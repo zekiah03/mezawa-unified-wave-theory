@@ -411,8 +411,10 @@ body.lang-gr { font-family:var(--font-gr); }
   .ldt { height:36px; padding:0 14px; display:flex; align-items:center; font-size:11px; letter-spacing:.06em; color:var(--dim); cursor:pointer; border-bottom:2px solid transparent; border-right:1px solid var(--bdr); white-space:nowrap; transition:all .16s; flex-shrink:0; }
   .ldt:hover { color:var(--W); background:rgba(255,255,255,.03); }
   .ldt.on { color:var(--T); border-bottom-color:var(--T); background:rgba(93,214,200,.05); }
-  .ldp { display:none !important; overflow-y:auto; padding:20px 22px; }
-  .ldp.ldp-on { display:block !important; }
+  .ldp { display:none !important; overflow-y:auto; padding:20px 22px; flex:1; min-height:0; }
+  .ldp.ldp-on { display:block !important; flex:1; min-height:0; }
+  .ldp.ldp-chat { padding:0; }
+  .ldp.ldp-chat.ldp-on { display:flex !important; flex-direction:column; overflow:hidden; }
 }
 /* Mobile: stacked sub-panes */
 @media (max-width:767px){
@@ -1101,6 +1103,7 @@ body.lang-gr { font-family:var(--font-gr); }
       <div class="sub-tab" onclick="swSub('l','l2')" id="st-l2">プラン</div>
       <div class="sub-tab" onclick="swSub('l','l3')" id="st-l3">成長ガイド</div>
       <div class="sub-tab" onclick="swSub('l','l4')" id="st-l4">生命解析</div>
+      <div class="sub-tab" onclick="swSub('l','l5')" id="st-l5">チャット</div>
     </div>
 
     <!-- Desktop: canvas left + detail right / Mobile: stacked via sub-panes -->
@@ -1123,6 +1126,7 @@ body.lang-gr { font-family:var(--font-gr); }
           <div class="ldt" onclick="swLifeDetail('l2')" id="ldt-l2">プラン</div>
           <div class="ldt" onclick="swLifeDetail('l3')" id="ldt-l3">成長ガイド</div>
           <div class="ldt" onclick="swLifeDetail('l4')" id="ldt-l4">生命解析</div>
+          <div class="ldt" onclick="swLifeDetail('l5')" id="ldt-l5">チャット</div>
         </div>
 
         <!-- 設定 -->
@@ -1147,6 +1151,18 @@ body.lang-gr { font-family:var(--font-gr); }
         <!-- 生命解析 -->
         <div id="sp-l4" class="sub-pane ldp" style="overflow-y:auto;padding:16px">
           <div id="lf-bio-content"></div>
+        </div>
+
+        <!-- チャット (desktop right panel) -->
+        <div id="sp-l5" class="sub-pane ldp ldp-chat">
+          <div class="life-chat-header">Ψ-生命体との対話</div>
+          <div id="life-chat-log" class="life-chat-log">
+            <div class="life-msg life-msg-ai">やあ。最近、なんかいいことあった？</div>
+          </div>
+          <div class="life-chat-foot">
+            <input id="life-input" class="life-chat-input-field" type="text" placeholder="生命体に語りかける..." onkeydown="if(event.key==='Enter')sendLifeMessage()">
+            <button class="life-send-btn" onclick="sendLifeMessage()">送信</button>
+          </div>
         </div>
       </div><!-- /life-detail-side -->
 
@@ -1704,6 +1720,12 @@ function swLifeDetail(id) {
   if (id === 'l1') setTimeout(renderLifeSettings, 50);
   if (id === 'l3') setTimeout(renderLifeGuide, 50);
   if (id === 'l4') setTimeout(renderBioParams, 50);
+  if (id === 'l5') {
+    const log = document.getElementById('life-chat-log');
+    if (log) log.scrollTop = log.scrollHeight;
+  }
+  // Ensure canvas is always rendering when switching panels
+  try { LIFE.start(); } catch(e){}
 }
 
 /* ════════════════════════════════════
