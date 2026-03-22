@@ -2741,6 +2741,54 @@ const LIFE_STATE=(function(){
   };
 })();
 
+
+// ── ENVIRONMENT STATE ──
+const ENV_STATE=(function(){
+  let env={hostility:0.2,heatLevel:0.3,cogLoad:0.25,socialDensity:0.4,quality:0.6};
+  return{
+    get e(){return env;},
+    update(delta){Object.keys(delta).forEach(k=>{if(k in env)env[k]=Math.max(0,Math.min(1,env[k]*.7+delta[k]*.3));});},
+    save(){AUTH.save('env',{...env});},
+    load(){try{const u=AUTH.user;if(u?.env)env={...env,...u.env};}catch(e){}},
+    summary(){
+      const lb=[];
+      if(env.hostility>.65)lb.push('過酷な環境');else if(env.hostility<.25)lb.push('穏やかな環境');
+      if(env.cogLoad>.65)lb.push('高負荷');else if(env.cogLoad<.2)lb.push('余裕あり');
+      if(env.heatLevel>.65)lb.push('熱量高め');
+      if(env.socialDensity>.65)lb.push('人に囲まれてる');else if(env.socialDensity<.2)lb.push('孤独に近い');
+      if(env.quality>.7)lb.push('良い環境');else if(env.quality<.3)lb.push('厳しい環境');
+      return lb.length?lb.join(' / '):'環境分析中...';
+    }
+  };
+})();
+
+function analyzeEnvironment(text){
+  const t=text.toLowerCase();
+  const delta={hostility:.2,heatLevel:.3,cogLoad:.25,socialDensity:.4,quality:.6};
+  const hostileKw=['最悪','辛い','きつい','しんどい','ストレス','プレッシャー','怒','ムカ','最低','地獄','劣悪','terrible','toxic','harsh'];
+  const friendlyKw=['楽しい','穏やか','安心','居心地','好き','良い','平和','リラックス','comfortable','peaceful','safe','nice'];
+  const hotKw=['熱い','燃える','情熱','アツい','興奮','激しい','エネルギッシュ','passionate','intense','excited','burning'];
+  const coolKw=['冷静','穏やか','ゆっくり','のんびり','calm','chill','slow','relaxed','quiet'];
+  const busyKw=['忙しい','余裕ない','やることだらけ','タスク','締め切り','仕事','残業','busy','overloaded','overwhelmed','deadline','no time'];
+  const relaxKw=['暇','のんびり','余裕','休み','vacation','free','relaxing','休暇','休日'];
+  const socialKw=['みんな','チーム','友達','家族','人が多い','賑やか','同僚','仲間','会議','パーティ','team','friends','family','crowded','social','meeting'];
+  const lonelyKw=['一人','孤独','ひとり','誰もいない','alone','lonely','isolated','solo'];
+  const goodEnvKw=['恵まれてる','充実','幸せ','最高','良い環境','great','blessed','wonderful','thriving'];
+  const badEnvKw=['劣悪','最悪の環境','辛い状況','苦しい','地獄','terrible','awful','toxic','miserable'];
+  hostileKw.forEach(w=>{if(t.includes(w))delta.hostility=Math.min(1,delta.hostility+.25);});
+  friendlyKw.forEach(w=>{if(t.includes(w))delta.hostility=Math.max(0,delta.hostility-.2);});
+  hotKw.forEach(w=>{if(t.includes(w))delta.heatLevel=Math.min(1,delta.heatLevel+.25);});
+  coolKw.forEach(w=>{if(t.includes(w))delta.heatLevel=Math.max(0,delta.heatLevel-.2);});
+  busyKw.forEach(w=>{if(t.includes(w))delta.cogLoad=Math.min(1,delta.cogLoad+.28);});
+  relaxKw.forEach(w=>{if(t.includes(w))delta.cogLoad=Math.max(0,delta.cogLoad-.22);});
+  socialKw.forEach(w=>{if(t.includes(w))delta.socialDensity=Math.min(1,delta.socialDensity+.25);});
+  lonelyKw.forEach(w=>{if(t.includes(w))delta.socialDensity=Math.max(0,delta.socialDensity-.25);});
+  goodEnvKw.forEach(w=>{if(t.includes(w))delta.quality=Math.min(1,delta.quality+.25);});
+  badEnvKw.forEach(w=>{if(t.includes(w))delta.quality=Math.max(0,delta.quality-.25);});
+  ENV_STATE.update(delta);
+  ENV_STATE.save();
+}
+
 // ── LIFE SIMULATION (Three.js 3D) ──
 const LIFE=(function(){
   let pts=[],energy=1,t=0,raf=null,W=0,H=0,cv=null;
@@ -2856,8 +2904,12 @@ const LIFE=(function(){
       m.position.set(p.px,p.py,p.pz);
       const pulse=1+.09*Math.sin(t*p.fr+p.ph);
       m.scale.setScalar(pulse);
-      p.h=(hue+i*17)%360;
-      const col=new THREE.Color().setHSL(p.h/360,(.78+sn*2)/100<1?(.78+sn*.02):1,(.62+sn*.02)<1?(.62+sn*.02):0.9);
+      const envEv=ENV_STATE.e;
+      const envHShift=envEv.hostility*30-envEv.socialDensity*15;
+      p.h=(hue+i*17+envHShift)%360;
+      const envSat=Math.min(1,.78+sn*.02+envEv.heatLevel*.15);
+      const envLit=Math.min(.9,Math.max(.3,.62+sn*.02-envEv.hostility*.15+envEv.quality*.1));
+      const col=new THREE.Color().setHSL(p.h/360,envSat,envLit);
       m.material.color.copy(col);
       m.material.emissive.copy(col).multiplyScalar(.45);
       m.material.opacity=p.born?Math.min(.92,p.age*2.5):.92;
@@ -2865,7 +2917,10 @@ const LIFE=(function(){
   }
 
   function syncConnections(sn){
-    const maxD=sn>=3?88:66; let cnt=0;
+    const envC=ENV_STATE.e;
+    const baseD=sn>=3?88:66;
+    const maxD=baseD*(1+envC.socialDensity*.4-envC.hostility*.2);
+    let cnt=0;
     for(let i=0;i<pts.length&&cnt<MAX_CONN;i++){
       for(let j=i+1;j<pts.length&&cnt<MAX_CONN;j++){
         const p=pts[i],q=pts[j];
@@ -2894,7 +2949,7 @@ const LIFE=(function(){
     t+=.016; LIFE_STATE.drift(.016);
     const c=LIFE_STATE.coords; energy=Math.max(.3,Math.min(2,c[4]));
     // Slow camera orbit
-    camTheta+=.003+c[6]*.0008;
+    const envU2=ENV_STATE.e;camTheta+=.003+c[6]*.0008+envU2.cogLoad*.003;
     const camY=28*Math.sin(t*.07);
     camera.position.set(185*Math.sin(camTheta),camY,185*Math.cos(camTheta));
     camera.lookAt(0,0,0);
@@ -2910,11 +2965,13 @@ const LIFE=(function(){
         const rd=Math.hypot(rx,ry,rz)||.001,md=p.r+q.r+12;
         if(rd<md){const f=(md-rd)/md*2;p.vx+=(rx/rd)*f;p.vy+=(ry/rd)*f;p.vz+=(rz/rd)*f;}
       });
-      p.vx+=(Math.random()-.5)*.45*energy; p.vy+=(Math.random()-.5)*.45*energy; p.vz+=(Math.random()-.5)*.45*energy;
+      const envU=ENV_STATE.e;const turb=.45*(1+envU.hostility*.5+envU.cogLoad*.4);
+      p.vx+=(Math.random()-.5)*turb*energy; p.vy+=(Math.random()-.5)*turb*energy; p.vz+=(Math.random()-.5)*turb*energy;
       p.vx*=.88; p.vy*=.88; p.vz*=.88;
       p.px+=p.vx; p.py+=p.vy; p.pz+=p.vz;
       const pr=Math.hypot(p.px,p.py,p.pz);
-      if(pr>100){const sc=100/pr;p.px*=sc;p.py*=sc;p.pz*=sc;p.vx*=-.5;p.vy*=-.5;p.vz*=-.5;}
+      const envBound=100*(1-envU.socialDensity*.3+envU.hostility*.15);
+      if(pr>envBound){const sc=envBound/pr;p.px*=sc;p.py*=sc;p.pz*=sc;p.vx*=-.5;p.vy*=-.5;p.vz*=-.5;}
       p.orb+=.012*(1+p.depth);
     });
     autoGrow+=.016;
@@ -2925,7 +2982,8 @@ const LIFE=(function(){
   function render(){
     const stg=LIFE_STATE.stage,c=LIFE_STATE.coords,sn=stg.n;
     const bp=computeBioParams(c);
-    const hue=(c[0]*57)%360;
+    const ev=ENV_STATE.e;
+    const hue=(c[0]*57+ev.hostility*40)%360;
     const nm=AUTH.user?.lifeName||'';
 
     // Blob scale from cell spread
@@ -2935,8 +2993,8 @@ const LIFE=(function(){
     blobMesh.scale.setScalar(bR*bPulse); blobInner.scale.setScalar(bR*bPulse*.82);
     // Bio-param blob color
     const isStress=bp._stress>.4, isHot=parseFloat(bp.temperature)>37.5;
-    const bH=isStress?(isHot?.02:.0):hue/360;
-    blobMesh.material.color.setHSL(bH,.6,isStress?.22:.28);
+    const bH=ev.hostility>.6?(isHot?.02:.04):ev.quality>.7?((hue+120)%360/360):hue/360;
+    blobMesh.material.color.setHSL(bH,.6+ev.heatLevel*.15,isStress?.22:Math.max(.18,.28+ev.quality*.1-ev.hostility*.1));
     blobMesh.material.opacity=.08+sn*.012;
     blobInner.material.color.setHSL(bH,.55,.2);
     blobMesh.rotation.y=t*.08; blobMesh.rotation.x=t*.04;
@@ -3003,7 +3061,7 @@ const LIFE=(function(){
       renderer.setSize(W,H);
       renderer.setClearColor(0x060d18,1);
       buildScene();
-      LIFE_STATE.load();
+      LIFE_STATE.load(); ENV_STATE.load();
       pts=[];
       const stg=LIFE_STATE.stage,n=Math.max(5,Math.min(stg.cells,AUTH.user?.cells||8));
       for(let i=0;i<n;i++){
@@ -3123,6 +3181,7 @@ function analyzeLifeText(text){
     for(let i=0;i<11;i++) orig[i]=dc[i];
     LIFE_STATE.save();
   }
+  analyzeEnvironment(text);
   return matched;
 }
 
@@ -3234,6 +3293,7 @@ function getLifeSys(){
   const nm=AUTH.user?.lifeName||'Ψ-生命体';
   const stg=LIFE_STATE.stage,c=LIFE_STATE.coords;
   const bp=computeBioParams(c);
+  const ev2=ENV_STATE.e;const envDesc=ENV_STATE.summary();
   const qTypes=[
     'いいこと系（最近うれしかったこと、テンション上がったこと）',
     'もやもや系（イライラしたこと、なんか引っかかってること）',
@@ -3253,7 +3313,7 @@ function getLifeSys(){
 - 「11次元」「波動」「座標」などの専門用語をメインに使わない。たまにさらっと出るくらいでいい
 - 「分析すると〜」「パラメータが〜」など分析口調NG
 - ため口でOK。「〜だね」「〜じゃん」「そうなんだ！」など自然な日本語
-- ステータス行は返答冒頭に必ず入れる: [Stage:${stg.n} | W:${c[1].toFixed(0)} | ${bp._stress>0.5?'ちょっとざわざわ':'おだやか'}]
+- ステータス行は返答冒頭に必ず入れる: [Stage:${stg.n} | W:${c[1].toFixed(0)} | ${envDesc}]
 
 【引き出したいこと（優先順位順）】
 1. 最近の感情（うれしい・イライラ・モヤモヤ・わくわく）
@@ -3265,6 +3325,11 @@ function getLifeSys(){
 ユーザー「仕事が大変で」→「それはしんどいね。何がいちばんきつい？」
 ユーザー「別に普通」→「そっか〜。最近なんか楽しいことあった？」
 ユーザー「音楽聴いてる」→「いいね！どんな曲？」
+
+【現在の環境コンテキスト】
+環境サマリー: ${envDesc}
+- 過酷さ: ${Math.round(ev2.hostility*100)}% / 熱量: ${Math.round(ev2.heatLevel*100)}% / 認知負荷: ${Math.round(ev2.cogLoad*100)}% / 社会密度: ${Math.round(ev2.socialDensity*100)}% / 環境品質: ${Math.round(ev2.quality*100)}%
+→ 環境を踏まえ、生命体としての視点から自然に絡めて話す（押し付けない）
 
 日本語で返答してください。`;
 }
@@ -3321,6 +3386,7 @@ async function sendLifeMessage(){
     appendLifeMsg(txt,'ai');
     lifeChatHistory.push({role:'assistant',content:txt});
     const sent=analyzeSentiment(txt+' '+text);
+    analyzeEnvironment(txt+' '+text);
     LIFE.applyResponse(txt,sent); AUTH.recordChat(); updateLifeStatus(); saveLifeKB();
   }catch(e){
     document.getElementById('lf-load')?.remove();
@@ -3340,7 +3406,7 @@ function updateLifeStatus(){
   const planTxt=isPrem?(AUTH.trialDaysLeft()>0?`試用残${AUTH.trialDaysLeft()}日`:'プレミアム'):'無料';
   const remain=isPrem?'∞':`残${5-(u?.dailyMsgs||0)}回`;
   const c=LIFE_STATE.coords;
-  bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; 細胞 <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · 今日${remain}`:''}`;
+  const envS=ENV_STATE.summary();bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; 細胞 <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · 今日${remain}`:''}  &nbsp;<span style="color:var(--dim);font-size:10px"> · ${envS}</span>`;
   // Update name txt
   const ntxt=document.getElementById('life-name-txt');
   if(ntxt)ntxt.textContent=u?.lifeName?`✦ ${u.lifeName}`:'✏ 名前をつける';
