@@ -2864,11 +2864,11 @@ const LIFE=(function(){
 
   // ── Phase system ──
   const PHASE_VIS={
-    fluid:  {hue:188,sat:.95,lit:.82,opLo:.55,opHi:.92,szLo:.35,szHi:.80,damp:.82,turb:.26,pull:.016,rep:1.0, bound:90, connD:95, emMul:.50,bH:0x001122,bOp:.08},
-    gas:    {hue:195,sat:.88,lit:.85,opLo:.25,opHi:.55,szLo:.18,szHi:.42,damp:.93,turb:1.65,pull:.003,rep:.4,  bound:155,connD:55, emMul:.60,bH:0x000a12,bOp:.03},
-    solid:  {hue:182,sat:.90,lit:.88,opLo:.72,opHi:.98,szLo:.45,szHi:1.0,damp:.60,turb:.03, pull:.048,rep:1.8, bound:64, connD:110,emMul:.40,bH:0x001133,bOp:.14},
-    burning:{hue:175,sat:.92,lit:.80,opLo:.35,opHi:.75,szLo:.22,szHi:.55,damp:.90,turb:2.2, pull:.006,rep:.6,  bound:135,connD:60, emMul:.65,bH:0x080012,bOp:.06},
-    frozen: {hue:200,sat:.85,lit:.92,opLo:.80,opHi:.99,szLo:.50,szHi:1.1,damp:.52,turb:.015,pull:.055,rep:2.2, bound:58, connD:115,emMul:.35,bH:0x001122,bOp:.18},
+    fluid:  {hue:188,sat:.95,lit:.82,opLo:.55,opHi:.92,szLo:.35,szHi:.80,damp:.82,turb:.26,pull:.006,rep:1.0, repR:18,bound:105,connD:48, emMul:.50,bH:0x001122,bOp:.08},
+    gas:    {hue:195,sat:.88,lit:.85,opLo:.25,opHi:.55,szLo:.18,szHi:.42,damp:.93,turb:1.65,pull:.002,rep:.4,  repR:22,bound:165,connD:38, emMul:.60,bH:0x000a12,bOp:.03},
+    solid:  {hue:182,sat:.90,lit:.88,opLo:.72,opHi:.98,szLo:.45,szHi:1.0,damp:.60,turb:.03, pull:.028,rep:1.8, repR:12,bound:72, connD:40, emMul:.40,bH:0x001133,bOp:.14},
+    burning:{hue:175,sat:.92,lit:.80,opLo:.35,opHi:.75,szLo:.22,szHi:.55,damp:.90,turb:2.2, pull:.002,rep:.6,  repR:20,bound:148,connD:42, emMul:.65,bH:0x080012,bOp:.06},
+    frozen: {hue:200,sat:.85,lit:.92,opLo:.80,opHi:.99,szLo:.50,szHi:1.1,damp:.52,turb:.015,pull:.030,rep:2.2, repR:10,bound:66, connD:36, emMul:.35,bH:0x001122,bOp:.18},
   };
   const PHASE_LABEL={fluid:'流体',gas:'気体',solid:'固体',burning:'燃焼',frozen:'凍結'};
   const PHASE_DESC={fluid:'粘性·表面張力',gas:'高速·拡散',solid:'結晶·剛体',burning:'燃焼·カオス',frozen:'凍結·結晶'};
@@ -2882,7 +2882,7 @@ const LIFE=(function(){
       opLo:lV(pa.opLo,pb.opLo,k),opHi:lV(pa.opHi,pb.opHi,k),
       szLo:lV(pa.szLo,pb.szLo,k),szHi:lV(pa.szHi,pb.szHi,k),
       damp:lV(pa.damp,pb.damp,k),turb:lV(pa.turb,pb.turb,k),
-      pull:lV(pa.pull,pb.pull,k),rep:lV(pa.rep,pb.rep,k),
+      pull:lV(pa.pull,pb.pull,k),rep:lV(pa.rep,pb.rep,k),repR:lV(pa.repR,pb.repR,k),
       bound:lV(pa.bound,pb.bound,k),connD:lV(pa.connD,pb.connD,k),
       emMul:lV(pa.emMul,pb.emMul,k),
     };
@@ -3046,7 +3046,7 @@ const LIFE=(function(){
         if(j===i)return;
         const rx=p.px-q.px,ry=p.py-q.py,rz=p.pz-q.pz;
         const rd=Math.hypot(rx,ry,rz)||.001;
-        const minD=(pv.szLo+pv.szHi)*pv.rep;
+        const minD=pv.repR;
         if(rd<minD){const f=(minD-rd)/minD*1.9;p.vx+=(rx/rd)*f;p.vy+=(ry/rd)*f;p.vz+=(rz/rd)*f;}
       });
       const turb=pv.turb*(1+ev.hostility*.4+ev.cogLoad*.3)*energy;
@@ -3165,7 +3165,7 @@ const LIFE=(function(){
       const stg=LIFE_STATE.stage,n=Math.max(8,Math.min(stg.cells,AUTH.user?.cells||15));
       for(let i=0;i<n;i++){
         const p=mkPt(null,stg.n);
-        const a=(i/n)*Math.PI*2,b=(i/n)*Math.PI,d=18+Math.random()*32;
+        const a=(i/n)*Math.PI*2,b=(i/n)*Math.PI,d=22+Math.random()*55;
         p.px=Math.sin(b)*Math.cos(a)*d; p.py=Math.cos(b)*d*.6; p.pz=Math.sin(b)*Math.sin(a)*d;
         pts.push(p);
       }
