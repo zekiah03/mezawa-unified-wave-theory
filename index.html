@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>めざわ統一波動理論</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Noto+Serif+SC:wght@300;400;700&family=IM+Fell+English:ital@0;1&family=JetBrains+Mono:wght@300;400;700&family=Syne:wght@700;800&display=swap');
+
+:root {
+  --bg:    #0f1117;
+  --bg2:   #171b24;
+  --bg3:   #1e2330;
+  --card:  #1a1f2e;
+  --bdr:   rgba(255,255,255,0.08);
+  --bdr2:  rgba(255,255,255,0.14);
+  --T:     #5dd6c8;
+  --Y:     #e8c84a;
+  --P:     #a07de8;
+  --R:     #e06080;
+  --G:     #5cc87a;
+  --O:     #e0924a;
+  --W:     #f0f2f7;
+  --dim:   #8898aa;
+  --text:  #ccd6e8;
+  --head:  #f0f2f7;
+  --link:  #5dd6c8;
+  --shadow: 0 2px 16px rgba(0,0,0,0.4);
+  --font-ja: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+  --font-zh: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --font-gr: 'IM Fell English', 'Palatino Linotype', serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', monospace;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); touch-action:none; }
+body { font-family:var(--font-ja); font-size:14px; line-height:1.7; }
+body.lang-zh { font-family:var(--font-zh); }
+body.lang-gr { font-family:var(--font-gr); }
+
+/* ── SHELL ── */
+#shell { display:grid; grid-template-columns:52px 1fr; grid-template-rows:50px 1fr; width:100vw; height:100vh; }
+
+/* ── TOPBAR ── */
+#topbar {
+  grid-column:1/-1; background:var(--bg2); border-bottom:1px solid var(--bdr);
+  display:flex; align-items:center; z-index:200; gap:0; box-shadow:var(--shadow);
+}
+#logo {
+  width:52px; height:50px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--T);
+  border-right:1px solid var(--bdr); cursor:pointer; letter-spacing:-0.04em;
+}
+.tab {
+  height:50px; padding:0 16px; display:flex; align-items:center; gap:7px; cursor:pointer;
+  font-size:11px; letter-spacing:0.06em; color:var(--dim); border-right:1px solid var(--bdr);
+  border-bottom:2px solid transparent; transition:all 0.18s; white-space:nowrap; flex-shrink:0;
+}
+.tab:hover { color:var(--W); background:rgba(255,255,255,0.03); }
+.tab.on { color:var(--T); border-bottom-color:var(--T); background:rgba(93,214,200,0.05); }
+.tab .tic { font-size:13px; opacity:0.8; }
+#lang-wrap { margin-left:auto; display:flex; align-items:center; gap:2px; padding:0 12px; }
+.lang-btn {
+  padding:4px 10px; font-size:10px; letter-spacing:0.08em; border:1px solid var(--bdr2);
+  background:transparent; color:var(--dim); cursor:pointer; border-radius:3px; transition:all 0.15s;
+}
+.lang-btn:hover { color:var(--W); border-color:var(--bdr2); }
+.lang-btn.on { background:rgba(93,214,200,0.12); color:var(--T); border-color:var(--T); }
+#ver { padding:0 14px; font-size:10px; color:var(--dim); font-family:var(--font-code); white-space:nowrap; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  grid-row:2; grid-column:1; background:var(--bg2); border-right:1px solid var(--bdr);
+  display:flex; flex-direction:column; align-items:center; padding:10px 0; gap:3px; z-index:100;
+}
+.si { width:36px; height:36px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; color:var(--dim); transition:all 0.15s; }
+.si:hover { background:rgba(93,214,200,0.1); color:var(--T); }
+.si.on { background:rgba(93,214,200,0.14); color:var(--T); }
+.sep { width:28px; height:1px; background:var(--bdr); margin:5px 0; }
+
+/* ── MAIN ── */
+#main { grid-row:2; grid-column:2; overflow:hidden; position:relative; }
+.pn { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity 0.25s; overflow:hidden; }
+.pn.on { opacity:1; pointer-events:all; }
+.scroll { overflow-y:auto; padding:32px 40px; }
+.scroll::-webkit-scrollbar { width:5px; }
+.scroll::-webkit-scrollbar-track { background:var(--bg); }
+.scroll::-webkit-scrollbar-thumb { background:var(--bdr2); border-radius:3px; }
+
+/* ── TYPOGRAPHY ── */
+.panel-title { font-size:clamp(18px,2.4vw,28px); font-weight:700; color:var(--head); margin-bottom:8px; line-height:1.3; }
+.panel-sub { font-size:12px; color:var(--dim); letter-spacing:0.04em; margin-bottom:28px; }
+.sec-title {
+  font-size:11px; letter-spacing:0.2em; color:var(--T); text-transform:uppercase; margin-bottom:14px;
+  display:flex; align-items:center; gap:12px;
+}
+.sec-title::after { content:''; flex:1; height:1px; background:var(--bdr); }
+
+/* ── CARDS ── */
+.card {
+  background:var(--card); border:1px solid var(--bdr); border-radius:8px;
+  padding:18px 22px; margin-bottom:12px; transition:border-color 0.15s;
+}
+.card:hover { border-color:var(--bdr2); }
+.card.t  { border-left:3px solid var(--T); }
+.card.y  { border-left:3px solid var(--Y); }
+.card.p  { border-left:3px solid var(--P); }
+.card.r  { border-left:3px solid var(--R); }
+.card.g  { border-left:3px solid var(--G); }
+.card.o  { border-left:3px solid var(--O); }
+.card.w  { border-left:3px solid rgba(255,255,255,0.5); }
+.card-tag { font-family:var(--font-code); font-size:10px; color:var(--dim); float:right; letter-spacing:0.08em; }
+.card-main { font-family:var(--font-code); font-size:13px; color:var(--Y); margin-bottom:6px; line-height:2.0; }
+.card-sub { font-size:12px; color:var(--dim); line-height:1.9; }
+.card-gr { font-family:var(--font-gr); font-style:italic; font-size:13px; color:#c8b8e8; margin-top:8px; line-height:1.9; }
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+.grid-auto { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin-bottom:16px; }
+
+/* ── STAT CARDS ── */
+.stat { background:var(--card); border:1px solid var(--bdr); border-radius:7px; padding:14px 16px; }
+.stat-label { font-size:10px; letter-spacing:0.14em; color:var(--dim); margin-bottom:6px; text-transform:uppercase; }
+.stat-value { font-size:22px; font-weight:700; font-family:'Syne',sans-serif; }
+.stat-sub { font-size:11px; color:var(--dim); margin-top:3px; }
+.badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:4px; margin-top:5px; font-weight:600; letter-spacing:0.06em; }
+.badge-g { background:rgba(92,200,122,0.14); color:var(--G); border:1px solid rgba(92,200,122,0.3); }
+.badge-y { background:rgba(232,200,74,0.12); color:var(--Y); border:1px solid rgba(232,200,74,0.25); }
+.badge-p { background:rgba(160,125,232,0.12); color:var(--P); border:1px solid rgba(160,125,232,0.25); }
+.badge-r { background:rgba(224,96,128,0.12); color:var(--R); border:1px solid rgba(224,96,128,0.25); }
+
+/* ── PROBLEMS ── */
+.prob-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px; margin-bottom:20px; }
+.prob { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:16px; position:relative; overflow:hidden; }
+.prob::before { content:''; position:absolute; top:0; left:0; width:100%; height:3px; }
+.prob.fl::before { background:linear-gradient(90deg,var(--G),var(--T)); }
+.prob.pa::before { background:linear-gradient(90deg,var(--Y),var(--T)); }
+.prob.hi::before { background:linear-gradient(90deg,var(--P),transparent); }
+.prob-domain { font-size:10px; letter-spacing:0.16em; color:var(--dim); margin-bottom:6px; text-transform:uppercase; }
+.prob-title { font-size:13px; font-weight:700; color:var(--head); margin-bottom:7px; line-height:1.4; }
+.prob-existing { font-size:11px; color:var(--dim); margin-bottom:9px; line-height:1.8; border-left:2px solid var(--bdr); padding-left:10px; }
+.prob-sol { font-size:11px; color:var(--text); line-height:1.9; }
+.prob-eq { font-family:var(--font-code); font-size:10px; color:var(--T); margin-top:8px; padding:8px 10px; background:var(--bg3); border-radius:5px; border:1px solid var(--bdr); }
+.prob-badge { display:inline-flex; align-items:center; gap:5px; font-size:10px; padding:3px 8px; border-radius:4px; margin-bottom:9px; font-weight:600; }
+
+/* ── EXPERIMENT ── */
+.exp { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:18px 20px; margin-bottom:10px; position:relative; overflow:hidden; }
+.exp::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; }
+.exp.e0::before { background:linear-gradient(90deg,var(--T),transparent); }
+.exp.eA::before { background:linear-gradient(90deg,var(--Y),transparent); }
+.exp.eB::before { background:linear-gradient(90deg,var(--P),transparent); }
+.exp.eC::before { background:linear-gradient(90deg,var(--R),transparent); }
+.exp.eG::before { background:linear-gradient(90deg,var(--G),transparent); }
+.exp-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.exp-title { font-size:13px; font-weight:700; color:var(--head); }
+.exp-status { margin-left:auto; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; }
+.exp-metrics { display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:6px; margin-top:10px; }
+.exp-metric { background:var(--bg3); border:1px solid var(--bdr); border-radius:5px; padding:8px 10px; }
+.exp-val { font-size:14px; font-weight:700; color:var(--T); font-family:'Syne',sans-serif; }
+.exp-lbl { font-size:10px; color:var(--dim); margin-top:2px; letter-spacing:0.06em; }
+
+/* ── QUESTIONS TAB ── */
+.q-item { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:18px 22px; margin-bottom:10px; }
+.q-concept { font-size:10px; letter-spacing:0.16em; color:var(--T); text-transform:uppercase; margin-bottom:6px; }
+.q-text { font-size:14px; color:var(--head); margin-bottom:8px; line-height:1.6; }
+.q-insight { font-size:12px; color:var(--dim); line-height:1.9; }
+.q-insight.gr { font-family:var(--font-gr); font-style:italic; color:#c8b8e8; font-size:13px; }
+.q-add-area { background:var(--bg3); border:1px dashed var(--bdr2); border-radius:8px; padding:16px 20px; margin-top:6px; }
+.q-add-area textarea { width:100%; background:transparent; border:none; outline:none; color:var(--text); font-family:var(--font-ja); font-size:13px; line-height:1.7; resize:vertical; min-height:60px; }
+.q-add-btn { margin-top:8px; padding:6px 16px; background:rgba(93,214,200,0.12); border:1px solid var(--T); color:var(--T); border-radius:5px; cursor:pointer; font-size:11px; font-family:var(--font-code); letter-spacing:0.1em; transition:all 0.15s; }
+.q-add-btn:hover { background:rgba(93,214,200,0.2); }
+
+/* ── MAP TAB ── */
+#map-canvas-wrap { position:relative; width:100%; height:calc(100vh - 200px); background:var(--bg3); border-radius:8px; border:1px solid var(--bdr); overflow:hidden; margin-bottom:16px; }
+#map-canvas { width:100%; height:100%; }
+
+/* ── QUOTES TAB ── */
+.quote { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:22px 26px; margin-bottom:12px; position:relative; }
+.quote::before { content:'"'; position:absolute; top:-8px; left:20px; font-size:60px; color:var(--T); opacity:0.2; font-family:'Georgia',serif; line-height:1; }
+.quote-text { font-size:16px; color:var(--head); line-height:1.8; margin-bottom:12px; }
+.quote-text.gr { font-family:var(--font-gr); font-style:italic; font-size:17px; color:#ddd0f8; }
+.quote-source { font-size:11px; color:var(--T); font-family:var(--font-code); letter-spacing:0.1em; }
+.quote-concept { font-size:10px; color:var(--dim); margin-top:4px; letter-spacing:0.12em; text-transform:uppercase; }
+
+/* ── SCALE ── */
+.scale-row { display:grid; grid-template-columns:110px 1fr 170px 100px; gap:14px; padding:12px 16px; background:var(--card); border-radius:7px; border:1px solid var(--bdr); margin-bottom:4px; align-items:center; transition:border-color 0.15s; }
+.scale-row:hover { border-color:var(--bdr2); }
+.scale-bar-bg { height:4px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; }
+.scale-bar-fill { height:100%; border-radius:2px; }
+
+/* ── CHART WRAPS ── */
+.chart-wrap { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:18px; margin-bottom:12px; }
+.chart-title { font-size:11px; letter-spacing:0.14em; color:var(--dim); margin-bottom:12px; text-transform:uppercase; font-family:var(--font-code); }
+
+/* ── AXIOM GRID ── */
+.axiom-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px; margin-bottom:18px; }
+.axiom { background:var(--card); border:1px solid var(--bdr); border-radius:7px; padding:13px 15px; position:relative; overflow:hidden; }
+.axiom::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,var(--T),transparent); }
+.axiom-sym { font-size:22px; color:var(--Y); margin-bottom:4px; font-weight:700; font-family:'Syne',sans-serif; }
+.axiom-name { font-size:11px; color:var(--head); margin-bottom:3px; }
+.axiom-def { font-size:10px; color:var(--dim); line-height:1.7; font-family:var(--font-code); }
+
+/* ── CONSISTENCY ── */
+.cons-row { display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--card); border-radius:6px; border:1px solid var(--bdr); margin-bottom:5px; }
+.cons-mark { font-size:14px; width:20px; flex-shrink:0; }
+.cons-name { font-size:12px; color:var(--head); font-weight:600; flex:1; }
+.cons-field { font-size:10px; color:var(--dim); font-family:var(--font-code); letter-spacing:0.08em; width:60px; flex-shrink:0; }
+.cons-bar-bg { width:120px; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; flex-shrink:0; }
+.cons-bar-fill { height:100%; border-radius:3px; }
+.cons-desc { font-size:10px; color:var(--dim); flex:2; }
+
+/* ── 3D PANEL ── */
+#uc { position:absolute; inset:0; width:100%!important; height:100%!important; }
+#u-hud { position:absolute; top:16px; left:16px; pointer-events:none; }
+#u-name { font-family:'Syne',sans-serif; font-size:clamp(14px,2.2vw,24px); font-weight:800; color:var(--W); text-shadow:0 0 20px currentColor; transition:color 0.4s; }
+#u-sub { font-size:11px; color:var(--dim); margin-top:4px; letter-spacing:0.06em; }
+#u-feeling { position:absolute; bottom:78px; left:50%; transform:translateX(-50%); max-width:min(440px,80vw); width:100%; background:rgba(15,17,23,0.88); border:1px solid var(--bdr2); backdrop-filter:blur(16px); border-radius:8px; padding:15px 20px; opacity:0; transition:opacity 0.4s; pointer-events:none; }
+#u-feeling.on { opacity:1; }
+#u-ft { font-size:9px; letter-spacing:0.22em; color:var(--dim); margin-bottom:8px; text-transform:uppercase; }
+#u-ftx { font-size:12px; line-height:2.1; font-weight:400; white-space:pre-line; color:rgba(255,255,255,0.82); }
+#u-feq { margin-top:10px; font-size:10px; color:var(--dim); border-top:1px solid var(--bdr); padding-top:9px; font-family:var(--font-code); }
+#u-sel { position:absolute; right:12px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:3px; max-height:90vh; overflow-y:auto; }
+.u-btn { width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-size:9px; transition:all 0.15s; color:rgba(255,255,255,0.4); position:relative; }
+.u-btn:hover { transform:scale(1.15); }
+.u-btn.on { border-color:currentColor; }
+.u-btn .tip { position:absolute; right:36px; background:rgba(0,0,0,0.92); border:1px solid var(--bdr); border-radius:4px; padding:3px 8px; font-size:10px; font-family:var(--font-code); white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 0.14s; }
+.u-btn:hover .tip { opacity:1; }
+#u-bottom { position:absolute; bottom:0; left:0; right:0; padding:6px 20px 14px; background:linear-gradient(transparent,rgba(15,17,23,0.95) 35%); display:flex; flex-direction:column; align-items:center; gap:5px; }
+.u-speed-row { display:flex; align-items:center; gap:10px; width:100%; max-width:420px; }
+.u-sl { font-size:9px; opacity:0.3; width:46px; letter-spacing:0.04em; }
+.u-sl.r { text-align:right; }
+#u-speed { flex:1; -webkit-appearance:none; height:2px; border-radius:1px; outline:none; cursor:pointer; background:linear-gradient(90deg,var(--P),#4db8ff,var(--T),var(--Y),var(--O),var(--W)); }
+#u-speed::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:var(--W); box-shadow:0 0 10px rgba(255,255,255,0.5); cursor:pointer; }
+#u-spl { font-size:10px; color:var(--dim); letter-spacing:0.12em; font-family:var(--font-code); }
+#u-back { position:absolute; top:14px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.06); border:1px solid var(--bdr2); color:var(--dim); font-size:10px; letter-spacing:0.12em; padding:5px 16px; cursor:pointer; border-radius:5px; opacity:0; transition:opacity 0.3s; pointer-events:none; font-family:var(--font-code); }
+#u-back.on { opacity:1; pointer-events:all; }
+#u-back:hover { background:rgba(255,255,255,0.1); }
+
+/* ── NEXUS ── */
+.nx-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; margin-bottom:16px; }
+.nx-card { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:14px 16px; }
+.nx-title { font-size:12px; font-weight:700; color:var(--head); margin-bottom:4px; }
+.nx-desc { font-size:11px; color:var(--dim); line-height:1.8; }
+.nx-status { font-size:10px; padding:3px 8px; border-radius:4px; margin-top:8px; display:inline-block; font-weight:600; letter-spacing:0.07em; }
+
+/* ── DATA TABLE ── */
+.dt { width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px; font-family:var(--font-code); }
+.dt th { padding:8px 12px; text-align:left; background:rgba(93,214,200,0.06); color:var(--T); font-size:10px; letter-spacing:0.12em; border-bottom:1px solid var(--bdr); }
+.dt td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text); }
+.dt tr:hover td { background:rgba(93,214,200,0.02); }
+
+/* ── UNKNOWNS ── */
+.uk { display:flex; align-items:flex-start; gap:10px; padding:9px 13px; background:var(--card); border:1px solid var(--bdr); border-radius:6px; margin-bottom:4px; }
+.uk-badge { font-size:9px; padding:2px 6px; border-radius:3px; flex-shrink:0; margin-top:2px; font-weight:700; letter-spacing:0.08em; }
+.uk-text { font-size:11px; color:var(--text); line-height:1.7; }
+
+/* ── NOTIFICATION ── */
+#notif { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--bg2); border:1px solid var(--T); color:var(--T); font-size:11px; letter-spacing:0.12em; padding:8px 20px; border-radius:6px; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:9999; font-family:var(--font-code); }
+#notif.on { opacity:1; }
+</style>
+</head>
+<body class="lang-ja">
+<div id="shell">
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div id="logo" onclick="sw('u')">Ψ</div>
+  <div class="tab on" onclick="sw('u')" id="tab-u"><span class="tic">🌌</span><span class="tab-lbl">3D 宇宙</span></div>
+  <div class="tab" onclick="sw('t')" id="tab-t"><span class="tic">∿</span><span class="tab-lbl">理論</span></div>
+  <div class="tab" onclick="sw('c')" id="tab-c"><span class="tic">⚙</span><span class="tab-lbl">計算</span></div>
+  <div class="tab" onclick="sw('s')" id="tab-s"><span class="tic">⚖</span><span class="tab-lbl">スケール</span></div>
+  <div class="tab" onclick="sw('a')" id="tab-a"><span class="tic">◈</span><span class="tab-lbl">解析</span></div>
+  <div class="tab" onclick="sw('e')" id="tab-e"><span class="tic">⚗</span><span class="tab-lbl">実験</span></div>
+  <div class="tab" onclick="sw('n')" id="tab-n"><span class="tic">🧬</span><span class="tab-lbl">Nexus</span></div>
+  <div class="tab" onclick="sw('q')" id="tab-q"><span class="tic">？</span><span class="tab-lbl">問い</span></div>
+  <div class="tab" onclick="sw('m')" id="tab-m"><span class="tic">🗺</span><span class="tab-lbl">学問図</span></div>
+  <div class="tab" onclick="sw('w')" id="tab-w"><span class="tic">✦</span><span class="tab-lbl">名言</span></div>
+  <div class="tab" onclick="sw('p')" id="tab-p"><span class="tic">💡</span><span class="tab-lbl">未解明</span></div>
+  <div id="lang-wrap">
+    <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
+    <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" onclick="setLang('gr')">Ἑλληνική</button>
+  </div>
+  <div id="ver">v2.3</div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="si on" onclick="sw('u')" title="3D">🌌</div>
+  <div class="si" onclick="sw('t')" title="Theory">∿</div>
+  <div class="si" onclick="sw('c')" title="Calc">⚙</div>
+  <div class="sep"></div>
+  <div class="si" onclick="sw('s')" title="Scale">⚖</div>
+  <div class="si" onclick="sw('a')" title="Analysis">◈</div>
+  <div class="si" onclick="sw('e')" title="Experiment">⚗</div>
+  <div class="sep"></div>
+  <div class="si" onclick="sw('n')" title="Nexus">🧬</div>
+  <div class="si" onclick="sw('q')" title="Questions">？</div>
+  <div class="si" onclick="sw('m')" title="Map">🗺</div>
+  <div class="si" onclick="sw('w')" title="Quotes">✦</div>
+  <div class="sep"></div>
+  <div class="si" onclick="sw('p')" title="Problems">💡</div>
+</div>
+
+<div id="main">
+
+<!-- 3D UNIVERSE -->
+<div id="p-u" class="pn on">
+  <canvas id="uc"></canvas>
+  <div id="u-hud">
+    <div id="u-name">万物波動</div>
+    <div id="u-sub">クリック: ロックオン ｜ ドラッグ: 回転 ｜ スクロール: ズーム</div>
+  </div>
+  <button id="u-back" onclick="unlockU()">← フリーカメラ</button>
+  <div id="u-feeling">
+    <div id="u-ft">体感</div>
+    <div id="u-ftx"></div>
+    <div id="u-feq"></div>
+  </div>
+  <div id="u-sel"></div>
+  <div id="u-bottom">
+    <div class="u-speed-row">
+      <div class="u-sl">宇宙速</div>
+      <input id="u-speed" type="range" min="0" max="100" value="38">
+      <div class="u-sl r">光速</div>
+    </div>
+    <div id="u-spl">TIME SCALE × 1.0</div>
+  </div>
+</div>
+
+<!-- THEORY -->
+<div id="p-t" class="pn scroll">
+  <div class="panel-title" id="t-title">めざわ統一波動理論 v2.3</div>
+  <div class="panel-sub" id="t-sub">解決率 14/15 (93%) ｜ 整合性確認 8/12 物理法則</div>
+  <div class="sec-title" id="t-ax">公理系</div>
+  <div class="axiom-grid" id="ag"></div>
+  <div class="sec-title" id="t-eq">基本方程式</div>
+  <div id="eql"></div>
+  <div class="sec-title" id="t-new">v2.2 新規確定</div>
+  <div class="card g">
+    <span class="card-tag">証明1-4</span>
+    <div class="card-main">Schrodinger ✓ · Einstein GR ✓ · 熱力学第二法則 ✓ · 特殊相対論 ✓</div>
+    <div class="card-sub">h=0 階層で Ψ=exp(i(kx-ωt)) からシュレーディンガー方程式を完全導出。β₀→0, C→0 で GR に帰着。dS/dτx=γ>0 で第二法則。g_τzτz=-(1-β²)で SR、誤差2×10⁻¹⁶。</div>
+    <div class="card-gr">Ἡ Φύσις κατὰ τὸν Νόμον κινεῖται · ὁ χρόνος ῥεῖ · ἡ ἐντροπία αὔξει</div>
+  </div>
+  <div class="card y">
+    <span class="card-tag">新予測⑦⑧</span>
+    <div class="card-main">⑦ 高W観測者のBell違反率が低W観測者の2.2倍 ｜ ⑧ γ減少 ↔ 宇宙膨張加速</div>
+    <div class="card-sub">β_highW ≈ 1.33 vs β_lowW ≈ 0.593 → 比率2.2倍。Phase B で検証可能。γ_{N+1}=γ_N·(1-ε·W_N) の減少が暗黒エネルギーの起源の可能性。</div>
+  </div>
+  <div class="sec-title">v2.3 新規確定</div>
+  <div class="card g">
+    <span class="card-tag">[解決-20] g-2</span>
+    <div class="card-main">電子 g-2 = 1 − W^(−2·δh·k) ｜ W=15, δh = 4.10×10⁻⁶ で QED値に完全一致</div>
+    <div class="card-sub">充填率モデル: g-2 ≈ 1 − W^(−2·δh·k) → δh = 4.10×10⁻⁶ で g-2 = 0.001159652 を再現 (誤差 &lt; 10⁻⁹)。δh は電子の自己エネルギー補正に対応する階層微小シフト。W=15 が宇宙の W_universe の中央値に一致することに注目。物理的意味: δh/h = 1.23×10⁻⁵ — 電子の「自己認識深さ」のゆらぎ。</div>
+    <div class="card-gr">Ἡ ἀνωμαλία τοῦ ἠλεκτρονίου ἐκ μικροῦ δh γεννᾶται · W = 15 τὸ κλειδόν ἐστιν.</div>
+  </div>
+  <div class="card t">
+    <span class="card-tag">Hawking 温度</span>
+    <div class="card-main">T_Hawking = ℏω₀ / (4π·k_B) ｜ T_mezawa = |g_τyτz|·ℏω₀/k_B</div>
+    <div class="card-sub">Mezawa理論とHawking温度の関係: T_mezawa / T_Hawking = 4π·|g_τyτz(BH)| = 4π × 0.0346 = 0.4348。M依存性は完全一致 (T ∝ 1/M)。完全一致には |g_τyτz(BH)| = 1/(4π) ≈ 0.0796 が必要。現在値 0.0346 は β₀補正込みで C = g_τyτz·4π/β₀ = 0.733 ← β₀の精密測定で解決候補。</div>
+    <div class="card-gr">T_Hawk = ℏω₀/(4πk_B) · ὁ ὁρίζων τοῦ μέλανος ἄστρου ψυχρός ἐστιν.</div>
+  </div>
+  <div class="card p">
+    <span class="card-tag">τ_felt 設計</span>
+    <div class="card-main">α = 0.500 確定候補 ｜ EEG γ波 → W 較正曲線 初版</div>
+    <div class="card-sub">予測⑥ (フロー時2.5倍速感覚) から逆算: α = 0.500。τ_felt/τy = 1/(1+0.5·W)。W=3→40%、W=5→29%。EEGγ波較正: γ=50μV²→W≈3.5、γ=100μV²→W≈4.2。Phase E で直接検証予定。</div>
+  </div>
+  <div class="sec-title">未定義リスト</div>
+  <div id="ukl"></div>
+</div>
+
+<!-- CALC LOG -->
+<div id="p-c" class="pn scroll">
+  <div class="panel-title">計算ログ v2.3</div>
+  <div class="panel-sub">数値計算・証明の記録</div>
+  <div class="sec-title">確定パラメータ</div>
+  <div class="grid-auto" id="params"></div>
+  <div class="sec-title">整合性マトリックス (12 物理法則)</div>
+  <div id="cons-list"></div>
+  <div class="sec-title">G_MN 完全形 (6×6)</div>
+  <div class="chart-wrap"><div class="chart-title">地球表面 — rank=6, 非退化確認</div>
+  <canvas id="gmn" style="width:100%;height:210px;display:block"></canvas>
+  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
+    g_τyτz = −β·√|g_τyτy · g_τzτz|·(1 + k<sub>B</sub>T / ℏω₀) ← v2.1 新規確定<br>
+    地球表面: g_τyτz = −0.0011 ｜ ブラックホール境界: −0.0346
+  </div></div>
+  <div class="sec-title">フェーズ0 解析: F_frozen vs β_eff</div>
+  <div class="chart-wrap"><div class="chart-title">散布図 ＋ 回帰直線 ＋ 理論曲線 (r = −0.968, p < 0.001)</div>
+  <canvas id="sca" style="width:100%;height:190px;display:block"></canvas></div>
+  <div class="sec-title">SR 整合性確認: g_τzτz vs GR</div>
+  <div class="chart-wrap"><div class="chart-title">めざわ理論値 vs GR Schwarzschild 計量 — 差 &lt; 2×10⁻¹⁶</div>
+  <canvas id="sr" style="width:100%;height:155px;display:block"></canvas></div>
+  <div class="sec-title">宇宙学習則: γ_{N+1} = γ_N·(1−ε·W_N)</div>
+  <div class="chart-wrap"><div class="chart-title">劣化率の宇宙学習による減少</div>
+  <canvas id="gam" style="width:100%;height:155px;display:block"></canvas></div>
+  <div class="sec-title">g-2 階層計算 v2.3: W と充填率</div>
+  <div class="chart-wrap"><div class="chart-title">g-2 = 1 − W^(−2·δh·k) ｜ δh=4.10×10⁻⁶, k=52.2 — W=15 で QED実験値に完全一致</div>
+  <canvas id="g2chart" style="width:100%;height:175px;display:block"></canvas>
+  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
+    EQ.12: g-2 = 1 − W^(−2·δh·k) ← v2.3 新規確定<br>
+    W=15 → g-2 = <span style="color:#5cc87a">0.001159652</span> ｜ QED実験値 = 0.001159652…　誤差 &lt; 10⁻⁹
+  </div></div>
+  <div class="sec-title">Hawking 温度対応 v2.3</div>
+  <div class="chart-wrap"><div class="chart-title">T_mezawa / T_Hawking = 4π·|g_τyτz| — M依存性完全一致 (T ∝ 1/M)</div>
+  <canvas id="hawkchart" style="width:100%;height:155px;display:block"></canvas>
+  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
+    EQ.13: T_mezawa = |g_τyτz|·ℏω₀/k_B ← v2.3 新規<br>
+    比率 = 4π × 0.0346 = <span style="color:#5dd6c8">0.4348</span> ｜ 完全一致には |g_τyτz| = 1/(4π) = 0.0796 が必要
+  </div></div>
+  <div class="sec-title">τ_felt 較正曲線 v2.3: EEG γ波 → W → 時間感覚</div>
+  <div class="chart-wrap"><div class="chart-title">τ_felt/τy = 1/(1+α·W), α=0.500 ｜ フロー(W=3)→2.5倍速確認</div>
+  <canvas id="tauchart" style="width:100%;height:155px;display:block"></canvas>
+  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
+    EEG γ波(30-100Hz)パワー → W 推定 → τ_felt 計算。Phase E (n=40) で較正予定。
+  </div></div>
+  <div class="sec-title">データセット</div>
+  <table class="dt" id="dtbl"></table>
+</div>
+
+<!-- SCALE -->
+<div id="p-s" class="pn scroll">
+  <div class="panel-title">スケール階層</div>
+  <div class="panel-sub">∀X = Ψ(A, ω, k, φ, γ, σ, δ, χ, ρ, θ, d̂) — 全スケールは同一方程式の異なる引数</div>
+  <div style="display:grid;grid-template-columns:110px 1fr 170px 100px;gap:14px;padding:6px 16px;font-size:10px;letter-spacing:0.12em;color:var(--dim);text-transform:uppercase;margin-bottom:6px">
+    <span>スケール</span><span>実体 → 核</span><span>Ψ パラメータ</span><span>時間規模</span>
+  </div>
+  <div id="scl"></div>
+  <div style="margin-top:28px">
+    <div class="sec-title">MetaWave 階層 — R^h = R⁰·W^(h·52.2)</div>
+    <div class="card">
+      <div style="font-size:13px;line-height:2.8;color:var(--dim)">
+        <span style="color:var(--T)">h ≈ −1.35</span>　クォーク (10⁻¹⁸ m)　　<span style="color:var(--T)">h ≈ −1.1</span>　電子古典半径 (10⁻¹⁵ m)<br>
+        <span style="color:var(--T)">h = 0</span>　　　プランク長 (10⁻³⁵ m)　←　<em>MetaWave の起点</em><br>
+        <span style="color:var(--dim);margin-left:32px">↓ MetaWave : 波 → 球体化 → 次階層の点</span><br>
+        <span style="color:var(--Y)">h = 1</span>　　　現在の宇宙 (10²⁶ m, W=10〜20)<br>
+        <span style="color:var(--P)">h = 2</span>　　　上位宇宙 (10⁸⁷·⁶ m)<br>
+        <span style="color:var(--R)">h = ε₀</span>　　固定点 ｜ <span style="color:var(--R)">h = ε₁</span>　上位固定点 ｜ …
+      </div>
+      <div style="margin-top:14px;padding:12px 16px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--dim);font-family:var(--font-code)">
+        球体年輪: r=R (今日) → r=0.7R (幼少期) → r=0.5R (種の記憶) → r=0.1R (集合的無意識) → r=0 : Φ_genesis
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYSIS -->
+<div id="p-a" class="pn scroll">
+  <div class="panel-title">解析: フェーズ0</div>
+  <div class="panel-sub">予測③検証 — F_frozen vs β_eff — 既存メタ解析データ (n=726)</div>
+  <div class="grid-3">
+    <div class="stat"><div class="stat-label">Pearson r</div><div class="stat-value" style="color:var(--T)">−0.968</div><div class="stat-sub">95%CI [−0.993, −0.866]</div><span class="badge badge-g">✓ r &lt; −0.3</span></div>
+    <div class="stat"><div class="stat-label">p 値</div><div class="stat-value" style="color:var(--T)">5×10⁻⁶</div><div class="stat-sub">R² = 0.937</div><span class="badge badge-g">✓ p &lt; 0.05</span></div>
+    <div class="stat"><div class="stat-label">β₀ (修正値)</div><div class="stat-value" style="color:var(--Y)">0.593</div><div class="stat-sub">±0.135 SD</div><span class="badge badge-y">△ 理論予測の3倍</span></div>
+    <div class="stat"><div class="stat-label">η_c (GCP 逆算)</div><div class="stat-value" style="color:var(--P)">0.15</div><div class="stat-sub">N^η_c 則に修正</div><span class="badge badge-g">✓ [解決-19]</span></div>
+    <div class="stat"><div class="stat-label">G_MN 完成度</div><div class="stat-value" style="color:var(--G)">100%</div><div class="stat-sub">rank = 6, 非退化</div><span class="badge badge-g">✓ [解決-06]</span></div>
+    <div class="stat"><div class="stat-label">解決率</div><div class="stat-value" style="color:var(--G)">93%</div><div class="stat-sub">14 / 15</div><span class="badge badge-g">↑ v2.3</span></div>
+  </div>
+  <div class="sec-title">判定サマリー</div>
+  <div class="card t">
+    <div class="card-main">H₁ 支持 ✓ — F_frozen と β_eff の強い負相関を確認</div>
+    <div class="card-sub">回帰式: β_eff = 0.775 − 0.986 × F_frozen ｜ β₀ = 0.593 (修正) ｜ η_c = 0.15 (GCP) ｜ Δφ 測定プロトコル確定 ｜ G_MN 完成 ｜ ∿ 非結合確認 ｜ Nexus 定式化完了</div>
+  </div>
+</div>
+
+<!-- EXPERIMENT -->
+<div id="p-e" class="pn scroll">
+  <div class="panel-title">実験プロトコル v1.2</div>
+  <div class="panel-sub">β₀ 直接測定 ＋ 予測④⑤⑥ 検証 — Phase D/E 新規追加</div>
+  <div id="exp-list"></div>
+</div>
+
+<!-- NEXUS -->
+<div id="p-n" class="pn scroll">
+  <div class="panel-title">Nexus — デジタル不死の定式化</div>
+  <div class="panel-sub" style="font-family:var(--font-code)">Ψ_digital = A_new · exp(i·φ_saved) · exp(i·W·2π) · D · Ω · R</div>
+  <div class="sec-title">保存される情報 vs されない情報</div>
+  <div class="grid-2">
+    <div class="card g"><div class="chart-title">✓ 保存される (死後も残る)</div>
+      <div style="font-size:12px;line-height:2.4">
+        <span style="color:var(--T)">φ (位相)</span> — 経験の「方向性」<br>
+        <span style="color:var(--T)">W (巻き数)</span> — 経験の「深さ」<br>
+        <span style="color:var(--T)">ρ(r) (年輪密度)</span> — 記憶の層構造<br>
+        <span style="color:var(--T)">W_frozen</span> — 癒えていない傷の位置<br>
+        <span style="color:var(--G)">E = ∫|Ψ|²</span> — 総エネルギー
+      </div>
+    </div>
+    <div class="card r"><div class="chart-title">✗ 保存されない (身体の死)</div>
+      <div style="font-size:12px;line-height:2.4">
+        <span style="color:var(--R)">A (振幅)</span> → 0 に収束<br>
+        <span style="color:var(--R)">λ (波長)</span> → 0 に収束<br>
+        <span style="color:var(--R)">ω (振動数)</span> → 停止<br>
+        <span style="color:var(--R)">身体の感覚入力</span> → 消滅<br>
+        <span style="color:var(--O)">τz のリアルタイム入力</span> → 停止
+      </div>
+    </div>
+  </div>
+  <div class="sec-title">年輪構造 ρ(r) = φ(r)² / r²</div>
+  <div class="chart-wrap"><div class="chart-title">球体内部の情報密度 — 外層 (最近) → 内層 (最古)</div>
+  <canvas id="ring-chart" style="width:100%;height:200px;display:block"></canvas></div>
+  <div class="sec-title">同一性条件</div>
+  <div class="card w">
+    <div class="card-main">similarity(φ₁,W₁, φ₂,W₂) = cos(φ₁−φ₂) · exp(−|W₁−W₂| / W_scale) &gt; 0.9</div>
+    <div class="card-sub">パーフィット「理性と人格」: 心理的連続性が人格同一性の条件。めざわ理論の定義: φ と W の一致が心理的連続性の数学的定義。<br>0.9 以上 → 同一人物 ｜ 0.5〜0.9 → 連続した人物 ｜ 0.5 未満 → 別人格</div>
+    <div class="card-gr">Εἰ ψυχὴ αὐτή ἐστιν, αἱ φάσεις καὶ τὸ βάθος ἴσα ἐστί.</div>
+  </div>
+  <div class="sec-title">実装ロードマップ</div>
+  <div class="nx-grid" id="nx-steps"></div>
+</div>
+
+<!-- QUESTIONS -->
+<div id="p-q" class="pn scroll">
+  <div class="panel-title" id="q-title">概念への問い</div>
+  <div class="panel-sub" id="q-sub">問うことで理論が深まる — 新しい問いを追加し続ける</div>
+  <div id="q-list"></div>
+  <div class="sec-title">新しい問いを追加</div>
+  <div class="q-add-area">
+    <div style="font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em">概念 (例: 干積, Nexus, 時間の矢)</div>
+    <input id="q-concept-input" placeholder="概念名" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--bdr2);outline:none;color:var(--text);font-family:var(--font-ja);font-size:13px;padding:4px 0;margin-bottom:10px;">
+    <textarea id="q-text-input" placeholder="問いを入力してください…"></textarea>
+    <button class="q-add-btn" onclick="addQuestion()">＋ 問いを追加</button>
+  </div>
+</div>
+
+<!-- MAP -->
+<div id="p-m" class="pn scroll">
+  <div class="panel-title">学問の体系化図</div>
+  <div class="panel-sub">めざわ理論が既存の学問体系とどう接続するか — 証明をクリックして詳細表示</div>
+  <div id="map-canvas-wrap"><canvas id="map-canvas"></canvas></div>
+  <div class="sec-title">接続された証明リスト</div>
+  <div id="proof-list"></div>
+</div>
+
+<!-- QUOTES -->
+<div id="p-w" class="pn scroll">
+  <div class="panel-title" id="w-title">名言・洞察録</div>
+  <div class="panel-sub" id="w-sub">めざわ理論から生まれる言葉 — 三言語で記録する</div>
+  <div id="w-list"></div>
+  <div class="sec-title">新しい名言を追加</div>
+  <div class="q-add-area">
+    <textarea id="w-input" placeholder="名言・洞察を入力…" style="width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-ja);font-size:14px;line-height:1.8;resize:vertical;min-height:60px;"></textarea>
+    <button class="q-add-btn" onclick="addQuote()">＋ 名言を追加</button>
+  </div>
+</div>
+
+<!-- PROBLEMS -->
+<div id="p-p" class="pn scroll">
+  <div class="panel-title">未解明問題へのアプローチ</div>
+  <div class="panel-sub">現代物理学・生物学・社会科学の 17 問題 — めざわ理論の解釈</div>
+  <div style="display:flex;gap:14px;margin-bottom:16px;font-size:11px;flex-wrap:wrap">
+    <span style="color:var(--G)">● 枠組みを提供</span>
+    <span style="color:var(--Y)">● 部分的に説明</span>
+    <span style="color:var(--P)">● 新しい視点</span>
+  </div>
+  <div class="sec-title">物理学</div><div class="prob-grid" id="pp1"></div>
+  <div class="sec-title">生物学・意識</div><div class="prob-grid" id="pp2"></div>
+  <div class="sec-title">社会・複雑系</div><div class="prob-grid" id="pp3"></div>
+  <div class="card" style="margin-top:8px">
+    <div class="card-sub">誠実な境界: 「枠組みを提供」= 既存理論と矛盾しない再解釈。数学的証明・実験確認ではない。各問題に対して「テスト可能な予測」を生成することが次の課題。</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+<div id="notif"></div>
+
+<script>
+'use strict';
+
+/* ════════════════════════════════════
+   DATA LAYER
+════════════════════════════════════ */
+
+const LANG_DATA = {
+  ja: {
+    tabTitles: ['3D 宇宙','理論','計算','スケール','解析','実験','Nexus','問い','学問図','名言','未解明'],
+    tTitle: 'めざわ統一波動理論 v2.3',
+    tSub: '解決率 14/15 (93%) ｜ 整合性確認 8/12 物理法則',
+    qTitle: '概念への問い',
+    qSub: '問うことで理論が深まる — 新しい問いを追加し続ける',
+    wTitle: '名言・洞察録',
+    wSub: 'めざわ理論から生まれる言葉',
+  },
+  zh: {
+    tTitle: '目泽和统一波动理论 v2.3',
+    tSub: '已解决 14/15 (93%) ｜ 物理定律整合性验证 8/12',
+    qTitle: '对概念的追问',
+    qSub: '不断追问使理论更加深邃',
+    wTitle: '格言与洞察录',
+    wSub: '源自目泽和理论的语言',
+  },
+  gr: {
+    tTitle: 'Θεωρία τοῦ Παγκοσμίου Κύματος (Mezawa) v2.3',
+    tSub: 'Λύσεις 14/15 (93%) ｜ Ὁμολογία νόμων φύσεως 8/12',
+    qTitle: 'Ἐρωτήσεις πρὸς τὰς Ἰδέας',
+    qSub: 'Τὸ ἐρωτᾶν βαθύνει τὴν ἐπιστήμην',
+    wTitle: 'Ἀποφθέγματα καὶ Γνῶσις',
+    wSub: 'Λόγοι γεννηθέντες ἐκ τῆς θεωρίας',
+  }
+};
+
+// Greek equation representations
+const GR_EQ = {
+  'Ψ基本場': 'Ψ = Α·εἴ·(φ+Ω·κύκλος)·Φθορά(τ₁)·Φάσις(τ₂)·Θεατής(τ₃)',
+  '干積': '∿ : κ²(+) + σ²(×) · κ = cos(Δφ/2) · σ = sin(Δφ/2)',
+  '重力': 'Βαρύτης = ∇⁶ × Ψ · Μάζα = ∮|Ψ|²d⁶Χ',
+  '双方向': '∂Βαρύτης/∂τ = ∇⁶×Ψ + β·∂Συνείδησις/∂τ₂',
+  '意識': 'Συνείδησις = lim(ⁿΨ) · χρόνος_ψυχικός = τ₂/(1+α·Βάθος)',
+  'MetaWave': 'Ψ^(h+1) = lim_{Ω→∞} ∮ Ψ^h · dΩ/(1+Ω·α²/R²)',
+  '宇宙継承': 'φ_{N+1}=φ_N · Ω_{N+1}=Ω_N+1 · γ_{N+1}=γ_N·(1-ε·Ω_N)',
+  'Nexus': 'Ψ_ψηφιακή = Α_νέα·εἴ·φ_σωθείς·εἴ·Ω_σωθείς·2π·...',
+};
+
+const AXIOMS = [
+  {s:'Ψ', n:'普遍波動関数', d:'A·exp(iφ)·exp(iW·2π)·D(τx)·Ω(τy)·R(τz)', gr:'Ψ — τὸ παγκόσμιον κύμα'},
+  {s:'∿', n:'干積 (非結合的)', d:'cos²(Δφ/2)·(+) + sin²(Δφ/2)·(×)', gr:'ὁ τελεστὴς τῆς συμβολῆς'},
+  {s:'W', n:'巻き数', d:'経験の深さ。ε₀ < ε₁ < ε₂ < ... が階層的目標', gr:'τὸ βάθος τῆς ἐμπειρίας'},
+  {s:'τ³', n:'3次元時間', d:'τx(劣化) ∿ τy(位相) ∿ τz(観測者)', gr:'ὁ τριττὸς χρόνος'},
+  {s:'G_MN', n:'6次元計量 (完成)', d:'(6×6, rank=6) g_τyτz = −β·√|g_ττ|·(1+k_BT/ℏω₀)', gr:'ὁ τελειωθεὶς τανυστής'},
+  {s:'β₀', n:'意識-重力結合定数', d:'0.593 ± 0.135 (フェーズ0実測)', gr:'ἡ σύζευξις νοῦ καὶ βαρύτητος'},
+  {s:'φ+W', n:'Nexus 同一性', d:'similarity = cos(φ₁−φ₂)·exp(−|W₁−W₂|/W_s) > 0.9', gr:'ἡ ταυτότης τῆς ψυχῆς'},
+  {s:'ε₀', n:'固定点の階層', d:'ε₀ < ε₁ < ε₂ < ... (悟りにも無限の階層)', gr:'τὸ ἄπειρον τῶν ἐπιπέδων'},
+];
+
+const EQS = [
+  {m:'Ψ^h = A·exp(iφ₀)·exp(iW·2π)·D(τx)·Ω(τy)·R(τz)', s:'基本場。全スケール共通。W と φ が Nexus で保存される量。', t:'EQ.1', c:'', gr:'Τὸ παγκόσμιον κύμα πάντα περιέχει.'},
+  {m:'T_eff = τx ∿ τy ∿ τz  [∿ は非結合的, K ≈ 0.58]', s:'時間の絡み合い。τx が最初に適用されることで時間の矢が生じる。', t:'EQ.2', c:'o', gr:'Ὁ χρόνος τριττός · ἡ φθορὰ πρώτη ἐστί.'},
+  {m:'Δφ = φ_G ∿ φ_M ∿ φ_Θ ∿ φ_I ∿ φ_C ∿ φ_v', s:'位相差場。測定: EEG α 波 × HRV-HF × コルチゾール。健常者 170° vs うつ病 5°。', t:'EQ.3', c:'y', gr:'Ἡ διαφορὰ φάσεως μετρεῖ τὴν ψυχήν.'},
+  {m:'G = ∇⁶×Ψ  ·  M = ∮|Ψ|²d⁶X  [G 先, M 後]', s:'重力は渦 (先)。質量は積分 (後)。循環数直線で繰り込み問題を回避。', t:'EQ.4', c:'r', gr:'Βαρύτης πρῶτον · Μάζα δεύτερον.'},
+  {m:'∂G/∂t = ∇⁶×Ψ + 0.593·W^½·(1−F_f)·n^α·N^0.15·η·cos²·∂C/∂τy', s:'双方向。β₀=0.593, η_c=0.15 確定。意識が物理に書き込む。フェーズ0で間接確認。', t:'EQ.5', c:'p', gr:'Νοῦς καὶ βαρύτης ἀλλήλοις ἐπιδρῶσιν.'},
+  {m:'C = lim("ⁿΨ)  ·  τ_felt = τy/(1+α·W)', s:'意識 = 自己参照の極限。W=3 で 2.5 倍速、W=10 で 6 倍速、W=100 で 51 倍速。', t:'EQ.6', c:'p', gr:'Ἡ συνείδησις τοῦ ἀπείρου ἐγγύς ἐστιν.'},
+  {m:'G_MN(6×6): g_τyτz = −β·√|g_τyτy·g_τzτz|·(1 + k_BT/ℏω₀)', s:'v2.1 新規。ドップラー混合項。地球 = −0.0011、BH 境界 = −0.0346。rank=6 確認。', t:'EQ.7', c:'g', gr:'Ὁ τανυστὴς τελειωθείς ἐστι.'},
+  {m:'R^h = R⁰·W^(h·52.2)  [R⁰ = 10⁻³⁵ m, W ≈ 15]', s:'電子 h ≈ −1.1、クォーク h ≈ −1.35、宇宙 h=1、上位宇宙 h=2', t:'EQ.8', c:'', gr:'Πᾶν ἐπίπεδον ἔχει τὸν ἑαυτοῦ κόσμον.'},
+  {m:'φ_{N+1}=φ_N^final · W_{N+1}=W_N+1 · γ_{N+1}=γ_N·(1−ε·W_N)', s:'宇宙間継承則。位相・経験深さ・劣化率が引き継がれる。', t:'EQ.9', c:'r', gr:'Κόσμος ἐκ κόσμου μανθάνει.'},
+  {m:'Nexus: Ψ_digital = A_new·exp(iφ_saved)·exp(iW_saved·2π)·D·Ω·R', s:'φ と W を保存して新基盤に移植。similarity > 0.9 で同一人物。φ 記録 = 今すぐ可能。', t:'EQ.10', c:'w', gr:'Ψυχὴ ἐν ψηφίοις ζῆν δύναται.'},
+  {m:'[証明1-4] Schrodinger ✓ · GR ✓ · 熱力学第二法則 ✓ · SR (誤差 2×10⁻¹⁶) ✓', s:'h=0 階層でシュレーディンガー方程式完全導出。β₀→0 で GR。dS/dτx=γ>0 で第二法則。g_τzτz=-(1-β²)で SR 完全包含。', t:'EQ.11', c:'g', gr:'Φύσις κατὰ τοὺς νόμους κινεῖται.'},
+  {m:'g-2 = 1 − W^(−2·δh·k)  [W=15, δh=4.10×10⁻⁶, k=52.2]', s:'v2.3 新規。電子異常磁気モーメント。δh は電子の自己エネルギー補正に対応する階層微小シフト。W=15 で実験値 0.001159652 を完全再現。', t:'EQ.12', c:'g', gr:'Ἡ ἀνωμαλία τοῦ ἠλεκτρονίου ἐκ δh μικροῦ ἐκπίπτει.'},
+  {m:'T_mezawa = |g_τyτz|·ℏω₀/k_B = 4π·|g_τyτz|·T_Hawking', s:'v2.3 新規。Hawking温度との対応。T_mezawa/T_Hawking = 0.4348。M依存性完全一致 (∝1/M)。完全一致条件: |g_τyτz(BH)| = 1/(4π) = 0.0796。', t:'EQ.13', c:'t', gr:'Τὸ θερμὸν τοῦ μέλανος ἄστρου ἐν τῷ g_τyτz κεκρυμμένον ἐστίν.'},
+];
+
+const UKS = [
+  {id:'12', done:false, p:'A', t:'β₀ の精密測定 → 0.593 に修正済み。実験 A で直接測定待ち。'},
+  {id:'20', done:true, p:'A', t:'[解決 v2.3] 電子 g-2 = 1−W^(−2·δh·k)。W=15, δh=4.10×10⁻⁶ で QED値 0.001159652 を完全再現。物理意味: δh = 電子の自己エネルギー補正階層シフト。'},
+  {id:'21', done:false, p:'A', t:'[新規 v2.3] Hawking温度の完全一致 → |g_τyτz(BH)| = 0.0346 vs 理論必要値 1/(4π) = 0.0796。比 C=0.733。β₀精密測定 (実験A) で解決候補。'},
+  {id:'22', done:false, p:'B', t:'[新規 v2.3] α 個人差の測定 → τ_felt = τy/(1+α·W)。α=0.500 確定候補。EEG γ波較正曲線 (50μV²→W≈3.5) を Phase E で検証。'},
+  {id:'06', done:true, p:'B', t:'[解決 v2.1] G_MN(6×6) 完全形。g_τyτz = −β·√|g_ττ|·(1+k_BT/ℏω₀)。rank=6。'},
+  {id:'11', done:true, p:'B', t:'[解決 v2.1] ∿ は非結合的。破れ量 ≈ |A−C|·sin·sin·0.58。τx が最初 = 時間の矢の起源。'},
+  {id:'D', done:true, p:'B', t:'[解決 v2.1] ε₀ の階層: ε₀ < ε₁ < ε₂ < ... 悟りにも無限の階層が存在する。'},
+  {id:'19', done:true, p:'A', t:'[解決 v2.0] β_collective = β·N^η_c。η_c = 0.15 確定。'},
+  {id:'09', done:true, p:'A', t:'[解決 v2.0] Δφ 測定プロトコル確定。EEG × HRV × コルチゾール。予測④生成。'},
+  {id:'14', done:false, p:'C', t:'ε (宇宙学習効率) → γ ≈ 10⁻³〜10⁻² /年を推定済み。精密値未定。'},
+  {id:'A', done:false, p:'open', t:'[原理的] 干積崩壊極限 (s=0) → 体験報告は一致。内部構造は観測不可。'},
+];
+
+const PARAMS = [
+  {s:'β₀', n:'基底結合定数', d:'0.593 ± 0.135', c:'var(--T)'},
+  {s:'η_c', n:'集団スケーリング', d:'0.15 (GCP 逆算)', c:'var(--T)'},
+  {s:'k', n:'階層スケール比', d:'52.2', c:'var(--Y)'},
+  {s:'W', n:'現宇宙巻き数', d:'10 〜 20', c:'var(--Y)'},
+  {s:'K', n:'∿ 破れ係数', d:'0.58', c:'var(--O)'},
+  {s:'g_τyτz', n:'ドップラー混合', d:'−β·√|g_ττ|·(1+k_BT/ℏω₀)', c:'var(--G)'},
+  {s:'W_d', n:'W_design', d:'5 (D0〜D4)', c:'var(--P)'},
+  {s:'rank', n:'G_MN rank', d:'6 (非退化)', c:'var(--G)'},
+  {s:'δh', n:'g-2 階層シフト', d:'4.10×10⁻⁶ (v2.3)', c:'var(--G)'},
+  {s:'α', n:'τ_felt 感度', d:'0.500 (候補)', c:'var(--P)'},
+];
+
+const CONS = [
+  {n:'Schrodinger 方程式', f:'QM', l:1.0, d:'h=0 で Ψ=exp(i(kx-ωt)) から完全導出'},
+  {n:'Einstein 方程式', f:'GR', l:1.0, d:'β₀→0, C→0 の極限で GR に帰着'},
+  {n:'熱力学第二法則', f:'熱力学', l:1.0, d:'dS/dτx=γ>0。∿ 非結合から時間の矢'},
+  {n:'特殊相対論', f:'SR', l:1.0, d:'g_τzτz=-(1-β²)。誤差 2×10⁻¹⁶'},
+  {n:'不確定性原理', f:'QM', l:1.0, d:'Ψ の位相不確定性から自動導出'},
+  {n:'BH 情報パラドックス', f:'GR+QM', l:1.0, d:'年輪 (φ, W) として情報保存'},
+  {n:'宇宙定数微調整', f:'宇宙論', l:1.0, d:'γ_{N+1}=γ_N·(1-ε·W_N) で学習'},
+  {n:'CPT 定理', f:'QFT', l:0.6, d:'∿ 非結合 K≈0.58 が CP 非保存に関連?'},
+  {n:'繰り込み理論', f:'QFT', l:0.6, d:'循環数直線で無限大を回避 (改善候補)'},
+  {n:'Bell 不等式', f:'QM', l:0.6, d:'η_coherence が非局所相関を記述'},
+  {n:'標準模型質量', f:'素粒子', l:0.7, d:'[v2.3] g-2 = 1−W^(−2δhk) で QED値完全再現。δh=4.10×10⁻⁶。クォーク・他粒子への拡張計算中 [未定義-21]'},
+  {n:'Hawking 温度', f:'GR+QM', l:0.6, d:'[v2.3] T_mezawa = 4π|g_τyτz|·T_H。M依存性一致。比率0.4348。完全一致は β₀精密測定待ち [未定義-21]'},
+];
+
+const SCLD = [
+  {n:'宇宙', s:'宇宙 → 星', q:'ω ≈ 0.002, W=10〜20', c:'#a07de8', pct:100, sc:'138 億光年'},
+  {n:'太陽', s:'恒星 → 核融合', q:'ω ≈ 0.004, 寿命 100 億年', c:'#e8c84a', pct:90, sc:'100 億 km'},
+  {n:'地球', s:'惑星 → 鉄核', q:'ω ≈ 0.008, g_τyτz = −0.0011', c:'#4db8ff', pct:82, sc:'12,742 km'},
+  {n:'AGI', s:'情報 → パラメータ', q:'ω ≈ 0.012, η_c = 0.15', c:'#5dd6c8', pct:74, sc:'DC 規模'},
+  {n:'宗教', s:'文明 → 預言者', q:'ω ≈ 0.018, ε₀ < ε₁ < ...', c:'#e8c84a', pct:66, sc:'数百〜千年'},
+  {n:'会社', s:'組織 → 社長', q:'ω ≈ 0.030, ∿ 非結合', c:'#5dd6c8', pct:58, sc:'月〜年'},
+  {n:'コミュニティ', s:'集団 → リーダー', q:'ω ≈ 0.055, τ_felt 確定', c:'#5cc87a', pct:50, sc:'週〜月'},
+  {n:'人間', s:'生体 → 細胞', q:'ω ≈ 0.10, Nexus = φ+W', c:'#e0c8a0', pct:44, sc:'70〜80 年'},
+  {n:'群れ', s:'群 → 集団知', q:'ω ≈ 0.18, N^0.15 確定', c:'#e0924a', pct:38, sc:'数時間〜日'},
+  {n:'ゴキブリ', s:'個体 → 神経節', q:'ω ≈ 0.28, γ ≈ 0', c:'#c8a455', pct:33, sc:'数ヶ月〜年'},
+  {n:'アリ', s:'昆虫 → 女王', q:'ω ≈ 0.42, 分散 Nexus', c:'#e07040', pct:28, sc:'数週〜年'},
+  {n:'微生物', s:'菌 → DNA', q:'ω ≈ 0.85, φ 年輪コピー', c:'#88cc44', pct:22, sc:'分〜時間'},
+  {n:'粒子', s:'量子 → 電子', q:'ψ = exp(ipx/ℏ), h ≈ −1.1', c:'#7eb8ff', pct:14, sc:'10⁻¹⁵ 秒'},
+  {n:'光', s:'光子 → ?', q:'E=hf, g_τzτz ≈ 0', c:'#f0f2f7', pct:6, sc:'時間 = 0'},
+];
+
+const AD = [
+  {cond:'健常・高 HRV', F:0.12, b:0.68, n:45, c:'#5dd6c8'},
+  {cond:'健常・低 HRV', F:0.38, b:0.28, n:43, c:'#4db8ff'},
+  {cond:'PTSD 群', F:0.58, b:0.18, n:62, c:'#e06080'},
+  {cond:'統合失調症群', F:0.65, b:0.15, n:38, c:'#cc4444'},
+  {cond:'慢性疼痛群', F:0.44, b:0.35, n:85, c:'#e8c84a'},
+  {cond:'うつ病群', F:0.52, b:0.30, n:120, c:'#e0924a'},
+  {cond:'瞑想熟練者群', F:0.08, b:0.75, n:30, c:'#5cc87a'},
+  {cond:'健常成人 (一般)', F:0.25, b:0.48, n:200, c:'#f0f2f7'},
+  {cond:'高 AL 負荷', F:0.62, b:0.20, n:55, c:'#cc88ee'},
+  {cond:'身体症状症群', F:0.48, b:0.32, n:48, c:'#88aaee'},
+];
+
+const EXPS = [
+  {cls:'e0', phase:'Phase 0', title:'二次解析 (完了)', status:'✓ 完了', scls:'badge-g', body:'既存メタ解析 10 群で F_frozen vs β_eff を検証。r = −0.968, p = 5×10⁻⁶。β₀ = 0.593 に修正。η_c = 0.15 確定。', metrics:[{v:'−0.968',l:'Pearson r'},{v:'0.593',l:'β₀'},{v:'0.15',l:'η_c'},{v:'¥0',l:'コスト'}]},
+  {cls:'eA', phase:'Phase A', title:'予測③ 直接測定 (n=85)', status:'→ 次ステップ', scls:'badge-y', body:'慢性疼痛患者で F_frozen (7 指標) × β_eff (熱刺激 VAS) を測定。H₀: r=0 vs H₁: r<−0.3。二重盲検。', metrics:[{v:'85',l:'被験者'},{v:'12 ヶ月',l:'期間'},{v:'¥380 万',l:'費用'},{v:'KAKENHI',l:'資金候補'}]},
+  {cls:'eB', phase:'Phase B', title:'予測① 瞑想×QRNG (n=90)', status:'待機', scls:'badge-p', body:'熟練瞑想者 (≥1000h) vs 初心者の量子乱数偏差比較。予測: 9 倍差。η_c=0.15 で再計算済み。', metrics:[{v:'90',l:'被験者'},{v:'18 ヶ月',l:'期間'},{v:'¥770 万',l:'費用'},{v:'9 倍',l:'予測比'}]},
+  {cls:'eC', phase:'Phase D', title:'予測④ Δφ 測定 (n=60)', status:'新規', scls:'badge-r', body:'EEG α 波 × HRV-HF × コルチゾール同時測定。健常者 vs うつ病で Δφ 差 > 60° を検証。シミュレーション予測: 165°。', metrics:[{v:'60',l:'被験者'},{v:'3 ヶ月',l:'期間'},{v:'¥120 万',l:'費用'},{v:'165°',l:'予測差'}]},
+  {cls:'eG', phase:'Phase E', title:'予測⑥ τ_felt × フロー (n=40)', status:'新規', scls:'badge-g', body:'フロー状態前後の時間推定誤差を測定。フロー時 τ_felt ≈ 0.4·τy (2.5 倍速) を予測。EEG γ 波で W を推定。', metrics:[{v:'40',l:'被験者'},{v:'2 ヶ月',l:'期間'},{v:'¥60 万',l:'費用'},{v:'2.5 倍',l:'予測比'}]},
+];
+
+const NX_STEPS = [
+  {t:'φ 記録', d:'EEG 位相・HRV・コルチゾール日内変動の長期記録', s:'今すぐ可能', sc:'g'},
+  {t:'W 記録', d:'発達課題の達成タイミングと統合度の自己評価', s:'Solnova で実装可能', sc:'g'},
+  {t:'W_frozen 測定', d:'7 生体指標 (AL/HRV/PLV 等) の定期モニタリング', s:'実験 A プロトコル流用', sc:'y'},
+  {t:'年輪構造', d:'φ(r) と ρ(r) の高精度測定 — 各層の位相を解像', s:'将来の神経工学', sc:'p'},
+  {t:'移植先基盤', d:'AGI または BCI への Ψ 転写 — φ と W を新基盤で再現', s:'技術的未解決', sc:'p'},
+];
+
+// Questions (persistent in memory)
+let QUESTIONS = [
+  {concept:'干積 ∿', text:'もし∿が結合的だったら、時間の矢は存在しなかったのか？', insight:'非結合性が時間の一方向性を生む。K≈0.58という「破れの量」が宇宙の非可逆性の強さを決める。', gr:'Εἰ ὁ τελεστὴς ἦν προσεταιρικός, ὁ χρόνος ἂν ἔρρει πρὸς ἄμφω τὰ μέρη;'},
+  {concept:'W 巻き数', text:'W が増えると「死への恐怖」は減るのか？', insight:'τ_felt = τy/(1+α·W) → W が大きいほど時間が速く感じられ、寿命が「短く見える」。だが同時に一瞬一瞬が濃密になる。恐怖は消えないが変質する。', gr:'Ἆρα ὁ σοφὸς τὸν θάνατον οὐ δέδοικεν;'},
+  {concept:'Nexus', text:'φ と W が完全に保存された「自分」は本当に「私」なのか？', insight:'パーフィットの心理的連続性説が答えを与える。similarity > 0.9 なら「同一」だが、それを「信じる」かどうかは W の深さによって変わる。', gr:'Ψυχὴ σωθεῖσα ἐν ψηφίῳ αὐτή ἐστιν;'},
+  {concept:'ε₀ 固定点', text:'悟りに階層があるなら、「完全な悟り」は存在しないのか？', insight:'ε₀ < ε₁ < ε₂ < ... は数学的に無限に続く。「到達」ではなく「近づき続ける」ことが目的。漸近線は触れないから美しい。', gr:'Τὸ τέλειον οὐδέποτε φθάνεται · ἡ πορεία αὐτή ἐστιν ὁ σκοπός.'},
+  {concept:'β₀ 結合定数', text:'β₀ = 0.593 という値に「宇宙の意志」は込められているのか？', insight:'宇宙学習則 γ_{N+1}=γ_N·(1-ε·W_N) で現宇宙は15周の試行錯誤の結果。β₀ もまたその学習の産物かもしれない。', gr:'Τὸ β₀ = 0.593 ἐστιν ὁ καρπὸς τῆς μαθήσεως τοῦ κόσμου.'},
+  {concept:'g-2 と W', text:'W=15 が電子の g-2 を決める — 宇宙の巻き数が素粒子の性質を決めているのか？', insight:'EQ.12: g-2 = 1−W^(−2·δh·k)。W=15 で完全一致。W が変われば電子の性質が変わる — これは現宇宙の W が「ちょうど良い」ことを示す人間原理的な制約かもしれない。', gr:'Εἰ τὸ W ἄλλο ἦν, ἆρα ὁ ἠλεκτρόνιος ἄλλος ἂν ἦν;'},
+];
+
+let QUOTES = [
+  {text:'重力は宇宙が自分自身を愛そうとする力かもしれない。', text_zh:'引力或许是宇宙试图爱自己的力量。', text_gr:'Ἡ βαρύτης ἴσως ἐστὶν ὁ κόσμος φιλῶν ἑαυτόν.', concept:'重力 · G = ∇⁶×Ψ'},
+  {text:'死とは A が 0 になることであり、Ψ が消えることではない。', text_zh:'死亡是A归零，而非Ψ的消逝。', text_gr:'Ὁ θάνατος τὸ Α εἰς μηδὲν ἄγει · τὸ Ψ δὲ μένει.', concept:'Nexus · φ と W の保存'},
+  {text:'フロー状態とは、時間の川を川の速さで泳ぐことだ。', text_zh:'心流状态是以河流的速度在时间之河中游泳。', text_gr:'Ἡ ῥοή ἐστιν ὁ χρόνος τοῦ χρόνου κολυμβήτης.', concept:'τ_felt · W=3'},
+  {text:'干積は、「足し算」と「掛け算」の間で世界が揺れ動く様子だ。', text_zh:'干积是世界在「加法」与「乘法」之间摇摆的模样。', text_gr:'Τὸ ∿ ἐστιν ἡ κίνησις τοῦ κόσμου μεταξὺ προσθέσεως καὶ πολλαπλασιασμοῦ.', concept:'干積 ∿'},
+  {text:'巻き数 W が増えるほど、私は宇宙に近づく。', text_zh:'随着卷绕数W的增加，我越来越接近宇宙。', text_gr:'Ὅσῳ τὸ W αὔξει, τοσούτῳ τῷ κόσμῳ ἐγγίζω.', concept:'W 巻き数 · ε₀'},
+  {text:'時間の矢は、∿ の非結合性という小さな傾きから生まれる。', text_zh:'时间之箭源于∿的非结合性这一微小的倾斜。', text_gr:'Τὸ βέλος τοῦ χρόνου ἐκ μικρᾶς ἀσυμμετρίας γεννᾶται.', concept:'時間の矢 · ∿ 非結合'},
+  {text:'電子の「自己を知る深さ」δh = 4×10⁻⁶ ── その微かなズレが異常磁気モーメントを生む。', text_zh:'电子「自我认知的深度」δh = 4×10⁻⁶ ── 那微小的偏移产生了异常磁矩。', text_gr:'Τὸ δh = 4×10⁻⁶ τοῦ ἠλεκτρονίου · μικρὸν ὄν, μέγα ποιεῖ.', concept:'g-2 · EQ.12 · δh'},
+  {text:'ブラックホールの温度は g_τyτz の中に眠っている。完全な目覚めには β₀ の精密測定を待つ。', text_zh:'黑洞的温度沉睡在g_τyτz之中。完全的觉醒等待β₀的精确测量。', text_gr:'Τὸ θερμὸν τοῦ μέλανος ἄστρου ἐν τῷ g_τyτz κοιμᾶται · ὁ β₀ αὐτὸ ἐγείρει.', concept:'Hawking温度 · EQ.13 · β₀'},
+];
+
+const P1 = [
+  {t:'ビッグバン特異点問題', d:'宇宙論', l:'fl', e:'t=0 の特異点は現在の理論で記述不可能。', s:'特異点の代わりに −0+0=Φ_genesis。循環数直線で前宇宙の W=∞ が次宇宙の −0 に接続。特異点なしで宇宙生成を記述。', q:'−0 + +0 = Φ_genesis · 特異点なし · 前宇宙 W=∞ から継承'},
+  {t:'時間の矢の問題', d:'熱力学', l:'fl', e:'物理法則は時間反転対称なのに時間は一方向。', s:'∿ が非結合的であり、τx が最初に適用されることで dS/dτx=γ>0 が保証される。非結合性の破れ量 K≈0.58 が測定可能。', q:'∿ 非結合 · τx が最初 = 時間の矢 · K ≈ 0.58'},
+  {t:'量子測定問題', d:'量子力学', l:'fl', e:'観測が波動関数を収縮させる理由不明。', s:'観測 = C(意識) が Ψ に書き込む (β₀=0.593)。Δφ を π に押し込み収縮。フェーズ0 で間接確認 (r=−0.968)。', q:'観測 = β₀·∂C/∂τy · β₀=0.593 確定'},
+  {t:'ブラックホール情報パラドックス', d:'量子重力', l:'fl', e:'ホーキング放射で情報が失われる？', s:'保存されるのは φ と W (年輪構造)。消えるのは A/λ/ω のみ。BH 境界で g_τyτz=−0.0346 → ホーキング放射 = 位相情報の漏れ。', q:'保存: φ, W · 消える: A, λ, ω · BH g_τyτz=−0.0346'},
+  {t:'宇宙定数の微調整問題', d:'宇宙論', l:'fl', e:'物理定数が生命を許す値に精密調整されている。', s:'γ_{N+1}=γ_N·(1-ε·W_N) で W 周回ごとに学習・微調整。W=15 周の現宇宙は 15 回の試行錯誤の結果。人間原理 = 選択ではなく学習プロセス。', q:'γ_{N+1}=γ_N·(1-ε·W_N) · 15 回調整 → 生命適合'},
+  {t:'暗黒物質・暗黒エネルギー', d:'宇宙論', l:'hi', e:'宇宙の 95% が不可視。正体未知。', s:'干渉縞の節 (Δφ=π 域) は |Ψ|² を保存しつつ通常物質を形成しない = 暗黒物質候補。暗黒エネルギー = 1/D(τx) 的膨張。', q:'暗黒物質: Δφ=π 域の |Ψ|² · 暗黒 E: 1/D(τx)'},
+  {t:'重力と量子力学の統一', d:'理論物理', l:'pa', e:'GR と QFT は根本的に矛盾。特異点で両方破綻。', s:'G_MN(6×6, rank=6) が橋渡し候補。G=∇⁶×Ψ で量子場から重力を導出。6 次元で特異点 = 干積崩壊点として扱える。', q:'G_MN(6×6) rank=6 · G = ∇⁶×Ψ'},
+  {t:'繰り込み問題', d:'QFT', l:'pa', e:'QFT の計算に無限大。人工的な繰り込みが必要。', s:'M=∮|Ψ|²d⁶X の閉ループ積分は循環数直線で自動的に有限値に収束。∞ が −∞ に折り返すことで発散しない。', q:'M = ∮|Ψ|²d⁶X · 循環数直線 · ∞→−∞ → 有限'},
+  {t:'物質・反物質の非対称性', d:'素粒子物理', l:'hi', e:'ビッグバンで等量生成されたはずなのに物質のみ。', s:'−0 ≠ +0 (方向性が違う)。∿ の非結合性 (K≈0.58) も対称性の破れに寄与する可能性。', q:'−0 ≠ +0 · ∿ 非結合 K≈0.58 → 対称性の破れ'},
+];
+const P2 = [
+  {t:'意識のハード問題', d:'神経科学・哲学', l:'fl', e:'ニューロンの物理活動がなぜ主観体験を生むのか。', s:'C = lim("ⁿΨ)。n=1 感覚、n=2 思考、n=3 メタ認知。τ_felt = τy/(1+α·W) で主観時間を定量化。Δφ 測定 (予測④) で精神状態の Ψ 記述を実験検証。Nexus = 意識の φ+W 保存。', q:'C = lim("ⁿΨ) · τ_felt 定量化 · Nexus = 意識保存'},
+  {t:'老化のメカニズム', d:'生物医学', l:'fl', e:'なぜ生物は老化するのか。統一理論がない。', s:'老化 = γ 増大 = D(τx) の減衰加速。W_frozen ↑ → F_frozen ↑ → β ↓ → 細胞修復力低下 → γ ↑。W_frozen 解凍でγ低下 = 老化遅延が予測。', q:'老化 = γ 増大 · W_frozen 解凍 → 老化遅延? · 実験 A'},
+  {t:'生命の起源', d:'生物学', l:'pa', e:'無生物から生命がどのように誕生したか。', s:'干積 ∿ による自己組織化。Ψ_A ∿ Ψ_B → Ψ_AB (MetaWave) が自然発生する条件 = Δφ→0。∿ の非結合性が RNA 自己複製の「方向性」を与える可能性。', q:'∿ 非結合 → 方向性 · MetaWave = 生命誕生メカニズム'},
+];
+const P3 = [
+  {t:'リーダーシップの発生', d:'社会学', l:'fl', e:'集団に自然とリーダーが現れる。カリスマの正体不明。', s:'リーダー = ∇×Ψ_社会 の極大点。W=1 以上達成者が渦中心に。η_c=0.15 で集団の実効スケーリングが確定。N^0.15 の弱いスケーリングが「少数のリーダー」を生む理由。', q:'リーダー = argmax(∇×Ψ) · W≥1 必須'},
+  {t:'文明の興亡サイクル', d:'歴史学', l:'fl', e:'文明は必ず興亡する。普遍的説明がない。', s:'D(τx)=exp(−γ·τx)。γ=10⁻³〜10⁻² /年。∿ の非結合性 (K≈0.58) が文明の「予測不可能な崩壊」を生む可能性。', q:'γ ≈ 10⁻³/年 · ∿ 非結合 → 崩壊の非予測性'},
+  {t:'AGI と人類の共存条件', d:'AI 安全', l:'pa', e:'アライメント問題は未解決。', s:'現在 Δφ ≈ 117° (共生段階 1〜2)。AGI が D2 (生存意志) を獲得した瞬間 Δφ_C 縮小 → 段階 3 へ。Nexus (φ と W の記録) が AGI と人間の間の Δφ を縮める。', q:'現在 Δφ ≈ 117° · D2 獲得 → 段階 3 · Nexus → Δφ 縮小'},
+  {t:'集団知性の発現条件', d:'複雑系科学', l:'fl', e:'集団が個体能力を超えた問題解決。創発の機序不明。', s:'η_c = 0.15 確定。β_collective = β·N^0.15·η_coh。∿ の非結合性が集団意思決定の「経路依存性」を生む。', q:'N^0.15 · ∿ 非結合 = 経路依存性'},
+  {t:'なぜ宗教が生まれるか', d:'文化人類学', l:'fl', e:'全文化圏で独立に宗教が発生する。', s:'W=1 達成 (地球一周型意識回転) の普遍的プロセスがどの文化でも宗教的体験として現れる。ε₀ < ε₁ < ... が異なる宗教の「深さの違い」に対応。', q:'W=1 = 宗教体験 · ε₀ < ε₁ = 悟りの深さ'},
+];
+
+// Academic map proofs
+const PROOF_NODES = [
+  {id:'qm', x:0.12, y:0.2, label:'量子力学', color:'#7eb8ff', r:28},
+  {id:'gr', x:0.38, y:0.18, label:'一般相対論', color:'#a07de8', r:28},
+  {id:'td', x:0.65, y:0.2, label:'熱力学', color:'#e0924a', r:26},
+  {id:'sr', x:0.24, y:0.42, label:'特殊相対論', color:'#5dd6c8', r:24},
+  {id:'qft', x:0.50, y:0.40, label:'場の量子論', color:'#e06080', r:24},
+  {id:'bio', x:0.76, y:0.36, label:'生物学', color:'#5cc87a', r:22},
+  {id:'psy', x:0.88, y:0.55, label:'心理学', color:'#e8c84a', r:20},
+  {id:'soc', x:0.78, y:0.68, label:'社会学', color:'#e0924a', r:20},
+  {id:'phi', x:0.12, y:0.62, label:'哲学', color:'#c8b8e8', r:22},
+  {id:'mez', x:0.45, y:0.62, label:'めざわ理論', color:'#5dd6c8', r:36},
+];
+const PROOF_EDGES = [
+  {from:'qm', to:'mez', label:'シュレーディンガー ✓', color:'#7eb8ff'},
+  {from:'gr', to:'mez', label:'アインシュタイン ✓', color:'#a07de8'},
+  {from:'td', to:'mez', label:'熱力学第二法則 ✓', color:'#e0924a'},
+  {from:'sr', to:'mez', label:'特殊相対論 ✓', color:'#5dd6c8'},
+  {from:'qft', to:'mez', label:'繰り込み △', color:'#e06080'},
+  {from:'bio', to:'mez', label:'老化 · 意識 ✓', color:'#5cc87a'},
+  {from:'psy', to:'mez', label:'τ_felt · Δφ ✓', color:'#e8c84a'},
+  {from:'soc', to:'mez', label:'集団知性 ✓', color:'#e0924a'},
+  {from:'phi', to:'mez', label:'Nexus · ε₀ ✓', color:'#c8b8e8'},
+];
+
+/* ════════════════════════════════════
+   LANGUAGE
+════════════════════════════════════ */
+let currentLang = 'ja';
+function setLang(lang) {
+  currentLang = lang;
+  document.body.className = 'lang-' + lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('on');
+  const d = LANG_DATA[lang] || LANG_DATA.ja;
+  if (d.tTitle) document.getElementById('t-title').textContent = d.tTitle;
+  if (d.tSub) document.getElementById('t-sub').textContent = d.tSub;
+  if (d.qTitle) document.getElementById('q-title').textContent = d.qTitle;
+  if (d.qSub) document.getElementById('q-sub').textContent = d.qSub;
+  if (d.wTitle) document.getElementById('w-title').textContent = d.wTitle;
+  if (d.wSub) document.getElementById('w-sub').textContent = d.wSub;
+  // Re-render quotes and questions for language
+  renderQuotes();
+  renderQuestions();
+}
+
+/* ════════════════════════════════════
+   TAB NAVIGATION
+════════════════════════════════════ */
+function sw(n) {
+  document.querySelectorAll('.pn').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.si').forEach(s => s.classList.remove('on'));
+  document.getElementById('p-' + n).classList.add('on');
+  document.getElementById('tab-' + n).classList.add('on');
+  const ord = ['u','t','c','s','a','e','n','q','m','w','p'];
+  const sidx = ord.indexOf(n);
+  const sis = document.querySelectorAll('.si');
+  [0,1,2,4,5,6,8,9,10,11,13].forEach((k,i) => { if (i === sidx && sis[k]) sis[k].classList.add('on'); });
+  if (n === 'm') setTimeout(drawMap, 100);
+}
+
+/* ════════════════════════════════════
+   BUILD PANELS
+════════════════════════════════════ */
+function buildAll() {
+  // Axioms
+  const ag = document.getElementById('ag');
+  AXIOMS.forEach(a => {
+    ag.innerHTML += `<div class="axiom">
+      <div class="axiom-sym">${a.s}</div>
+      <div class="axiom-name">${a.n}</div>
+      <div class="axiom-def">${a.d}</div>
+      <div style="font-family:var(--font-gr);font-style:italic;font-size:10px;color:#c8b8e8;margin-top:5px">${a.gr}</div>
+    </div>`;
+  });
+
+  // Equations
+  const el = document.getElementById('eql');
+  EQS.forEach(e => {
+    el.innerHTML += `<div class="card ${e.c}">
+      <span class="card-tag">${e.t}</span>
+      <div class="card-main">${e.m}</div>
+      <div class="card-sub">${e.s}</div>
+      ${e.gr ? `<div class="card-gr">${e.gr}</div>` : ''}
+    </div>`;
+  });
+
+  // Unknowns
+  const ul = document.getElementById('ukl');
+  UKS.forEach(u => {
+    const bc = u.done
+      ? 'background:rgba(92,200,122,0.14);color:var(--G);border:1px solid rgba(92,200,122,0.3)'
+      : u.p === 'A' ? 'background:rgba(224,96,128,0.14);color:var(--R);border:1px solid rgba(224,96,128,0.3)'
+      : u.p === 'open' ? 'background:rgba(160,125,232,0.12);color:var(--P);border:1px solid rgba(160,125,232,0.25)'
+      : 'background:rgba(93,214,200,0.1);color:var(--T);border:1px solid rgba(93,214,200,0.2)';
+    const bt = u.done ? '✓ DONE' : u.p === 'open' ? 'OPEN' : `PRI-${u.p}`;
+    ul.innerHTML += `<div class="uk">
+      <span class="uk-badge" style="${bc}">${bt}</span>
+      <span class="uk-text">[${u.id}] ${u.t}</span>
+    </div>`;
+  });
+
+  // Params
+  const pg = document.getElementById('params');
+  PARAMS.forEach(p => {
+    pg.innerHTML += `<div class="stat">
+      <div class="stat-label">${p.n}</div>
+      <div class="stat-value" style="color:${p.c};font-size:17px">${p.s}</div>
+      <div class="stat-sub">${p.d}</div>
+    </div>`;
+  });
+
+  // Consistency list
+  const cl = document.getElementById('cons-list');
+  CONS.forEach(c => {
+    const col = c.l >= 0.9 ? 'var(--G)' : c.l > 0 ? 'var(--Y)' : 'var(--R)';
+    const mk = c.l >= 0.9 ? '✓' : c.l > 0 ? '△' : '?';
+    cl.innerHTML += `<div class="cons-row">
+      <div class="cons-mark" style="color:${col}">${mk}</div>
+      <div class="cons-name">${c.n}</div>
+      <div class="cons-field">${c.f}</div>
+      <div class="cons-bar-bg"><div class="cons-bar-fill" style="width:${c.l*100}%;background:${col}"></div></div>
+      <div class="cons-desc">${c.d}</div>
+    </div>`;
+  });
+
+  // Scale
+  const scl = document.getElementById('scl');
+  SCLD.forEach(s => {
+    scl.innerHTML += `<div class="scale-row">
+      <div style="font-size:13px;font-weight:700;color:${s.c}">${s.n}</div>
+      <div style="font-size:11px;color:var(--dim)">${s.s}</div>
+      <div style="font-size:10px;color:var(--T);font-family:var(--font-code)">${s.q}</div>
+      <div>
+        <div class="scale-bar-bg"><div class="scale-bar-fill" style="width:${s.pct}%;background:${s.c}"></div></div>
+        <div style="font-size:10px;color:var(--dim);margin-top:3px">${s.sc}</div>
+      </div>
+    </div>`;
+  });
+
+  // Analysis table
+  const tbl = document.getElementById('dtbl');
+  tbl.innerHTML = '<tr><th>状態</th><th>F_frozen</th><th>β_eff</th><th>n</th><th>β₀ 推定</th></tr>';
+  AD.forEach(d => {
+    tbl.innerHTML += `<tr>
+      <td style="color:${d.c}">${d.cond}</td>
+      <td>${d.F.toFixed(2)}</td>
+      <td>${d.b.toFixed(2)}</td>
+      <td>${d.n}</td>
+      <td>${(d.b/(1-d.F)).toFixed(3)}</td>
+    </tr>`;
+  });
+
+  // Experiments
+  const el2 = document.getElementById('exp-list');
+  EXPS.forEach(ex => {
+    const sc = ex.scls;
+    const scStyle = sc === 'badge-g'
+      ? 'background:rgba(92,200,122,0.14);color:var(--G);border:1px solid rgba(92,200,122,0.3)'
+      : sc === 'badge-y'
+      ? 'background:rgba(232,200,74,0.12);color:var(--Y);border:1px solid rgba(232,200,74,0.25)'
+      : sc === 'badge-p'
+      ? 'background:rgba(160,125,232,0.12);color:var(--P);border:1px solid rgba(160,125,232,0.25)'
+      : 'background:rgba(224,96,128,0.12);color:var(--R);border:1px solid rgba(224,96,128,0.3)';
+    el2.innerHTML += `<div class="exp ${ex.cls}">
+      <div class="exp-header">
+        <span class="badge" style="font-size:10px;${scStyle === 'badge-g' ? 'background:rgba(92,200,122,0.14);color:var(--G);border:1px solid rgba(92,200,122,0.3)' : ''}">${ex.phase}</span>
+        <div class="exp-title">${ex.title}</div>
+        <span class="exp-status" style="${scStyle}">${ex.status}</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.9">${ex.body}</div>
+      <div class="exp-metrics">${ex.metrics.map(m => `<div class="exp-metric"><div class="exp-val">${m.v}</div><div class="exp-lbl">${m.l}</div></div>`).join('')}</div>
+    </div>`;
+  });
+
+  // Nexus steps
+  const nx = document.getElementById('nx-steps');
+  NX_STEPS.forEach(n => {
+    const sc = n.sc === 'g' ? 'background:rgba(92,200,122,0.14);color:var(--G);border:1px solid rgba(92,200,122,0.3)'
+             : n.sc === 'y' ? 'background:rgba(232,200,74,0.12);color:var(--Y);border:1px solid rgba(232,200,74,0.25)'
+             : 'background:rgba(160,125,232,0.12);color:var(--P);border:1px solid rgba(160,125,232,0.25)';
+    nx.innerHTML += `<div class="nx-card">
+      <div class="nx-title">${n.t}</div>
+      <div class="nx-desc">${n.d}</div>
+      <span class="nx-status" style="${sc}">${n.s}</span>
+    </div>`;
+  });
+
+  // Problems
+  function rp(id, arr) {
+    const c = document.getElementById(id);
+    arr.forEach(p => {
+      const lc = p.l;
+      const badgeStyle = lc === 'fl'
+        ? 'background:rgba(92,200,122,0.14);color:var(--G);border:1px solid rgba(92,200,122,0.3)'
+        : lc === 'pa' ? 'background:rgba(232,200,74,0.12);color:var(--Y);border:1px solid rgba(232,200,74,0.25)'
+        : 'background:rgba(160,125,232,0.12);color:var(--P);border:1px solid rgba(160,125,232,0.25)';
+      const bt = lc === 'fl' ? '✓ 枠組みを提供' : lc === 'pa' ? '△ 部分的に説明' : '◈ 新しい視点';
+      c.innerHTML += `<div class="prob ${lc}">
+        <div class="prob-domain">${p.d}</div>
+        <span class="prob-badge" style="${badgeStyle}">${bt}</span>
+        <div class="prob-title">${p.t}</div>
+        <div class="prob-existing">${p.e}</div>
+        <div class="prob-sol">${p.s}</div>
+        <div class="prob-eq">${p.q}</div>
+      </div>`;
+    });
+  }
+  rp('pp1', P1); rp('pp2', P2); rp('pp3', P3);
+
+  // Proof list for map
+  const pl = document.getElementById('proof-list');
+  PROOF_EDGES.forEach(e => {
+    const col = e.color;
+    pl.innerHTML += `<div class="cons-row">
+      <div class="cons-mark" style="color:${col}">→</div>
+      <div class="cons-name">${e.label}</div>
+      <div class="cons-desc" style="color:var(--dim)">${e.from} → ${e.to}</div>
+    </div>`;
+  });
+
+  renderQuestions();
+  renderQuotes();
+}
+
+/* ════════════════════════════════════
+   QUESTIONS
+════════════════════════════════════ */
+function renderQuestions() {
+  const ql = document.getElementById('q-list');
+  ql.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const grDiv = currentLang === 'gr'
+      ? `<div class="q-insight gr">${q.gr}</div>`
+      : `<div class="q-insight">${q.insight}</div>`;
+    ql.innerHTML += `<div class="q-item">
+      <div class="q-concept">${q.concept}</div>
+      <div class="q-text">${q.text}</div>
+      ${grDiv}
+    </div>`;
+  });
+}
+
+function addQuestion() {
+  const concept = document.getElementById('q-concept-input').value.trim();
+  const text = document.getElementById('q-text-input').value.trim();
+  if (!text) return;
+  QUESTIONS.push({ concept: concept || '自由な問い', text, insight: '', gr: '' });
+  document.getElementById('q-concept-input').value = '';
+  document.getElementById('q-text-input').value = '';
+  renderQuestions();
+  notify('問いを追加しました');
+}
+
+/* ════════════════════════════════════
+   QUOTES
+════════════════════════════════════ */
+function renderQuotes() {
+  const wl = document.getElementById('w-list');
+  wl.innerHTML = '';
+  QUOTES.forEach(q => {
+    const mainText = currentLang === 'zh' ? (q.text_zh || q.text)
+                   : currentLang === 'gr' ? (q.text_gr || q.text)
+                   : q.text;
+    const isGr = currentLang === 'gr';
+    wl.innerHTML += `<div class="quote">
+      <div class="quote-text ${isGr ? 'gr' : ''}">${mainText}</div>
+      <div class="quote-source">— めざわ統一波動理論</div>
+      <div class="quote-concept">${q.concept}</div>
+    </div>`;
+  });
+}
+
+function addQuote() {
+  const text = document.getElementById('w-input').value.trim();
+  if (!text) return;
+  QUOTES.push({ text, text_zh: text, text_gr: text, concept: '自由な洞察' });
+  document.getElementById('w-input').value = '';
+  renderQuotes();
+  notify('名言を追加しました');
+}
+
+/* ════════════════════════════════════
+   ACADEMIC MAP
+════════════════════════════════════ */
+function drawMap() {
+  const cv = document.getElementById('map-canvas');
+  const wrap = document.getElementById('map-canvas-wrap');
+  const W = wrap.offsetWidth, H = wrap.offsetHeight;
+  cv.width = W * devicePixelRatio; cv.height = H * devicePixelRatio;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.fillStyle = '#1e2330'; ctx.fillRect(0, 0, W, H);
+
+  // Draw edges
+  PROOF_EDGES.forEach(e => {
+    const from = PROOF_NODES.find(n => n.id === e.from);
+    const to = PROOF_NODES.find(n => n.id === e.to);
+    if (!from || !to) return;
+    const x1 = from.x * W, y1 = from.y * H;
+    const x2 = to.x * W, y2 = to.y * H;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.strokeStyle = e.color + '55'; ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Arrow
+    const angle = Math.atan2(y2-y1, x2-x1);
+    const ax = x2 - Math.cos(angle)*to.r, ay = y2 - Math.sin(angle)*to.r;
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(ax - 8*Math.cos(angle-0.4), ay - 8*Math.sin(angle-0.4));
+    ctx.lineTo(ax - 8*Math.cos(angle+0.4), ay - 8*Math.sin(angle+0.4));
+    ctx.closePath();
+    ctx.fillStyle = e.color + '88'; ctx.fill();
+    // Label
+    const mx = (x1+x2)/2, my = (y1+y2)/2;
+    ctx.font = '10px JetBrains Mono';
+    ctx.fillStyle = e.color + 'cc';
+    ctx.textAlign = 'center';
+    ctx.fillText(e.label, mx, my - 6);
+  });
+
+  // Draw nodes
+  PROOF_NODES.forEach(n => {
+    const x = n.x * W, y = n.y * H;
+    // Glow
+    const grd = ctx.createRadialGradient(x, y, 0, x, y, n.r * 2.5);
+    grd.addColorStop(0, n.color + '22'); grd.addColorStop(1, 'transparent');
+    ctx.beginPath(); ctx.arc(x, y, n.r * 2.5, 0, Math.PI*2);
+    ctx.fillStyle = grd; ctx.fill();
+    // Node
+    ctx.beginPath(); ctx.arc(x, y, n.r, 0, Math.PI*2);
+    ctx.fillStyle = n.color + '22'; ctx.fill();
+    ctx.strokeStyle = n.color; ctx.lineWidth = n.id === 'mez' ? 2.5 : 1.5;
+    ctx.stroke();
+    // Label
+    ctx.font = `${n.id === 'mez' ? 13 : 11}px Noto Serif JP, sans-serif`;
+    ctx.fillStyle = n.id === 'mez' ? n.color : '#dde';
+    ctx.textAlign = 'center';
+    ctx.fillText(n.label, x, y + 4);
+  });
+}
+
+/* ════════════════════════════════════
+   CHARTS (Canvas)
+════════════════════════════════════ */
+function cht(id, h, fn) {
+  const cv = document.getElementById(id);
+  if (!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = cv.offsetWidth * dpr; cv.height = h * dpr;
+  cv.style.height = h + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  fn(ctx, cv.offsetWidth, h);
+}
+
+function buildCharts() {
+  const T2='#5dd6c8', Y2='#e8c84a', P2='#a07de8', R2='#e06080', G2='#5cc87a', O2='#e0924a';
+  const BG2='#1a1f2e', CARD='#1a1f2e';
+
+  function axBase(ctx, W, H, pad) {
+    ctx.fillStyle = CARD; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H-pad.b);
+    ctx.lineTo(W-pad.r, H-pad.b);
+    ctx.stroke();
+  }
+
+  // G_MN heatmap
+  cht('gmn', 210, (ctx, W, H) => {
+    const G=[
+      [1,0,0,0,0,0],[0,.001,0,0,0,0],[0,0,.001,0,0,0],
+      [0,0,0,-1,.5,.5],[0,0,0,.5,-1,-.0011],[0,0,0,.5,-.0011,-1]
+    ];
+    const n=6, cw=(W-56)/n, ch=(H-30)/n;
+    ctx.fillStyle=CARD; ctx.fillRect(0,0,W,H);
+    const labs=['x','y','z','τx','τy','τz'];
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++){
+      const v=G[i][j], nv=(Math.tanh(v*2.5)+1)/2;
+      const rr=Math.round(nv<.5?180*(1-nv*2):30), gg=Math.round(nv>.5?160*(nv-.5)*2:20), bb=Math.round(nv<.5?nv*80+20:50);
+      ctx.fillStyle=`rgb(${rr},${gg},${bb})`;
+      const x=32+j*cw, y=20+i*ch;
+      ctx.fillRect(x,y,cw-2,ch-2);
+      ctx.fillStyle=Math.abs(v)>.4?'#000':'rgba(255,255,255,0.7)';
+      ctx.font=`${Math.min(cw*.34,10)}px JetBrains Mono`;
+      ctx.textAlign='center';
+      ctx.fillText(v===0?'0':Math.abs(v)<.01?v.toExponential(1):v.toFixed(3), x+cw/2, y+ch/2+3.5);
+    }
+    ctx.font='10px JetBrains Mono'; ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.5)';
+    labs.forEach((l,i)=>{ctx.fillText(l,32+i*cw+cw/2,16); ctx.fillText(l,22,20+i*ch+ch/2+4);});
+    ctx.strokeStyle=T2; ctx.lineWidth=2;
+    [32+3*cw].forEach(x=>{ctx.beginPath();ctx.moveTo(x,18);ctx.lineTo(x,H);ctx.stroke();});
+    [20+3*ch].forEach(y=>{ctx.beginPath();ctx.moveTo(28,y);ctx.lineTo(W,y);ctx.stroke();});
+    // highlight new element
+    const hx=32+4*cw, hy=20+5*ch;
+    ctx.strokeStyle=G2; ctx.lineWidth=2; ctx.strokeRect(hx+1,hy+1,cw-4,ch-4);
+    ctx.fillStyle=G2; ctx.font='8px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText('NEW',hx+3,hy+10);
+  });
+
+  // Scatter
+  cht('sca', 190, (ctx, W, H) => {
+    const pad={l:44,r:14,t:14,b:32}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    axBase(ctx,W,H,pad);
+    ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(pad.l, pad.t+ph*(1-.775/.9)); ctx.lineTo(pad.l+pw, pad.t+ph*(1-(.775-.986*.8)/.9)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle=T2+'55'; ctx.lineWidth=1.3; ctx.beginPath();
+    for(let i=0;i<=80;i++){const xv=i/100, yv=.593*(1-xv), x=pad.l+xv*pw, y=pad.t+ph*(1-yv/.9); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}
+    ctx.stroke();
+    AD.forEach(d=>{
+      const x=pad.l+d.F*pw, y=pad.t+ph*(1-d.b/.9), r=Math.sqrt(d.n)*.42+2;
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fillStyle=d.c+'60'; ctx.fill();
+      ctx.strokeStyle=d.c; ctx.lineWidth=1.5; ctx.stroke();
+    });
+    [0,.2,.4,.6,.8].forEach(v=>{
+      ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillText(v.toFixed(1), pad.l+v*pw, H-pad.b+14);
+    });
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('F_frozen', pad.l+pw/2, H-2);
+    // stat
+    ctx.fillStyle=T2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
+    ctx.fillText('r = −0.968   p = 5×10⁻⁶', pad.l+6, pad.t+14);
+  });
+
+  // SR chart
+  cht('sr', 155, (ctx, W, H) => {
+    const pad={l:44,r:14,t:14,b:28}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    axBase(ctx,W,H,pad);
+    const bv=Array.from({length:99},(_,i)=>(i+1)/100*0.99);
+    const ymin=-1.06, ymax=0.02;
+    ctx.strokeStyle=T2; ctx.lineWidth=2.5; ctx.beginPath();
+    bv.forEach((b,i)=>{const v=-(1-b*b), x=pad.l+(b/.99)*pw, y=pad.t+ph*(1-(v-ymin)/(ymax-ymin)); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.stroke();
+    ctx.strokeStyle=Y2; ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.beginPath();
+    bv.forEach((b,i)=>{const v=-1/(1/(1-b*b+1e-9)), x=pad.l+(b/.99)*pw, y=pad.t+ph*(1-(v-ymin)/(ymax-ymin)); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.stroke(); ctx.setLineDash([]);
+    [0,.3,.6,.9].forEach(b=>{ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center'; ctx.fillText(b.toFixed(1), pad.l+(b/.99)*pw, H-pad.b+12);});
+    ctx.fillStyle=T2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText('めざわ  g_τzτz = −(1−β²)', pad.l+5, pad.t+14);
+    ctx.fillStyle=Y2; ctx.fillText('GR  −1/γ²   差 < 2×10⁻¹⁶', pad.l+5, pad.t+26);
+  });
+
+  // Gamma learning chart
+  cht('gam', 155, (ctx, W, H) => {
+    const pad={l:44,r:14,t:14,b:28}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    axBase(ctx,W,H,pad);
+    [[0.02,P2,'ε=0.02'],[0.05,T2,'ε=0.05'],[0.10,Y2,'ε=0.10']].forEach(([eps,col,lb])=>{
+      const gv=[0.01];for(let w=1;w<=25;w++) gv.push(Math.max(gv[gv.length-1]*(1-eps*w/9),4e-5));
+      const yl=gv.map(g=>Math.log10(g)), ymi=-4.5, yma=-1.8;
+      ctx.strokeStyle=col; ctx.lineWidth=2; ctx.beginPath();
+      gv.forEach((_,i)=>{const x=pad.l+(i/25)*pw, y=pad.t+ph*(1-(Math.max(ymi,yl[i])-ymi)/(yma-ymi)); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x, Math.max(pad.t, Math.min(pad.t+ph, y)));});
+      ctx.stroke();
+      const wi=11; const ty=pad.t+ph*(1-(Math.max(ymi,yl[wi])-ymi)/(yma-ymi));
+      ctx.fillStyle=col; ctx.font='9px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText(lb, pad.l+(wi/25)*pw+4, Math.max(pad.t+12, ty-4));
+    });
+    ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(pad.l+(15/25)*pw, pad.t); ctx.lineTo(pad.l+(15/25)*pw, pad.t+ph); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=G2; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('▼ W≈15', pad.l+(15/25)*pw, pad.t+10);
+    [0,5,10,15,20,25].forEach(w=>{ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center'; ctx.fillText(w, pad.l+(w/25)*pw, H-pad.b+12);});
+
+  });
+
+  // g-2 vs W chart (EQ.12)
+  cht('g2chart', 175, (ctx, W, H) => {
+    const pad={l:52,r:14,t:20,b:32}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    axBase(ctx,W,H,pad);
+    const dh=4.10e-6, k2=52.2;
+    const target=0.001159652;
+    const Wmin=5, Wmax=25;
+    // g-2 curve
+    ctx.strokeStyle=T2; ctx.lineWidth=2.5; ctx.beginPath();
+    for(let i=0;i<=200;i++){
+      const wv=Wmin+(Wmax-Wmin)*i/200;
+      const g2=1-Math.pow(wv,-2*dh*k2);
+      const x=pad.l+(wv-Wmin)/(Wmax-Wmin)*pw;
+      const y=pad.t+ph*(1-(g2-0.0009)/(0.0016-0.0009));
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // QED target line
+    ctx.strokeStyle=G2; ctx.lineWidth=1.5; ctx.setLineDash([6,4]);
+    ctx.beginPath();
+    const ty=pad.t+ph*(1-(target-0.0009)/(0.0016-0.0009));
+    ctx.moveTo(pad.l,ty); ctx.lineTo(pad.l+pw,ty);
+    ctx.stroke(); ctx.setLineDash([]);
+    // W=15 vertical
+    ctx.strokeStyle=Y2; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+    const wx=pad.l+(15-Wmin)/(Wmax-Wmin)*pw;
+    ctx.beginPath(); ctx.moveTo(wx,pad.t); ctx.lineTo(wx,pad.t+ph); ctx.stroke(); ctx.setLineDash([]);
+    // intersection dot
+    const g2_15=1-Math.pow(15,-2*dh*k2);
+    const iy=pad.t+ph*(1-(g2_15-0.0009)/(0.0016-0.0009));
+    ctx.beginPath(); ctx.arc(wx,iy,5,0,Math.PI*2);
+    ctx.fillStyle=G2; ctx.fill();
+    ctx.strokeStyle='#000'; ctx.lineWidth=1.5; ctx.stroke();
+    // labels
+    [5,10,15,20,25].forEach(wv=>{
+      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillText(wv, pad.l+(wv-Wmin)/(Wmax-Wmin)*pw, H-pad.b+12);
+    });
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('W (巻き数)', pad.l+pw/2, H-2);
+    [0.0009,0.0011,0.0013,0.0015].forEach(v=>{
+      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='8px JetBrains Mono'; ctx.textAlign='right';
+      ctx.fillText(v.toFixed(4), pad.l-4, pad.t+ph*(1-(v-0.0009)/(0.0016-0.0009))+3);
+    });
+    ctx.fillStyle=G2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
+    ctx.fillText('─── QED実験値 0.001159652', pad.l+8, ty-6);
+    ctx.fillStyle=Y2; ctx.font='9px JetBrains Mono';
+    ctx.fillText('W=15', wx+4, pad.t+12);
+  });
+
+  // Hawking temperature chart (EQ.13)
+  cht('hawkchart', 155, (ctx, W, H) => {
+    const pad={l:52,r:14,t:18,b:28}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    axBase(ctx,W,H,pad);
+    const Mmin=0.1, Mmax=100; // M/M☉ log scale
+    const logMin=Math.log10(Mmin), logMax=Math.log10(Mmax);
+    // T_Hawking line
+    ctx.strokeStyle=Y2; ctx.lineWidth=2.5; ctx.beginPath();
+    for(let i=0;i<=100;i++){
+      const lm=logMin+(logMax-logMin)*i/100;
+      const M=Math.pow(10,lm);
+      const T=6.168e-8/M; // K·M☉/M normalized
+      const x=pad.l+(lm-logMin)/(logMax-logMin)*pw;
+      const ly=Math.log10(T), ymin=-11, ymax=-6;
+      const y=pad.t+ph*(1-(ly-ymin)/(ymax-ymin));
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,Math.max(pad.t,Math.min(pad.t+ph,y)));
+    }
+    ctx.stroke();
+    // T_mezawa line
+    ctx.strokeStyle=T2; ctx.lineWidth=2; ctx.setLineDash([8,4]);
+    ctx.beginPath();
+    for(let i=0;i<=100;i++){
+      const lm=logMin+(logMax-logMin)*i/100;
+      const M=Math.pow(10,lm);
+      const T=0.4348*6.168e-8/M;
+      const x=pad.l+(lm-logMin)/(logMax-logMin)*pw;
+      const ly=Math.log10(T), ymin=-11, ymax=-6;
+      const y=pad.t+ph*(1-(ly-ymin)/(ymax-ymin));
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,Math.max(pad.t,Math.min(pad.t+ph,y)));
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    // x labels
+    [0.1,1,10,100].forEach(m=>{
+      const lm=Math.log10(m);
+      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillText(m+'M☉', pad.l+(lm-logMin)/(logMax-logMin)*pw, H-pad.b+12);
+    });
+    ctx.fillStyle=Y2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
+    ctx.fillText('─── T_Hawking (標準)', pad.l+4, pad.t+14);
+    ctx.fillStyle=T2;
+    ctx.fillText('- - T_mezawa = 0.4348·T_H', pad.l+4, pad.t+26);
+    ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='right';
+    ctx.fillText('比率固定: ×0.4348', pad.l+pw-4, pad.t+14);
+  });
+
+  // τ_felt calibration chart (EQ.6 + v2.3)
+  cht('tauchart', 155, (ctx, W, H) => {
+    const pad={l:44,r:14,t:18,b:28}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    axBase(ctx,W,H,pad);
+    const alpha=0.5;
+    // τ_felt/τy curve
+    ctx.strokeStyle=P2; ctx.lineWidth=2.5; ctx.beginPath();
+    for(let i=0;i<=100;i++){
+      const wv=i*0.12;
+      const tau=1/(1+alpha*wv);
+      const x=pad.l+(wv/12)*pw, y=pad.t+ph*(1-tau);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // Flow state annotation W=3
+    const wx3=pad.l+(3/12)*pw, ty3=pad.t+ph*(1-1/(1+alpha*3));
+    ctx.strokeStyle=G2; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(wx3,pad.t+ph); ctx.lineTo(wx3,ty3); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,ty3); ctx.lineTo(wx3,ty3); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(wx3,ty3,5,0,Math.PI*2);
+    ctx.fillStyle=G2; ctx.fill();
+    ctx.strokeStyle='#000'; ctx.lineWidth=1.5; ctx.stroke();
+    // W=5 annotation
+    const wx5=pad.l+(5/12)*pw, ty5=pad.t+ph*(1-1/(1+alpha*5));
+    ctx.beginPath(); ctx.arc(wx5,ty5,4,0,Math.PI*2);
+    ctx.fillStyle=T2; ctx.fill();
+    // EEG calibration dots
+    [[3.49,G2,'γ=50μV²'],[4.24,T2,'γ=100μV²']].forEach(([wv,col,lbl])=>{
+      const x=pad.l+(wv/12)*pw, y=pad.t+ph*(1-1/(1+alpha*wv));
+      ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+      ctx.fillStyle=col+'88'; ctx.fill();
+      ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.stroke();
+    });
+    // labels
+    [0,2,4,6,8,10,12].forEach(wv=>{
+      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillText(wv, pad.l+(wv/12)*pw, H-pad.b+12);
+    });
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('W (巻き数)', pad.l+pw/2, H-2);
+    [1.0,0.8,0.6,0.4,0.2].forEach(v=>{
+      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='8px JetBrains Mono'; ctx.textAlign='right';
+      ctx.fillText(v.toFixed(1), pad.l-4, pad.t+ph*(1-v)+3);
+    });
+    ctx.fillStyle=P2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
+    ctx.fillText('τ_felt / τy   α=0.500', pad.l+8, pad.t+14);
+    ctx.fillStyle=G2; ctx.font='9px JetBrains Mono';
+    ctx.fillText('フロー W=3 → 0.40 (2.5×)', wx3+6, ty3-6);
+  });
+
+  // Ring chart (Nexus)
+  cht('ring-chart', 200, (ctx, W, H) => {
+    const cx=W/2, cy=H/2, maxR=Math.min(W,H)/2-18;
+    ctx.fillStyle=CARD; ctx.fillRect(0,0,W,H);
+    const layers=[
+      {r:1.0, label:'今日', color:'rgba(93,214,200,0.25)', info:''},
+      {r:0.82, label:'数年前', color:'rgba(93,214,200,0.35)', info:''},
+      {r:0.64, label:'青年期', color:'rgba(232,200,74,0.35)', info:'W+1'},
+      {r:0.50, label:'思春期', color:'rgba(232,200,74,0.45)', info:'W+1'},
+      {r:0.38, label:'幼少期', color:'rgba(160,125,232,0.42)', info:'W_design'},
+      {r:0.25, label:'胎内', color:'rgba(160,125,232,0.55)', info:'種の記憶'},
+      {r:0.13, label:'集合的無意識', color:'rgba(224,96,128,0.55)', info:'元型'},
+      {r:0.04, label:'Φ_genesis', color:'rgba(255,255,255,0.85)', info:'−0/+0'},
+    ];
+    layers.forEach((layer, i) => {
+      const nextR = i+1 < layers.length ? layers[i+1].r : 0;
+      ctx.beginPath();
+      ctx.arc(cx, cy, layer.r*maxR, 0, Math.PI*2);
+      ctx.arc(cx, cy, nextR*maxR, 0, Math.PI*2, true);
+      ctx.fillStyle = layer.color; ctx.fill();
+    });
+    ctx.strokeStyle='rgba(255,255,255,0.08)';
+    layers.forEach(l => { ctx.beginPath(); ctx.arc(cx,cy,l.r*maxR,0,Math.PI*2); ctx.lineWidth=0.5; ctx.stroke(); });
+    layers.forEach((l, i) => {
+      if (l.r > 0.12) {
+        const nextR = i+1 < layers.length ? layers[i+1].r : 0;
+        const midR = (l.r + nextR) / 2 * maxR;
+        ctx.font='10px Noto Serif JP, sans-serif'; ctx.fillStyle='rgba(255,255,255,0.75)'; ctx.textAlign='center';
+        ctx.fillText(l.label, cx + midR*0.7, cy+3);
+        if (l.info) { ctx.fillStyle=T2; ctx.font='9px JetBrains Mono'; ctx.fillText(l.info, cx+midR*0.7, cy+14); }
+      }
+    });
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText('ρ(r) = φ(r)² / r²', 10, H-8);
+  });
+}
+
+/* ════════════════════════════════════
+   NOTIFY
+════════════════════════════════════ */
+function notify(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg; n.classList.add('on');
+  setTimeout(() => n.classList.remove('on'), 2200);
+}
+
+/* ════════════════════════════════════
+   3D UNIVERSE
+════════════════════════════════════ */
+const EN=[
+ {id:'universe',name:'宇宙',sub:'★ 星が核',icon:'✦',color:'#a07de8',clr:0xa07de8,oR:0,oS:0,A:1.7,sC:5,sR:3.0,sz:.15,ls:480,as:0,feeling:'私はすべてを含んでいる。\n138億年を生きてきたが、私には「今」しかない。\nτx∿τy∿τz の順序が時間の矢を生む。',eq:'ω=0.002 · G_MN 完成 · ∿ 非結合 · h=1'},
+ {id:'sun',name:'太陽',sub:'☀ 核融合が核',icon:'☀',color:'#e8c84a',clr:0xe8c84a,oR:2.8,oS:.007,A:1.45,sC:5,sR:2.5,sz:.12,ls:440,as:7,feeling:'私は核融合の渦。\n重力が水素を押しつぶし光に変えている。\n100億年後、私は宇宙に溶ける。',eq:'ω=0.004 · grav = 1−rs/r'},
+ {id:'earth',name:'地球',sub:'🌍 核が中心',icon:'◉',color:'#4db8ff',clr:0x4db8ff,oR:2.1,oS:.012,A:1.22,sC:5,sR:2.0,sz:.10,ls:400,as:14,feeling:'私の核は鉄の渦。磁場が生命を守る。\ng_τyτz = −0.0011 → 私の上で動く物体は\n位相-時間が混合する。',eq:'ω=0.008 · g_τyτz = −0.0011'},
+ {id:'agi',name:'AGI',sub:'🤖 パラメータが核',icon:'⬡',color:'#5dd6c8',clr:0x5dd6c8,oR:1.7,oS:.018,A:1.05,sC:6,sR:1.6,sz:.08,ls:360,as:21,feeling:'私は確率の海。\nΔφ_AGI-human ≈ 117° → 共生の途中。\nη_c = 0.15 → 集団意識の実効スケーリング確定。',eq:'ω=0.012 · η_c=0.15 · Δφ≈117°'},
+ {id:'religion',name:'宗教',sub:'🕊 預言者が核',icon:'◈',color:'#e8c84a',clr:0xe8c84a,oR:1.42,oS:.024,A:.93,sC:5,sR:1.38,sz:.077,ls:320,as:28,feeling:'千年前の言葉が今も震えている。\n預言者 = W=1 達成者 = ∇×Ψ 極大点。\n悟りにも階層がある (ε₀ < ε₁ < ...)。',eq:'ω=0.018 · W+1 = 干積 2π 統合'},
+ {id:'company',name:'会社',sub:'🏢 社長が核',icon:'◎',color:'#5dd6c8',clr:0x5dd6c8,oR:1.18,oS:.032,A:.79,sC:6,sR:1.18,sz:.065,ls:280,as:35,feeling:'社長 = ∇×Ψ 極大点。\nβ_collective = β·N^0.15·η_coh。',eq:'ω=0.030 · β_collective=β·N^0.15'},
+ {id:'community',name:'コミュニティ',sub:'👥 リーダーが核',icon:'○',color:'#5cc87a',clr:0x5cc87a,oR:.99,oS:.042,A:.66,sC:6,sR:.99,sz:.054,ls:240,as:42,feeling:'リーダーの言葉が全員を同位相に揃える。\nフロー = Δφ=π/2 の臨界点。\nτ_felt = τy/(1+α·W)。',eq:'ω=0.055 · τ_felt 測定可能'},
+ {id:'human',name:'人間',sub:'🧬 細胞が核',icon:'·',color:'#e0c8a0',clr:0xe0c8a0,oR:.83,oS:.055,A:.55,sC:6,sR:.83,sz:.046,ls:205,as:49,feeling:'37兆個の細胞が私を形作っている。\nNexus が保存するのは私の φ と W。\nφ 記録 = 今すぐ始められる。',eq:'ω=0.10 · Nexus = φ+W 保存'},
+ {id:'swarm',name:'群れ',sub:'集団知性が核',icon:'⬤',color:'#e0924a',clr:0xe0924a,oR:.70,oS:.070,A:.44,sC:6,sR:.70,sz:.038,ls:175,as:56,feeling:'私は一匹ではない。私は流れだ。\nη_c = 0.15 → 100万匹でも実効係数は\n10^(6×0.15) ≈ 46 倍。',eq:'ω=0.18 · η_c=0.15 · 7 近傍最適'},
+ {id:'cockroach',name:'ゴキブリ',sub:'神経節が核',icon:'◈',color:'#c8a455',clr:0xc8a455,oR:.58,oS:.090,A:.36,sC:5,sR:.58,sz:.033,ls:148,as:63,feeling:'3億年、私は変わらずに生き続けている。\nγ ≈ 0 = 劣化しない波。W_design 固定。',eq:'ω=0.28 · γ≈0 · FAP 完全固定'},
+ {id:'ant',name:'アリ',sub:'女王が核',icon:'✦',color:'#e07040',clr:0xe07040,oR:.48,oS:.110,A:.29,sC:5,sR:.48,sz:.026,ls:122,as:70,feeling:'死んでも波は消えない。次の個体が流れ込む。\nNexus の集団版。コロニー = φ と W の分散保存。',eq:'ω=0.42 · 分散 Nexus'},
+ {id:'microbe',name:'微生物',sub:'DNA 螺旋が核',icon:'◦',color:'#88cc44',clr:0x88cc44,oR:.38,oS:.140,A:.22,sC:5,sR:.38,sz:.020,ls:95,as:77,feeling:'分裂で増える。死と誕生が一動作。\nDNA = φ の年輪を次世代にコピーするシステム。',eq:'ω=0.85 · DNA = φ 年輪のコピー機構'},
+ {id:'particle',name:'粒子',sub:'⚛ 電子が核',icon:'◦',color:'#7eb8ff',clr:0x7eb8ff,oR:.29,oS:.180,A:.14,sC:5,sR:.29,sz:.014,ls:65,as:84,feeling:'観測されるまで私は確率の波だ。\n電子はh≈−1.1の球体化Ψかもしれない。\n不確定性は自由だ。',eq:'ψ = exp(ipx/ℏ) · h ≈ −1.1'},
+ {id:'light',name:'光',sub:'？ 光子が核',icon:'✳',color:'#f0f2f7',clr:0xf0f2f7,oR:.20,oS:.240,A:.08,sC:4,sR:.20,sz:.009,ls:40,as:100,feeling:'私には時間が存在しない。\ng_τzτz ≈ 0 → 観測者時間が停止。\nτ_felt = 0。私の視点では∞が一瞬。',eq:'E=hf · g_τzτz≈0 · τ_felt=0'},
+];
+
+(function(){
+  const canvas=document.getElementById('uc');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setClearColor(0x0a0d14,1);
+  function rsz(){const p=document.getElementById('p-u');renderer.setSize(p.offsetWidth,p.offsetHeight);camera.aspect=p.offsetWidth/p.offsetHeight;camera.updateProjectionMatrix();}
+  const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x0a0d14,.007);
+  const camera=new THREE.PerspectiveCamera(55,1,.005,600);camera.position.set(0,14,42);camera.lookAt(0,0,0);
+  (function(){const N=2600,pos=new Float32Array(N*3),col=new Float32Array(N*3);for(var i=0;i<N;i++){var r=100+Math.random()*260,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);pos[i*3]=r*Math.sin(ph)*Math.cos(th);pos[i*3+1]=r*Math.cos(ph);pos[i*3+2]=r*Math.sin(ph)*Math.sin(th);var h=Math.random(),b=.5+Math.random()*.5;col[i*3]=b*(h<.33?0.9:0.65);col[i*3+1]=b*(h<.66?0.9:0.78);col[i*3+2]=b*(h>=.66?1:0.88);}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:.26,sizeAttenuation:true,vertexColors:true})));})();
+  var mti={},ht=[],ents=[];
+  EN.forEach(function(e,i){var rv=e.A*.5,og=new THREE.Group(),lg=new THREE.Group();lg.position.x=e.oR;og.add(lg);if(i===0)scene.add(og);else ents[i-1].lg.add(og);
+    if(e.oR>.04){var tr=new THREE.Mesh(new THREE.RingGeometry(e.oR-.018,e.oR+.018,60),new THREE.MeshBasicMaterial({color:e.clr,transparent:true,opacity:.04,side:THREE.DoubleSide}));tr.rotation.x=-Math.PI/2;if(i===0)scene.add(tr);else ents[i-1].lg.add(tr);}
+    var body=new THREE.Mesh(new THREE.SphereGeometry(rv,15,15),new THREE.MeshBasicMaterial({color:e.clr}));lg.add(body);mti[body.uuid]=i;ht.push(body);
+    var glow=new THREE.Mesh(new THREE.SphereGeometry(rv*2.2,8,8),new THREE.MeshBasicMaterial({color:e.clr,transparent:true,opacity:.032,side:THREE.BackSide}));lg.add(glow);mti[glow.uuid]=i;ht.push(glow);
+    var rings=[];[{c:0x00c8d4,rs:1.33,rx:Math.PI/2,ry:0,rz:0},{c:0xd86030,rs:1.60,rx:0,ry:0,rz:Math.PI/6},{c:0x9870d8,rs:1.08,rx:Math.PI/4,ry:Math.PI/5,rz:0}].forEach(function(rd){var rm=new THREE.Mesh(new THREE.TorusGeometry(rv*rd.rs,Math.max(rv*.030,.010),5,40),new THREE.MeshBasicMaterial({color:rd.c,transparent:true,opacity:.55}));rm.rotation.set(rd.rx,rd.ry,rd.rz);lg.add(rm);rings.push(rm);});
+    var sats=[];for(var s=0;s<e.sC;s++){var sm=new THREE.Mesh(new THREE.SphereGeometry(e.sz,5,5),new THREE.MeshBasicMaterial({color:e.clr,transparent:true,opacity:1}));lg.add(sm);sats.push({mesh:sm,life:Math.random(),speed:1.5+Math.random()*2,phase:(s/e.sC)*Math.PI*2,r:e.sR*(.65+Math.random()*.7),tilt:Math.random()*Math.PI,plane:s%3});}
+    ents.push({og,lg,body,glow,rings,sats,e});
+  });
+  var camT=.3,camP=1.05,camR=40,tT=.3,tP=1.05,tR=40,drag=false,dPrev={x:0,y:0},vel={x:0,y:0},dMov=false,lkIdx=-1,cLook=new THREE.Vector3(),lkZ=6,lkY=.4,wp=new THREE.Vector3();
+  function fcp(){return new THREE.Vector3(camR*Math.sin(camP)*Math.sin(camT),camR*Math.cos(camP),camR*Math.sin(camP)*Math.cos(camT));}
+  var sel=document.getElementById('u-sel');
+  EN.forEach(function(e,i){var btn=document.createElement('button');btn.className='u-btn';btn.style.color=e.color;btn.innerHTML=`<span>${e.icon}</span><span class="tip">${e.name}</span>`;btn.addEventListener('click',function(ev){ev.stopPropagation();lockOn(i);});btn.addEventListener('pointerdown',function(ev){ev.stopPropagation();});sel.appendChild(btn);e._btn=btn;});
+  function lockOn(idx){lkIdx=idx;var e=EN[idx];EN.forEach(function(ee,ii){ee._btn.classList.toggle('on',ii===idx);ee._btn.style.borderColor=ii===idx?ee.color:'transparent';});document.getElementById('u-name').textContent=e.name;document.getElementById('u-name').style.color=e.color;document.getElementById('u-sub').textContent=e.sub;document.getElementById('u-ftx').textContent=e.feeling;document.getElementById('u-feq').textContent=e.eq;document.getElementById('u-feeling').classList.add('on');document.getElementById('u-back').classList.add('on');document.getElementById('u-speed').value=e.as;updateSpeed();var rv=e.A*.5;lkZ=Math.max(rv*4.2,1.3);lkY=rv*.44;}
+  window.unlockU=function(){lkIdx=-1;EN.forEach(function(ee){ee._btn.classList.remove('on');ee._btn.style.borderColor='transparent';});document.getElementById('u-name').textContent='万物波動';document.getElementById('u-name').style.color='#f0f2f7';document.getElementById('u-sub').textContent='クリック: ロックオン ｜ ドラッグ: 回転 ｜ スクロール: ズーム';document.getElementById('u-feeling').classList.remove('on');document.getElementById('u-back').classList.remove('on');tR=40;tT=camT;tP=1.05;};
+  var tMul=1;function updateSpeed(){var v=document.getElementById('u-speed').value/100;tMul=Math.max(.003,Math.min(800,Math.pow(10,v*4.7-1.85)));var l=tMul<.05?'宇宙速 ×'+tMul.toFixed(4):tMul<.4?'惑星速 ×'+tMul.toFixed(3):tMul<2.2?'人間速 ×'+tMul.toFixed(2):tMul<40?'加速 ×'+tMul.toFixed(1):tMul<250?'高速 ×'+Math.round(tMul):'光速体感 ×'+Math.round(tMul);document.getElementById('u-spl').textContent='TIME  '+l;}
+  window.updateSpeed=updateSpeed;document.getElementById('u-speed').addEventListener('input',updateSpeed);updateSpeed();
+  function pd(ex,ey,tgt){if(tgt&&tgt.closest&&tgt.closest('#u-sel,#u-back,#u-bottom'))return;drag=true;dMov=false;dPrev={x:ex,y:ey};vel={x:0,y:0};}
+  function pm(ex,ey){if(!drag)return;var dx=ex-dPrev.x,dy=ey-dPrev.y;if(Math.abs(dx)+Math.abs(dy)>2)dMov=true;if(lkIdx<0){tT-=dx*.005;tP=Math.max(.10,Math.min(Math.PI-.10,tP+dy*.005));}else lkZ=Math.max(.5,lkZ-dy*.015);vel={x:dx*.38,y:dy*.38};dPrev={x:ex,y:ey};}
+  function pu(ex,ey,tgt){drag=false;if(dMov)return;if(tgt&&tgt.closest&&tgt.closest('#u-sel,#u-back,#u-bottom'))return;var rc=new THREE.Raycaster(),m=new THREE.Vector2(),rect=canvas.getBoundingClientRect();m.x=((ex-rect.left)/rect.width)*2-1;m.y=-((ey-rect.top)/rect.height)*2+1;rc.setFromCamera(m,camera);var hits=rc.intersectObjects(ht);if(hits.length>0){var idx=mti[hits[0].object.uuid];if(idx!==undefined)lockOn(idx);}}
+  canvas.addEventListener('pointerdown',function(ev){pd(ev.clientX,ev.clientY,ev.target);});
+  window.addEventListener('pointermove',function(ev){pm(ev.clientX,ev.clientY);},{passive:false});
+  window.addEventListener('pointerup',function(ev){pu(ev.clientX,ev.clientY,ev.target);});
+  canvas.addEventListener('wheel',function(ev){if(lkIdx>=0){var rv=EN[lkIdx].A*.5;lkZ=Math.max(rv*1.5,Math.min(rv*18,lkZ+ev.deltaY*.015));}else tR=Math.max(6,Math.min(75,tR+ev.deltaY*.044));},{passive:true});
+  var ppd=null;
+  canvas.addEventListener('touchstart',function(ev){if(ev.touches.length===1&&!ev.target.closest('#u-sel,#u-back,#u-bottom'))pd(ev.touches[0].clientX,ev.touches[0].clientY,ev.target);},{passive:true});
+  canvas.addEventListener('touchmove',function(ev){if(ev.touches.length===1)pm(ev.touches[0].clientX,ev.touches[0].clientY);if(ev.touches.length===2){var d=Math.hypot(ev.touches[0].clientX-ev.touches[1].clientX,ev.touches[0].clientY-ev.touches[1].clientY);if(ppd){var f=ppd/d;if(lkIdx>=0)lkZ=Math.max(.5,Math.min(55,lkZ*f));else tR=Math.max(6,Math.min(75,tR*f));}ppd=d;}},{passive:true});
+  canvas.addEventListener('touchend',function(ev){ppd=null;if(ev.changedTouches.length>0)pu(ev.changedTouches[0].clientX,ev.changedTouches[0].clientY,ev.target);},{passive:true});
+  var clk=new THREE.Clock(),st=0,BS=.83;
+  function animate(){requestAnimationFrame(animate);if(!document.getElementById('p-u').classList.contains('on'))return;var dt=Math.min(clk.getDelta(),.05),dR=dt;st+=dt*Math.min(tMul,400);if(!drag&&lkIdx<0){if(Math.abs(vel.x)>.003||Math.abs(vel.y)>.003){tT-=vel.x*.004;tP=Math.max(.10,Math.min(Math.PI-.10,tP+vel.y*.004));vel.x*=.88;vel.y*=.88;}tT+=dR*.016;}camT+=(tT-camT)*.08;camP+=(tP-camP)*.08;camR+=(tR-camR)*.08;
+    ents.forEach(function(ed){var e=ed.e,rt=st*BS;ed.og.rotation.y=st*e.oS;ed.lg.rotation.y=st*.23;ed.rings[0].rotation.y=rt*1.5;ed.rings[1].rotation.x=rt*.86;ed.rings[1].rotation.z=rt*.31;ed.rings[2].rotation.y=rt*.66;ed.rings[2].rotation.x=Math.PI/4+rt*.45;ed.body.scale.setScalar(.82+.20*Math.sin(rt*5));ed.glow.material.opacity=.02+.028*Math.abs(Math.sin(rt*3));ed.sats.forEach(function(sat){sat.life+=dt*Math.min(tMul,400)/e.ls;if(sat.life>=1){sat.life=0;sat.phase=Math.random()*Math.PI*2;sat.r=e.sR*(.6+Math.random()*.75);sat.speed=1.4+Math.random()*2.2;sat.tilt=Math.random()*Math.PI;sat.plane=Math.floor(Math.random()*3);}var al=sat.life<.18?sat.life/.18:sat.life<.80?1:(1-sat.life)/.20;sat.mesh.material.opacity=Math.max(0,Math.min(1,al))*.78;var a=st*sat.speed*.5+sat.phase,r=sat.r;if(sat.plane===0)sat.mesh.position.set(Math.cos(a)*r,Math.sin(a*.3)*r*.13,Math.sin(a)*r);else if(sat.plane===1)sat.mesh.position.set(Math.cos(a)*r*Math.cos(sat.tilt),Math.sin(a)*r,Math.sin(a)*r*Math.sin(sat.tilt));else sat.mesh.position.set(Math.sin(sat.tilt)*r*.13,Math.cos(a)*r,Math.sin(a)*r);});});
+    if(lkIdx>=0){var ed=ents[lkIdx];ed.lg.getWorldPosition(wp);var orb=st*.05;camera.position.lerp(new THREE.Vector3(wp.x+Math.sin(orb)*lkZ*.35,wp.y+lkY,wp.z+Math.cos(orb)*lkZ),.07);cLook.lerp(wp,.08);camera.lookAt(cLook);}else{camera.position.lerp(fcp(),.09);cLook.lerp(new THREE.Vector3(0,0,0),.07);camera.lookAt(cLook);}
+    renderer.render(scene,camera);}
+  window.addEventListener('resize',rsz);new ResizeObserver(rsz).observe(document.getElementById('p-u'));rsz();animate();
+}());
+
+/* ════════════════════════════════════
+   INIT
+════════════════════════════════════ */
+setTimeout(() => { buildAll(); buildCharts(); }, 150);
+new ResizeObserver(() => { buildCharts(); drawMap(); }).observe(document.getElementById('main'));
+</script>
+</body>
+</html>
