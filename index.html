@@ -1122,15 +1122,15 @@ body.lang-gr { font-family:var(--font-gr); }
       <div id="life-detail-side">
         <!-- Desktop detail nav (hidden on mobile) -->
         <div class="life-detail-nav">
-          <div class="ldt on" onclick="swLifeDetail('l1')" id="ldt-l1">設定</div>
+          <div class="ldt on" onclick="swLifeDetail('l5')" id="ldt-l5">チャット</div>
+          <div class="ldt" onclick="swLifeDetail('l1')" id="ldt-l1">設定</div>
           <div class="ldt" onclick="swLifeDetail('l2')" id="ldt-l2">プラン</div>
           <div class="ldt" onclick="swLifeDetail('l3')" id="ldt-l3">成長ガイド</div>
           <div class="ldt" onclick="swLifeDetail('l4')" id="ldt-l4">生命解析</div>
-          <div class="ldt" onclick="swLifeDetail('l5')" id="ldt-l5">チャット</div>
         </div>
 
         <!-- 設定 -->
-        <div id="sp-l1" class="sub-pane ldp ldp-on">
+        <div id="sp-l1" class="sub-pane ldp">
           <div class="panel-title">API ＆ ナレッジベース設定</div>
           <div class="panel-sub">接続先とデータ保存先を選択してください</div>
           <div id="lf-settings-form"></div>
@@ -1154,7 +1154,7 @@ body.lang-gr { font-family:var(--font-gr); }
         </div>
 
         <!-- チャット (desktop right panel) -->
-        <div id="sp-l5" class="sub-pane ldp ldp-chat">
+        <div id="sp-l5" class="sub-pane ldp ldp-chat ldp-on">
           <div class="life-chat-header">Ψ-生命体との対話</div>
           <div id="life-chat-log" class="life-chat-log">
             <div class="life-msg life-msg-ai">やあ。最近、なんかいいことあった？</div>
@@ -4103,6 +4103,8 @@ function initLifeTab(){
   if(lifeTabInited)return; lifeTabInited=true;
   AUTH.init(); LIFE_CFG.load();
   if(AUTH.user)showLifeMain(); else showLifeGate('login');
+  // Open chat pane first on desktop
+  if(window.innerWidth>=768) setTimeout(()=>swLifeDetail('l5'),150);
 }
 
 // ── SETTINGS UI ──
