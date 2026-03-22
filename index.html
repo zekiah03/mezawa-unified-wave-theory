@@ -1200,14 +1200,14 @@ body.lang-gr { font-family:var(--font-gr); }
   <div id="life-gate" class="life-gate">
     <div class="life-gate-inner">
       <div class="life-gate-logo">Ψ-生命体</div>
-      <div class="life-gate-sub">めざわ統一波動理論 × AI対話による生命体育成<br>座標が変容し続ける波動生命とともに成長する</div>
+      <div id="life-gate-sub" class="life-gate-sub">めざわ統一波動理論 × AI対話による生命体育成<br>座標が変容し続ける波動生命とともに成長する</div>
 
       <!-- Login -->
       <div id="lf-login">
         <input class="lf-input" id="lf-email" type="email" placeholder="メールアドレス" autocomplete="email">
         <input class="lf-input" id="lf-pw" type="password" placeholder="パスワード" autocomplete="current-password">
-        <button class="lf-btn" onclick="doLogin()">ログイン</button>
-        <div class="lf-switch">アカウントをお持ちでない方は <a onclick="showLifeGate('signup')">新規登録（最初の1ヶ月無料）</a></div>
+        <button id="lf-login-btn" class="lf-btn" onclick="doLogin()">ログイン</button>
+        <div class="lf-switch" id="lf-login-switch">アカウントをお持ちでない方は <a onclick="showLifeGate('signup')">新規登録（最初の1ヶ月無料）</a></div>
       </div>
 
       <!-- Signup -->
@@ -1216,9 +1216,9 @@ body.lang-gr { font-family:var(--font-gr); }
         <input class="lf-input" id="lf-su-age" type="number" placeholder="年齢（生命体の初期状態に反映）" min="1" max="120" style="width:100%">
         <input class="lf-input" id="lf-su-email" type="email" placeholder="メールアドレス" autocomplete="email">
         <input class="lf-input" id="lf-su-pw" type="password" placeholder="パスワード（6文字以上）" autocomplete="new-password">
-        <div class="lf-trial-note">最初の1ヶ月は無料でご利用いただけます</div>
-        <button class="lf-btn" onclick="doSignup()">新規登録して生命体を育てる</button>
-        <div class="lf-switch">既にアカウントをお持ちの方は <a onclick="showLifeGate('login')">ログイン</a></div>
+        <div id="lf-trial-note" class="lf-trial-note">最初の1ヶ月は無料でご利用いただけます</div>
+        <button id="lf-signup-btn" class="lf-btn" onclick="doSignup()">新規登録して生命体を育てる</button>
+        <div class="lf-switch" id="lf-signup-switch">既にアカウントをお持ちの方は <a onclick="showLifeGate('login')">ログイン</a></div>
       </div>
 
       <div id="lf-auth-err" class="lf-error"></div>
@@ -1227,7 +1227,7 @@ body.lang-gr { font-family:var(--font-gr); }
 
   <!-- ── MAIN (after login) ── -->
   <div id="life-main" class="life-main" style="display:none">
-    <div id="life-status-bar" class="life-status-bar">起動中...</div>
+    <div id="life-status-bar" class="life-status-bar">…</div>
 
     <!-- Mobile-only top nav -->
     <div class="sub-nav life-mob-nav">
@@ -1328,19 +1328,19 @@ body.lang-gr { font-family:var(--font-gr); }
   <!-- ── Add task modal ── -->
   <div id="cal-modal" class="cal-modal-overlay" style="display:none" onclick="if(event.target===this)closeCalModal()">
     <div class="cal-modal-box">
-      <div class="cal-modal-title">やることを追加</div>
+      <div id="cal-modal-title" class="cal-modal-title">やることを追加</div>
       <input id="cal-add-title" type="text" class="cal-modal-input" placeholder="タイトルを入力…" onkeydown="if(event.key==='Enter')submitCalTask()">
       <div class="cal-modal-row">
-        <label class="cal-modal-lbl">日付</label>
+        <label id="cal-lbl-date" class="cal-modal-lbl">日付</label>
         <input id="cal-add-date" type="date" class="cal-modal-input">
       </div>
       <div class="cal-modal-row">
-        <label class="cal-modal-lbl">時間</label>
+        <label id="cal-lbl-time" class="cal-modal-lbl">時間</label>
         <input id="cal-add-time" type="time" class="cal-modal-input">
       </div>
       <div class="cal-modal-actions">
-        <button class="cal-modal-btn-primary" onclick="submitCalTask()">追加</button>
-        <button class="cal-modal-btn-ghost" onclick="closeCalModal()">キャンセル</button>
+        <button id="cal-modal-submit" class="cal-modal-btn-primary" onclick="submitCalTask()">追加</button>
+        <button id="cal-modal-cancel" class="cal-modal-btn-ghost" onclick="closeCalModal()">キャンセル</button>
       </div>
     </div>
   </div>
@@ -1359,8 +1359,8 @@ body.lang-gr { font-family:var(--font-gr); }
 <div id="p-g" class="pn scroll" style="background:var(--bg)">
   <div class="gs-wrap">
     <div class="gs-header">
-      <div class="gs-title">人生シミュレーション</div>
-      <div class="gs-sub">目標と期日を設定すると、Ψ-生命体の状態をもとに AI が最適な習慣を提案します</div>
+      <div id="gs-main-title" class="gs-title">人生シミュレーション</div>
+      <div id="gs-main-sub" class="gs-sub">目標と期日を設定すると、Ψ-生命体の状態をもとに AI が最適な習慣を提案します</div>
     </div>
 
     <!-- Ψ生命体の現在状態バッジ -->
@@ -1371,7 +1371,7 @@ body.lang-gr { font-family:var(--font-gr); }
       <input id="gs-goal-input" class="gs-add-input" type="text" placeholder="目標を入力… 例：TOEIC 900点を取る、体重を5kg落とす"
         onkeydown="if(event.key==='Enter')submitGoal()">
       <input id="gs-goal-date" class="gs-add-date" type="date">
-      <button class="gs-add-btn" onclick="submitGoal()">追加</button>
+      <button id="gs-add-btn" class="gs-add-btn" onclick="submitGoal()">追加</button>
     </div>
 
     <!-- 目標リスト -->
@@ -1401,7 +1401,7 @@ const LANG_DATA = {
     qSub: '問うことで理論が深まる — 新しい問いを追加し続ける',
     wTitle: '名言・洞察録',
     wSub: 'めざわ理論から生まれる言葉',
-    tabs: {u:'宇宙', t:'理論', e:'実験', n:'意識', m:'学問', l:'生命'},
+    tabs: {u:'宇宙', t:'理論', e:'実験', n:'意識', m:'学問', l:'生命', h:'習慣', g:'人生'},
     uName: '万物波動',
     uSub: 'クリック: ロックオン ｜ ドラッグ: 回転 ｜ スクロール: ズーム',
     uBack: '← フリーカメラ',
@@ -1414,6 +1414,54 @@ const LANG_DATA = {
     nTitle: '意識と時間',
     mTitle: '学問との統合',
     lTitle: '生命体',
+    sidebar: ['宇宙 3D','理論','実験','意識','学問','Ψ-生命体','習慣','人生シミュレーション'],
+    lifeNav: {l5:'チャット', l1:'設定', l2:'プラン', l3:'成長ガイド', l4:'生命解析', l0:'観察'},
+    phaseLabel: {fluid:'流体', gas:'気体', solid:'固体', burning:'燃焼', frozen:'凍結'},
+    phaseDesc: {fluid:'粘性·表面張力', gas:'高速·拡散', solid:'結晶·剛体', burning:'燃焼·カオス', frozen:'凍結·結晶'},
+    phaseLabelLong: {fluid:'流動相', gas:'気体相', solid:'固体相', burning:'燃焼相', frozen:'凍結相'},
+    cal: {
+      dayNames: ['日','月','火','水','木','金','土'],
+      today: '今日',
+      efKeys: {W:'W↑', heatLevel:'熱↑', quality:'質↑', cogLoad:'集中↓', hostility:'敵意↓', socialDensity:'社会↑'},
+      barText: '習慣を記録すると生命体に影響します',
+      barLogin: 'ログインすると生命体と連携します',
+      modalTitle: 'やることを追加',
+      titlePlaceholder: 'タイトルを入力…',
+      lblDate: '日付',
+      lblTime: '時間',
+      modalAdd: '追加',
+      modalCancel: 'キャンセル',
+      taskRequired: 'タイトルと日付を入力してください',
+      prevWeek: '前の週',
+      nextWeek: '次の週',
+    },
+    goal: {
+      title: '人生シミュレーション',
+      sub: '目標と期日を設定すると、Ψ-生命体の状態をもとに AI が最適な習慣を提案します',
+      addBtn: '追加',
+      placeholder: '目標を入力… 例：TOEIC 900点を取る、体重を5kg落とす',
+      analyze: 'AIに提案してもらう',
+      reanalyze: '再分析',
+      added: '追加済み',
+      addToHabit: '＋ 習慣に追加',
+      habitsTitle: '推奨習慣',
+      emptyIcon: '🎯',
+      emptyText: 'まだ目標がありません。<br>上のフォームから最初の目標を追加しましょう。',
+      loading: 'Ψ-生命体が目標を解析しています…',
+      daysLeft: (n) => `残り${n}日`,
+      daysToday: '今日が期日',
+      daysOver: (n) => `${n}日超過`,
+      deadline: '期日',
+      errorNoKey: 'APIキーが設定されていません。生命タブ → 設定 からAPIキーを追加してください。',
+      required: '目標を入力してください',
+      requiredDate: '達成期日を選択してください',
+      addedMsg: (name) => `「${name}」を習慣に追加しました`,
+      parseFail: 'レスポンスの解析に失敗しました',
+      errorPrefix: 'エラー: ',
+      phLabel: {fluid:'流動相', gas:'気体相', solid:'固体相', burning:'燃焼相', frozen:'凍結相'},
+    },
+    lifeFormType: '生命体タイプ',
+    lifeGateSub: 'めざわ統一波動理論 × AI対話による生命体育成<br>座標が変容し続ける波動生命とともに成長する',
   },
   en: {
     tTitle: 'Mezawa Unified Wave Theory v2.3',
@@ -1422,7 +1470,7 @@ const LANG_DATA = {
     qSub: 'Questions deepen the theory — keep adding new ones',
     wTitle: 'Insights & Aphorisms',
     wSub: 'Words born from Mezawa Theory',
-    tabs: {u:'Universe', t:'Theory', e:'Exp.', n:'Noesis', m:'Disc.', l:'Life'},
+    tabs: {u:'Universe', t:'Theory', e:'Exp.', n:'Noesis', m:'Disc.', l:'Life', h:'Habits', g:'Life Sim.'},
     uName: 'Universal Wave Field',
     uSub: 'Click: Lock-On ｜ Drag: Rotate ｜ Scroll: Zoom',
     uBack: '← Free Camera',
@@ -1435,6 +1483,54 @@ const LANG_DATA = {
     nTitle: 'Consciousness & Time',
     mTitle: 'Integration with Disciplines',
     lTitle: 'Life Form',
+    sidebar: ['Universe 3D','Theory','Experiment','Noesis','Disciplines','Ψ-Life Form','Habits','Life Simulation'],
+    lifeNav: {l5:'Chat', l1:'Settings', l2:'Plan', l3:'Growth Guide', l4:'Bio Analysis', l0:'Observe'},
+    phaseLabel: {fluid:'Fluid', gas:'Gas', solid:'Solid', burning:'Burning', frozen:'Frozen'},
+    phaseDesc: {fluid:'Viscosity·Surface Tension', gas:'Fast·Diffuse', solid:'Crystal·Rigid', burning:'Combustion·Chaos', frozen:'Frozen·Crystal'},
+    phaseLabelLong: {fluid:'Fluid Phase', gas:'Gas Phase', solid:'Solid Phase', burning:'Burning Phase', frozen:'Frozen Phase'},
+    cal: {
+      dayNames: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+      today: 'Today',
+      efKeys: {W:'W↑', heatLevel:'Heat↑', quality:'Quality↑', cogLoad:'Focus↓', hostility:'Stress↓', socialDensity:'Social↑'},
+      barText: 'Log habits to influence your life form',
+      barLogin: 'Log in to sync with your life form',
+      modalTitle: 'Add a Task',
+      titlePlaceholder: 'Enter title…',
+      lblDate: 'Date',
+      lblTime: 'Time',
+      modalAdd: 'Add',
+      modalCancel: 'Cancel',
+      taskRequired: 'Please enter a title and date',
+      prevWeek: 'Previous week',
+      nextWeek: 'Next week',
+    },
+    goal: {
+      title: 'Life Simulation',
+      sub: 'Set goals and deadlines — AI suggests optimal habits based on your Ψ-Life Form',
+      addBtn: 'Add',
+      placeholder: 'Enter a goal… e.g. Run a marathon, Learn Spanish',
+      analyze: 'Get AI Suggestions',
+      reanalyze: 'Re-analyze',
+      added: 'Added',
+      addToHabit: '＋ Add to Habits',
+      habitsTitle: 'Recommended Habits',
+      emptyIcon: '🎯',
+      emptyText: 'No goals yet.<br>Add your first goal using the form above.',
+      loading: 'Ψ-Life Form is analyzing your goal…',
+      daysLeft: (n) => `${n} days left`,
+      daysToday: 'Due today',
+      daysOver: (n) => `${n} days overdue`,
+      deadline: 'Deadline',
+      errorNoKey: 'No API key set. Go to Life tab → Settings to add your API key.',
+      required: 'Please enter a goal',
+      requiredDate: 'Please select a deadline',
+      addedMsg: (name) => `"${name}" added to habits`,
+      parseFail: 'Failed to parse response',
+      errorPrefix: 'Error: ',
+      phLabel: {fluid:'Fluid Phase', gas:'Gas Phase', solid:'Solid Phase', burning:'Burning Phase', frozen:'Frozen Phase'},
+    },
+    lifeFormType: 'Life Form Type',
+    lifeGateSub: 'Mezawa Unified Wave Theory × AI Dialogue Life Form<br>Grow alongside a wave-life form whose coordinates continuously transform',
   },
   gr: {
     tTitle: 'Θεωρία τοῦ Παγκοσμίου Κύματος (Mezawa) v2.3',
@@ -1443,7 +1539,7 @@ const LANG_DATA = {
     qSub: 'Τὸ ἐρωτᾶν βαθύνει τὴν ἐπιστήμην',
     wTitle: 'Ἀποφθέγματα καὶ Γνῶσις',
     wSub: 'Λόγοι γεννηθέντες ἐκ τῆς θεωρίας',
-    tabs: {u:'Κόσμος', t:'Θεωρία', e:'Πεῖρα', n:'Νόησις', m:'Μάθησ.', l:'Ζωή'},
+    tabs: {u:'Κόσμος', t:'Θεωρία', e:'Πεῖρα', n:'Νόησις', m:'Μάθησ.', l:'Ζωή', h:'Συνήθ.', g:'Βίος'},
     uName: 'Κοσμικὸν Κῦμα',
     uSub: 'Κλικ: Κλείδ. ｜ Σύρσιμο: Στροφή ｜ Κύλιση: Ζουμ',
     uBack: '← Ἐλεύθερα',
@@ -1456,6 +1552,54 @@ const LANG_DATA = {
     nTitle: 'Συνείδησις καὶ Χρόνος',
     mTitle: 'Ἐπιστῆμαι καὶ Θεωρία',
     lTitle: 'Ζωντανὸν Ὄν',
+    sidebar: ['Κόσμος 3D','Θεωρία','Πεῖρα','Νόησις','Μαθήματα','Ψ-Ζωντ. Ὄν','Συνήθ.','Βίος Προσομ.'],
+    lifeNav: {l5:'Συνομ.', l1:'Ρυθμίσ.', l2:'Σχέδιο', l3:'Ὁδηγὸς', l4:'Βιο-Ἀνάλ.', l0:'Παρατ.'},
+    phaseLabel: {fluid:'Ὑγρόν', gas:'Ἀέριον', solid:'Στερεόν', burning:'Καύσις', frozen:'Πάγος'},
+    phaseDesc: {fluid:'Ἱξωδ.·Ἐπιφ.Τάσις', gas:'Ταχύ·Διάχυσις', solid:'Κρυστ.·Ἄκαμπτ.', burning:'Καύσις·Χάος', frozen:'Πάγος·Κρυστ.'},
+    phaseLabelLong: {fluid:'Ὑγρὰ Φάσις', gas:'Ἀέρια Φάσις', solid:'Στερεὰ Φάσις', burning:'Φάσις Καύσεως', frozen:'Παγωμένη Φάσις'},
+    cal: {
+      dayNames: ['Κυρ','Δευτ','Τρ','Τετ','Πέμ','Παρ','Σαβ'],
+      today: 'Σήμερον',
+      efKeys: {W:'W↑', heatLevel:'Θερμ.↑', quality:'Ποιότ.↑', cogLoad:'Συγκ.↓', hostility:'Ἄγχ.↓', socialDensity:'Κοιν.↑'},
+      barText: 'Καταγράφετε συνήθειες γιὰ ἐπίδραση στὸ ὄν',
+      barLogin: 'Συνδεθεῖτε γιὰ σύνδεση μὲ τὸ ζωντανὸ ὄν',
+      modalTitle: 'Προσθήκη ἔργου',
+      titlePlaceholder: 'Εἰσάγετε τίτλο…',
+      lblDate: 'Ἡμερομηνία',
+      lblTime: 'Ὥρα',
+      modalAdd: 'Προσθήκη',
+      modalCancel: 'Ἀκύρωση',
+      taskRequired: 'Εἰσάγετε τίτλο καὶ ἡμερομηνία',
+      prevWeek: 'Προηγούμενη ἑβδομάδα',
+      nextWeek: 'Ἑπόμενη ἑβδομάδα',
+    },
+    goal: {
+      title: 'Προσομοίωσις Βίου',
+      sub: 'Ὁρίσατε στόχους καὶ προθεσμίες — ΑΙ προτείνει συνήθειες βάσει τοῦ Ψ-ζωντανοῦ ὄντος',
+      addBtn: 'Προσθήκη',
+      placeholder: 'Εἰσάγετε στόχο…',
+      analyze: 'Προτάσεις ΑΙ',
+      reanalyze: 'Ἐπανα-ἀνάλυση',
+      added: 'Προστέθηκε',
+      addToHabit: '＋ Εἰς Συνήθειες',
+      habitsTitle: 'Προτεινόμεναι Συνήθειαι',
+      emptyIcon: '🎯',
+      emptyText: 'Δὲν ὑπάρχουν στόχοι.<br>Προσθέστε τὸν πρῶτο σας στόχο ἄνωθεν.',
+      loading: 'Τὸ Ψ-ζωντανὸ ὄν ἀναλύει τὸν στόχον…',
+      daysLeft: (n) => `${n} ἡμέρες`,
+      daysToday: 'Σήμερον λήγει',
+      daysOver: (n) => `${n} ἡμέρες ὑπέρβαση`,
+      deadline: 'Προθεσμία',
+      errorNoKey: 'Δὲν ὑπάρχει κλειδὶ API. Μεταβεῖτε εἰς Ζωή → Ρυθμίσεις.',
+      required: 'Εἰσάγετε στόχο',
+      requiredDate: 'Ἐπιλέξτε προθεσμία',
+      addedMsg: (name) => `"${name}" προστέθηκε εἰς τὰς συνηθείας`,
+      parseFail: 'Ἀποτυχία ἀνάλυσης ἀπαντήσεως',
+      errorPrefix: 'Σφάλμα: ',
+      phLabel: {fluid:'Ὑγρὰ Φάσις', gas:'Ἀέρια Φάσις', solid:'Στερεὰ Φάσις', burning:'Φάσις Καύσεως', frozen:'Παγωμένη Φάσις'},
+    },
+    lifeFormType: 'Τύπος Ζωντανοῦ Ὄντος',
+    lifeGateSub: 'Θεωρία Mezawa × ΑΙ Διάλογος<br>Ἀναπτύσσεσθε μαζὶ μὲ τὸ κυματικὸ ζωντανὸ ὄν',
   }
 };
 
@@ -1810,7 +1954,20 @@ const PROOF_EDGES = [
    LANGUAGE
 ════════════════════════════════════ */
 let currentLang = 'ja';
-function _setText(id, val){ const el=document.getElementById(id); if(el&&val) el.textContent=val; }
+function _setText(id, val){ const el=document.getElementById(id); if(el&&val!==undefined) el.textContent=val; }
+function _setAttr(id, attr, val){ const el=document.getElementById(id); if(el&&val) el.setAttribute(attr,val); }
+function _setPlaceholder(id, val){ const el=document.getElementById(id); if(el&&val) el.placeholder=val; }
+
+/* Translation helper — returns value from current LANG_DATA, falls back to ja */
+function t(key){
+  const d=LANG_DATA[currentLang]||LANG_DATA.ja;
+  const keys=key.split('.');
+  let v=d;
+  for(const k of keys){v=v&&v[k];}
+  if(v===undefined){const jd=LANG_DATA.ja;let jv=jd;for(const k of keys){jv=jv&&jv[k];}return jv;}
+  return v;
+}
+
 function setLang(lang) {
   currentLang = lang;
   document.body.className = 'lang-' + lang;
@@ -1837,12 +1994,92 @@ function setLang(lang) {
   // Universe speed labels
   if(d.uSlow){ const els=document.querySelectorAll('.u-sl'); if(els[0]) els[0].textContent=d.uSlow; }
   if(d.uFast){ const els=document.querySelectorAll('.u-sl'); if(els[1]) els[1].textContent=d.uFast; }
-  // Tab labels (top nav)
+  // Tab labels (top nav) — all 8 tabs
   if(d.tabs){
-    ['u','t','e','n','m','l'].forEach(k=>{
+    ['u','t','e','n','m','l','h','g'].forEach(k=>{
       const tab=document.querySelector(`#tab-${k} .tab-lbl`);
       if(tab && d.tabs[k]) tab.textContent = d.tabs[k];
     });
+  }
+  // Sidebar title attributes
+  if(d.sidebar){
+    document.querySelectorAll('.si').forEach((el,i)=>{
+      if(d.sidebar[i]) el.title=d.sidebar[i];
+    });
+  }
+  // Life detail nav tabs (desktop right panel)
+  if(d.lifeNav){
+    Object.entries(d.lifeNav).forEach(([k,v])=>{
+      const el=document.getElementById('ldt-'+k);
+      if(el) el.textContent=v;
+    });
+  }
+  // Mobile life sub-nav
+  if(d.lifeNav){
+    Object.entries(d.lifeNav).forEach(([k,v])=>{
+      const el=document.getElementById('st-'+k);
+      if(el) el.textContent=v;
+    });
+  }
+  // Calendar: today button
+  if(d.cal){
+    _setText('cal-today-btn', d.cal.today) ||
+      (() => { const el=document.querySelector('.cal-today-btn'); if(el) el.textContent=d.cal.today; })();
+    // Modal labels
+    _setText('cal-modal-title', d.cal.modalTitle);
+    _setPlaceholder('cal-add-title', d.cal.titlePlaceholder);
+    _setText('cal-lbl-date', d.cal.lblDate);
+    _setText('cal-lbl-time', d.cal.lblTime);
+    _setText('cal-modal-submit', d.cal.modalAdd);
+    _setText('cal-modal-cancel', d.cal.modalCancel);
+    // Nav button titles
+    const prev=document.querySelector('.cal-nav-btn:first-child');
+    const next=document.querySelector('.cal-nav-btn:last-of-type');
+    if(prev) prev.title=d.cal.prevWeek;
+    if(next) next.title=d.cal.nextWeek;
+  }
+  // Goal tab header
+  if(d.goal){
+    _setText('gs-main-title', d.goal.title);
+    _setText('gs-main-sub', d.goal.sub);
+    _setPlaceholder('gs-goal-input', d.goal.placeholder);
+    _setText('gs-add-btn', d.goal.addBtn);
+  }
+  // Life gate (login/signup form)
+  {
+    const isEn=lang==='en', isGr=lang==='gr';
+    const el=document.getElementById('life-gate-sub');
+    if(el) el.innerHTML=d.lifeGateSub||'めざわ統一波動理論 × AI対話による生命体育成<br>座標が変容し続ける波動生命とともに成長する';
+    _setPlaceholder('lf-email', isEn?'Email address':isGr?'Ἠλ. διεύθυνση':'メールアドレス');
+    _setPlaceholder('lf-pw', isEn?'Password':isGr?'Κωδικός':'パスワード');
+    _setText('lf-login-btn', isEn?'Log In':isGr?'Σύνδεση':'ログイン');
+    _setPlaceholder('lf-su-name', isEn?'Name (optional)':isGr?'Ὄνομα (προαιρ.)':'名前（任意）');
+    _setPlaceholder('lf-su-age', isEn?'Age (affects initial life form state)':isGr?'Ἡλικία (ἀρχικὴ κατάσταση)':'年齢（生命体の初期状態に反映）');
+    _setPlaceholder('lf-su-email', isEn?'Email address':isGr?'Ἠλ. διεύθυνση':'メールアドレス');
+    _setPlaceholder('lf-su-pw', isEn?'Password (6+ characters)':isGr?'Κωδικός (6+ χαρ.)':'パスワード（6文字以上）');
+    _setText('lf-trial-note', isEn?'First month is free':isGr?'Πρῶτος μήνας δωρεάν':'最初の1ヶ月は無料でご利用いただけます');
+    _setText('lf-signup-btn', isEn?'Sign Up & Grow Your Life Form':isGr?'Εγγραφή & Ανάπτυξη':'新規登録して生命体を育てる');
+    const lls=document.getElementById('lf-login-switch');
+    if(lls) lls.innerHTML=isEn?`Don't have an account? <a onclick="showLifeGate('signup')">Sign up (first month free)</a>`:
+      isGr?`Δεν ἔχετε λογαριασμό; <a onclick="showLifeGate('signup')">Εγγραφή</a>`:
+      `アカウントをお持ちでない方は <a onclick="showLifeGate('signup')">新規登録（最初の1ヶ月無料）</a>`;
+    const lss=document.getElementById('lf-signup-switch');
+    if(lss) lss.innerHTML=isEn?`Already have an account? <a onclick="showLifeGate('login')">Log in</a>`:
+      isGr?`Ἔχετε ἤδη λογαριασμό; <a onclick="showLifeGate('login')">Σύνδεση</a>`:
+      `既にアカウントをお持ちの方は <a onclick="showLifeGate('login')">ログイン</a>`;
+  }
+  // Life chat placeholder
+  _setPlaceholder('life-input', lang==='en'?'Message your life form…':lang==='gr'?'Μήνυμα πρὸς τὸ ζωντανὸ ὄν…':'生命体に語りかける...');
+  // Re-render dynamic content if already inited
+  if(typeof calInited!=='undefined' && calInited) renderCalendar();
+  if(typeof goalTabInited!=='undefined' && goalTabInited) renderGoalTab();
+  // Re-render life panels if inited
+  if(typeof lifeTabInited!=='undefined' && lifeTabInited){
+    if(typeof renderLifeSettings==='function') renderLifeSettings();
+    if(typeof renderLifePlan==='function') renderLifePlan();
+    if(typeof renderLifeGuide==='function') renderLifeGuide();
+    if(typeof renderBioParams==='function') renderBioParams();
+    if(typeof updateLifeStatus==='function') updateLifeStatus();
   }
   // Re-render quotes and questions for language
   renderQuotes();
@@ -3158,8 +3395,10 @@ const LIFE=(function(){
     burning:{hue:14, sat:.92,lit:.68,opLo:.32,opHi:.70,szLo:.22,szHi:.55,damp:.90,turb:2.2, pull:.002,rep:.6,  repR:20,bound:148,connD:42, emMul:.60,bH:0x180400,bOp:.06},
     frozen: {hue:202,sat:.70,lit:.80,opLo:.78,opHi:.97,szLo:.50,szHi:1.1,damp:.52,turb:.015,pull:.030,rep:2.2, repR:10,bound:66, connD:36, emMul:.30,bH:0x001122,bOp:.18},
   };
-  const PHASE_LABEL={fluid:'流体',gas:'気体',solid:'固体',burning:'燃焼',frozen:'凍結'};
-  const PHASE_DESC={fluid:'粘性·表面張力',gas:'高速·拡散',solid:'結晶·剛体',burning:'燃焼·カオス',frozen:'凍結·結晶'};
+  function getPhaseLabel(){ return (typeof currentLang!=='undefined'&&LANG_DATA[currentLang]?.phaseLabel)||{fluid:'流体',gas:'気体',solid:'固体',burning:'燃焼',frozen:'凍結'}; }
+  function getPhaseDesc(){ return (typeof currentLang!=='undefined'&&LANG_DATA[currentLang]?.phaseDesc)||{fluid:'粘性·表面張力',gas:'高速·拡散',solid:'結晶·剛体',burning:'燃焼·カオス',frozen:'凍結·結晶'}; }
+  const PHASE_LABEL=new Proxy({},{get(_,k){ return getPhaseLabel()[k]; }});
+  const PHASE_DESC=new Proxy({},{get(_,k){ return getPhaseDesc()[k]; }});
 
   // ── Life form comparison data (microbe → cosmic scale) ──
   const LIFE_FORMS=[
@@ -3496,7 +3735,7 @@ const LIFE=(function(){
         const top=matches[0].lf;
         const phN=PHASE_LABEL[currentPhase]||currentPhase;
         lifeFormDiv.innerHTML=
-          `<div style="font:600 10px 'Noto Sans JP',sans-serif;color:#88c8e8;letter-spacing:.12em;margin-bottom:5px">生命体タイプ</div>`+
+          `<div style="font:600 10px 'Noto Sans JP',sans-serif;color:#88c8e8;letter-spacing:.12em;margin-bottom:5px">${(typeof currentLang!=='undefined'&&LANG_DATA[currentLang]?.lifeFormType)||'生命体タイプ'}</div>`+
           `<div style="font:bold 16px 'Noto Sans JP',sans-serif;color:#e8f4ff;line-height:1.2;margin-bottom:2px">${top.ja}</div>`+
           `<div style="font:11px sans-serif;color:#6699bb;margin-bottom:6px">${top.en} &nbsp;·&nbsp; ${phN}相</div>`+
           `<div style="font:11px 'Noto Sans JP',sans-serif;color:#8aaabb;line-height:1.6;max-width:190px">${top.desc}</div>`;
@@ -3901,13 +4140,21 @@ function updateLifeStatus(){
   const s=LIFE.getStatus();const u=AUTH.user;
   const bar=document.getElementById('life-status-bar');if(!bar)return;
   const isPrem=AUTH.isPremium();
-  const planTxt=isPrem?(AUTH.trialDaysLeft()>0?`試用残${AUTH.trialDaysLeft()}日`:'プレミアム'):'無料';
-  const remain=isPrem?'∞':`残${5-(u?.dailyMsgs||0)}回`;
+  const isEn=currentLang==='en', isGr=currentLang==='gr';
+  const trialLabel=isEn?`Trial: ${AUTH.trialDaysLeft()}d left`:isGr?`Δοκ. ${AUTH.trialDaysLeft()}ημ.`:`試用残${AUTH.trialDaysLeft()}日`;
+  const premLabel=isEn?'Premium':isGr?'Premium':'プレミアム';
+  const freeLabel=isEn?'Free':isGr?'Δωρεάν':'無料';
+  const planTxt=isPrem?(AUTH.trialDaysLeft()>0?trialLabel:premLabel):freeLabel;
+  const remainN=5-(u?.dailyMsgs||0);
+  const remain=isPrem?'∞':(isEn?`${remainN} left`:isGr?`${remainN} απομ.`:`残${remainN}回`);
+  const cellsLbl=isEn?'Cells':isGr?'Κύτταρα':'細胞';
+  const todayLbl=isEn?'Today':isGr?'Σήμερα':'今日';
   const c=LIFE_STATE.coords;
-  const envS=ENV_STATE.summary();bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; 細胞 <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · 今日${remain}`:''}  &nbsp;<span style="color:var(--dim);font-size:10px"> · ${envS}</span>`;
+  const envS=ENV_STATE.summary();bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; ${cellsLbl} <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · ${todayLbl} ${remain}`:''}  &nbsp;<span style="color:var(--dim);font-size:10px"> · ${envS}</span>`;
   // Update name txt
   const ntxt=document.getElementById('life-name-txt');
-  if(ntxt)ntxt.textContent=u?.lifeName?`✦ ${u.lifeName}`:'✏ 名前をつける';
+  const namePrompt=isEn?'✏ Give a name':isGr?'✏ Δῶστε ὄνομα':'✏ 名前をつける';
+  if(ntxt)ntxt.textContent=u?.lifeName?`✦ ${u.lifeName}`:namePrompt;
 }
 
 // ── AUTH UI ──
@@ -3915,53 +4162,77 @@ function updateLifeStatus(){
 function renderLifeGuide(){
   const el=document.getElementById('lf-guide-content');if(!el)return;
   const u=AUTH.user;
+  const isEn=currentLang==='en', isGr=currentLang==='gr';
+  const lg={
+    title:     isEn?'Growth Guide':isGr?'Ὁδηγὸς Ἀνάπτυξης':'成長ガイド',
+    sub:       isEn?'How to grow your life form & future integration plans':isGr?'Πῶς νὰ ἀναπτύξετε τὸ ζωντανὸ ὄν':'生命体を育てる方法と今後の統合計画',
+    chatTitle: isEn?'💬 Growth Through Conversation':isGr?'💬 Ἀνάπτυξη μέσω Συνομιλίας':'💬 会話による成長',
+    growWords:  isEn?'Words that grow the life form':isGr?'Λέξεις ποὺ αὐξάνουν':'大きく成長する言葉',
+    growList:  isEn?'Love·Beauty·Light·Hope·Growth·Joy·Life — <span style="color:var(--G)">+2–3 cells</span><br>Wave·Quantum·Phase·W·∿·Ψ — <span style="color:var(--P)">β₀ rise + growth</span><br>Theory·Discovery·Equation·Proof·Universe — <span style="color:var(--T)">W value rises</span>':
+               isGr?'Ἀγάπη·Ὀμορφιά·Φῶς·Ἐλπίδα·Ἀνάπτυξη — <span style="color:var(--G)">+2–3 κύτταρα</span><br>Κῦμα·Κβάντο·Φάσις·W·∿·Ψ — <span style="color:var(--P)">β₀↑ + ἀνάπτυξη</span>':
+               '愛・美・光・希望・成長・喜び・生命 — <span style="color:var(--G)">+2〜3 細胞</span><br>波動・量子・位相・巻き数・干積・Ψ — <span style="color:var(--P)">β₀上昇 + 成長</span><br>理論・発見・数式・証明・宇宙 — <span style="color:var(--T)">W値上昇</span>',
+    shrinkWords: isEn?'Words that shrink the life form':isGr?'Λέξεις ποὺ συρρικνώνουν':'収縮する言葉',
+    shrinkList:  isEn?'Fear·Darkness·Death·Pain·Hatred — <span style="color:var(--R)">energy loss</span>':
+                 isGr?'Φόβος·Σκοτάδι·Θάνατος·Πόνος·Μίσος — <span style="color:var(--R)">ἀπώλεια ἐνέργειας</span>':
+                 '恐怖・暗黒・死・痛み・憎しみ — <span style="color:var(--R)">エネルギー低下</span>',
+    autoTitle:  isEn?'🧬 Autonomous Growth':isGr?'🧬 Αὐτόνομη Ἀνάπτυξη':'🧬 自律成長',
+    autoList:   isEn?`Every 5s: autonomous division toward target cell count<br>Daily conversation: W accumulates, evolution approaches<br>Theory updates: new equations directly drive growth<br>Age: starts at ${u?.age||'?'} → initial cells ${u?.cells||'?'} · W=${u?.W_total?.toFixed(1)||'?'}`:
+                isGr?`Κάθε 5δλ: αὐτόνομη διαίρεση<br>Καθημερινὴ συνομιλία: W αὐξάνεται<br>Ἐνημερώσεις θεωρίας: ἄμεση ἀνάπτυξη<br>Ἡλικία: ξεκινᾷ ${u?.age||'?'} → κύτταρα ${u?.cells||'?'} · W=${u?.W_total?.toFixed(1)||'?'}`:
+                `毎5秒: 目標細胞数に向かって自律分裂<br>毎日の会話: W値が積み上がり進化に近づく<br>理論アップデート時: 方程式の増加が直接成長に反映<br>年齢: ${u?.age||'?'}歳スタート → 初期細胞数 ${u?.cells||'?'} · W=${u?.W_total?.toFixed(1)||'?'}`,
+    extTitle:   isEn?'🌐 Import External Data':isGr?'🌐 Εισαγωγὴ Δεδομένων':'🌐 外部データ取り込み',
+    extSub:     isEn?'Paste social media posts, AI conversations, or news articles — the life form absorbs and grows from them':
+                isGr?'Επικολλήστε ανάρτηση κοιν. μέσων ή AI συνομιλίες — τὸ ζωντανὸ ὄν τὰ ἀπορροφᾷ':
+                'SNSの投稿・AIとの会話・ニュース記事などを貼り付けると、生命体がその内容を吸収して成長します',
+    extPh:      isEn?'Paste SNS posts, AI conversations, news articles here…':isGr?'Επικολλήστε ἐδῶ κείμενο…':'ここにSNSの投稿・AIとの会話・ニュース記事などをペースト...',
+    snsBtn:     isEn?'Import as Social Post':isGr?'Ώς ανάρτηση':'SNS投稿として取り込む',
+    aiBtn:      isEn?'Import as AI Conversation':isGr?'Ώς συνομιλία AI':'AI会話として取り込む',
+    futureTitle:isEn?'🔗 Planned Integrations':isGr?'🔗 Μελλοντικὲς Συνδέσεις':'🔗 今後の統合予定',
+    ready:      isEn?'In progress':isGr?'Σὲ ἑτοιμασία':'準備中',
+    planned:    isEn?'Planned':isGr?'Σχεδιασμένο':'計画中',
+  };
+  const integrations=[
+    {icon:'🍎',name:'Apple Health',desc:isEn?'Steps·Heart rate·Sleep affect cell activity':isGr?'Βήματα·Καρδιά·Ύπνος':'歩数・心拍・睡眠が細胞の活性化に影響',status:lg.ready},
+    {icon:'🥗',name:isEn?'Diet Tracker':isGr?'Διατροφή':'食事管理',desc:isEn?'Nutrition balance links to energy values':isGr?'Ισορροπία θρεπτικών':'栄養バランスがエネルギー値に連動',status:lg.ready},
+    {icon:'🐦',name:'X (Twitter)',desc:isEn?'Timeline sentiment analysis reflected in wave':isGr?'Ανάλυση συναισθήματος':'タイムラインの感情分析が波形に反映',status:lg.planned},
+    {icon:'📸',name:'Instagram',desc:isEn?'Viewed content influences mood and hue':isGr?'Περιεχόμενο επηρεάζει τὴν χρωματική':' 閲覧コンテンツが気分・色相に影響',status:lg.planned},
+    {icon:'🤖',name:isEn?'AI Chat History':isGr?'Ιστορικό AI':'AI会話履歴',desc:isEn?'Auto-import Claude/ChatGPT dialogues':isGr?'Αὐτόματη εισαγωγὴ Claude/ChatGPT':'Claude/ChatGPTとの対話を自動取り込み',status:lg.planned},
+    {icon:'😴',name:isEn?'Sleep Data':isGr?'Δεδομένα ύπνου':'睡眠データ',desc:isEn?'Sleep quality affects τy (subjective time)':isGr?'Ποιότητα ύπνου επηρεάζει τὸ τy':'睡眠の質がτy（主観時間）に影響',status:lg.planned},
+  ];
   el.innerHTML=`
-<div class="panel-title">成長ガイド</div>
-<div class="panel-sub">生命体を育てる方法と今後の統合計画</div>
+<div class="panel-title">${lg.title}</div>
+<div class="panel-sub">${lg.sub}</div>
 
-<div class="sec-title">💬 会話による成長</div>
+<div class="sec-title">${lg.chatTitle}</div>
 <div class="card w" style="margin-bottom:12px;font-size:12px;line-height:1.9">
-  <div style="margin-bottom:6px"><b style="color:var(--T)">大きく成長する言葉</b></div>
-  愛・美・光・希望・成長・喜び・生命 — <span style="color:var(--G)">+2〜3 細胞</span><br>
-  波動・量子・位相・巻き数・干積・Ψ — <span style="color:var(--P)">β₀上昇 + 成長</span><br>
-  理論・発見・数式・証明・宇宙 — <span style="color:var(--T)">W値上昇</span><br>
-  <div style="margin-top:8px"><b style="color:var(--O)">収縮する言葉</b></div>
-  恐怖・暗黒・死・痛み・憎しみ — <span style="color:var(--R)">エネルギー低下</span>
+  <div style="margin-bottom:6px"><b style="color:var(--T)">${lg.growWords}</b></div>
+  ${lg.growList}<br>
+  <div style="margin-top:8px"><b style="color:var(--O)">${lg.shrinkWords}</b></div>
+  ${lg.shrinkList}
 </div>
 
-<div class="sec-title">🧬 自律成長</div>
+<div class="sec-title">${lg.autoTitle}</div>
 <div class="card w" style="margin-bottom:12px;font-size:12px;line-height:1.9">
-  毎5秒: 目標細胞数に向かって自律分裂<br>
-  毎日の会話: W値が積み上がり進化に近づく<br>
-  理論アップデート時: 方程式の増加が直接成長に反映<br>
-  年齢: ${u?.age||'?'}歳スタート → 初期細胞数 ${u?.cells||'?'} · W=${u?.W_total?.toFixed(1)||'?'}
+  ${lg.autoList}
 </div>
 
-<div class="sec-title">🌐 外部データ取り込み</div>
+<div class="sec-title">${lg.extTitle}</div>
 <div style="margin-bottom:12px">
-  <div style="font-size:11px;color:var(--dim);margin-bottom:6px">SNSの投稿・AIとの会話・ニュース記事などを貼り付けると、生命体がその内容を吸収して成長します</div>
-  <textarea id="lf-ingest-txt" style="width:100%;height:90px;border:1px solid var(--bdr);border-radius:6px;padding:8px;font-size:11px;resize:vertical;box-sizing:border-box;background:var(--card)" placeholder="ここにSNSの投稿・AIとの会話・ニュース記事などをペースト..."></textarea>
+  <div style="font-size:11px;color:var(--dim);margin-bottom:6px">${lg.extSub}</div>
+  <textarea id="lf-ingest-txt" style="width:100%;height:90px;border:1px solid var(--bdr);border-radius:6px;padding:8px;font-size:11px;resize:vertical;box-sizing:border-box;background:var(--card)" placeholder="${lg.extPh}"></textarea>
   <div style="display:flex;gap:8px;margin-top:6px">
-    <button class="lf-btn" style="max-width:160px" onclick="ingestExternalData('sns')">SNS投稿として取り込む</button>
-    <button class="lf-btn" style="max-width:180px;background:var(--P)" onclick="ingestExternalData('ai')">AI会話として取り込む</button>
+    <button class="lf-btn" style="max-width:160px" onclick="ingestExternalData('sns')">${lg.snsBtn}</button>
+    <button class="lf-btn" style="max-width:180px;background:var(--P)" onclick="ingestExternalData('ai')">${lg.aiBtn}</button>
   </div>
   <div id="lf-ingest-result" style="font-size:11px;color:var(--G);margin-top:6px;min-height:16px"></div>
 </div>
 
-<div class="sec-title">🔗 今後の統合予定</div>
+<div class="sec-title">${lg.futureTitle}</div>
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:12px">
-${[
-  {icon:'🍎',name:'Apple Health',desc:'歩数・心拍・睡眠が細胞の活性化に影響',status:'準備中'},
-  {icon:'🥗',name:'食事管理',desc:'栄養バランスがエネルギー値に連動',status:'準備中'},
-  {icon:'🐦',name:'X (Twitter)',desc:'タイムラインの感情分析が波形に反映',status:'計画中'},
-  {icon:'📸',name:'Instagram',desc:'閲覧コンテンツが気分・色相に影響',status:'計画中'},
-  {icon:'🤖',name:'AI会話履歴',desc:'Claude/ChatGPTとの対話を自動取り込み',status:'計画中'},
-  {icon:'😴',name:'睡眠データ',desc:'睡眠の質がτy（主観時間）に影響',status:'計画中'},
-].map(it=>`<div class="card w" style="padding:10px;font-size:11px">
+${integrations.map(it=>`<div class="card w" style="padding:10px;font-size:11px">
   <div style="font-size:16px">${it.icon}</div>
   <div style="font-weight:700;color:var(--head);margin:3px 0">${it.name}</div>
   <div style="color:var(--dim);line-height:1.5">${it.desc}</div>
-  <div style="margin-top:5px;font-size:10px;color:${it.status==='準備中'?'var(--T)':'var(--dim)'}">● ${it.status}</div>
+  <div style="margin-top:5px;font-size:10px;color:${it.status===lg.ready?'var(--T)':'var(--dim)'}">● ${it.status}</div>
 </div>`).join('')}
 </div>`;
 }
@@ -3969,7 +4240,12 @@ ${[
 // ── BIO PARAMS DASHBOARD ──
 function renderBioParams(){
   const el=document.getElementById('lf-bio-content');if(!el)return;
-  if(!AUTH.user){el.innerHTML='<div class="panel-title">生命解析</div><div class="panel-sub">ログインが必要です</div>';return;}
+  const isEn=currentLang==='en', isGr=currentLang==='gr';
+  if(!AUTH.user){
+    const loginReq=isEn?'Login required':isGr?'Ἀπαιτεῖται σύνδεση':'ログインが必要です';
+    const bioTitle=isEn?'Bio Analysis':isGr?'Βιο-Ανάλυση':'生命解析';
+    el.innerHTML=`<div class="panel-title">${bioTitle}</div><div class="panel-sub">${loginReq}</div>`;return;
+  }
   const c=LIFE_STATE.coords;
   const bp=computeBioParams(c);
   function bar(val,max,color){
@@ -3978,121 +4254,157 @@ function renderBioParams(){
   }
   function pct(val){return Math.round(parseFloat(val)*100)+'%';}
   const stg=LIFE_STATE.stage;
+  const bp_lbl={
+    title:     isEn?'🔬 Bio Analysis Dashboard':isGr?'🔬 Πίνακας Βιο-Ανάλυσης':'🔬 生命解析ダッシュボード',
+    sub:       isEn?`11D coordinates → Bio params · Stage ${stg.n} · ${stg.label}`:isGr?`11D συντεταγμένες → Βιο-παράμ. · Στάδιο ${stg.n}·${stg.label}`:`11次元座標 → 生物学的パラメータ · Stage ${stg.n} · ${stg.label}`,
+    snap:      isEn?'Coordinate Snapshot':isGr?'Στιγμιότυπο Συντεταγμένων':'座標スナップショット',
+    s1:        isEn?'① Physical Parameters':isGr?'① Φυσικὲς Παράμετροι':'① 物理的パラメータ',
+    s2:        isEn?'② Dynamics & Motion':isGr?'② Δυναμικὴ & Κίνηση':'② 力学・運動パラメータ',
+    s3:        isEn?'③ Thermal & Energy':isGr?'③ Θερμικὴ & Ἐνέργεια':'③ 熱・エネルギー系',
+    s4:        isEn?'④ Chemical & Sensory':isGr?'④ Χημικὴ & Αἰσθητήρια':'④ 化学・感覚系',
+    s5:        isEn?'⑤ Electrical & Signals':isGr?'⑤ Ἠλεκτρικὴ & Σήματα':'⑤ 電気・信号系',
+    s6:        isEn?'⑥ Temporal Parameters':isGr?'⑥ Χρονικὲς Παράμετροι':'⑥ 時間変化パラメータ',
+    s7c:       isEn?'⑦ Internal State':isGr?'⑦ Ἐσωτερικὴ Κατάσταση':'⑦ 内部状態',
+    size:      isEn?'Size':isGr?'Μέγεθος':'大きさ', density:isEn?'Density':isGr?'Πυκνότητα':'密度',
+    rigidity:  isEn?'Rigidity':isGr?'Ακαμψία':'硬さ', viscosity:isEn?'Viscosity':isGr?'Ιξωδία':'粘性',
+    transparency:isEn?'Transparency':isGr?'Διαφάνεια':'透明度', hue:isEn?'Hue':isGr?'Χρωματική':'色相',
+    speed:     isEn?'Speed':isGr?'Ταχύτητα':'速さ', vibration:isEn?'Vibration':isGr?'Δόνηση':'振動',
+    pressure:  isEn?'Pressure':isGr?'Πίεση':'圧力', balance:isEn?'Balance':isGr?'Ισορροπία':'バランス',
+    momentum:  isEn?'Momentum':isGr?'Ορμή':'運動量',
+    temp:      isEn?'Temperature':isGr?'Θερμοκρασία':'体温', metabolism:isEn?'Metabolism':isGr?'Μεταβολισμός':'代謝率',
+    energyEff: isEn?'Energy Efficiency':isGr?'Ενεργειακή Αποδοτ.':'エネルギー効率', atp:isEn?'ATP Production':isGr?'Παραγωγή ATP':'ATP産生',
+    thermoReg: isEn?'Thermoregulation':isGr?'Θερμορρύθμιση':'体温調節',
+    pH:        'pH', water:isEn?'Water Content':isGr?'Περιεκτικ. νερού':'水分量', osmolarity:isEn?'Osmolarity':isGr?'Ωσμωτικότητα':'浸透圧',
+    gasExch:   isEn?'Gas Exchange':isGr?'Ανταλλαγή αερίων':'ガス交換', sensorySens:isEn?'Sensory Sensitivity':isGr?'Αισθητική ευαισθ.':'感覚感度',
+    membranePot:isEn?'Membrane Potential':isGr?'Μεμβρανικό δυναμ.':'膜電位', brainWave:isEn?'Brain Wave':isGr?'Εγκεφαλ. κύμα':'脳波',
+    signalSpeed:isEn?'Signal Speed':isGr?'Ταχύτητα σήματος':'信号速度', actionPot:isEn?'Action Potential Threshold':isGr?'Κατώφλι δυναμ. ενέργ.':'活動電位閾値',
+    neuralPlast:isEn?'Neural Plasticity':isGr?'Νευρική Πλαστικ.':'神経可塑性',
+    heartbeat: isEn?'Heart Rate':isGr?'Καρδιακός ρυθμός':'心拍数', breathing:isEn?'Breathing':isGr?'Αναπνοή':'呼吸数',
+    growthRate:isEn?'Growth Rate':isGr?'Ρυθμ. ανάπτυξης':'成長速度', agingRate:isEn?'Aging Rate':isGr?'Ρυθμ. γήρανσης':'老化速度',
+    circadian: isEn?'Circadian Rhythm':isGr?'Κιρκαδιανός ρυθμός':'概日リズム',
+    stress:    isEn?'Stress':isGr?'Στρες':'ストレス', immune:isEn?'Immunity':isGr?'Ανοσία':'免疫力',
+    hormone:   isEn?'Hormones':isGr?'Ορμόνες':'ホルモン', neural:isEn?'Neural Activity':isGr?'Νευρική Δραστ.':'神経活性',
+    homeostasis:isEn?'Homeostasis':isGr?'Ομοιόσταση':'恒常性',
+    refresh:   isEn?'🔄 Refresh':isGr?'🔄 Ανανέωση':'🔄 更新',
+    breathUnit:isEn?'/min':isGr?'/λεπτ.':'/分',
+  };
   el.innerHTML=`
-<div class="panel-title">🔬 生命解析ダッシュボード</div>
-<div class="panel-sub">11次元座標 → 生物学的パラメータ · Stage ${stg.n} · ${stg.label}</div>
+<div class="panel-title">${bp_lbl.title}</div>
+<div class="panel-sub">${bp_lbl.sub}</div>
 
 <div style="background:var(--card);border:1px solid var(--b);border-radius:8px;padding:12px;margin-bottom:10px">
-  <div style="font-size:11px;color:var(--dim);margin-bottom:8px">座標スナップショット</div>
+  <div style="font-size:11px;color:var(--dim);margin-bottom:8px">${bp_lbl.snap}</div>
   <div style="font-size:11px;color:var(--T);font-family:monospace;line-height:2">
     φ=${c[0].toFixed(3)} · W=${c[1].toFixed(1)} · τx=${c[2].toFixed(2)} · τy=${c[3].toFixed(2)} · τz=${c[4].toFixed(2)}<br>
     D=${c[5].toFixed(2)} · Ω=${c[6].toFixed(3)} · R=${c[7].toFixed(3)} · β₀=${c[8].toFixed(4)} · η_c=${c[9].toFixed(4)} · Δφ=${c[10].toFixed(2)}°
   </div>
 </div>
 
-<!-- ① 物理的パラメータ -->
+<!-- ① Physical -->
 <div style="background:var(--card);border:1px solid #6e7ef133;border-radius:8px;padding:12px;margin-bottom:8px">
-  <div style="font-size:12px;font-weight:700;color:#6e7ef1;margin-bottom:8px">① 物理的パラメータ</div>
+  <div style="font-size:12px;font-weight:700;color:#6e7ef1;margin-bottom:8px">${bp_lbl.s1}</div>
   <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
-    <div>大きさ (D): <b style="color:var(--T)">${bp.size}</b></div>
-    <div>密度 (β₀·φ): <b style="color:var(--T)">${bp.density}</b></div>
-    <div>硬さ: <b style="color:var(--T)">${bp.rigidity}</b></div>
-    <div>粘性: <b style="color:var(--T)">${bp.viscosity}</b></div>
-    <div>透明度: <b style="color:var(--T)">${pct(bp.transparency)}</b></div>
-    <div>色相: <b style="color:hsl(${bp.hue},${bp.saturation}%,60%)">${bp.hue}°</b></div>
+    <div>${bp_lbl.size} (D): <b style="color:var(--T)">${bp.size}</b></div>
+    <div>${bp_lbl.density} (β₀·φ): <b style="color:var(--T)">${bp.density}</b></div>
+    <div>${bp_lbl.rigidity}: <b style="color:var(--T)">${bp.rigidity}</b></div>
+    <div>${bp_lbl.viscosity}: <b style="color:var(--T)">${bp.viscosity}</b></div>
+    <div>${bp_lbl.transparency}: <b style="color:var(--T)">${pct(bp.transparency)}</b></div>
+    <div>${bp_lbl.hue}: <b style="color:hsl(${bp.hue},${bp.saturation}%,60%)">${bp.hue}°</b></div>
   </div>
   ${bar(bp.rigidity,1,'#6e7ef1')}
 </div>
 
-<!-- ② 力学・運動 -->
+<!-- ② Dynamics -->
 <div style="background:var(--card);border:1px solid #4ecdc433;border-radius:8px;padding:12px;margin-bottom:8px">
-  <div style="font-size:12px;font-weight:700;color:#4ecdc4;margin-bottom:8px">② 力学・運動パラメータ</div>
+  <div style="font-size:12px;font-weight:700;color:#4ecdc4;margin-bottom:8px">${bp_lbl.s2}</div>
   <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
-    <div>速さ (Ω·τz): <b style="color:var(--T)">${bp.speed}</b></div>
-    <div>振動 (Ω·φ): <b style="color:var(--T)">${bp.vibration}</b></div>
-    <div>圧力: <b style="color:var(--T)">${bp.pressure}</b></div>
-    <div>バランス: <b style="color:var(--T)">${pct(bp.balance)}</b></div>
-    <div>運動量: <b style="color:var(--T)">${bp.momentum}</b></div>
+    <div>${bp_lbl.speed} (Ω·τz): <b style="color:var(--T)">${bp.speed}</b></div>
+    <div>${bp_lbl.vibration} (Ω·φ): <b style="color:var(--T)">${bp.vibration}</b></div>
+    <div>${bp_lbl.pressure}: <b style="color:var(--T)">${bp.pressure}</b></div>
+    <div>${bp_lbl.balance}: <b style="color:var(--T)">${pct(bp.balance)}</b></div>
+    <div>${bp_lbl.momentum}: <b style="color:var(--T)">${bp.momentum}</b></div>
   </div>
   ${bar(bp.balance,1,'#4ecdc4')}
 </div>
 
-<!-- ③ 熱・エネルギー -->
+<!-- ③ Thermal -->
 <div style="background:var(--card);border:1px solid ${parseFloat(bp.temperature)>37.2?'#ff6b6b':'#f9a82533'}33;border-radius:8px;padding:12px;margin-bottom:8px">
-  <div style="font-size:12px;font-weight:700;color:${parseFloat(bp.temperature)>37.2?'#ff6b6b':'#f9a825'};margin-bottom:8px">③ 熱・エネルギー系</div>
+  <div style="font-size:12px;font-weight:700;color:${parseFloat(bp.temperature)>37.2?'#ff6b6b':'#f9a825'};margin-bottom:8px">${bp_lbl.s3}</div>
   <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
-    <div>体温: <b style="color:${parseFloat(bp.temperature)>37.5?'#ff6b6b':parseFloat(bp.temperature)<36?'#4ecdc4':'var(--G)'}">${bp.temperature}°C</b></div>
-    <div>代謝率: <b style="color:var(--T)">${bp.metabolism}</b></div>
-    <div>エネルギー効率: <b style="color:var(--T)">${pct(bp.energyEff)}</b></div>
-    <div>ATP産生: <b style="color:var(--T)">${bp.atp}</b></div>
-    <div>体温調節: <b style="color:var(--T)">${pct(bp.thermoReg)}</b></div>
+    <div>${bp_lbl.temp}: <b style="color:${parseFloat(bp.temperature)>37.5?'#ff6b6b':parseFloat(bp.temperature)<36?'#4ecdc4':'var(--G)'}">${bp.temperature}°C</b></div>
+    <div>${bp_lbl.metabolism}: <b style="color:var(--T)">${bp.metabolism}</b></div>
+    <div>${bp_lbl.energyEff}: <b style="color:var(--T)">${pct(bp.energyEff)}</b></div>
+    <div>${bp_lbl.atp}: <b style="color:var(--T)">${bp.atp}</b></div>
+    <div>${bp_lbl.thermoReg}: <b style="color:var(--T)">${pct(bp.thermoReg)}</b></div>
   </div>
   ${bar(bp.energyEff,1,'#f9a825')}
 </div>
 
-<!-- ④ 化学・感覚 -->
+<!-- ④ Chemical -->
 <div style="background:var(--card);border:1px solid #a8e6cf33;border-radius:8px;padding:12px;margin-bottom:8px">
-  <div style="font-size:12px;font-weight:700;color:#a8e6cf;margin-bottom:8px">④ 化学・感覚系</div>
+  <div style="font-size:12px;font-weight:700;color:#a8e6cf;margin-bottom:8px">${bp_lbl.s4}</div>
   <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
-    <div>pH: <b style="color:var(--T)">${bp.pH}</b></div>
-    <div>水分量: <b style="color:var(--T)">${bp.waterContent}%</b></div>
-    <div>浸透圧: <b style="color:var(--T)">${bp.osmolarity} mOsm</b></div>
-    <div>ガス交換: <b style="color:var(--T)">${pct(bp.gasExchange)}</b></div>
-    <div>感覚感度: <b style="color:var(--T)">${pct(bp.sensorySens)}</b></div>
+    <div>${bp_lbl.pH}: <b style="color:var(--T)">${bp.pH}</b></div>
+    <div>${bp_lbl.water}: <b style="color:var(--T)">${bp.waterContent}%</b></div>
+    <div>${bp_lbl.osmolarity}: <b style="color:var(--T)">${bp.osmolarity} mOsm</b></div>
+    <div>${bp_lbl.gasExch}: <b style="color:var(--T)">${pct(bp.gasExchange)}</b></div>
+    <div>${bp_lbl.sensorySens}: <b style="color:var(--T)">${pct(bp.sensorySens)}</b></div>
   </div>
   ${bar(bp.sensorySens,1,'#a8e6cf')}
 </div>
 
-<!-- ⑤ 電気・信号 -->
+<!-- ⑤ Electrical -->
 <div style="background:var(--card);border:1px solid var(--P)33;border-radius:8px;padding:12px;margin-bottom:8px">
-  <div style="font-size:12px;font-weight:700;color:var(--P);margin-bottom:8px">⑤ 電気・信号系</div>
+  <div style="font-size:12px;font-weight:700;color:var(--P);margin-bottom:8px">${bp_lbl.s5}</div>
   <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
-    <div>膜電位: <b style="color:var(--T)">${bp.membranePot} mV</b></div>
-    <div>脳波: <b style="color:var(--T)">${bp.brainWave} Hz</b></div>
-    <div>信号速度: <b style="color:var(--T)">${bp.signalSpeed} m/s</b></div>
-    <div>活動電位閾値: <b style="color:var(--T)">${pct(bp.actionPotThresh)}</b></div>
-    <div>神経可塑性: <b style="color:var(--T)">${pct(bp.neuralPlast)}</b></div>
+    <div>${bp_lbl.membranePot}: <b style="color:var(--T)">${bp.membranePot} mV</b></div>
+    <div>${bp_lbl.brainWave}: <b style="color:var(--T)">${bp.brainWave} Hz</b></div>
+    <div>${bp_lbl.signalSpeed}: <b style="color:var(--T)">${bp.signalSpeed} m/s</b></div>
+    <div>${bp_lbl.actionPot}: <b style="color:var(--T)">${pct(bp.actionPotThresh)}</b></div>
+    <div>${bp_lbl.neuralPlast}: <b style="color:var(--T)">${pct(bp.neuralPlast)}</b></div>
   </div>
   ${bar(bp.neuralPlast,1,'var(--P)')}
 </div>
 
-<!-- ⑥ 時間変化 -->
+<!-- ⑥ Temporal -->
 <div style="background:var(--card);border:1px solid #ffd93d33;border-radius:8px;padding:12px;margin-bottom:8px">
-  <div style="font-size:12px;font-weight:700;color:#ffd93d;margin-bottom:8px">⑥ 時間変化パラメータ</div>
+  <div style="font-size:12px;font-weight:700;color:#ffd93d;margin-bottom:8px">${bp_lbl.s6}</div>
   <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
-    <div>心拍数: <b style="color:var(--T)">${bp.heartbeat} BPM</b></div>
-    <div>呼吸数: <b style="color:var(--T)">${bp.breathing} /分</b></div>
-    <div>成長速度: <b style="color:var(--T)">${bp.growthRate}</b></div>
-    <div>老化速度: <b style="color:var(--T)">${bp.agingRate}</b></div>
-    <div>概日リズム: <b style="color:var(--T)">${pct(bp.circadian)}</b></div>
+    <div>${bp_lbl.heartbeat}: <b style="color:var(--T)">${bp.heartbeat} BPM</b></div>
+    <div>${bp_lbl.breathing}: <b style="color:var(--T)">${bp.breathing} ${bp_lbl.breathUnit}</b></div>
+    <div>${bp_lbl.growthRate}: <b style="color:var(--T)">${bp.growthRate}</b></div>
+    <div>${bp_lbl.agingRate}: <b style="color:var(--T)">${bp.agingRate}</b></div>
+    <div>${bp_lbl.circadian}: <b style="color:var(--T)">${pct(bp.circadian)}</b></div>
   </div>
   ${bar(bp.growthRate,3,'#ffd93d')}
 </div>
 
-<!-- ⑦ 内部状態 -->
+<!-- ⑦ Internal State -->
 <div style="background:var(--card);border:1px solid ${bp._stress>0.6?'#ff6b6b':'#51cf6633'}33;border-radius:8px;padding:12px;margin-bottom:8px">
-  <div style="font-size:12px;font-weight:700;color:${bp._stress>0.6?'#ff6b6b':'#51cf66'};margin-bottom:8px">⑦ 内部状態</div>
+  <div style="font-size:12px;font-weight:700;color:${bp._stress>0.6?'#ff6b6b':'#51cf66'};margin-bottom:8px">${bp_lbl.s7c}</div>
   <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
-    <div>ストレス: <b style="color:${bp._stress>0.5?'#ff6b6b':'var(--G)'}">${Math.round(bp._stress*100)}%</b></div>
-    <div>免疫力: <b style="color:var(--T)">${pct(bp.immune)}</b></div>
-    <div>ホルモン: <b style="color:var(--T)">${pct(bp.hormone)}</b></div>
-    <div>神経活性: <b style="color:var(--T)">${pct(bp.neural)}</b></div>
-    <div>恒常性: <b style="color:var(--T)">${pct(bp.homeostasis)}</b></div>
+    <div>${bp_lbl.stress}: <b style="color:${bp._stress>0.5?'#ff6b6b':'var(--G)'}">${Math.round(bp._stress*100)}%</b></div>
+    <div>${bp_lbl.immune}: <b style="color:var(--T)">${pct(bp.immune)}</b></div>
+    <div>${bp_lbl.hormone}: <b style="color:var(--T)">${pct(bp.hormone)}</b></div>
+    <div>${bp_lbl.neural}: <b style="color:var(--T)">${pct(bp.neural)}</b></div>
+    <div>${bp_lbl.homeostasis}: <b style="color:var(--T)">${pct(bp.homeostasis)}</b></div>
   </div>
   ${bar(1-bp._stress,1,'#51cf66')}
 </div>
 
 <div style="font-size:10px;color:var(--dim);text-align:center;margin-top:12px;padding:8px;border-top:1px solid var(--b)">
-  数式: size=D·(1+W/100)·e^(-0.1/τx) · pH=7+(β₀-0.5)·2 · temp=36.5+(τz-1)·3 · heartbeat=60+Ω·40 BPM<br>
-  <button onclick="renderBioParams()" style="margin-top:6px;padding:4px 12px;background:var(--P);color:#000;border:none;border-radius:4px;cursor:pointer;font-size:10px">🔄 更新</button>
+  size=D·(1+W/100)·e^(-0.1/τx) · pH=7+(β₀-0.5)·2 · temp=36.5+(τz-1)·3 · heartbeat=60+Ω·40 BPM<br>
+  <button onclick="renderBioParams()" style="margin-top:6px;padding:4px 12px;background:var(--P);color:#000;border:none;border-radius:4px;cursor:pointer;font-size:10px">${bp_lbl.refresh}</button>
 </div>`;
 }
 
 function ingestExternalData(type){
   const txt=document.getElementById('lf-ingest-txt')?.value.trim();
   const res=document.getElementById('lf-ingest-result');
-  if(!txt){if(res)res.textContent='テキストを入力してください';return;}
-  if(!AUTH.user){if(res)res.textContent='ログインが必要です';return;}
+  const noTxt=currentLang==='en'?'Please enter text':currentLang==='gr'?'Εἰσάγετε κείμενο':'テキストを入力してください';
+  const noLogin=currentLang==='en'?'Login required':currentLang==='gr'?'Ἀπαιτεῖται σύνδεση':'ログインが必要です';
+  if(!txt){if(res)res.textContent=noTxt;return;}
+  if(!AUTH.user){if(res)res.textContent=noLogin;return;}
   const sent=analyzeSentiment(txt);
   // Length bonus
   const lb=Math.min(4,Math.floor(txt.length/150));
@@ -4101,7 +4413,11 @@ function ingestExternalData(type){
   if(type==='sns') sent.score=Math.max(sent.score,1);
   LIFE.applyResponse(txt,sent);
   const cells=LIFE.getStatus().cells;
-  if(res)res.textContent=`✓ ${type==='ai'?'AI会話':'SNS投稿'} ${txt.length}文字を取り込みました — 感情:${sent.score>0?'+':''}${sent.score} / 細胞数: ${cells}`;
+  const typeLabel=type==='ai'?(currentLang==='en'?'AI conversation':currentLang==='gr'?'AI συνομιλία':'AI会話'):(currentLang==='en'?'Social post':currentLang==='gr'?'Ανάρτηση':'SNS投稿');
+  const charsLabel=currentLang==='en'?'chars':currentLang==='gr'?'χαρ.':'文字';
+  const emotionLabel=currentLang==='en'?'Emotion':currentLang==='gr'?'Συναίσθ.':'感情';
+  const cellsLabel=currentLang==='en'?'Cells':currentLang==='gr'?'Κύτταρα':'細胞数';
+  if(res)res.textContent=`✓ ${typeLabel} ${txt.length}${charsLabel} — ${emotionLabel}:${sent.score>0?'+':''}${sent.score} / ${cellsLabel}: ${cells}`;
   document.getElementById('lf-ingest-txt').value='';
   AUTH.recordChat();updateLifeStatus();
   swSub('l','l0');setTimeout(()=>swSub('l','l3'),800);
@@ -4136,8 +4452,9 @@ function doSignup(){
   const pw=document.getElementById('lf-su-pw').value;
   const name=document.getElementById('lf-su-name').value.trim();
   const age=parseInt(document.getElementById('lf-su-age').value)||25;
-  if(!email||!pw){document.getElementById('lf-auth-err').textContent='メールアドレスとパスワードを入力してください';return;}
-  if(pw.length<6){document.getElementById('lf-auth-err').textContent='パスワードは6文字以上';return;}
+  const errEl=document.getElementById('lf-auth-err');
+  if(!email||!pw){if(errEl)errEl.textContent=currentLang==='en'?'Please enter email and password':currentLang==='gr'?'Εἰσάγετε ἠλ. διεύθυνση καὶ κωδικό':'メールアドレスとパスワードを入力してください';return;}
+  if(pw.length<6){if(errEl)errEl.textContent=currentLang==='en'?'Password must be 6+ characters':currentLang==='gr'?'Κωδικός 6+ χαρ.':'パスワードは6文字以上';return;}
   const r=AUTH.signup(email,pw,name,age);
   if(r.err){document.getElementById('lf-auth-err').textContent=r.err;return;}
   showLifeMain();
@@ -4243,6 +4560,19 @@ const CALENDAR_STATE=(function(){
   function weekLabel(){
     const days=getWeekDates();
     const s=days[0],e=days[6];
+    const lang=typeof currentLang!=='undefined'?currentLang:'ja';
+    if(lang==='en'){
+      const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const sm=months[s.getMonth()],em=months[e.getMonth()];
+      if(s.getMonth()===e.getMonth())return`${sm} ${s.getDate()}–${e.getDate()}, ${s.getFullYear()}`;
+      return`${sm} ${s.getDate()} – ${em} ${e.getDate()}, ${s.getFullYear()}`;
+    }
+    if(lang==='gr'){
+      const months=['Ἰαν','Φεβ','Μαρ','Ἀπρ','Μαΐ','Ἰουν','Ἰουλ','Αὐγ','Σεπ','Ὀκτ','Νοε','Δεκ'];
+      const sm=months[s.getMonth()],em=months[e.getMonth()];
+      if(s.getMonth()===e.getMonth())return`${sm} ${s.getDate()}–${e.getDate()}, ${s.getFullYear()}`;
+      return`${sm} ${s.getDate()} – ${em} ${e.getDate()}, ${s.getFullYear()}`;
+    }
     const sm=s.getMonth()+1,em=e.getMonth()+1;
     if(sm===em)return`${s.getFullYear()}年${sm}月 ${s.getDate()}日–${e.getDate()}日`;
     return`${s.getFullYear()}年${sm}月${s.getDate()}日 – ${em}月${e.getDate()}日`;
@@ -4284,12 +4614,12 @@ function renderCalendar(){
   // Life effect bar
   if(bar&&AUTH.user){
     const ef=HABIT_STATE.getTodayEffect();
-    const efKeys={W:'W↑',heatLevel:'熱↑',quality:'質↑',cogLoad:'集中↓',hostility:'敵意↓',socialDensity:'社会↑'};
+    const efKeys=(t('cal.efKeys'))||{W:'W↑',heatLevel:'熱↑',quality:'質↑',cogLoad:'集中↓',hostility:'敵意↓',socialDensity:'社会↑'};
     const badges=Object.entries(ef).filter(([,v])=>Math.abs(v)>.005)
       .map(([k,v])=>`<span class="cal-life-badge">${efKeys[k]||k} ${v>0?'+':''}${v.toFixed(2)}</span>`).join('');
-    bar.innerHTML=badges||'<span style="font:11px sans-serif;color:var(--dim)">習慣を記録すると生命体に影響します</span>';
+    bar.innerHTML=badges||`<span style="font:11px sans-serif;color:var(--dim)">${t('cal.barText')||'習慣を記録すると生命体に影響します'}</span>`;
   } else if(bar){
-    bar.innerHTML='<span style="font:11px sans-serif;color:var(--dim)">ログインすると生命体と連携します</span>';
+    bar.innerHTML=`<span style="font:11px sans-serif;color:var(--dim)">${t('cal.barLogin')||'ログインすると生命体と連携します'}</span>`;
   }
 
   const todayStr=CALENDAR_STATE.getWeekDates()[0].constructor===Date?
@@ -4323,7 +4653,7 @@ function renderCalendar(){
 
     return`<div class="cal-day">
       <div class="cal-day-hd${isToday?' is-today':''}${isWeekend?' is-weekend':''}">
-        <div class="cal-day-name">${CALENDAR_STATE.DAY_NAMES[d.getDay()]}</div>
+        <div class="cal-day-name">${(t('cal.dayNames')||CALENDAR_STATE.DAY_NAMES)[d.getDay()]}</div>
         <div class="cal-day-num">${d.getDate()}</div>
         <div class="cal-day-dot"></div>
       </div>
@@ -4374,7 +4704,7 @@ function submitCalTask(){
   const title=(document.getElementById('cal-add-title')?.value||'').trim();
   const date=document.getElementById('cal-add-date')?.value||_calPendingDate;
   const time=document.getElementById('cal-add-time')?.value||'';
-  if(!title||!date){notify('タイトルと日付を入力してください');return;}
+  if(!title||!date){notify(t('cal.taskRequired')||'タイトルと日付を入力してください');return;}
   CALENDAR_STATE.addTask(title,date,time);
   closeCalModal();
   renderCalendar();
@@ -4423,37 +4753,46 @@ function renderGoalTab(){
     const W=c[1]||0;
     const phase=typeof currentPhase!=='undefined'?currentPhase:'—';
     const ev=ENV_STATE?.e||{};
-    const phLabel={'fluid':'流動相','gas':'気体相','solid':'固体相','burning':'燃焼相','frozen':'凍結相'};
+    const phLabel=t('goal.phLabel')||{'fluid':'流動相','gas':'気体相','solid':'固体相','burning':'燃焼相','frozen':'凍結相'};
+    const qualityLbl=currentLang==='en'?'Quality':currentLang==='gr'?'Ποιότ.':'質';
+    const cogLbl=currentLang==='en'?'Cog. Load':currentLang==='gr'?'Συγκ.':'認知負荷';
     status.innerHTML=
       `<span class="gs-life-badge">W = ${W.toFixed(1)}</span>`+
       `<span class="gs-life-badge">${phLabel[phase]||phase}</span>`+
-      (ev.quality!=null?`<span class="gs-life-badge">質 ${(ev.quality*100).toFixed(0)}%</span>`:'')+
-      (ev.cogLoad!=null?`<span class="gs-life-badge">認知負荷 ${(ev.cogLoad*100).toFixed(0)}%</span>`:'');
+      (ev.quality!=null?`<span class="gs-life-badge">${qualityLbl} ${(ev.quality*100).toFixed(0)}%</span>`:'')+
+      (ev.cogLoad!=null?`<span class="gs-life-badge">${cogLbl} ${(ev.cogLoad*100).toFixed(0)}%</span>`:'');
   }
 
   const goals=GOAL_STATE.goals;
   if(!goals.length){
-    list.innerHTML=`<div class="gs-empty"><div class="gs-empty-icon">🎯</div><div class="gs-empty-text">まだ目標がありません。<br>上のフォームから最初の目標を追加しましょう。</div></div>`;
+    const emptyIcon=t('goal.emptyIcon')||'🎯';
+    const emptyText=t('goal.emptyText')||'まだ目標がありません。<br>上のフォームから最初の目標を追加しましょう。';
+    list.innerHTML=`<div class="gs-empty"><div class="gs-empty-icon">${emptyIcon}</div><div class="gs-empty-text">${emptyText}</div></div>`;
     return;
   }
 
   const today=new Date(); today.setHours(0,0,0,0);
+  const dlFn=t('goal.daysLeft'); const dlOver=t('goal.daysOver');
   list.innerHTML=goals.map(g=>{
     const dl=new Date(g.deadline);
     const days=Math.ceil((dl-today)/(1000*60*60*24));
-    const daysLabel=days>0?`残り${days}日`:days===0?'今日が期日':`${Math.abs(days)}日超過`;
+    const daysLabel=days>0?(typeof dlFn==='function'?dlFn(days):`残り${days}日`):
+      days===0?(t('goal.daysToday')||'今日が期日'):
+      (typeof dlOver==='function'?dlOver(Math.abs(days)):`${Math.abs(days)}日超過`);
     const daysClass=days<=7?'urgent':'';
+    const deadlineLbl=t('goal.deadline')||'期日';
 
     let resultHtml='';
     if(g.loading){
-      resultHtml=`<div class="gs-result"><div class="gs-result-loading"><div class="gs-spinner"></div>Ψ-生命体が目標を解析しています…</div></div>`;
+      const loadTxt=t('goal.loading')||'Ψ-生命体が目標を解析しています…';
+      resultHtml=`<div class="gs-result"><div class="gs-result-loading"><div class="gs-spinner"></div>${loadTxt}</div></div>`;
     } else if(g.error){
       resultHtml=`<div class="gs-result"><div class="gs-error">${escH(g.error)}</div></div>`;
     } else if(g.analysis){
       const habitCards=(g.habits||[]).map((h,i)=>{
         const existing=HABIT_STATE.habits.find(x=>x.name===h.name);
         const addedClass=existing?'added':'';
-        const addedLabel=existing?'追加済み':'＋ 習慣に追加';
+        const addedLabel=existing?(t('goal.added')||'追加済み'):(t('goal.addToHabit')||'＋ 習慣に追加');
         return`<div class="gs-habit-chip">
           <span class="gs-habit-chip-icon">${h.icon||'✦'}</span>
           <div class="gs-habit-chip-body">
@@ -4463,27 +4802,30 @@ function renderGoalTab(){
           <button class="gs-habit-add-btn ${addedClass}" onclick="addGoalHabit('${g.id}',${i})" ${existing?'disabled':''}>${addedLabel}</button>
         </div>`;
       }).join('');
+      const habitsTitle=t('goal.habitsTitle')||'推奨習慣';
       resultHtml=`<div class="gs-result">
         <div class="gs-analysis-text">${escH(g.analysis)}</div>
-        ${g.habits?.length?`<div class="gs-habits-title">推奨習慣</div><div class="gs-habit-chips">${habitCards}</div>`:''}
+        ${g.habits?.length?`<div class="gs-habits-title">${habitsTitle}</div><div class="gs-habit-chips">${habitCards}</div>`:''}
       </div>`;
     }
 
+    const analyzeTxt=g.analysis&&!g.loading?(t('goal.reanalyze')||'再分析'):(t('goal.analyze')||'AIに提案してもらう');
+    const delTitle=currentLang==='en'?'Delete':currentLang==='gr'?'Διαγρ.':'削除';
     return`<div class="gs-card" id="gs-card-${g.id}">
       <div class="gs-card-head">
         <div class="gs-card-icon">🎯</div>
         <div class="gs-card-info">
           <div class="gs-card-title">${escH(g.title)}</div>
           <div class="gs-card-meta">
-            <span>期日: ${g.deadline}</span>
+            <span>${deadlineLbl}: ${g.deadline}</span>
             <span class="gs-card-days ${daysClass}">${daysLabel}</span>
           </div>
         </div>
         <div class="gs-card-actions">
           <button class="gs-analyze-btn" onclick="generateGoalSuggestion('${g.id}')" ${g.loading?'disabled':''}>
-            ${g.analysis&&!g.loading?'再分析':'AIに提案してもらう'}
+            ${analyzeTxt}
           </button>
-          <button class="gs-del-btn" onclick="removeGoal('${g.id}')" title="削除">×</button>
+          <button class="gs-del-btn" onclick="removeGoal('${g.id}')" title="${delTitle}">×</button>
         </div>
       </div>
       ${resultHtml}
@@ -4494,8 +4836,8 @@ function renderGoalTab(){
 function submitGoal(){
   const title=(document.getElementById('gs-goal-input')?.value||'').trim();
   const deadline=document.getElementById('gs-goal-date')?.value||'';
-  if(!title){notify('目標を入力してください');return;}
-  if(!deadline){notify('達成期日を選択してください');return;}
+  if(!title){notify(t('goal.required')||'目標を入力してください');return;}
+  if(!deadline){notify(t('goal.requiredDate')||'達成期日を選択してください');return;}
   GOAL_STATE.add(title,deadline);
   document.getElementById('gs-goal-input').value='';
   document.getElementById('gs-goal-date').value='';
@@ -4511,10 +4853,12 @@ function addGoalHabit(goalId,habitIdx){
   const g=GOAL_STATE.goals.find(x=>x.id===goalId);
   if(!g||!g.habits[habitIdx])return;
   const h=g.habits[habitIdx];
-  const preset={id:'goal_'+Date.now().toString(36),name:h.name,icon:h.icon||'✦',cat:'目標',
+  const catLabel=currentLang==='en'?'Goal':currentLang==='gr'?'Στόχος':'目標';
+  const preset={id:'goal_'+Date.now().toString(36),name:h.name,icon:h.icon||'✦',cat:catLabel,
     ef:{W:0.2,quality:0.08}};
   HABIT_STATE.add(preset);
-  notify(`「${h.name}」を習慣に追加しました`);
+  const addedMsgFn=t('goal.addedMsg');
+  notify(typeof addedMsgFn==='function'?addedMsgFn(h.name):`「${h.name}」を習慣に追加しました`);
   renderGoalTab();
 }
 
@@ -4524,7 +4868,7 @@ async function generateGoalSuggestion(goalId){
 
   const cfg=LIFE_CFG.get();
   if(!cfg.userApiKey){
-    GOAL_STATE.setError(goalId,'APIキーが設定されていません。生命タブ → 設定 からAPIキーを追加してください。');
+    GOAL_STATE.setError(goalId,t('goal.errorNoKey')||'APIキーが設定されていません。生命タブ → 設定 からAPIキーを追加してください。');
     renderGoalTab();return;
   }
 
@@ -4535,14 +4879,65 @@ async function generateGoalSuggestion(goalId){
     const c=LIFE_STATE.coords||[];
     const W=(c[1]||0).toFixed(1);
     const ev=ENV_STATE?.e||{};
-    const phLabel={'fluid':'流動相','gas':'気体相','solid':'固体相','burning':'燃焼相','frozen':'凍結相'};
-    const phase=phLabel[typeof currentPhase!=='undefined'?currentPhase:'fluid']||'流動相';
-    const existingHabits=HABIT_STATE.habits.map(h=>h.name).join('、')||'なし';
+    const phLabelMap=t('goal.phLabel')||{'fluid':'流動相','gas':'気体相','solid':'固体相','burning':'燃焼相','frozen':'凍結相'};
+    const phase=phLabelMap[typeof currentPhase!=='undefined'?currentPhase:'fluid']||(t('goal.phLabel.fluid')||'流動相');
+    const existingHabits=HABIT_STATE.habits.map(h=>h.name).join(currentLang==='ja'?'、':', ')||(currentLang==='en'?'None':currentLang==='gr'?'Καμία':'なし');
     const today=new Date(); today.setHours(0,0,0,0);
     const dl=new Date(g.deadline);
     const daysLeft=Math.ceil((dl-today)/(1000*60*60*24));
 
-    const prompt=`あなたはΨ統一波動理論に基づく人生設計AIです。ユーザーのΨ-生命体の状態と目標をもとに、最適な習慣を提案してください。
+    // Build prompt in current language
+    let prompt;
+    if(currentLang==='en'){
+      prompt=`You are a life-design AI based on Ψ Unified Wave Theory. Based on the user's Ψ-Life Form state and goal, suggest optimal habits.
+
+[Current Ψ-Life Form State]
+- W (Wave Depth): ${W}
+- Phase: ${phase}
+- Environment Heat Level: ${((ev.heatLevel||0.3)*100).toFixed(0)}%
+- Quality of Life: ${((ev.quality||0.7)*100).toFixed(0)}%
+- Cognitive Load: ${((ev.cogLoad||0.2)*100).toFixed(0)}%
+
+[Current Habits] ${existingHabits}
+
+[User Goal]
+"${g.title}"
+Deadline: ${g.deadline} (${daysLeft} days remaining)
+
+Suggest 3–5 highly effective habits to achieve this goal.
+Reply ONLY with valid JSON (no explanation before or after):
+{
+  "analysis": "Analysis comment based on goal and Ψ-Life Form state (100–150 characters)",
+  "habits": [
+    {"name": "Short habit name", "icon": "single emoji", "reason": "Reason (max 60 chars)", "frequency": "Daily / 3x per week / etc."}
+  ]
+}`;
+    } else if(currentLang==='gr'){
+      prompt=`Εἶσαι ΑΙ σχεδιασμοῦ βίου βάσει τῆς Ψ Θεωρίας. Πρότεινε βέλτιστες συνήθειες βάσει τοῦ Ψ-ζωντανοῦ ὄντος καὶ τοῦ στόχου.
+
+[Κατάσταση Ψ-ζωντανοῦ ὄντος]
+- W: ${W}
+- Φάσις: ${phase}
+- Θερμ. περιβάλλοντος: ${((ev.heatLevel||0.3)*100).toFixed(0)}%
+- Ποιότης ζωῆς: ${((ev.quality||0.7)*100).toFixed(0)}%
+- Γνωστικὸ φορτίο: ${((ev.cogLoad||0.2)*100).toFixed(0)}%
+
+[Τρέχουσαι Συνήθειαι] ${existingHabits}
+
+[Στόχος χρήστου]
+"${g.title}"
+Προθεσμία: ${g.deadline} (${daysLeft} ἡμέρες)
+
+Πρότεινε 3–5 ἀποτελεσματικὰς συνηθείας.
+Ἀπάντησε ΜΟΝΟ μὲ ἔγκυρο JSON:
+{
+  "analysis": "Ἀνάλυση (100–150 χαρακτῆρες)",
+  "habits": [
+    {"name": "Σύντομο ὄνομα", "icon": "ἕνα emoji", "reason": "Αἰτία (ἕως 60 χαρ.)", "frequency": "Καθημερινά / 3 φ./εβδ. κ.λπ."}
+  ]
+}`;
+    } else {
+      prompt=`あなたはΨ統一波動理論に基づく人生設計AIです。ユーザーのΨ-生命体の状態と目標をもとに、最適な習慣を提案してください。
 
 【Ψ-生命体の現在状態】
 - W（生命波動量）: ${W}
@@ -4565,6 +4960,7 @@ async function generateGoalSuggestion(goalId){
     {"name": "習慣名（短く）", "icon": "絵文字1文字", "reason": "理由（40字以内）", "frequency": "毎日/週3回など"}
   ]
 }`;
+    }
 
     const res=await fetch(cfg.userApiEndpoint||'https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -4577,11 +4973,11 @@ async function generateGoalSuggestion(goalId){
     if(!res.ok)throw new Error(data.error?.message||`HTTP ${res.status}`);
     const text=data.content?.[0]?.text||'';
     const m=text.match(/\{[\s\S]*\}/);
-    if(!m)throw new Error('レスポンスの解析に失敗しました');
+    if(!m)throw new Error(t('goal.parseFail')||'レスポンスの解析に失敗しました');
     const parsed=JSON.parse(m[0]);
     GOAL_STATE.setResult(goalId,parsed.analysis||'',parsed.habits||[]);
   }catch(e){
-    GOAL_STATE.setError(goalId,'エラー: '+e.message);
+    GOAL_STATE.setError(goalId,(t('goal.errorPrefix')||'エラー: ')+e.message);
   }finally{
     GOAL_STATE.setLoading(goalId,false);
     renderGoalTab();
@@ -4600,34 +4996,48 @@ function initLifeTab(){
 function renderLifeSettings(){
   const cfg=LIFE_CFG.get();
   const el=document.getElementById('lf-settings-form'); if(!el)return;
+  const isEn=currentLang==='en', isGr=currentLang==='gr';
+  const lf={
+    apiTitle:   isEn?'API Connection':isGr?'Σύνδεση API':'API 接続先',
+    appApi:     isEn?'App API — Use Mezawa Theory app server (recommended)':isGr?'API Εφαρμογῆς — Χρήση διακομιστοῦ (συνιστᾶται)':'アプリ提供 API — めざわ理論アプリのサーバーを使用（推奨）',
+    userApi:    isEn?'My API Key — Anthropic or custom endpoint':isGr?'Δικό μου κλειδὶ API — Anthropic ἢ προσαρμοσμένο':'自分の APIキー — Anthropic または カスタムエンドポイント',
+    apiKeyLbl:  isEn?'Anthropic API Key':isGr?'Κλειδὶ API Anthropic':'Anthropic API キー',
+    epLbl:      isEn?'Endpoint URL (optional)':isGr?'URL τελικοῦ σημείου (προαιρετικό)':'エンドポイント URL（任意）',
+    kbTitle:    isEn?'Knowledge Base Storage':isGr?'Ἀποθήκευση Βάσης Γνώσης':'ナレッジベース 保存先',
+    appKb:      isEn?'App Storage — Auto-save (recommended)':isGr?'Ἀποθήκη Εφαρμογῆς — Αὐτόματη (συνιστᾶται)':'アプリ側ストレージ — 自動保存（推奨）',
+    userKb:     isEn?'My Storage — Custom REST endpoint':isGr?'Δική μου ἀποθήκη — REST endpoint':'自分のストレージ — 任意の REST エンドポイント',
+    kbEpLbl:    isEn?'Endpoint URL':isGr?'URL τελικοῦ σημείου':'エンドポイント URL',
+    kbKeyLbl:   isEn?'API Key (optional)':isGr?'Κλειδὶ API (προαιρετικό)':'API キー（任意）',
+    save:       isEn?'Save Settings':isGr?'Ἀποθήκευση Ρυθμίσεων':'設定を保存',
+  };
   el.innerHTML=`
 <div class="lf-setting-group">
-  <div class="lf-setting-title">API 接続先</div>
+  <div class="lf-setting-title">${lf.apiTitle}</div>
   <div class="lf-radio-row">
-    <label><input type="radio" name="apiMode" value="app" ${cfg.apiMode==='app'?'checked':''}> <span><b>アプリ提供 API</b> — めざわ理論アプリのサーバーを使用（推奨）</span></label>
-    <label><input type="radio" name="apiMode" value="user" ${cfg.apiMode==='user'?'checked':''}> <span><b>自分の APIキー</b> — Anthropic または カスタムエンドポイント</span></label>
+    <label><input type="radio" name="apiMode" value="app" ${cfg.apiMode==='app'?'checked':''}> <span>${lf.appApi}</span></label>
+    <label><input type="radio" name="apiMode" value="user" ${cfg.apiMode==='user'?'checked':''}> <span>${lf.userApi}</span></label>
   </div>
   <div id="lf-user-api-wrap" class="lf-sub-group" style="${cfg.apiMode==='user'?'':'display:none'}">
-    <label class="lf-label">Anthropic API キー</label>
+    <label class="lf-label">${lf.apiKeyLbl}</label>
     <input class="lf-input" id="lf-api-key" type="password" placeholder="sk-ant-..." value="${cfg.userApiKey}">
-    <label class="lf-label">エンドポイント URL（任意）</label>
+    <label class="lf-label">${lf.epLbl}</label>
     <input class="lf-input" id="lf-api-ep" type="url" placeholder="https://api.anthropic.com/v1/messages" value="${cfg.userApiEndpoint}">
   </div>
 </div>
 <div class="lf-setting-group">
-  <div class="lf-setting-title">ナレッジベース 保存先</div>
+  <div class="lf-setting-title">${lf.kbTitle}</div>
   <div class="lf-radio-row">
-    <label><input type="radio" name="kbMode" value="app" ${cfg.kbMode==='app'?'checked':''}> <span><b>アプリ側ストレージ</b> — 自動保存（推奨）</span></label>
-    <label><input type="radio" name="kbMode" value="user" ${cfg.kbMode==='user'?'checked':''}> <span><b>自分のストレージ</b> — 任意の REST エンドポイント</span></label>
+    <label><input type="radio" name="kbMode" value="app" ${cfg.kbMode==='app'?'checked':''}> <span>${lf.appKb}</span></label>
+    <label><input type="radio" name="kbMode" value="user" ${cfg.kbMode==='user'?'checked':''}> <span>${lf.userKb}</span></label>
   </div>
   <div id="lf-user-kb-wrap" class="lf-sub-group" style="${cfg.kbMode==='user'?'':'display:none'}">
-    <label class="lf-label">エンドポイント URL</label>
+    <label class="lf-label">${lf.kbEpLbl}</label>
     <input class="lf-input" id="lf-kb-ep" type="url" placeholder="https://your-storage.example.com/kb" value="${cfg.userKbEndpoint}">
-    <label class="lf-label">API キー（任意）</label>
+    <label class="lf-label">${lf.kbKeyLbl}</label>
     <input class="lf-input" id="lf-kb-key" type="password" placeholder="Bearer token..." value="${cfg.userKbKey}">
   </div>
 </div>
-<button class="lf-btn" style="max-width:200px" onclick="saveLifeSettings()">設定を保存</button>`;
+<button class="lf-btn" style="max-width:200px" onclick="saveLifeSettings()">${lf.save}</button>`;
   el.querySelectorAll('[name="apiMode"]').forEach(r=>r.addEventListener('change',()=>{
     document.getElementById('lf-user-api-wrap').style.display=r.value==='user'?'block':'none';}));
   el.querySelectorAll('[name="kbMode"]').forEach(r=>r.addEventListener('change',()=>{
@@ -4649,31 +5059,55 @@ function saveLifeSettings(){
 function renderLifePlan(){
   const el=document.getElementById('lf-plan-content'); if(!el)return;
   const u=AUTH.user, isPrem=AUTH.isPremium(), days=AUTH.trialDaysLeft();
+  const isEn=currentLang==='en', isGr=currentLang==='gr';
+  const pl={
+    notLoggedIn: isEn?'Not logged in':isGr?'Μη συνδεδεμένος':'未ログイン',
+    logout:      isEn?'Log out':isGr?'Αποσύνδεση':'ログアウト',
+    trialLeft:   isEn?`Free trial: ${days} days left`:isGr?`Δοκιμή: ${days} ημ. απομ.`:`無料トライアル残${days}日`,
+    premium:     isEn?'Premium':isGr?'Premium':'プレミアム',
+    freePlan:    isEn?'Free Plan':isGr?'Δωρεάν Πλάνο':'無料プラン',
+    freeName:    isEn?'Free':isGr?'Δωρεάν':'無料',
+    perMonth:    isEn?'/mo':isGr?'/μήνα':'/月',
+    f1:          isEn?'✓ Observe life form':isGr?'✓ Παρατήρηση ζωντ. ὄντος':'✓ 生命体の観察',
+    f2:          isEn?'✓ 5 AI chats per day':isGr?'✓ 5 AI συνομιλίες/ημ.':'✓ 1日5回のAI対話',
+    f3:          isEn?'✓ Up to 10 cells':isGr?'✓ Ἕως 10 κύτταρα':'✓ 最大10細胞',
+    f4:          isEn?'✗ Knowledge base':isGr?'✗ Βάση γνώσης':'✗ ナレッジベース保存',
+    f5:          isEn?'✗ Custom API':isGr?'✗ Προσαρμοσμένο API':'✗ カスタムAPI',
+    badge:       isEn?'First month free':isGr?'Πρῶτος μήνας δωρεάν':'最初の1ヶ月無料',
+    p1:          isEn?'✓ Unlimited AI chats':isGr?'✓ Ἀπεριόριστες συνομ.':'✓ 無制限のAI対話',
+    p2:          isEn?'✓ Up to 60 cells':isGr?'✓ Ἕως 60 κύτταρα':'✓ 最大60細胞',
+    p3:          isEn?'✓ Knowledge base':isGr?'✓ Βάση γνώσης':'✓ ナレッジベース保存',
+    p4:          isEn?'✓ Custom API':isGr?'✓ Προσαρμοσμένο API':'✓ カスタムAPI対応',
+    p5:          isEn?'✓ Life form evolution log':isGr?'✓ Αρχείο εξέλιξης':'✓ 生命体の進化記録',
+    upgrade:     isEn?'Upgrade (coming soon)':isGr?'Αναβάθμιση (σύντομα)':'アップグレード（準備中）',
+    planStatus:  isPrem?(days>0?`無料トライアル残${days}日`:pl?.premium||'プレミアム'):pl?.freePlan||'無料プラン',
+  };
+  const planStatusTxt=isPrem?(days>0?pl.trialLeft:pl.premium):pl.freePlan;
   el.innerHTML=`
 <div class="lf-plan-status">
-  ${u?`<b>${u.name}</b> &nbsp;(${u.email})&nbsp;—&nbsp;<span style="color:${isPrem?'var(--G)':'var(--R)'}">${isPrem?(days>0?`無料トライアル残${days}日`:'プレミアム'):'無料プラン'}</span>`:'未ログイン'}
-  ${u?`<button class="lf-btn-sm" onclick="doLogout()" style="margin-left:auto">ログアウト</button>`:''}
+  ${u?`<b>${u.name}</b> &nbsp;(${u.email})&nbsp;—&nbsp;<span style="color:${isPrem?'var(--G)':'var(--R)'}">${planStatusTxt}</span>`:`<span>${pl.notLoggedIn}</span>`}
+  ${u?`<button class="lf-btn-sm" onclick="doLogout()" style="margin-left:auto">${pl.logout}</button>`:''}
 </div>
 <div class="lf-plan-grid">
   <div class="lf-plan-card${!isPrem?' lf-plan-active':''}">
-    <div class="lf-plan-name">無料</div>
-    <div class="lf-plan-price">¥0 <span>/月</span></div>
-    <div class="lf-plan-feature">✓ 生命体の観察</div>
-    <div class="lf-plan-feature">✓ 1日5回のAI対話</div>
-    <div class="lf-plan-feature">✓ 最大10細胞</div>
-    <div class="lf-plan-feature dim">✗ ナレッジベース保存</div>
-    <div class="lf-plan-feature dim">✗ カスタムAPI</div>
+    <div class="lf-plan-name">${pl.freeName}</div>
+    <div class="lf-plan-price">¥0 <span>${pl.perMonth}</span></div>
+    <div class="lf-plan-feature">${pl.f1}</div>
+    <div class="lf-plan-feature">${pl.f2}</div>
+    <div class="lf-plan-feature">${pl.f3}</div>
+    <div class="lf-plan-feature dim">${pl.f4}</div>
+    <div class="lf-plan-feature dim">${pl.f5}</div>
   </div>
   <div class="lf-plan-card lf-plan-premium${isPrem?' lf-plan-active':''}">
-    <div class="lf-plan-badge">最初の1ヶ月無料</div>
-    <div class="lf-plan-name">プレミアム</div>
-    <div class="lf-plan-price">¥500 <span>/月</span></div>
-    <div class="lf-plan-feature">✓ 無制限のAI対話</div>
-    <div class="lf-plan-feature">✓ 最大60細胞</div>
-    <div class="lf-plan-feature">✓ ナレッジベース保存</div>
-    <div class="lf-plan-feature">✓ カスタムAPI対応</div>
-    <div class="lf-plan-feature">✓ 生命体の進化記録</div>
-    ${!isPrem?'<button class="lf-btn" style="margin-top:14px">アップグレード（準備中）</button>':''}
+    <div class="lf-plan-badge">${pl.badge}</div>
+    <div class="lf-plan-name">${pl.premium}</div>
+    <div class="lf-plan-price">¥500 <span>${pl.perMonth}</span></div>
+    <div class="lf-plan-feature">${pl.p1}</div>
+    <div class="lf-plan-feature">${pl.p2}</div>
+    <div class="lf-plan-feature">${pl.p3}</div>
+    <div class="lf-plan-feature">${pl.p4}</div>
+    <div class="lf-plan-feature">${pl.p5}</div>
+    ${!isPrem?`<button class="lf-btn" style="margin-top:14px">${pl.upgrade}</button>`:''}
   </div>
 </div>`;
 }
