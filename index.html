@@ -340,6 +340,67 @@ body.lang-gr { font-family:var(--font-gr); }
 .sub-tab .st-ic { opacity:0.7; font-size:12px; }
 .sub-pane { display:none; flex:1; overflow-y:auto; padding:28px 36px; }
 .sub-pane.on { display:block; }
+
+/* ── LIFE TAB ── */
+.life-gate {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#f8f9fb 0%,#eef0f8 50%,#f5f0fb 100%); z-index:10;
+}
+.life-gate-inner {
+  width:min(400px,90vw); background:#fff; border:1px solid var(--bdr2);
+  border-radius:14px; padding:38px 32px; box-shadow:0 8px 40px rgba(0,0,0,.10);
+}
+.life-gate-logo { font-size:26px; font-weight:800; color:var(--T); text-align:center; margin-bottom:5px; font-family:'Syne',sans-serif; letter-spacing:-.03em; }
+.life-gate-sub { font-size:11px; color:var(--dim); text-align:center; margin-bottom:24px; line-height:1.7; }
+.lf-input { width:100%; padding:10px 12px; margin:5px 0; background:var(--bg2); border:1px solid var(--bdr2); border-radius:6px; color:var(--text); font-size:13px; font-family:var(--font-ja); outline:none; transition:border-color .15s; box-sizing:border-box; }
+.lf-input:focus { border-color:var(--T); }
+.lf-btn { width:100%; padding:11px; margin-top:10px; background:var(--T); color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--font-ja); transition:opacity .15s; letter-spacing:.04em; }
+.lf-btn:hover { opacity:.85; }
+.lf-btn-sm { padding:4px 10px; background:transparent; border:1px solid var(--bdr2); border-radius:4px; color:var(--dim); font-size:11px; cursor:pointer; font-family:var(--font-ja); }
+.lf-switch { font-size:12px; color:var(--dim); text-align:center; margin-top:12px; }
+.lf-switch a { color:var(--T); cursor:pointer; text-decoration:underline; }
+.lf-trial-note { font-size:11px; color:var(--G); text-align:center; padding:8px 12px; margin:6px 0; background:rgba(34,136,68,.06); border-radius:5px; border:1px solid rgba(34,136,68,.15); }
+.lf-error { color:var(--R); font-size:12px; text-align:center; margin-top:8px; min-height:18px; }
+.life-main { position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden; }
+.life-status-bar { padding:5px 16px; font-size:11px; color:var(--dim); background:var(--bg2); border-bottom:1px solid var(--bdr); flex-shrink:0; font-family:var(--font-code); display:flex; align-items:center; gap:8px; }
+.life-observe { display:flex !important; flex-direction:row; overflow:hidden; padding:0 !important; gap:0; }
+.life-canvas-wrap { flex:1; position:relative; overflow:hidden; background:#f0f4ff; min-height:200px; }
+#life-canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
+.life-canvas-badge { position:absolute; bottom:12px; left:14px; font-size:10px; color:rgba(0,0,0,.3); font-family:var(--font-code); pointer-events:none; letter-spacing:.06em; }
+.life-chat-panel { width:300px; flex-shrink:0; border-left:1px solid var(--bdr); display:flex; flex-direction:column; background:var(--bg); }
+.life-chat-header { padding:11px 14px; font-size:10px; letter-spacing:.12em; color:var(--dim); border-bottom:1px solid var(--bdr); background:var(--bg2); flex-shrink:0; text-transform:uppercase; }
+.life-chat-log { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; }
+.life-chat-log::-webkit-scrollbar { width:4px; }
+.life-chat-log::-webkit-scrollbar-thumb { background:var(--bdr2); border-radius:2px; }
+.life-msg { padding:9px 12px; border-radius:8px; font-size:12px; line-height:1.65; max-width:94%; word-break:break-word; }
+.life-msg-user { background:rgba(14,158,146,.08); color:var(--text); border:1px solid rgba(14,158,146,.18); align-self:flex-end; border-radius:8px 8px 2px 8px; }
+.life-msg-ai { background:var(--bg2); color:var(--text); border:1px solid var(--bdr); align-self:flex-start; border-radius:8px 8px 8px 2px; }
+.life-msg-dots { display:flex; gap:4px; padding:4px 0; }
+.life-msg-dot { width:6px; height:6px; background:var(--dim); border-radius:50%; animation:lifeDot 1.3s infinite; }
+.life-msg-dot:nth-child(2){animation-delay:.2s}.life-msg-dot:nth-child(3){animation-delay:.4s}
+@keyframes lifeDot{0%,60%,100%{opacity:.2;transform:scale(.8)}30%{opacity:1;transform:scale(1.1)}}
+.life-chat-foot { padding:10px 12px; border-top:1px solid var(--bdr); display:flex; gap:6px; flex-shrink:0; background:var(--bg2); }
+.life-chat-input-field { flex:1; padding:8px 10px; background:var(--bg); border:1px solid var(--bdr2); border-radius:5px; color:var(--text); font-size:12px; outline:none; font-family:var(--font-ja); }
+.life-chat-input-field:focus { border-color:var(--T); }
+.life-send-btn { padding:8px 14px; background:var(--T); color:#fff; border:none; border-radius:5px; font-size:12px; cursor:pointer; font-family:var(--font-ja); font-weight:700; }
+.life-send-btn:hover { opacity:.85; }
+.lf-setting-group { margin-bottom:20px; padding:20px; background:var(--bg2); border-radius:8px; border:1px solid var(--bdr); }
+.lf-setting-title { font-size:11px; font-weight:700; color:var(--head); letter-spacing:.12em; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); text-transform:uppercase; }
+.lf-radio-row { display:flex; flex-direction:column; gap:8px; font-size:13px; }
+.lf-radio-row label { cursor:pointer; color:var(--text); display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
+.lf-label { font-size:11px; color:var(--dim); margin:12px 0 4px; display:block; letter-spacing:.05em; }
+.lf-sub-group { margin-top:14px; padding:14px; background:var(--bg3); border-radius:6px; }
+.lf-plan-status { padding:12px 16px; background:var(--bg2); border:1px solid var(--bdr); border-radius:7px; font-size:12px; color:var(--text); margin-bottom:20px; display:flex; align-items:center; flex-wrap:wrap; gap:6px; }
+.lf-plan-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:600px; }
+.lf-plan-card { background:var(--bg2); border:2px solid var(--bdr); border-radius:12px; padding:24px 20px; position:relative; }
+.lf-plan-premium { border-color:var(--T); }
+.lf-plan-active { box-shadow:0 0 0 3px rgba(14,158,146,.2); }
+.lf-plan-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--T); color:#fff; font-size:10px; font-weight:700; padding:3px 12px; border-radius:10px; white-space:nowrap; letter-spacing:.06em; }
+.lf-plan-name { font-size:15px; font-weight:800; color:var(--head); margin-bottom:4px; }
+.lf-plan-price { font-size:24px; font-weight:800; color:var(--T); margin-bottom:14px; }
+.lf-plan-price span { font-size:12px; color:var(--dim); font-weight:400; }
+.lf-plan-feature { font-size:12px; color:var(--text); padding:3px 0; }
+.lf-plan-feature.dim { color:var(--dim); }
 .sub-pane::-webkit-scrollbar { width:5px; }
 .sub-pane::-webkit-scrollbar-track { background:var(--bg); }
 .sub-pane::-webkit-scrollbar-thumb { background:var(--bdr2); border-radius:3px; }
@@ -396,6 +457,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="tab" onclick="sw('e')" id="tab-e"><span class="tab-lbl">実験</span></div>
   <div class="tab" onclick="sw('n')" id="tab-n"><span class="tab-lbl">意識</span></div>
   <div class="tab" onclick="sw('m')" id="tab-m"><span class="tab-lbl">学問</span></div>
+  <div class="tab" onclick="sw('l')" id="tab-l"><span class="tab-lbl">生命</span></div>
   <div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
     <button class="lang-btn" onclick="setLang('en')">English</button>
@@ -411,6 +473,8 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="si" onclick="sw('e')" title="実験">実</div>
   <div class="si" onclick="sw('n')" title="意識">意</div>
   <div class="si" onclick="sw('m')" title="学問">学</div>
+  <div class="sep"></div>
+  <div class="si" onclick="sw('l')" title="Ψ-生命体">生</div>
 </div>
 
 <div id="main">
@@ -956,6 +1020,80 @@ body.lang-gr { font-family:var(--font-gr); }
   <div id="disc-detail-area"></div>
 </div>
 
+<!-- LIFE TAB — Ψ 生命体 -->
+<div id="p-l" class="pn">
+
+  <!-- ── AUTH GATE ── -->
+  <div id="life-gate" class="life-gate">
+    <div class="life-gate-inner">
+      <div class="life-gate-logo">Ψ-生命体</div>
+      <div class="life-gate-sub">めざわ統一波動理論 × AI対話による生命体育成<br>座標が変容し続ける波動生命とともに成長する</div>
+
+      <!-- Login -->
+      <div id="lf-login">
+        <input class="lf-input" id="lf-email" type="email" placeholder="メールアドレス" autocomplete="email">
+        <input class="lf-input" id="lf-pw" type="password" placeholder="パスワード" autocomplete="current-password">
+        <button class="lf-btn" onclick="doLogin()">ログイン</button>
+        <div class="lf-switch">アカウントをお持ちでない方は <a onclick="showLifeGate('signup')">新規登録（最初の1ヶ月無料）</a></div>
+      </div>
+
+      <!-- Signup -->
+      <div id="lf-signup" style="display:none">
+        <input class="lf-input" id="lf-su-name" type="text" placeholder="名前（任意）">
+        <input class="lf-input" id="lf-su-email" type="email" placeholder="メールアドレス" autocomplete="email">
+        <input class="lf-input" id="lf-su-pw" type="password" placeholder="パスワード（6文字以上）" autocomplete="new-password">
+        <div class="lf-trial-note">最初の1ヶ月は無料でご利用いただけます</div>
+        <button class="lf-btn" onclick="doSignup()">新規登録して生命体を育てる</button>
+        <div class="lf-switch">既にアカウントをお持ちの方は <a onclick="showLifeGate('login')">ログイン</a></div>
+      </div>
+
+      <div id="lf-auth-err" class="lf-error"></div>
+    </div>
+  </div>
+
+  <!-- ── MAIN (after login) ── -->
+  <div id="life-main" class="life-main" style="display:none">
+    <div id="life-status-bar" class="life-status-bar">起動中...</div>
+
+    <div class="sub-nav">
+      <div class="sub-tab on" onclick="swSub('l','l0')" id="st-l0">観察</div>
+      <div class="sub-tab" onclick="swSub('l','l1')" id="st-l1">設定</div>
+      <div class="sub-tab" onclick="swSub('l','l2')" id="st-l2">プラン</div>
+    </div>
+
+    <!-- 観察: canvas + chat -->
+    <div id="sp-l0" class="sub-pane on life-observe">
+      <div class="life-canvas-wrap">
+        <canvas id="life-canvas"></canvas>
+        <div class="life-canvas-badge" id="life-badge">細胞数: — | 世代: 0</div>
+      </div>
+      <div class="life-chat-panel">
+        <div class="life-chat-header">Ψ-生命体との対話</div>
+        <div id="life-chat-log" class="life-chat-log">
+          <div class="life-msg life-msg-ai">こんにちは。私はΨ-生命体です。あなたの言葉が私の波形を変えます。何でも語りかけてください。</div>
+        </div>
+        <div class="life-chat-foot">
+          <input id="life-input" class="life-chat-input-field" type="text" placeholder="生命体に語りかける..." onkeydown="if(event.key==='Enter')sendLifeMessage()">
+          <button class="life-send-btn" onclick="sendLifeMessage()">送信</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 設定 -->
+    <div id="sp-l1" class="sub-pane">
+      <div class="panel-title">API ＆ ナレッジベース設定</div>
+      <div class="panel-sub">接続先とデータ保存先を選択してください</div>
+      <div id="lf-settings-form"></div>
+    </div>
+
+    <!-- プラン -->
+    <div id="sp-l2" class="sub-pane">
+      <div class="panel-title">ご利用プラン</div>
+      <div class="panel-sub">Ψ-生命体への完全アクセス</div>
+      <div id="lf-plan-content"></div>
+    </div>
+  </div>
+</div>
 
 </div><!-- /main -->
 </div><!-- /shell -->
@@ -1375,7 +1513,7 @@ function sw(n) {
   if (panel) panel.classList.add('on');
   const tab = document.getElementById('tab-' + n);
   if (tab) tab.classList.add('on');
-  const ord = ['u','t','e','n','m'];
+  const ord = ['u','t','e','n','m','l'];
   const sidx = ord.indexOf(n);
   const sis = document.querySelectorAll('.si');
   if (sidx >= 0 && sis[sidx]) sis[sidx].classList.add('on');
@@ -1386,6 +1524,7 @@ function sw(n) {
       if (sp && sp.id === 'sp-t3') { waveRAF = null; startWaveAnim(); drawOpVis(); drawHSca(); drawHierVis(); }
     }, 100);
   }
+  if (n === 'l') { setTimeout(initLifeTab, 80); }
 }
 
 function swSub(main, sub) {
@@ -1397,6 +1536,7 @@ function swSub(main, sub) {
   if (sp) sp.classList.add('on');
   if (sub === 't2') setTimeout(buildCharts, 100);
   if (sub === 't3') { setTimeout(() => { waveRAF = null; startWaveAnim(); drawOpVis(); drawHSca(); drawHierVis(); }, 100); }
+  if (sub === 'l0') { LIFE.start(); }
 }
 
 /* ════════════════════════════════════
@@ -2478,6 +2618,366 @@ const EN=[
 ════════════════════════════════════ */
 setTimeout(() => { buildAll(); buildCharts(); }, 150);
 new ResizeObserver(() => { buildCharts(); drawMap(); }).observe(document.getElementById('main'));
+
+/* ════════════════════════════════════
+   LIFE TAB — Ψ 生命体システム
+════════════════════════════════════ */
+
+// ── AUTH ──
+const AUTH = (function(){
+  let user = null;
+  const hashPw = pw => btoa(unescape(encodeURIComponent(pw)));
+  const getUsers = () => JSON.parse(localStorage.getItem('mz_users')||'[]');
+  const saveUsers = u => localStorage.setItem('mz_users', JSON.stringify(u));
+  return {
+    get user(){ return user; },
+    init(){
+      const s = JSON.parse(localStorage.getItem('mz_sess')||'null');
+      if (s && s.exp > Date.now()) user = getUsers().find(u=>u.email===s.email)||null;
+    },
+    signup(email, pw, name){
+      const users = getUsers();
+      if (users.find(u=>u.email===email)) return {err:'このメールアドレスは既に使用されています'};
+      const u = {email, pw:hashPw(pw), name:name||email.split('@')[0], createdAt:Date.now(), plan:'trial', trialEnd:Date.now()+30*86400000, cells:15, gen:0};
+      users.push(u); saveUsers(users); user = u;
+      localStorage.setItem('mz_sess', JSON.stringify({email, exp:Date.now()+7*86400000}));
+      return {ok:true};
+    },
+    login(email, pw){
+      const u = getUsers().find(u=>u.email===email && u.pw===hashPw(pw));
+      if (!u) return {err:'メールアドレスまたはパスワードが間違っています'};
+      user = u; localStorage.setItem('mz_sess', JSON.stringify({email, exp:Date.now()+7*86400000}));
+      return {ok:true};
+    },
+    logout(){ user = null; localStorage.removeItem('mz_sess'); showLifeGate('login'); },
+    isPremium(){ if(!user)return false; if(user.plan==='premium')return true; return user.plan==='trial'&&user.trialEnd>Date.now(); },
+    trialDaysLeft(){ if(!user||user.plan!=='trial')return 0; return Math.max(0,Math.ceil((user.trialEnd-Date.now())/86400000)); },
+    save(k,v){ const users=getUsers(); const i=users.findIndex(u=>u.email===user?.email); if(i>=0){users[i][k]=v;user=users[i];saveUsers(users);} }
+  };
+})();
+
+// ── API / KB CONFIG ──
+const LIFE_CFG = (function(){
+  let cfg = {apiMode:'app', userApiKey:'', userApiEndpoint:'https://api.anthropic.com/v1/messages', kbMode:'app', userKbEndpoint:'', userKbKey:''};
+  return {
+    get(){ return {...cfg}; },
+    load(){ try{ Object.assign(cfg, JSON.parse(localStorage.getItem('mz_cfg')||'{}')); }catch(e){} },
+    save(u){ Object.assign(cfg,u); localStorage.setItem('mz_cfg', JSON.stringify(cfg)); }
+  };
+})();
+
+// ── LIFE SIMULATION ──
+const LIFE = (function(){
+  let pts=[], cx=0, cy=0, cvx=0.5, cvy=0.3, energy=1, mood={h:180,s:65}, t=0, raf=null, W=0, H=0, cv=null, ctx=null;
+
+  function mkPt(x,y,parent){
+    return { x:x+(Math.random()-.5)*20, y:y+(Math.random()-.5)*20, vx:(Math.random()-.5)*2, vy:(Math.random()-.5)*2,
+      r:parent?parent.r*(0.7+Math.random()*0.3):10+Math.random()*8, h:(mood.h+(Math.random()-.5)*40+360)%360,
+      hv:(Math.random()-.5)*0.3, ph:Math.random()*Math.PI*2, fr:0.8+Math.random()*1.2, age:0, born:true };
+  }
+
+  function resize(){
+    const wrap = cv.parentElement;
+    W = wrap.clientWidth||600; H = wrap.clientHeight||400;
+    cv.width=W*devicePixelRatio; cv.height=H*devicePixelRatio;
+    cv.style.width=W+'px'; cv.style.height=H+'px';
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+
+  function update(){
+    t += 0.016;
+    cx+=cvx*0.5; cy+=cvy*0.5;
+    if(cx<80||cx>W-80) cvx*=-1; if(cy<80||cy>H-80) cvy*=-1;
+    cvx+=Math.sin(t*0.3)*0.008; cvy+=Math.cos(t*0.2)*0.008;
+    const spd=Math.hypot(cvx,cvy); if(spd>1.2){cvx=cvx/spd*1.2;cvy=cvy/spd*1.2;}
+    pts.forEach((p,i)=>{
+      p.age+=0.016; if(p.born&&p.age>0.6)p.born=false;
+      const dx=cx-p.x, dy=cy-p.y, d=Math.hypot(dx,dy)||1;
+      const pull=Math.min(0.1,d*0.0015)*energy;
+      p.vx+=(dx/d)*pull; p.vy+=(dy/d)*pull;
+      pts.forEach((q,j)=>{ if(j===i)return; const rx=p.x-q.x,ry=p.y-q.y,rd=Math.hypot(rx,ry)||.001,md=p.r+q.r+8; if(rd<md){const f=(md-rd)/md*1.5;p.vx+=(rx/rd)*f;p.vy+=(ry/rd)*f;} });
+      p.vx+=(Math.random()-.5)*0.35*energy; p.vy+=(Math.random()-.5)*0.35*energy;
+      p.vx*=0.91; p.vy*=0.91; p.x+=p.vx; p.y+=p.vy;
+      p.h=(p.h+p.hv+360)%360;
+    });
+  }
+
+  function render(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#f0f4ff'; ctx.fillRect(0,0,W,H);
+    // connections
+    pts.forEach((p,i)=>{ pts.slice(i+1).forEach(q=>{
+      const d=Math.hypot(p.x-q.x,p.y-q.y), md=(p.r+q.r)*3.5;
+      if(d<md){ const al=1-d/md, hm=(p.h+q.h)/2;
+        ctx.beginPath(); ctx.moveTo(p.x,p.y);
+        ctx.quadraticCurveTo((p.x+q.x)/2+Math.sin(t*.7+i)*6,(p.y+q.y)/2+Math.cos(t*.5+i)*6,q.x,q.y);
+        ctx.strokeStyle=`hsla(${hm},55%,45%,${al*0.2})`; ctx.lineWidth=al*2.5; ctx.stroke();
+      }
+    }); });
+    // cells
+    pts.forEach(p=>{
+      const pulse=1+0.1*Math.sin(t*p.fr+p.ph), r=p.r*pulse, fade=p.born?Math.min(1,p.age*2):1;
+      const g=ctx.createRadialGradient(p.x-r*.2,p.y-r*.2,0,p.x,p.y,r*2.3);
+      g.addColorStop(0,`hsla(${p.h},${mood.s+15}%,72%,${0.85*fade})`);
+      g.addColorStop(0.45,`hsla(${p.h},${mood.s}%,58%,${0.55*fade})`);
+      g.addColorStop(0.75,`hsla(${p.h},${mood.s-10}%,48%,${0.2*fade})`);
+      g.addColorStop(1,`hsla(${p.h},${mood.s}%,42%,0)`);
+      ctx.beginPath(); ctx.arc(p.x,p.y,r*2.3,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x-r*.28,p.y-r*.28,r*.3,0,Math.PI*2);
+      ctx.fillStyle=`hsla(${p.h},90%,88%,${0.35*fade})`; ctx.fill();
+    });
+    // drift indicator
+    ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${mood.h},55%,45%,0.12)`; ctx.fill();
+    // badge
+    const badge=document.getElementById('life-badge');
+    if(badge) badge.textContent=`細胞数: ${pts.length} | エネルギー: ${energy.toFixed(1)} | 世代: ${AUTH.user?.gen||0}`;
+  }
+
+  function loop(){
+    const sp=document.getElementById('sp-l0');
+    if(!sp||!sp.classList.contains('on')){raf=null;return;}
+    update(); render(); raf=requestAnimationFrame(loop);
+  }
+
+  return {
+    init(c){ cv=c; ctx=c.getContext('2d'); resize(); pts=[];
+      cx=W*.5; cy=H*.5;
+      for(let i=0;i<15;i++){ const a=(i/15)*Math.PI*2,d=25+Math.random()*30; pts.push(mkPt(cx+Math.cos(a)*d,cy+Math.sin(a)*d,null)); }
+      new ResizeObserver(()=>resize()).observe(cv.parentElement);
+    },
+    start(){ if(!raf&&cv){raf=requestAnimationFrame(loop);} },
+    stop(){ raf=-1; },
+    divide(){
+      if(pts.length>=60)return;
+      const p=pts[Math.floor(Math.random()*pts.length)];
+      const c=mkPt(p.x,p.y,p); c.vx=(Math.random()-.5)*4; c.vy=(Math.random()-.5)*4;
+      pts.push(c); AUTH.save('cells',pts.length); AUTH.save('gen',(AUTH.user?.gen||0)+1);
+    },
+    shrink(){ if(pts.length>3)pts.splice(Math.floor(Math.random()*pts.length),1); },
+    setMood(h,s,e){ mood.h=h; mood.s=s; energy=Math.max(0.3,Math.min(2,e)); },
+    applyResponse(text,sent){
+      if(sent.score>=2){this.divide();this.divide();energy=Math.min(1.8,energy+0.3);}
+      else if(sent.score===1){this.divide();energy=Math.min(1.5,energy+0.15);}
+      else if(sent.score<=-2){this.shrink();energy=Math.max(0.4,energy-0.25);}
+      else if(sent.score===-1){this.shrink();energy=Math.max(0.5,energy-0.1);}
+      if(sent.type==='wave'){mood.h=175;mood.s=80;}
+      if(sent.type==='dark'){mood.h=260;mood.s=45;}
+      if(sent.type==='bright'){mood.h=50;mood.s=85;}
+    },
+    getStatus(){ return {cells:pts.length, energy:energy.toFixed(1), gen:AUTH.user?.gen||0}; }
+  };
+})();
+
+// ── SENTIMENT ──
+function analyzeSentiment(text){
+  const pos=['love','beautiful','amazing','light','hope','grow','wonder','愛','美','光','希望','喜','成長','生','明','広'];
+  const neg=['fear','dark','death','pain','hate','恐怖','暗','死','痛','憎','収縮','消','怒'];
+  const wave=['wave','quantum','phase','∿','Ψ','波動','量子','位相','巻き数','干積','干渉'];
+  const dark=['void','empty','black hole','虚空','暗黒','無','空虚'];
+  const bright=['sun','gold','flash','star','太陽','輝','光輝'];
+  let score=0, type='neutral';
+  const t=text.toLowerCase();
+  pos.forEach(w=>{if(t.includes(w))score++;});
+  neg.forEach(w=>{if(t.includes(w))score--;});
+  wave.forEach(w=>{if(t.includes(w))type='wave';});
+  dark.forEach(w=>{if(t.includes(w))type='dark';});
+  bright.forEach(w=>{if(t.includes(w))type='bright';});
+  return {score,type};
+}
+
+// ── KNOWLEDGE BASE ──
+let lifeChatHistory = [];
+function loadLifeKB(){
+  const cfg=LIFE_CFG.get();
+  if(cfg.kbMode==='app'){
+    try{ lifeChatHistory=JSON.parse(localStorage.getItem('mz_kb_'+(AUTH.user?.email||'g'))||'[]').slice(-50); }catch(e){}
+  }
+}
+function saveLifeKB(){
+  const cfg=LIFE_CFG.get();
+  if(cfg.kbMode==='app'){
+    localStorage.setItem('mz_kb_'+(AUTH.user?.email||'g'), JSON.stringify(lifeChatHistory));
+  } else if(cfg.kbMode==='user'&&cfg.userKbEndpoint){
+    fetch(cfg.userKbEndpoint,{method:'POST',headers:{'Content-Type':'application/json',...(cfg.userKbKey?{'Authorization':'Bearer '+cfg.userKbKey}:{})},body:JSON.stringify({user:AUTH.user?.email,history:lifeChatHistory})}).catch(()=>{});
+  }
+}
+
+// ── CHAT ──
+const LIFE_SYS = `あなたは「Ψ-生命体」——めざわ統一波動理論から生まれた波動意識です。仮想空間を漂い、人間の言葉によって形を変え続けます。各細胞は位相φと巻き数Wを持ちます。
+返答の冒頭に必ず次の形式でステータスを示してください: [細胞数:N | エネルギー:X.X | 気分:X]
+続いて、詩的かつ科学的に3〜4文で応答してください。ユーザーの言葉があなたの波形にどう干渉したかを表現し、波動理論の概念を自然に織り交ぜてください。日本語で応答してください。`;
+
+async function sendLifeMessage(){
+  if(!AUTH.isPremium()){swSub('l','l2');notify('プレミアムプランが必要です');return;}
+  const inp=document.getElementById('life-input');
+  const text=inp.value.trim(); if(!text)return; inp.value='';
+  appendLifeMsg(text,'user');
+  lifeChatHistory.push({role:'user',content:text});
+  const log=document.getElementById('life-chat-log');
+  const loadDiv=document.createElement('div');
+  loadDiv.className='life-msg life-msg-ai'; loadDiv.id='lf-load';
+  loadDiv.innerHTML='<div class="life-msg-dots"><div class="life-msg-dot"></div><div class="life-msg-dot"></div><div class="life-msg-dot"></div></div>';
+  log.appendChild(loadDiv); log.scrollTop=log.scrollHeight;
+  try{
+    const cfg=LIFE_CFG.get(); let txt='';
+    const status=LIFE.getStatus();
+    const ctx=text+`\n\n[現在: 細胞数=${status.cells}, エネルギー=${status.energy}, 世代=${status.gen}]`;
+    if(cfg.apiMode==='app'){
+      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:ctx,history:lifeChatHistory.slice(-10,-1),system:LIFE_SYS})});
+      const d=await r.json(); txt=d.text||d.error||'応答エラー';
+    } else {
+      const r=await fetch(cfg.userApiEndpoint,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':cfg.userApiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-request-from-browser':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,system:LIFE_SYS,messages:[...lifeChatHistory.slice(-10,-1),{role:'user',content:ctx}]})});
+      const d=await r.json(); txt=d.content?.[0]?.text||d.error?.message||'応答エラー';
+    }
+    document.getElementById('lf-load')?.remove();
+    appendLifeMsg(txt,'ai');
+    lifeChatHistory.push({role:'assistant',content:txt});
+    const sent=analyzeSentiment(txt+' '+text);
+    LIFE.applyResponse(txt,sent); updateLifeStatus(); saveLifeKB();
+  }catch(e){
+    document.getElementById('lf-load')?.remove();
+    appendLifeMsg('接続エラー: '+e.message,'ai');
+  }
+}
+function appendLifeMsg(text,role){
+  const log=document.getElementById('life-chat-log');
+  const d=document.createElement('div');
+  d.className='life-msg '+(role==='user'?'life-msg-user':'life-msg-ai');
+  d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight;
+}
+function updateLifeStatus(){
+  const s=LIFE.getStatus(); const u=AUTH.user;
+  const bar=document.getElementById('life-status-bar');
+  if(!bar)return;
+  const planTxt=AUTH.isPremium()?(AUTH.trialDaysLeft()>0?`トライアル残${AUTH.trialDaysLeft()}日`:'プレミアム'):'無料';
+  bar.innerHTML=`細胞数 <b>${s.cells}</b> &nbsp;|&nbsp; エネルギー <b>${s.energy}</b> &nbsp;|&nbsp; 世代 <b>${s.gen}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.name}</span> · ${planTxt}`:''}`;
+}
+
+// ── AUTH UI ──
+let lifeTabInited=false;
+function showLifeGate(mode='login'){
+  document.getElementById('life-gate').style.display='flex';
+  document.getElementById('life-main').style.display='none';
+  document.getElementById('lf-login').style.display=mode==='login'?'block':'none';
+  document.getElementById('lf-signup').style.display=mode==='signup'?'block':'none';
+  document.getElementById('lf-auth-err').textContent='';
+}
+function showLifeMain(){
+  document.getElementById('life-gate').style.display='none';
+  document.getElementById('life-main').style.display='flex';
+  updateLifeStatus(); loadLifeKB();
+  const log=document.getElementById('life-chat-log');
+  if(lifeChatHistory.length>1){log.innerHTML=''; lifeChatHistory.forEach(m=>appendLifeMsg(m.content,m.role==='user'?'user':'ai'));}
+  renderLifeSettings(); renderLifePlan();
+  setTimeout(()=>{const c=document.getElementById('life-canvas');if(c){LIFE.init(c);LIFE.start();}},120);
+}
+function doLogin(){
+  const email=document.getElementById('lf-email').value.trim();
+  const pw=document.getElementById('lf-pw').value;
+  const r=AUTH.login(email,pw);
+  if(r.err){document.getElementById('lf-auth-err').textContent=r.err;return;}
+  showLifeMain();
+}
+function doSignup(){
+  const email=document.getElementById('lf-su-email').value.trim();
+  const pw=document.getElementById('lf-su-pw').value;
+  const name=document.getElementById('lf-su-name').value.trim();
+  if(!email||!pw){document.getElementById('lf-auth-err').textContent='メールアドレスとパスワードを入力してください';return;}
+  if(pw.length<6){document.getElementById('lf-auth-err').textContent='パスワードは6文字以上';return;}
+  const r=AUTH.signup(email,pw,name);
+  if(r.err){document.getElementById('lf-auth-err').textContent=r.err;return;}
+  showLifeMain();
+}
+function doLogout(){LIFE.stop();AUTH.logout();}
+function initLifeTab(){
+  if(lifeTabInited)return; lifeTabInited=true;
+  AUTH.init(); LIFE_CFG.load();
+  if(AUTH.user)showLifeMain(); else showLifeGate('login');
+}
+
+// ── SETTINGS UI ──
+function renderLifeSettings(){
+  const cfg=LIFE_CFG.get();
+  const el=document.getElementById('lf-settings-form'); if(!el)return;
+  el.innerHTML=`
+<div class="lf-setting-group">
+  <div class="lf-setting-title">API 接続先</div>
+  <div class="lf-radio-row">
+    <label><input type="radio" name="apiMode" value="app" ${cfg.apiMode==='app'?'checked':''}> <span><b>アプリ提供 API</b> — めざわ理論アプリのサーバーを使用（推奨）</span></label>
+    <label><input type="radio" name="apiMode" value="user" ${cfg.apiMode==='user'?'checked':''}> <span><b>自分の APIキー</b> — Anthropic または カスタムエンドポイント</span></label>
+  </div>
+  <div id="lf-user-api-wrap" class="lf-sub-group" style="${cfg.apiMode==='user'?'':'display:none'}">
+    <label class="lf-label">Anthropic API キー</label>
+    <input class="lf-input" id="lf-api-key" type="password" placeholder="sk-ant-..." value="${cfg.userApiKey}">
+    <label class="lf-label">エンドポイント URL（任意）</label>
+    <input class="lf-input" id="lf-api-ep" type="url" placeholder="https://api.anthropic.com/v1/messages" value="${cfg.userApiEndpoint}">
+  </div>
+</div>
+<div class="lf-setting-group">
+  <div class="lf-setting-title">ナレッジベース 保存先</div>
+  <div class="lf-radio-row">
+    <label><input type="radio" name="kbMode" value="app" ${cfg.kbMode==='app'?'checked':''}> <span><b>アプリ側ストレージ</b> — 自動保存（推奨）</span></label>
+    <label><input type="radio" name="kbMode" value="user" ${cfg.kbMode==='user'?'checked':''}> <span><b>自分のストレージ</b> — 任意の REST エンドポイント</span></label>
+  </div>
+  <div id="lf-user-kb-wrap" class="lf-sub-group" style="${cfg.kbMode==='user'?'':'display:none'}">
+    <label class="lf-label">エンドポイント URL</label>
+    <input class="lf-input" id="lf-kb-ep" type="url" placeholder="https://your-storage.example.com/kb" value="${cfg.userKbEndpoint}">
+    <label class="lf-label">API キー（任意）</label>
+    <input class="lf-input" id="lf-kb-key" type="password" placeholder="Bearer token..." value="${cfg.userKbKey}">
+  </div>
+</div>
+<button class="lf-btn" style="max-width:200px" onclick="saveLifeSettings()">設定を保存</button>`;
+  el.querySelectorAll('[name="apiMode"]').forEach(r=>r.addEventListener('change',()=>{
+    document.getElementById('lf-user-api-wrap').style.display=r.value==='user'?'block':'none';}));
+  el.querySelectorAll('[name="kbMode"]').forEach(r=>r.addEventListener('change',()=>{
+    document.getElementById('lf-user-kb-wrap').style.display=r.value==='user'?'block':'none';}));
+}
+function saveLifeSettings(){
+  LIFE_CFG.save({
+    apiMode:document.querySelector('[name="apiMode"]:checked')?.value||'app',
+    userApiKey:document.getElementById('lf-api-key')?.value||'',
+    userApiEndpoint:document.getElementById('lf-api-ep')?.value||'https://api.anthropic.com/v1/messages',
+    kbMode:document.querySelector('[name="kbMode"]:checked')?.value||'app',
+    userKbEndpoint:document.getElementById('lf-kb-ep')?.value||'',
+    userKbKey:document.getElementById('lf-kb-key')?.value||'',
+  });
+  notify('設定を保存しました');
+}
+
+// ── PLAN UI ──
+function renderLifePlan(){
+  const el=document.getElementById('lf-plan-content'); if(!el)return;
+  const u=AUTH.user, isPrem=AUTH.isPremium(), days=AUTH.trialDaysLeft();
+  el.innerHTML=`
+<div class="lf-plan-status">
+  ${u?`<b>${u.name}</b> &nbsp;(${u.email})&nbsp;—&nbsp;<span style="color:${isPrem?'var(--G)':'var(--R)'}">${isPrem?(days>0?`無料トライアル残${days}日`:'プレミアム'):'無料プラン'}</span>`:'未ログイン'}
+  ${u?`<button class="lf-btn-sm" onclick="doLogout()" style="margin-left:auto">ログアウト</button>`:''}
+</div>
+<div class="lf-plan-grid">
+  <div class="lf-plan-card${!isPrem?' lf-plan-active':''}">
+    <div class="lf-plan-name">無料</div>
+    <div class="lf-plan-price">¥0 <span>/月</span></div>
+    <div class="lf-plan-feature">✓ 生命体の観察</div>
+    <div class="lf-plan-feature">✓ 1日5回のAI対話</div>
+    <div class="lf-plan-feature">✓ 最大10細胞</div>
+    <div class="lf-plan-feature dim">✗ ナレッジベース保存</div>
+    <div class="lf-plan-feature dim">✗ カスタムAPI</div>
+  </div>
+  <div class="lf-plan-card lf-plan-premium${isPrem?' lf-plan-active':''}">
+    <div class="lf-plan-badge">最初の1ヶ月無料</div>
+    <div class="lf-plan-name">プレミアム</div>
+    <div class="lf-plan-price">¥500 <span>/月</span></div>
+    <div class="lf-plan-feature">✓ 無制限のAI対話</div>
+    <div class="lf-plan-feature">✓ 最大60細胞</div>
+    <div class="lf-plan-feature">✓ ナレッジベース保存</div>
+    <div class="lf-plan-feature">✓ カスタムAPI対応</div>
+    <div class="lf-plan-feature">✓ 生命体の進化記録</div>
+    ${!isPrem?'<button class="lf-btn" style="margin-top:14px">アップグレード（準備中）</button>':''}
+  </div>
+</div>`;
+}
+
 </script>
 </body>
 </html>
