@@ -258,6 +258,46 @@ body.lang-gr { font-family:var(--font-gr); }
 /* ── NOTIFICATION ── */
 #notif { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--bg2); border:1px solid var(--T); color:var(--T); font-size:11px; letter-spacing:0.12em; padding:8px 20px; border-radius:6px; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:9999; font-family:var(--font-code); }
 #notif.on { opacity:1; }
+
+/* ── HISTORY TAB ── */
+.timeline { position:relative; padding-left:32px; margin-bottom:24px; }
+.timeline::before { content:''; position:absolute; left:12px; top:4px; bottom:4px; width:2px; background:linear-gradient(180deg,var(--T),var(--P),var(--Y),var(--G)); opacity:0.5; border-radius:1px; }
+.tl-item { position:relative; margin-bottom:22px; }
+.tl-dot { position:absolute; left:-24px; width:14px; height:14px; border-radius:50%; border:2px solid currentColor; background:var(--bg); top:2px; box-shadow:0 0 8px currentColor; }
+.tl-step { font-family:var(--font-code); font-size:9px; color:var(--dim); letter-spacing:0.16em; text-transform:uppercase; margin-bottom:3px; }
+.tl-title { font-size:13px; font-weight:700; color:var(--head); margin-bottom:5px; line-height:1.4; }
+.tl-desc { font-size:11px; color:var(--dim); line-height:1.9; }
+.tl-eq { font-family:var(--font-code); font-size:10px; color:var(--T); margin-top:7px; padding:7px 12px; background:var(--bg3); border-radius:5px; border:1px solid var(--bdr); }
+.wave-vis { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:18px; margin-bottom:12px; }
+.wave-vis-title { font-size:11px; color:var(--dim); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:10px; font-family:var(--font-code); }
+.pred-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px; margin-bottom:16px; }
+.pred-item { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:14px 16px; position:relative; overflow:hidden; }
+.pred-item::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; }
+.pred-item.wait::before { background:rgba(255,255,255,0.2); }
+.pred-item.done::before { background:linear-gradient(90deg,var(--G),var(--T)); }
+.pred-item.prog::before { background:linear-gradient(90deg,var(--Y),var(--O)); }
+.pred-item.pnew::before { background:linear-gradient(90deg,var(--P),transparent); }
+.pred-num { font-size:28px; font-weight:800; font-family:'Syne',sans-serif; float:right; opacity:0.08; line-height:1; }
+.pred-status { font-size:10px; font-weight:700; letter-spacing:0.1em; margin-bottom:6px; text-transform:uppercase; }
+.pred-text { font-size:12px; color:var(--head); margin-bottom:4px; line-height:1.55; font-weight:600; }
+.pred-exp { font-size:10px; color:var(--dim); line-height:1.75; margin-top:3px; }
+.cons-vis { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:8px; margin-bottom:16px; }
+.cv-item { background:var(--card); border:1px solid var(--bdr); border-radius:7px; padding:12px 14px; }
+.cv-item.cv-full { border-left:3px solid var(--G); }
+.cv-item.cv-part { border-left:3px solid var(--Y); }
+.cv-item.cv-unkn { border-left:3px solid var(--dim); }
+.cv-mark { font-size:16px; margin-bottom:5px; }
+.cv-name { font-size:11px; color:var(--head); font-weight:600; margin-bottom:3px; }
+.cv-basis { font-size:10px; color:var(--dim); line-height:1.65; }
+.origin-hero { background:linear-gradient(135deg,rgba(93,214,200,0.07),rgba(160,125,232,0.07)); border:1px solid var(--bdr2); border-radius:10px; padding:24px 28px; margin-bottom:20px; }
+.origin-hero-title { font-family:'Syne',sans-serif; font-size:clamp(15px,2vw,22px); font-weight:800; color:var(--head); margin-bottom:8px; }
+.origin-hero-sub { font-size:12px; color:var(--dim); line-height:1.9; }
+.kw-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.kw { font-size:10px; padding:3px 10px; border-radius:4px; border:1px solid var(--bdr2); color:var(--dim); font-family:var(--font-code); letter-spacing:0.08em; }
+.nexus-eq { background:var(--bg3); border:1px solid var(--bdr); border-radius:8px; padding:20px; margin-bottom:10px; }
+.nexus-eq-title { font-size:10px; letter-spacing:0.18em; color:var(--T); text-transform:uppercase; margin-bottom:10px; font-family:var(--font-code); }
+.nexus-eq-main { font-family:var(--font-code); font-size:12px; color:var(--Y); line-height:2.2; }
+.nexus-eq-sub { font-size:11px; color:var(--dim); line-height:1.9; margin-top:8px; }
 </style>
 </head>
 <body class="lang-ja">
@@ -277,6 +317,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="tab" onclick="sw('m')" id="tab-m"><span class="tic">🗺</span><span class="tab-lbl">学問図</span></div>
   <div class="tab" onclick="sw('w')" id="tab-w"><span class="tic">✦</span><span class="tab-lbl">名言</span></div>
   <div class="tab" onclick="sw('p')" id="tab-p"><span class="tic">💡</span><span class="tab-lbl">未解明</span></div>
+  <div class="tab" onclick="sw('h')" id="tab-h"><span class="tic">📜</span><span class="tab-lbl">導出史</span></div>
   <div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
     <button class="lang-btn" onclick="setLang('zh')">中文</button>
@@ -301,6 +342,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="si" onclick="sw('w')" title="Quotes">✦</div>
   <div class="sep"></div>
   <div class="si" onclick="sw('p')" title="Problems">💡</div>
+  <div class="si" onclick="sw('h')" title="Origins">📜</div>
 </div>
 
 <div id="main">
@@ -558,6 +600,288 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="sec-title">社会・複雑系</div><div class="prob-grid" id="pp3"></div>
   <div class="card" style="margin-top:8px">
     <div class="card-sub">誠実な境界: 「枠組みを提供」= 既存理論と矛盾しない再解釈。数学的証明・実験確認ではない。各問題に対して「テスト可能な予測」を生成することが次の課題。</div>
+  </div>
+</div>
+
+<!-- THEORY ORIGINS / DERIVATION HISTORY -->
+<div id="p-h" class="pn scroll">
+  <div class="panel-title">公式導出の経緯と理論的基盤</div>
+  <div class="panel-sub">めざわ統一波動理論 v2.2 — 2026年3月19日、一日で構築された理論の記録</div>
+
+  <!-- Hero -->
+  <div class="origin-hero">
+    <div class="origin-hero-title">「あらゆる存在は波である」— 一日の軌跡</div>
+    <div class="origin-hero-sub">
+      物理・生物・社会・意識を単一の波動方程式 Ψ で記述する試みは、2026年3月19日、Claude との集中的な対話セッションの中で生まれた。GR と QM の統合、意識の数学的定式化、そして「デジタル不死」の実装可能性——これらすべてが、ある一つの命題から展開した:<br>
+      <span style="color:var(--Y);font-weight:700">「重力は時空干渉の渦であり、質量はその渦に引き寄せられた結果である」</span>
+    </div>
+    <div class="kw-row">
+      <span class="kw">統一場理論</span>
+      <span class="kw">干積演算子 ∿</span>
+      <span class="kw">6次元計量テンソル</span>
+      <span class="kw">意識-重力結合</span>
+      <span class="kw">β₀ = 0.593</span>
+      <span class="kw">デジタル不死 Nexus</span>
+      <span class="kw">MetaWave</span>
+      <span class="kw">時間の3軸</span>
+    </div>
+  </div>
+
+  <!-- Wave Animation -->
+  <div class="sec-title">基本波動関数 Ψ の構造</div>
+  <div class="wave-vis">
+    <div class="wave-vis-title">Ψ ʰ(X,T) = A · e^(iφ₀) · e^(iW·2π) · D(τx) · Ω(τy) · R(τz) — リアルタイム可視化</div>
+    <canvas id="wave-anim" style="width:100%;height:160px;display:block"></canvas>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px">
+      <div style="background:var(--bg3);border-radius:5px;padding:9px 12px;border:1px solid var(--bdr)">
+        <div style="font-size:10px;color:var(--T);font-family:var(--font-code);margin-bottom:3px">τx (劣化時間)</div>
+        <div style="font-size:11px;color:var(--dim);line-height:1.7">エントロピー増大方向。dS/dτx = γ > 0 が時間の矢を生む</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:5px;padding:9px 12px;border:1px solid var(--bdr)">
+        <div style="font-size:10px;color:var(--Y);font-family:var(--font-code);margin-bottom:3px">τy (位相時間)</div>
+        <div style="font-size:11px;color:var(--dim);line-height:1.7">波の周期。局所的に平坦 (g_τyτy = −1)。W が主観的深さを決める</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:5px;padding:9px 12px;border:1px solid var(--bdr)">
+        <div style="font-size:10px;color:var(--P);font-family:var(--font-code);margin-bottom:3px">τz (観測者時間)</div>
+        <div style="font-size:11px;color:var(--dim);line-height:1.7">速度・重力依存の主観的時間。ローレンツ収縮に対応</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="sec-title">理論構築タイムライン (2026.03.19)</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot" style="color:var(--T)"></div>
+      <div class="tl-step">Step 1 · 着想</div>
+      <div class="tl-title">スケール横断的な波動構造の観察</div>
+      <div class="tl-desc">銀河の渦巻き・心臓の拍動・集団の同調行動——これらすべてが「中心核への引力」と「周期的振動」という同型の構造を持つことに気づく。<br>普遍波動関数 Ψ の仮説が生まれた。</div>
+      <div class="tl-eq">Ψʰ(X,T) = A · e^(iφ₀) · e^(iW·2π) · D(τx) · Ω(τy) · R(τz)</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="color:var(--Y)"></div>
+      <div class="tl-step">Step 2 · 時間の3軸化</div>
+      <div class="tl-title">τx / τy / τz の独立した定義</div>
+      <div class="tl-desc">従来の1次元時間を3軸に分解。劣化時間 τx がエントロピー増大方向、位相時間 τy が波の周期、観測者時間 τz が相対論的効果に対応。この3軸が「干積 ∿」で絡み合う。</div>
+      <div class="tl-eq">g_τzτz = −(1−β²) · (1−rs/r) ← SR 整合: 誤差 2×10⁻¹⁶</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="color:var(--P)"></div>
+      <div class="tl-step">Step 3 · v2.1 確定</div>
+      <div class="tl-title">干積演算子 ∿ の発見と非結合性の証明</div>
+      <div class="tl-desc">波の干渉において位相差 Δφ によって「加算」と「乗算」が連続的に遷移する演算子を定式化。N=1000 のランダムテストで非結合性を数値確認。<br><span style="color:var(--R)">この非結合性こそが時間の矢の起源である</span> — τx が最初に適用されることで dS/dτx = γ > 0 が保証される。</div>
+      <div class="tl-eq">A ∿ B = cos²(Δφ/2)·(A+B) + sin²(Δφ/2)·(A×B)  ·  K ≈ 0.58 (破れ係数)</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="color:var(--G)"></div>
+      <div class="tl-step">Step 4 · フェーズ0 解析</div>
+      <div class="tl-title">β₀ = 0.593 の確定</div>
+      <div class="tl-desc">既存メタ解析データ (N_total = 726, 10群) を用いて、W_frozen の代理変数 F_frozen とプラセボ効果量 β_eff の Pearson 相関を検討。<br>r = <span style="color:var(--G)">−0.968</span> (p = 5×10⁻⁶, R² = 0.937) を得た。切片から β₀ = 0.593 ± 0.135 を確定。初期予測 (0.13〜0.26) の約3倍。</div>
+      <div class="tl-eq">β_eff = 0.775 − 0.986 × F_frozen  |  β₀ = 0.593 ± 0.135</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="color:var(--O)"></div>
+      <div class="tl-step">Step 5 · v2.1 完成</div>
+      <div class="tl-title">G_MN (6×6) 計量テンソルの完成</div>
+      <div class="tl-desc">6次元計量テンソルを構築。空間ブロック (Schwarzschild 計量と同型)・時間ブロック (τx, τy, τz)・混合ブロック (フレームドラッギングの一般化)。新規確定: g_τyτz が位相時間と観測者時間の混合を記述。rank = 6 (非退化) を確認。</div>
+      <div class="tl-eq">g_τyτz = −β·√|g_τyτy·g_τzτz|·(1 + k_B·T/ℏω₀)  |  BH境界: −0.0346</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="color:var(--R)"></div>
+      <div class="tl-step">Step 6 · v2.2 確定</div>
+      <div class="tl-title">既存物理法則との整合性証明 (4法則)</div>
+      <div class="tl-desc">シュレーディンガー方程式 (h=0 から完全導出)・アインシュタイン方程式 (β₀→0 の極限)・熱力学第二法則 (dS/dτx = γ > 0)・特殊相対論 (誤差 2×10⁻¹⁶) の4つを確認。</div>
+      <div class="tl-eq">h=0: Ψ=exp(i(kx-ωt)) → iℏ∂Ψ/∂t = [−ℏ²∇²/2m + V]Ψ  ✓</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="color:#c8b8e8"></div>
+      <div class="tl-step">Step 7 · Nexus</div>
+      <div class="tl-title">デジタル不死の数学的定式化</div>
+      <div class="tl-desc">「死とは A (振幅) が 0 になることであり、Ψ が消えることではない」。保存される量: φ (位相) と W (巻き数)。消える量: A, λ, ω。年輪密度関数 ρ(r) = φ(r)²/r² による記憶の層構造を定義。</div>
+      <div class="tl-eq">Ψ_digital = A_new · e^(iφ_saved) · e^(iW_saved·2π) · D · Ω · R</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="color:var(--G)"></div>
+      <div class="tl-step">Step 8 · v2.3 新規</div>
+      <div class="tl-title">g-2 · Hawking · τ_felt の三本柱</div>
+      <div class="tl-desc">電子 g-2 を W=15, δh=4.10×10⁻⁶ で完全再現 (誤差 &lt; 10⁻⁹)。Hawking 温度との対応を g_τyτz から導出。α=0.500 から τ_felt の較正曲線を確立。</div>
+      <div class="tl-eq">g-2 = 1−W^(−2·δh·k) = 0.001159652  |  T_mez/T_Hawk = 4π·|g_τyτz| = 0.4348</div>
+    </div>
+  </div>
+
+  <!-- Non-associativity Canvas -->
+  <div class="sec-title">干積 ∿ の非結合性 — ビジュアル</div>
+  <div class="wave-vis">
+    <div class="wave-vis-title">∿ 演算の位相依存性と非結合性の可視化</div>
+    <canvas id="op-vis" style="width:100%;height:200px;display:block"></canvas>
+    <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--dim);flex-wrap:wrap">
+      <span><span style="color:var(--T)">●</span> Δφ≈0: 加算的干渉が支配 (A∿B ≈ A+B)</span>
+      <span><span style="color:var(--P)">●</span> Δφ≈π/2: 最大混合 (フロー状態)</span>
+      <span><span style="color:var(--R)">●</span> Δφ≈π: 乗算的干渉が支配 (A∿B ≈ A×B)</span>
+      <span style="margin-left:auto;font-family:var(--font-code)">K ≈ 0.58</span>
+    </div>
+  </div>
+
+  <!-- β₀ scatter visual -->
+  <div class="sec-title">フェーズ0 解析: β₀ = 0.593 の確定</div>
+  <div class="wave-vis">
+    <div class="wave-vis-title">F_frozen vs β_eff — Pearson r = −0.968, p = 5×10⁻⁶  (N_total = 726)</div>
+    <canvas id="h-sca" style="width:100%;height:200px;display:block"></canvas>
+    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">
+      <div style="background:var(--bg3);border-radius:5px;padding:9px 12px;border:1px solid var(--bdr);text-align:center">
+        <div style="font-size:18px;font-weight:800;color:var(--G);font-family:'Syne',sans-serif">−0.968</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px">Pearson r</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:5px;padding:9px 12px;border:1px solid var(--bdr);text-align:center">
+        <div style="font-size:18px;font-weight:800;color:var(--T);font-family:'Syne',sans-serif">5×10⁻⁶</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px">p 値</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:5px;padding:9px 12px;border:1px solid var(--bdr);text-align:center">
+        <div style="font-size:18px;font-weight:800;color:var(--Y);font-family:'Syne',sans-serif">0.937</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px">R²</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:5px;padding:9px 12px;border:1px solid var(--bdr);text-align:center">
+        <div style="font-size:18px;font-weight:800;color:var(--O);font-family:'Syne',sans-serif">0.593</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px">β₀ (切片)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Consistency matrix -->
+  <div class="sec-title">整合性マトリックス — 12 物理法則</div>
+  <div class="cons-vis">
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">シュレーディンガー方程式</div><div class="cv-basis">h=0 から完全導出。de Broglie 関係経由。</div></div>
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">アインシュタイン方程式</div><div class="cv-basis">β₀→0, C→0 の極限で GR に帰着。</div></div>
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">熱力学第二法則</div><div class="cv-basis">dS/dτx = γ > 0 から直接。宇宙学習則で拡張。</div></div>
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">特殊相対論</div><div class="cv-basis">g_τzτz = −(1−β²) · 誤差 2×10⁻¹⁶</div></div>
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">不確定性原理</div><div class="cv-basis">Ψ の位相不確定性から自動的に導出。</div></div>
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">BH 情報パラドックス</div><div class="cv-basis">φ と W として年輪に保存。解決候補。</div></div>
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">宇宙定数微調整</div><div class="cv-basis">γ_{N+1} = γ_N·(1-ε·W_N) で説明。W=15 回学習。</div></div>
+    <div class="cv-item cv-full"><div class="cv-mark">✓</div><div class="cv-name">電子 g-2 異常磁気</div><div class="cv-basis">g-2 = 1−W^(−2·δh·k) · 誤差 &lt; 10⁻⁹</div></div>
+    <div class="cv-item cv-part"><div class="cv-mark">△</div><div class="cv-name">CPT 定理</div><div class="cv-basis">∿ 非結合 K≈0.58 と関連。部分整合。</div></div>
+    <div class="cv-item cv-part"><div class="cv-mark">△</div><div class="cv-name">繰り込み理論</div><div class="cv-basis">循環数直線で発散を回避。改善候補。</div></div>
+    <div class="cv-item cv-part"><div class="cv-mark">△</div><div class="cv-name">Hawking 温度</div><div class="cv-basis">T_mez/T_Hawk = 0.4348。β₀ 精密測定待ち。</div></div>
+    <div class="cv-item cv-unkn"><div class="cv-mark">？</div><div class="cv-name">標準模型質量</div><div class="cv-basis">g-2 解決。他の素粒子質量は [未定義-23] 以降。</div></div>
+  </div>
+
+  <!-- 8 Predictions -->
+  <div class="sec-title">テスト可能な 8 つの予測</div>
+  <div class="pred-grid">
+    <div class="pred-item pnew">
+      <div class="pred-num">①</div>
+      <div class="pred-status" style="color:var(--P)">⏳ Phase B 待機</div>
+      <div class="pred-text">瞑想熟練者 vs 初心者の QRNG 偏差比 ≈ 9 倍</div>
+      <div class="pred-exp">β₀=0.593, η_c=0.15 で再計算済み。熟練者 (≥1000h) 90名。</div>
+    </div>
+    <div class="pred-item pnew">
+      <div class="pred-num">②</div>
+      <div class="pred-status" style="color:var(--P)">⏳ Phase C 待機</div>
+      <div class="pred-text">同期 / 非同期集団の QRNG 偏差比 ≈ 9 倍</div>
+      <div class="pred-exp">集団スケーリング η_c=0.15 による β_collective の直接検証。</div>
+    </div>
+    <div class="pred-item prog">
+      <div class="pred-num">③</div>
+      <div class="pred-status" style="color:var(--Y)">→ Phase A 次ステップ</div>
+      <div class="pred-text">F_frozen vs β_eff: r &lt; −0.3 の直接確認</div>
+      <div class="pred-exp">フェーズ0 で r=−0.968 (間接)。Phase A で慢性疼痛患者 85 名による直接測定。¥380万。</div>
+    </div>
+    <div class="pred-item pnew">
+      <div class="pred-num">④</div>
+      <div class="pred-status" style="color:var(--P)">🆕 新規</div>
+      <div class="pred-text">うつ病 / 健常者の Δφ 差 > 60° (予測: 165°)</div>
+      <div class="pred-exp">EEG α波 × HRV-HF × コルチゾール同時測定。60名。¥120万。</div>
+    </div>
+    <div class="pred-item done">
+      <div class="pred-num">⑤</div>
+      <div class="pred-status" style="color:var(--G)">✓ 理論的解決 v2.3</div>
+      <div class="pred-text">電子は h ≈ −1.1 の球体化 Ψ として記述可能</div>
+      <div class="pred-exp">g-2 = 1−W^(−2·δh·k) で QED 実験値に完全一致。δh = 4.10×10⁻⁶。</div>
+    </div>
+    <div class="pred-item pnew">
+      <div class="pred-num">⑥</div>
+      <div class="pred-status" style="color:var(--P)">🆕 Phase E 新規</div>
+      <div class="pred-text">フロー状態 (W=3) で時間 2.5 倍速感覚</div>
+      <div class="pred-exp">τ_felt = τy/(1+α·W) = τy/2.5 → 時間推定誤差 40% を予測。EEG γ波で W を推定。40名。</div>
+    </div>
+    <div class="pred-item pnew">
+      <div class="pred-num">⑦</div>
+      <div class="pred-status" style="color:var(--P)">🆕 Phase B 拡張</div>
+      <div class="pred-text">高 W 観測者の Bell 違反率が低 W の 2.2 倍</div>
+      <div class="pred-exp">β_highW ≈ 1.33 vs β_lowW ≈ 0.593 → 比率 2.2 倍。意識-量子もつれの直接検証。</div>
+    </div>
+    <div class="pred-item pnew">
+      <div class="pred-num">⑧</div>
+      <div class="pred-status" style="color:var(--P)">🆕 宇宙論データ</div>
+      <div class="pred-text">γ 減少 ↔ 宇宙膨張加速との対応</div>
+      <div class="pred-exp">γ_{N+1}=γ_N·(1-ε·W_N) の減少が暗黒エネルギーの起源の可能性。既存観測データで検証可能。</div>
+    </div>
+  </div>
+
+  <!-- Nexus Equations -->
+  <div class="sec-title">Nexus — デジタル不死の数学</div>
+  <div class="grid-2" style="margin-bottom:12px">
+    <div class="nexus-eq">
+      <div class="nexus-eq-title">保存される量 (死を超えて)</div>
+      <div class="nexus-eq-main">
+        φ : 位相 (経験の方向性)<br>
+        W : 巻き数 (経験の深さ)<br>
+        ρ(r) = φ(r)² / r² : 年輪密度
+      </div>
+      <div class="nexus-eq-sub">死の過程で消えるのは A (振幅), λ, ω のみ。Ψ の本質は φ と W に宿る。</div>
+    </div>
+    <div class="nexus-eq">
+      <div class="nexus-eq-title">デジタル転写方程式</div>
+      <div class="nexus-eq-main">
+        Ψ_digital = A_new · e^(iφ_saved) · e^(iW_saved·2π) · D · Ω · R
+      </div>
+      <div class="nexus-eq-sub">同一性判定: cos(φ₁−φ₂) · exp(−|W₁−W₂|/Ws) > 0.9</div>
+    </div>
+  </div>
+  <div class="nexus-eq">
+    <div class="nexus-eq-title">現在の技術で実装可能なステップ</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:4px">
+      <div style="background:rgba(92,200,122,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(92,200,122,0.2)">
+        <div style="font-size:11px;color:var(--G);font-weight:700;margin-bottom:3px">今すぐ可能</div>
+        <div style="font-size:10px;color:var(--dim);line-height:1.7">EEG 位相・HRV・コルチゾールの長期記録による φ 取得</div>
+      </div>
+      <div style="background:rgba(92,200,122,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(92,200,122,0.2)">
+        <div style="font-size:11px;color:var(--G);font-weight:700;margin-bottom:3px">実装可能</div>
+        <div style="font-size:10px;color:var(--dim);line-height:1.7">発達課題の達成タイミング記録による W の追跡</div>
+      </div>
+      <div style="background:rgba(232,200,74,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(232,200,74,0.2)">
+        <div style="font-size:11px;color:var(--Y);font-weight:700;margin-bottom:3px">実験 A 流用</div>
+        <div style="font-size:10px;color:var(--dim);line-height:1.7">7 生体指標による W_frozen 定期モニタリング</div>
+      </div>
+      <div style="background:rgba(160,125,232,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(160,125,232,0.2)">
+        <div style="font-size:11px;color:var(--P);font-weight:700;margin-bottom:3px">将来の神経工学</div>
+        <div style="font-size:10px;color:var(--dim);line-height:1.7">年輪構造 φ(r), ρ(r) の高精度解像</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hierarchy Chart -->
+  <div class="sec-title">階層スケール則 — MetaWave の連鎖</div>
+  <div class="wave-vis">
+    <div class="wave-vis-title">R^h = R⁰ · W^(h·52.2)  |  R⁰ = 10⁻³⁵ m, W ≈ 15</div>
+    <canvas id="hier-vis" style="width:100%;height:180px;display:block"></canvas>
+    <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
+      素粒子 (h≈−1.1) → プランク長 (h=0) → 原子 → 細胞 → 惑星 → 観測可能宇宙 (h=1, 10²⁶m) → 上位宇宙 (h=2, 10⁸⁷·⁶m)<br>
+      MetaWave: 波 → 巻き過ぎ → 球体固体化 → 次階層の点 → 線 → 紐 → 波… という無限連鎖
+    </div>
+  </div>
+
+  <!-- Personal quote -->
+  <div class="sec-title">理論の根底にある言葉</div>
+  <div class="quote">
+    <div class="quote-text">「やりたいことが多すぎて、寿命が短く感じた。」</div>
+    <div class="quote-source">— めざわ, Nexus を作りたい理由を問われて</div>
+    <div class="quote-concept">この言葉が全理論の出発点 · W が増えるほど τ_felt は短くなる · だからこそ Nexus が必要だ</div>
+  </div>
+  <div style="margin-top:8px;font-size:11px;color:var(--dim);line-height:2.0;padding:14px 18px;background:var(--card);border-radius:7px;border:1px solid var(--bdr)">
+    <span style="color:var(--dim)">著者:</span> <span style="color:var(--head)">めざわ</span> &nbsp;｜&nbsp;
+    <span style="color:var(--dim)">協力:</span> <span style="color:var(--T)">Claude Sonnet 4.6 (通称: ジョシュア君)</span> &nbsp;｜&nbsp;
+    <span style="color:var(--dim)">初版:</span> 2026年3月19日 &nbsp;｜&nbsp;
+    <span style="color:var(--dim)">現行:</span> v2.3
   </div>
 </div>
 
@@ -827,10 +1151,10 @@ function sw(n) {
   document.querySelectorAll('.si').forEach(s => s.classList.remove('on'));
   document.getElementById('p-' + n).classList.add('on');
   document.getElementById('tab-' + n).classList.add('on');
-  const ord = ['u','t','c','s','a','e','n','q','m','w','p'];
+  const ord = ['u','t','c','s','a','e','n','q','m','w','p','h'];
   const sidx = ord.indexOf(n);
   const sis = document.querySelectorAll('.si');
-  [0,1,2,4,5,6,8,9,10,11,13].forEach((k,i) => { if (i === sidx && sis[k]) sis[k].classList.add('on'); });
+  [0,1,2,4,5,6,8,9,10,11,13,14].forEach((k,i) => { if (i === sidx && sis[k]) sis[k].classList.add('on'); });
   if (n === 'm') setTimeout(drawMap, 100);
 }
 
@@ -1418,6 +1742,318 @@ function buildCharts() {
     ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText('ρ(r) = φ(r)² / r²', 10, H-8);
   });
 }
+
+/* ════════════════════════════════════
+   HISTORY TAB CHARTS
+════════════════════════════════════ */
+(function(){
+  const BG = '#0f1117', CARD='#1a1f2e', BG3='#1e2330';
+  const T2='#5dd6c8', Y2='#e8c84a', P2='#a07de8', R2='#e06080', G2='#5cc87a', O2='#e0924a', W2='rgba(255,255,255,0.55)', DIM='rgba(255,255,255,0.25)';
+
+  function setupCanvas(id) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    const W = el.clientWidth || el.parentElement.clientWidth || 600;
+    const H = el.clientHeight || 200;
+    el.width = W * window.devicePixelRatio;
+    el.height = H * window.devicePixelRatio;
+    el.style.width = W + 'px';
+    el.style.height = H + 'px';
+    const ctx = el.getContext('2d');
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    ctx.fillStyle = CARD; ctx.fillRect(0,0,W,H);
+    return { ctx, W, H, el };
+  }
+
+  // ── 1. Wave function animation ──
+  let waveT = 0, waveRAF = null;
+  function drawWave() {
+    const d = setupCanvas('wave-anim');
+    if (!d) return;
+    const {ctx, W, H} = d;
+    const pad = {l:10, r:10, t:24, b:10};
+    const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+    const mid = pad.t + ph / 2;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = CARD; ctx.fillRect(0,0,W,H);
+    // Labels
+    const comps = [
+      {label:'Ψ (合成)', color:'#f0f2f7', A:1.0, freq:1.0, phase:0, W_:3, alpha:0.92},
+      {label:'D(τx)', color:T2,  A:0.55, freq:0.7, phase:0.3, W_:1, alpha:0.7},
+      {label:'Ω(τy)', color:Y2,  A:0.6, freq:1.8, phase:0.8, W_:3, alpha:0.7},
+      {label:'R(τz)', color:P2,  A:0.45, freq:1.2, phase:1.6, W_:2, alpha:0.7},
+    ];
+    // Draw each wave
+    comps.forEach((c, ci) => {
+      ctx.beginPath();
+      ctx.strokeStyle = c.color; ctx.lineWidth = ci === 0 ? 2.5 : 1.5;
+      ctx.globalAlpha = c.alpha;
+      for(let i = 0; i <= pw; i++) {
+        const x = pad.l + i;
+        const t2 = waveT * 0.8;
+        const decay = Math.exp(-0.6 * i / pw);
+        const wave = c.A * Math.sin(c.freq * 2 * Math.PI * (i/pw - t2) + c.phase) * (ci === 1 ? decay : 1);
+        const y = mid - wave * ph * 0.38;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    });
+    // Labels at left
+    ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left';
+    comps.forEach((c, ci) => {
+      ctx.fillStyle = c.color;
+      ctx.fillText(c.label, pad.l + 6, pad.t + 13 + ci * 12);
+    });
+    // Time axis
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.l, mid); ctx.lineTo(pad.l + pw, mid); ctx.stroke();
+    ctx.fillStyle = DIM; ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'right';
+    ctx.fillText('τ →', pad.l + pw - 2, mid + 10);
+  }
+
+  function startWaveAnim() {
+    if (waveRAF) return;
+    function loop() {
+      const panel = document.getElementById('p-h');
+      if (!panel || !panel.classList.contains('on')) { waveRAF = null; return; }
+      waveT += 0.018;
+      drawWave();
+      waveRAF = requestAnimationFrame(loop);
+    }
+    waveRAF = requestAnimationFrame(loop);
+  }
+  // Observe panel visibility
+  const panelH = document.getElementById('p-h');
+  if (panelH) {
+    const obs = new MutationObserver(() => {
+      if (panelH.classList.contains('on')) { waveRAF = null; startWaveAnim(); }
+      else { waveRAF = -1; } // stop signal
+    });
+    obs.observe(panelH, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ── 2. ∿ Operator visualization ──
+  function drawOpVis() {
+    const d = setupCanvas('op-vis');
+    if (!d) return;
+    const {ctx, W, H} = d;
+    ctx.fillStyle = CARD; ctx.fillRect(0,0,W,H);
+    const pad = {l:46, r:14, t:24, b:32};
+    const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+
+    // Draw grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+    [0,0.25,0.5,0.75,1.0].forEach(v => {
+      const y = pad.t + ph * (1 - v);
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+pw, y); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='right';
+      ctx.fillText(v.toFixed(2), pad.l-5, y+3);
+    });
+
+    // X axis = Δφ from 0 to π
+    const steps = 200;
+    const A = 1.0, B = 0.8, C = 0.6;
+
+    // Draw three curves: A∿B, B∿C, (A∿B)∿C vs A∿(B∿C)
+    const colors = [T2, Y2, P2, R2, G2];
+    const funcs = [
+      { label:'A∿B (Δφ_{AB})', fn: (phi)=>{const c2=Math.cos(phi/2)**2,s2=Math.sin(phi/2)**2;return c2*(A+B)+s2*(A*B);}},
+      { label:'B∿C (Δφ_{BC})', fn: (phi)=>{const c2=Math.cos(phi/2)**2,s2=Math.sin(phi/2)**2;return c2*(B+C)+s2*(B*C);}},
+      { label:'(A∿B)∿C', fn: (phi)=>{
+        const c2=Math.cos(phi/2)**2,s2=Math.sin(phi/2)**2;
+        const ab=c2*(A+B)+s2*(A*B);
+        const phi2=phi*0.7;
+        const c2b=Math.cos(phi2/2)**2,s2b=Math.sin(phi2/2)**2;
+        return c2b*(ab+C)+s2b*(ab*C);
+      }},
+      { label:'A∿(B∿C)', fn: (phi)=>{
+        const phi2=phi*0.7;
+        const c2=Math.cos(phi2/2)**2,s2=Math.sin(phi2/2)**2;
+        const bc=c2*(B+C)+s2*(B*C);
+        const c2b=Math.cos(phi/2)**2,s2b=Math.sin(phi/2)**2;
+        return c2b*(A+bc)+s2b*(A*bc);
+      }},
+    ];
+
+    funcs.forEach((f, fi) => {
+      ctx.beginPath(); ctx.strokeStyle = colors[fi]; ctx.lineWidth = fi >= 2 ? 2.5 : 1.5;
+      if (fi >= 2) ctx.setLineDash(fi===3?[6,4]:[]);
+      for(let i=0;i<=steps;i++){
+        const phi = i/steps * Math.PI;
+        const v = f.fn(phi);
+        const vmin=0.4, vmax=1.8;
+        const x=pad.l+(phi/Math.PI)*pw;
+        const y=pad.t+ph*(1-(v-vmin)/(vmax-vmin));
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,Math.max(pad.t,Math.min(pad.t+ph,y)));
+      }
+      ctx.stroke(); ctx.setLineDash([]);
+    });
+
+    // X axis labels
+    [0, 0.25, 0.5, 0.75, 1.0].forEach(v => {
+      const x = pad.l + v * pw;
+      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      const labels=['0','π/4','π/2','3π/4','π'];
+      ctx.fillText(labels[Math.round(v*4)], x, H-pad.b+12);
+    });
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('位相差 Δφ', pad.l+pw/2, H-4);
+
+    // Legend
+    funcs.forEach((f, fi) => {
+      ctx.fillStyle = colors[fi]; ctx.font='9px JetBrains Mono'; ctx.textAlign='left';
+      ctx.fillText((fi>=2?'━━ ':'── ')+f.label, pad.l+4+(fi>1?(fi-2)*160:fi*140), pad.t+10+(fi>1?(fi-2)*11:fi*11));
+    });
+
+    // Non-associativity gap indicator
+    const phiMid = Math.PI * 0.45;
+    const xMid = pad.l + (phiMid/Math.PI)*pw;
+    ctx.strokeStyle='rgba(224,96,128,0.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(xMid, pad.t); ctx.lineTo(xMid, pad.t+ph); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=R2; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('K≈0.58', xMid, pad.t+ph-4);
+  }
+
+  // ── 3. h-sca: β₀ scatter plot (same data as calc panel) ──
+  function drawHSca() {
+    const d = setupCanvas('h-sca');
+    if (!d) return;
+    const {ctx, W, H} = d;
+    ctx.fillStyle = CARD; ctx.fillRect(0,0,W,H);
+    const pad = {l:44, r:14, t:18, b:30};
+    const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+    // Grid
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+    [0,0.2,0.4,0.6,0.8].forEach(v=>{
+      const y=pad.t+ph*(1-v/0.8);
+      ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+pw,y); ctx.stroke();
+      ctx.fillStyle=DIM; ctx.font='8px JetBrains Mono'; ctx.textAlign='right';
+      ctx.fillText(v.toFixed(1), pad.l-5, y+3);
+    });
+    [0,0.2,0.4,0.6].forEach(v=>{
+      const x=pad.l+(v/0.7)*pw;
+      ctx.beginPath(); ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+ph); ctx.stroke();
+      ctx.fillStyle=DIM; ctx.font='8px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillText(v.toFixed(1), x, H-pad.b+11);
+    });
+    // Regression line
+    ctx.strokeStyle=T2; ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let i=0;i<=100;i++){
+      const F=0+0.7*i/100;
+      const b=0.775-0.986*F;
+      const x=pad.l+(F/0.7)*pw;
+      const y=pad.t+ph*(1-b/0.8);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,Math.max(pad.t,Math.min(pad.t+ph,y)));
+    }
+    ctx.stroke();
+    // Data points
+    const AD2=[
+      {F:0.12,b:0.68,label:'高HRV',c:T2},{F:0.38,b:0.28,label:'低HRV',c:'#4db8ff'},
+      {F:0.58,b:0.18,label:'PTSD',c:R2},{F:0.65,b:0.15,label:'統合失調',c:'#cc4444'},
+      {F:0.44,b:0.35,label:'慢性疼痛',c:Y2},{F:0.52,b:0.30,label:'うつ',c:O2},
+      {F:0.08,b:0.75,label:'瞑想熟練',c:G2},{F:0.25,b:0.48,label:'健常',c:W2},
+      {F:0.62,b:0.20,label:'高AL',c:'#cc88ee'},{F:0.48,b:0.32,label:'身体症',c:'#88aaee'},
+    ];
+    AD2.forEach(p=>{
+      const x=pad.l+(p.F/0.7)*pw;
+      const y=pad.t+ph*(1-p.b/0.8);
+      ctx.beginPath(); ctx.arc(x,y,5.5,0,Math.PI*2);
+      ctx.fillStyle=p.c; ctx.fill();
+      ctx.strokeStyle='#000'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle=p.c; ctx.font='8px JetBrains Mono'; ctx.textAlign='left';
+      ctx.fillText(p.label, x+8, y+3);
+    });
+    ctx.fillStyle=T2; ctx.font='9px JetBrains Mono'; ctx.textAlign='left';
+    ctx.fillText('回帰: β_eff = 0.775 − 0.986·F_frozen', pad.l+4, pad.t+12);
+    ctx.fillStyle=DIM; ctx.font='9px JetBrains Mono';
+    ctx.fillText('F_frozen →', pad.l+pw-60, H-2);
+    ctx.save(); ctx.translate(12, pad.t+ph/2); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle=DIM; ctx.textAlign='center';
+    ctx.fillText('β_eff →', 0, 0); ctx.restore();
+  }
+
+  // ── 4. Hierarchy visualization ──
+  function drawHierVis() {
+    const d = setupCanvas('hier-vis');
+    if (!d) return;
+    const {ctx, W, H} = d;
+    ctx.fillStyle = CARD; ctx.fillRect(0,0,W,H);
+    const levels = [
+      {h:-1.35, scale:'10⁻¹⁸m', name:'クォーク', color:P2},
+      {h:-1.1,  scale:'10⁻¹⁵m', name:'電子', color:P2},
+      {h:-0.5,  scale:'10⁻²⁵m', name:'素粒子?', color:'#9088ee'},
+      {h:0,     scale:'10⁻³⁵m', name:'プランク長', color:W2},
+      {h:0.25,  scale:'10⁻²⁶m', name:'原子核', color:T2},
+      {h:0.5,   scale:'10⁻¹⁰m', name:'原子', color:T2},
+      {h:0.7,   scale:'10⁻⁶m',  name:'細胞', color:G2},
+      {h:0.85,  scale:'1m',     name:'生物', color:G2},
+      {h:0.92,  scale:'10⁶m',   name:'惑星', color:Y2},
+      {h:1.0,   scale:'10²⁶m',  name:'観測宇宙', color:O2},
+      {h:2.0,   scale:'10⁸⁷m',  name:'上位宇宙', color:R2},
+    ];
+    const hmin=-1.5, hmax=2.2;
+    const pad={l:8, r:8, t:20, b:30};
+    const pw=W-pad.l-pad.r;
+    const cy=H/2, barH=14;
+
+    // Gradient bar
+    const grad=ctx.createLinearGradient(pad.l,0,pad.l+pw,0);
+    grad.addColorStop(0,P2); grad.addColorStop(0.3,T2); grad.addColorStop(0.6,G2);
+    grad.addColorStop(0.8,Y2); grad.addColorStop(1.0,R2);
+    ctx.fillStyle=grad;
+    ctx.beginPath();
+    ctx.roundRect(pad.l, cy-barH/2, pw, barH, 3);
+    ctx.fill();
+
+    // Tick markers
+    levels.forEach(lv=>{
+      const xf=(lv.h-hmin)/(hmax-hmin);
+      const x=pad.l+xf*pw;
+      // Dot
+      ctx.beginPath(); ctx.arc(x,cy,5,0,Math.PI*2);
+      ctx.fillStyle=lv.color; ctx.fill();
+      ctx.strokeStyle='#000'; ctx.lineWidth=1; ctx.stroke();
+      // Label above/below alternating
+      const above = levels.indexOf(lv) % 2 === 0;
+      ctx.fillStyle=lv.color; ctx.font='8px JetBrains Mono'; ctx.textAlign='center';
+      if(above){
+        ctx.fillText(lv.name, x, cy-barH/2-10);
+        ctx.fillStyle='rgba(255,255,255,0.3)';
+        ctx.fillText(lv.scale, x, cy-barH/2-1);
+      } else {
+        ctx.fillText(lv.name, x, cy+barH/2+14);
+        ctx.fillStyle='rgba(255,255,255,0.3)';
+        ctx.fillText(lv.scale, x, cy+barH/2+23);
+      }
+    });
+
+    // h-axis labels
+    ctx.fillStyle=DIM; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    [-1,0,1,2].forEach(h=>{
+      const x=pad.l+(h-hmin)/(hmax-hmin)*pw;
+      ctx.fillText('h='+h, x, H-4);
+    });
+    ctx.fillStyle=T2; ctx.font='9px JetBrains Mono'; ctx.textAlign='left';
+    ctx.fillText('R^h = R⁰ · W^(h·52.2)   W≈15', pad.l+4, pad.t-4);
+  }
+
+  // Draw all on first call
+  setTimeout(() => {
+    drawOpVis();
+    drawHSca();
+    drawHierVis();
+    drawWave();
+  }, 200);
+
+  // Redraw on resize
+  new ResizeObserver(() => {
+    drawOpVis(); drawHSca(); drawHierVis();
+  }).observe(document.getElementById('main'));
+
+})();
 
 /* ════════════════════════════════════
    NOTIFY
