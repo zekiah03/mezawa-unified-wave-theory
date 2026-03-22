@@ -3082,7 +3082,7 @@ const LIFE=(function(){
     blobInner.scale.setScalar(bR*bPulse*.78);
     const pvC=PHASE_VIS[currentPhase];
     blobMesh.material.color.setHex(pvC.bH);
-    blobMesh.material.opacity=pvC.bOp*(0.88+0.12*Math.sin(t*.38));
+    blobMesh.material.opacity=pvC.bOp*(0.55+0.08*Math.sin(t*.38));
     blobInner.material.color.setHex(pvC.bH);
     blobInner.material.opacity=pvC.bOp*.6;
     blobMesh.rotation.y=t*.065; blobMesh.rotation.x=t*.032;
