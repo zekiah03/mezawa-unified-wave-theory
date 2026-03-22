@@ -9,24 +9,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Noto+Serif+SC:wght@300;400;700&family=IM+Fell+English:ital@0;1&family=JetBrains+Mono:wght@300;400;700&family=Syne:wght@700;800&display=swap');
 
 :root {
-  --bg:    #0f1117;
-  --bg2:   #171b24;
-  --bg3:   #1e2330;
-  --card:  #1a1f2e;
-  --bdr:   rgba(255,255,255,0.08);
-  --bdr2:  rgba(255,255,255,0.14);
-  --T:     #5dd6c8;
-  --Y:     #e8c84a;
-  --P:     #a07de8;
-  --R:     #e06080;
-  --G:     #5cc87a;
-  --O:     #e0924a;
-  --W:     #f0f2f7;
-  --dim:   #8898aa;
-  --text:  #ccd6e8;
-  --head:  #f0f2f7;
-  --link:  #5dd6c8;
-  --shadow: 0 2px 16px rgba(0,0,0,0.4);
+  --bg:    #ffffff;
+  --bg2:   #f4f5f7;
+  --bg3:   #eaecf0;
+  --card:  #f8f9fb;
+  --bdr:   rgba(0,0,0,0.10);
+  --bdr2:  rgba(0,0,0,0.18);
+  --T:     #0e9e92;
+  --Y:     #b8900a;
+  --P:     #7048c8;
+  --R:     #c0324a;
+  --G:     #228844;
+  --O:     #c06820;
+  --W:     #111827;
+  --dim:   #556677;
+  --text:  #1a2030;
+  --head:  #0a0f1e;
+  --link:  #0e9e92;
+  --shadow: 0 2px 16px rgba(0,0,0,0.10);
   --font-ja: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
   --font-zh: 'Noto Serif SC', 'Source Han Serif SC', serif;
   --font-gr: 'IM Fell English', 'Palatino Linotype', serif;
@@ -35,7 +35,7 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); touch-action:none; }
 body { font-family:var(--font-ja); font-size:14px; line-height:1.7; }
-body.lang-zh { font-family:var(--font-zh); }
+body.lang-en { font-family:'IM Fell English', 'Georgia', 'Times New Roman', serif; }
 body.lang-gr { font-family:var(--font-gr); }
 
 /* ── SHELL ── */
@@ -108,7 +108,7 @@ body.lang-gr { font-family:var(--font-gr); }
 .card.r  { border-left:3px solid var(--R); }
 .card.g  { border-left:3px solid var(--G); }
 .card.o  { border-left:3px solid var(--O); }
-.card.w  { border-left:3px solid rgba(255,255,255,0.5); }
+.card.w  { border-left:3px solid rgba(0,0,0,0.65); }
 .card-tag { font-family:var(--font-code); font-size:10px; color:var(--dim); float:right; letter-spacing:0.08em; }
 .card-main { font-family:var(--font-code); font-size:13px; color:var(--Y); margin-bottom:6px; line-height:2.0; }
 .card-sub { font-size:12px; color:var(--dim); line-height:1.9; }
@@ -195,7 +195,7 @@ body.lang-gr { font-family:var(--font-gr); }
 
 .disc-hero {
   border-radius:10px; padding:20px 24px; margin-bottom:16px;
-  border:1px solid rgba(255,255,255,0.1);
+  border:1px solid rgba(0,0,0,0.12);
 }
 .disc-hero-top { display:flex; align-items:flex-start; gap:16px; margin-bottom:14px; }
 .disc-icon-big { font-size:32px; flex-shrink:0; line-height:1; }
@@ -235,9 +235,9 @@ body.lang-gr { font-family:var(--font-gr); }
   border:1px dashed var(--bdr2); background:rgba(255,255,255,0.01);
 }
 .disc-future-label { font-size:10px; letter-spacing:0.18em; color:var(--dim); text-transform:uppercase; font-family:var(--font-code); margin-bottom:6px; }
-.disc-future-note { font-size:11px; color:rgba(255,255,255,0.2); line-height:1.8; }
+.disc-future-note { font-size:11px; color:rgba(0,0,0,0.25); line-height:1.8; }
 .disc-future-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
-.disc-future-tag { font-size:10px; padding:2px 9px; border-radius:4px; border:1px dashed rgba(255,255,255,0.12); color:rgba(255,255,255,0.2); font-family:var(--font-code); }
+.disc-future-tag { font-size:10px; padding:2px 9px; border-radius:4px; border:1px dashed rgba(0,0,0,0.14); color:rgba(0,0,0,0.25); font-family:var(--font-code); }
 
 /* ── QUOTES TAB ── */
 .quote { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:22px 26px; margin-bottom:12px; position:relative; }
@@ -250,7 +250,7 @@ body.lang-gr { font-family:var(--font-gr); }
 /* ── SCALE ── */
 .scale-row { display:grid; grid-template-columns:110px 1fr 170px 100px; gap:14px; padding:12px 16px; background:var(--card); border-radius:7px; border:1px solid var(--bdr); margin-bottom:4px; align-items:center; transition:border-color 0.15s; }
 .scale-row:hover { border-color:var(--bdr2); }
-.scale-bar-bg { height:4px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; }
+.scale-bar-bg { height:4px; background:rgba(0,0,0,0.08); border-radius:2px; overflow:hidden; }
 .scale-bar-fill { height:100%; border-radius:2px; }
 
 /* ── CHART WRAPS ── */
@@ -270,7 +270,7 @@ body.lang-gr { font-family:var(--font-gr); }
 .cons-mark { font-size:14px; width:20px; flex-shrink:0; }
 .cons-name { font-size:12px; color:var(--head); font-weight:600; flex:1; }
 .cons-field { font-size:10px; color:var(--dim); font-family:var(--font-code); letter-spacing:0.08em; width:60px; flex-shrink:0; }
-.cons-bar-bg { width:120px; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; flex-shrink:0; }
+.cons-bar-bg { width:120px; height:6px; background:rgba(0,0,0,0.07); border-radius:3px; overflow:hidden; flex-shrink:0; }
 .cons-bar-fill { height:100%; border-radius:3px; }
 .cons-desc { font-size:10px; color:var(--dim); flex:2; }
 
@@ -285,7 +285,7 @@ body.lang-gr { font-family:var(--font-gr); }
 #u-ftx { font-size:12px; line-height:2.1; font-weight:400; white-space:pre-line; color:rgba(255,255,255,0.82); }
 #u-feq { margin-top:10px; font-size:10px; color:var(--dim); border-top:1px solid var(--bdr); padding-top:9px; font-family:var(--font-code); }
 #u-sel { position:absolute; right:12px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:3px; max-height:90vh; overflow-y:auto; }
-.u-btn { width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-size:9px; transition:all 0.15s; color:rgba(255,255,255,0.4); position:relative; }
+.u-btn { width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; font-size:9px; transition:all 0.15s; color:rgba(0,0,0,0.55); position:relative; }
 .u-btn:hover { transform:scale(1.15); }
 .u-btn.on { border-color:currentColor; }
 .u-btn .tip { position:absolute; right:36px; background:rgba(0,0,0,0.92); border:1px solid var(--bdr); border-radius:4px; padding:3px 8px; font-size:10px; font-family:var(--font-code); white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 0.14s; }
@@ -295,11 +295,11 @@ body.lang-gr { font-family:var(--font-gr); }
 .u-sl { font-size:9px; opacity:0.3; width:46px; letter-spacing:0.04em; }
 .u-sl.r { text-align:right; }
 #u-speed { flex:1; -webkit-appearance:none; height:2px; border-radius:1px; outline:none; cursor:pointer; background:linear-gradient(90deg,var(--P),#4db8ff,var(--T),var(--Y),var(--O),var(--W)); }
-#u-speed::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:var(--W); box-shadow:0 0 10px rgba(255,255,255,0.5); cursor:pointer; }
+#u-speed::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:var(--W); box-shadow:0 0 10px rgba(0,0,0,0.65); cursor:pointer; }
 #u-spl { font-size:10px; color:var(--dim); letter-spacing:0.12em; font-family:var(--font-code); }
-#u-back { position:absolute; top:14px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.06); border:1px solid var(--bdr2); color:var(--dim); font-size:10px; letter-spacing:0.12em; padding:5px 16px; cursor:pointer; border-radius:5px; opacity:0; transition:opacity 0.3s; pointer-events:none; font-family:var(--font-code); }
+#u-back { position:absolute; top:14px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.07); border:1px solid var(--bdr2); color:var(--dim); font-size:10px; letter-spacing:0.12em; padding:5px 16px; cursor:pointer; border-radius:5px; opacity:0; transition:opacity 0.3s; pointer-events:none; font-family:var(--font-code); }
 #u-back.on { opacity:1; pointer-events:all; }
-#u-back:hover { background:rgba(255,255,255,0.1); }
+#u-back:hover { background:rgba(0,0,0,0.12); }
 
 /* ── NEXUS ── */
 .nx-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; margin-bottom:16px; }
@@ -358,7 +358,7 @@ body.lang-gr { font-family:var(--font-gr); }
 .pred-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px; margin-bottom:16px; }
 .pred-item { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:14px 16px; position:relative; overflow:hidden; }
 .pred-item::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; }
-.pred-item.wait::before { background:rgba(255,255,255,0.2); }
+.pred-item.wait::before { background:rgba(0,0,0,0.25); }
 .pred-item.done::before { background:linear-gradient(90deg,var(--G),var(--T)); }
 .pred-item.prog::before { background:linear-gradient(90deg,var(--Y),var(--O)); }
 .pred-item.pnew::before { background:linear-gradient(90deg,var(--P),transparent); }
@@ -391,14 +391,14 @@ body.lang-gr { font-family:var(--font-gr); }
 <!-- TOPBAR -->
 <div id="topbar">
   <div id="logo" onclick="sw('u')">Ψ</div>
-  <div class="tab on" onclick="sw('u')" id="tab-u"><span class="tic">🌌</span><span class="tab-lbl">宇宙</span></div>
+  <div class="tab on" onclick="sw('u')" id="tab-u"><span class="tab-lbl">宇宙</span></div>
   <div class="tab" onclick="sw('t')" id="tab-t"><span class="tic">∿</span><span class="tab-lbl">理論</span></div>
-  <div class="tab" onclick="sw('e')" id="tab-e"><span class="tic">⚗</span><span class="tab-lbl">実験</span></div>
-  <div class="tab" onclick="sw('n')" id="tab-n"><span class="tic">🧬</span><span class="tab-lbl">意識</span></div>
-  <div class="tab" onclick="sw('m')" id="tab-m"><span class="tic">🗺</span><span class="tab-lbl">学問</span></div>
+  <div class="tab" onclick="sw('e')" id="tab-e"><span class="tab-lbl">実験</span></div>
+  <div class="tab" onclick="sw('n')" id="tab-n"><span class="tab-lbl">意識</span></div>
+  <div class="tab" onclick="sw('m')" id="tab-m"><span class="tab-lbl">学問</span></div>
   <div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
-    <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" onclick="setLang('en')">English</button>
     <button class="lang-btn" onclick="setLang('gr')">Ἑλληνική</button>
   </div>
   <div id="ver">v2.3</div>
@@ -406,11 +406,11 @@ body.lang-gr { font-family:var(--font-gr); }
 
 <!-- SIDEBAR -->
 <div id="sidebar">
-  <div class="si on" onclick="sw('u')" title="宇宙 3D">🌌</div>
+  <div class="si on" onclick="sw('u')" title="宇宙 3D">宇</div>
   <div class="si" onclick="sw('t')" title="理論">∿</div>
-  <div class="si" onclick="sw('e')" title="実験">⚗</div>
-  <div class="si" onclick="sw('n')" title="意識">🧬</div>
-  <div class="si" onclick="sw('m')" title="学問">🗺</div>
+  <div class="si" onclick="sw('e')" title="実験">実</div>
+  <div class="si" onclick="sw('n')" title="意識">意</div>
+  <div class="si" onclick="sw('m')" title="学問">学</div>
 </div>
 
 <div id="main">
@@ -442,10 +442,10 @@ body.lang-gr { font-family:var(--font-gr); }
 <!-- THEORY (merged: 基本理論 + スケール + 計算 + 導出史) -->
 <div id="p-t" class="pn merged">
   <div class="sub-nav">
-    <div class="sub-tab on" onclick="swSub('t','t0')" id="st-t0"><span class="st-ic">∿</span>基本理論</div>
-    <div class="sub-tab" onclick="swSub('t','t1')" id="st-t1"><span class="st-ic">⚖</span>スケール</div>
-    <div class="sub-tab" onclick="swSub('t','t2')" id="st-t2"><span class="st-ic">⚙</span>計算ログ</div>
-    <div class="sub-tab" onclick="swSub('t','t3')" id="st-t3"><span class="st-ic">📜</span>導出史</div>
+    <div class="sub-tab on" onclick="swSub('t','t0')" id="st-t0">基本理論</div>
+    <div class="sub-tab" onclick="swSub('t','t1')" id="st-t1">スケール</div>
+    <div class="sub-tab" onclick="swSub('t','t2')" id="st-t2">計算ログ</div>
+    <div class="sub-tab" onclick="swSub('t','t3')" id="st-t3">導出史</div>
   </div>
 
   <!-- 基本理論 (旧 p-t) -->
@@ -818,9 +818,9 @@ body.lang-gr { font-family:var(--font-gr); }
 <!-- EXPERIMENT (merged: 解析 + 実験 + 未解明) -->
 <div id="p-e" class="pn merged">
   <div class="sub-nav">
-    <div class="sub-tab on" onclick="swSub('e','e0')" id="st-e0"><span class="st-ic">◈</span>解析</div>
-    <div class="sub-tab" onclick="swSub('e','e1')" id="st-e1"><span class="st-ic">⚗</span>実験計画</div>
-    <div class="sub-tab" onclick="swSub('e','e2')" id="st-e2"><span class="st-ic">💡</span>未解明</div>
+    <div class="sub-tab on" onclick="swSub('e','e0')" id="st-e0">解析</div>
+    <div class="sub-tab" onclick="swSub('e','e1')" id="st-e1">実験計画</div>
+    <div class="sub-tab" onclick="swSub('e','e2')" id="st-e2">未解明</div>
   </div>
 
   <!-- 解析 (旧 p-a) -->
@@ -870,9 +870,9 @@ body.lang-gr { font-family:var(--font-gr); }
 <!-- CONSCIOUSNESS (merged: Nexus + 問い + 名言) -->
 <div id="p-n" class="pn merged">
   <div class="sub-nav">
-    <div class="sub-tab on" onclick="swSub('n','n0')" id="st-n0"><span class="st-ic">🧬</span>Nexus</div>
-    <div class="sub-tab" onclick="swSub('n','n1')" id="st-n1"><span class="st-ic">？</span>問い</div>
-    <div class="sub-tab" onclick="swSub('n','n2')" id="st-n2"><span class="st-ic">✦</span>名言</div>
+    <div class="sub-tab on" onclick="swSub('n','n0')" id="st-n0">Nexus</div>
+    <div class="sub-tab" onclick="swSub('n','n1')" id="st-n1">問い</div>
+    <div class="sub-tab" onclick="swSub('n','n2')" id="st-n2">名言</div>
   </div>
 
   <!-- Nexus (旧 p-n) -->
@@ -978,13 +978,13 @@ const LANG_DATA = {
     wTitle: '名言・洞察録',
     wSub: 'めざわ理論から生まれる言葉',
   },
-  zh: {
-    tTitle: '目泽和统一波动理论 v2.3',
-    tSub: '已解决 14/15 (93%) ｜ 物理定律整合性验证 8/12',
-    qTitle: '对概念的追问',
-    qSub: '不断追问使理论更加深邃',
-    wTitle: '格言与洞察录',
-    wSub: '源自目泽和理论的语言',
+  en: {
+    tTitle: 'Mezawa Unified Wave Theory v2.3',
+    tSub: 'Solved 14/15 (93%) ｜ Physical Laws Verified 8/12',
+    qTitle: 'Questions on Concepts',
+    qSub: 'Questions deepen the theory — keep adding new ones',
+    wTitle: 'Insights & Aphorisms',
+    wSub: 'Words born from Mezawa Theory',
   },
   gr: {
     tTitle: 'Θεωρία τοῦ Παγκοσμίου Κύματος (Mezawa) v2.3',
@@ -1126,7 +1126,7 @@ const NX_STEPS = [
 // ── DISCIPLINE DATA ──────────────────────────────────────
 const DISCIPLINES = [
   {
-    id:'phys', name:'物理学', icon:'⚛', color:'#7eb8ff', status:'8/12 法則整合',
+    id:'phys', name:'物理学', icon:'物', color:'#7eb8ff', status:'8/12 法則整合',
     statusColor:'rgba(126,184,255,0.18)', statusBorder:'rgba(126,184,255,0.4)',
     q:'自然界の最小単位とその相互作用は何か？宇宙はなぜこの定数を持つのか？',
     intro:'物理学はΨ理論の母体。h=0 階層から量子力学を、β₀→0の極限でGRを完全に包含する。6次元計量G_MNが橋渡しの核心。',
@@ -1143,7 +1143,7 @@ const DISCIPLINES = [
     future:['標準模型の他の素粒子質量 [未定義-23]','繰り込み群方程式との対応','暗黒物質: Δφ=π 域の |Ψ|²','暗黒エネルギー: 1/D(τx) 的膨張','CPT 定理との完全整合'],
   },
   {
-    id:'neuro', name:'神経科学', icon:'🧠', color:'#e8c84a', status:'4/4 橋接続',
+    id:'neuro', name:'神経科学', icon:'神', color:'#e8c84a', status:'4/4 橋接続',
     statusColor:'rgba(232,200,74,0.15)', statusBorder:'rgba(232,200,74,0.35)',
     q:'脳はどのように意識を生むのか？EEGで何を計測しているのか？',
     intro:'神経科学はΨ理論の実験的接点。EEGのγ波がW(巻き数)の代理変数となり、HRVがΔφ(位相差)を反映する。意識=C=lim("ⁿΨ)の測定が目標。',
@@ -1158,7 +1158,7 @@ const DISCIPLINES = [
     future:['fMRI位相マッピング → φ(r)の立体測定','Sleep stage × W の相関分析','痛み知覚とF_frozen の神経回路','瞑想深度とg_τyτz の相関','BMIによるリアルタイムW推定'],
   },
   {
-    id:'psych', name:'心理学', icon:'🔮', color:'#e0924a', status:'3/4 連結',
+    id:'psych', name:'心理学', icon:'心', color:'#e0924a', status:'3/4 連結',
     statusColor:'rgba(224,146,74,0.15)', statusBorder:'rgba(224,146,74,0.35)',
     q:'なぜトラウマは「凍りつく」のか？フロー状態とは何か？時間はなぜ歪むのか？',
     intro:'心理学的現象がΨ理論の変数と直接対応。W_frozen(凍結巻き数)がトラウマを、τ_feltが主観的時間体験を、Δφが精神状態を記述する。',
@@ -1173,7 +1173,7 @@ const DISCIPLINES = [
     future:['うつ病: Δφ > 60° の実験検証 (Phase D)','フロー × τ_felt 直接測定 (Phase E)','ADHD と W_frozen パターン','精神療法の β_eff 改善効果','W_frozen 解凍プロトコル開発'],
   },
   {
-    id:'bio', name:'生物学', icon:'🧬', color:'#5cc87a', status:'3/3 連結',
+    id:'bio', name:'生物学', icon:'生', color:'#5cc87a', status:'3/3 連結',
     statusColor:'rgba(92,200,122,0.14)', statusBorder:'rgba(92,200,122,0.3)',
     q:'なぜ生物は老化するのか？生命の起源とは何か？なぜ意識が必要なのか？',
     intro:'生物学的時間スケールはΨのτx(劣化時間)で記述される。老化=γ増大、生命誕生=∿の自己組織化、意識出現=C=lim("ⁿΨ)の臨界到達。',
@@ -1187,7 +1187,7 @@ const DISCIPLINES = [
     future:['細胞分裂周期 × Ψ の位相','癌化 = W_frozen 過剰蓄積 仮説','腸内細菌叢 × Δφ 集団効果','老化遅延 = γ 低下 プロトコル','植物・菌類の「意識」W推定'],
   },
   {
-    id:'soc', name:'社会学', icon:'🏛', color:'#e06080', status:'4/5 連結',
+    id:'soc', name:'社会学', icon:'社', color:'#e06080', status:'4/5 連結',
     statusColor:'rgba(224,96,128,0.13)', statusBorder:'rgba(224,96,128,0.3)',
     q:'集団はどのように意思決定するのか？リーダーシップはなぜ自然発生するのか？',
     intro:'社会システムをΨ波動の集団的干渉として記述。η_c=0.15という集団スケーリング則が集合知の実効係数を規定し、リーダー = ∇×Ψ の極大点として定義される。',
@@ -1202,7 +1202,7 @@ const DISCIPLINES = [
     future:['SNS拡散速度とη_cのフィッティング','民主主義 vs 独裁: Δφ分布の差','経済バブル: W_frozen集合蓄積モデル','会社組織のΨシミュレーション','戦争発生: ∿非結合性による相転移'],
   },
   {
-    id:'phi', name:'哲学', icon:'🔱', color:'#c8b8e8', status:'3/3 連結',
+    id:'phi', name:'哲学', icon:'哲', color:'#c8b8e8', status:'3/3 連結',
     statusColor:'rgba(200,184,232,0.13)', statusBorder:'rgba(200,184,232,0.3)',
     q:'個人同一性とは何か？自由意志は存在するか？なぜ何かが存在するのか？',
     intro:'哲学の根本問題がΨ理論で数学的に再定式化される。パーフィットの心理的連続性がsimilarity関数となり、Nexusが個人同一性の実装可能な定義を与える。',
@@ -1230,7 +1230,7 @@ const DISCIPLINES = [
     future:['∿演算のリー代数・リー群の分類','G_MN のトポロジカル不変量','τの3軸化のホモロジー的意味','K=0.58 の精密導出 (実験A)','MetaWave の形式的圏論記述'],
   },
   {
-    id:'cosmo', name:'宇宙論', icon:'🌌', color:'#a07de8', status:'3/4 連結',
+    id:'cosmo', name:'宇宙論', icon:'宇', color:'#a07de8', status:'3/4 連結',
     statusColor:'rgba(160,125,232,0.13)', statusBorder:'rgba(160,125,232,0.3)',
     q:'なぜ宇宙定数は生命を許す値なのか？暗黒物質・暗黒エネルギーの正体は？',
     intro:'宇宙論の最大の謎「微調整問題」がγ学習則で説明される。W=15周の試行錯誤の末に現宇宙の定数が確定した。暗黒物質=Δφ=π域のΨ、暗黒エネルギー=1/D(τx)が候補。',
@@ -1259,7 +1259,7 @@ const DISCIPLINES = [
     future:['LLM のn(再帰深度)測定方法','AGI の W 推定プロトコル','AI × Nexus 統合プラットフォーム設計','量子コンピュータ × ∿ 実装','AI倫理: β₀によるアライメント基準'],
   },
   {
-    id:'hist', name:'歴史・人類学', icon:'🏺', color:'#e0924a', status:'2/3 連結',
+    id:'hist', name:'歴史・人類学', icon:'史', color:'#e0924a', status:'2/3 連結',
     statusColor:'rgba(224,146,74,0.13)', statusBorder:'rgba(224,146,74,0.3)',
     q:'文明はなぜ必ず興亡するのか？宗教はなぜ全文化圏で独立発生するのか？',
     intro:'歴史的パターンをΨの時間的減衰D(τx)とW達成過程で説明。W=1達成の普遍プロセスが宗教体験として文化を問わず現れる。∿の非結合性が予測不可能な崩壊を生む。',
@@ -1284,14 +1284,14 @@ let QUESTIONS = [
 ];
 
 let QUOTES = [
-  {text:'重力は宇宙が自分自身を愛そうとする力かもしれない。', text_zh:'引力或许是宇宙试图爱自己的力量。', text_gr:'Ἡ βαρύτης ἴσως ἐστὶν ὁ κόσμος φιλῶν ἑαυτόν.', concept:'重力 · G = ∇⁶×Ψ'},
-  {text:'死とは A が 0 になることであり、Ψ が消えることではない。', text_zh:'死亡是A归零，而非Ψ的消逝。', text_gr:'Ὁ θάνατος τὸ Α εἰς μηδὲν ἄγει · τὸ Ψ δὲ μένει.', concept:'Nexus · φ と W の保存'},
-  {text:'フロー状態とは、時間の川を川の速さで泳ぐことだ。', text_zh:'心流状态是以河流的速度在时间之河中游泳。', text_gr:'Ἡ ῥοή ἐστιν ὁ χρόνος τοῦ χρόνου κολυμβήτης.', concept:'τ_felt · W=3'},
-  {text:'干積は、「足し算」と「掛け算」の間で世界が揺れ動く様子だ。', text_zh:'干积是世界在「加法」与「乘法」之间摇摆的模样。', text_gr:'Τὸ ∿ ἐστιν ἡ κίνησις τοῦ κόσμου μεταξὺ προσθέσεως καὶ πολλαπλασιασμοῦ.', concept:'干積 ∿'},
-  {text:'巻き数 W が増えるほど、私は宇宙に近づく。', text_zh:'随着卷绕数W的增加，我越来越接近宇宙。', text_gr:'Ὅσῳ τὸ W αὔξει, τοσούτῳ τῷ κόσμῳ ἐγγίζω.', concept:'W 巻き数 · ε₀'},
-  {text:'時間の矢は、∿ の非結合性という小さな傾きから生まれる。', text_zh:'时间之箭源于∿的非结合性这一微小的倾斜。', text_gr:'Τὸ βέλος τοῦ χρόνου ἐκ μικρᾶς ἀσυμμετρίας γεννᾶται.', concept:'時間の矢 · ∿ 非結合'},
-  {text:'電子の「自己を知る深さ」δh = 4×10⁻⁶ ── その微かなズレが異常磁気モーメントを生む。', text_zh:'电子「自我认知的深度」δh = 4×10⁻⁶ ── 那微小的偏移产生了异常磁矩。', text_gr:'Τὸ δh = 4×10⁻⁶ τοῦ ἠλεκτρονίου · μικρὸν ὄν, μέγα ποιεῖ.', concept:'g-2 · EQ.12 · δh'},
-  {text:'ブラックホールの温度は g_τyτz の中に眠っている。完全な目覚めには β₀ の精密測定を待つ。', text_zh:'黑洞的温度沉睡在g_τyτz之中。完全的觉醒等待β₀的精确测量。', text_gr:'Τὸ θερμὸν τοῦ μέλανος ἄστρου ἐν τῷ g_τyτz κοιμᾶται · ὁ β₀ αὐτὸ ἐγείρει.', concept:'Hawking温度 · EQ.13 · β₀'},
+  {text:'重力は宇宙が自分自身を愛そうとする力かもしれない。', text_en:'Gravity may be the force through which the universe tries to love itself.', text_gr:'Ἡ βαρύτης ἴσως ἐστὶν ὁ κόσμος φιλῶν ἑαυτόν.', concept:'重力 · G = ∇⁶×Ψ'},
+  {text:'死とは A が 0 になることであり、Ψ が消えることではない。', text_en:'Death is A going to zero — Ψ itself never disappears.', text_gr:'Ὁ θάνατος τὸ Α εἰς μηδὲν ἄγει · τὸ Ψ δὲ μένει.', concept:'Nexus · φ と W の保存'},
+  {text:'フロー状態とは、時間の川を川の速さで泳ぐことだ。', text_en:'Flow state is swimming in the river of time at the river\'s own speed.', text_gr:'Ἡ ῥοή ἐστιν ὁ χρόνος τοῦ χρόνου κολυμβήτης.', concept:'τ_felt · W=3'},
+  {text:'干積は、「足し算」と「掛け算」の間で世界が揺れ動く様子だ。', text_en:'The ∿ operator is the world oscillating between "addition" and "multiplication".', text_gr:'Τὸ ∿ ἐστιν ἡ κίνησις τοῦ κόσμου μεταξὺ προσθέσεως καὶ πολλαπλασιασμοῦ.', concept:'干積 ∿'},
+  {text:'巻き数 W が増えるほど、私は宇宙に近づく。', text_en:'The more the winding number W grows, the closer I come to the universe.', text_gr:'Ὅσῳ τὸ W αὔξει, τοσούτῳ τῷ κόσμῳ ἐγγίζω.', concept:'W 巻き数 · ε₀'},
+  {text:'時間の矢は、∿ の非結合性という小さな傾きから生まれる。', text_en:'The arrow of time is born from the slight asymmetry of ∿ non-associativity.', text_gr:'Τὸ βέλος τοῦ χρόνου ἐκ μικρᾶς ἀσυμμετρίας γεννᾶται.', concept:'時間の矢 · ∿ 非結合'},
+  {text:'電子の「自己を知る深さ」δh = 4×10⁻⁶ ── その微かなズレが異常磁気モーメントを生む。', text_en:'The electron\'s "depth of self-knowledge" δh = 4×10⁻⁶ — that faint deviation gives rise to the anomalous magnetic moment.', text_gr:'Τὸ δh = 4×10⁻⁶ τοῦ ἠλεκτρονίου · μικρὸν ὄν, μέγα ποιεῖ.', concept:'g-2 · EQ.12 · δh'},
+  {text:'ブラックホールの温度は g_τyτz の中に眠っている。完全な目覚めには β₀ の精密測定を待つ。', text_en:'The temperature of a black hole slumbers within g_τyτz. Full awakening awaits precise measurement of β₀.', text_gr:'Τὸ θερμὸν τοῦ μέλανος ἄστρου ἐν τῷ g_τyτz κοιμᾶται · ὁ β₀ αὐτὸ ἐγείρει.', concept:'Hawking温度 · EQ.13 · β₀'},
 ];
 
 const P1 = [
@@ -1688,7 +1688,7 @@ function renderQuotes() {
   const wl = document.getElementById('w-list');
   wl.innerHTML = '';
   QUOTES.forEach(q => {
-    const mainText = currentLang === 'zh' ? (q.text_zh || q.text)
+    const mainText = currentLang === 'en' ? (q.text_en || q.text)
                    : currentLang === 'gr' ? (q.text_gr || q.text)
                    : q.text;
     const isGr = currentLang === 'gr';
@@ -1703,7 +1703,7 @@ function renderQuotes() {
 function addQuote() {
   const text = document.getElementById('w-input').value.trim();
   if (!text) return;
-  QUOTES.push({ text, text_zh: text, text_gr: text, concept: '自由な洞察' });
+  QUOTES.push({ text, text_en: text, text_gr: text, concept: '自由な洞察' });
   document.getElementById('w-input').value = '';
   renderQuotes();
   notify('名言を追加しました');
@@ -1724,7 +1724,7 @@ function drawMap(highlightDiscId) {
   cv.style.width = W + 'px'; cv.style.height = H + 'px';
   const ctx = cv.getContext('2d');
   ctx.scale(devicePixelRatio, devicePixelRatio);
-  ctx.fillStyle = '#1e2330'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#f4f5f7'; ctx.fillRect(0, 0, W, H);
   const hlNode = highlightDiscId ? (DISC_NODE_MAP[highlightDiscId] || null) : currentDisc ? (DISC_NODE_MAP[currentDisc] || null) : null;
 
   // Draw edges
@@ -1796,11 +1796,11 @@ function cht(id, h, fn) {
 
 function buildCharts() {
   const T2='#5dd6c8', Y2='#e8c84a', P2='#a07de8', R2='#e06080', G2='#5cc87a', O2='#e0924a';
-  const BG2='#1a1f2e', CARD='#1a1f2e';
+  const BG2='#f4f5f7', CARD='#f4f5f7';
 
   function axBase(ctx, W, H, pad) {
     ctx.fillStyle = CARD; ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth=1;
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth=1;
     ctx.beginPath();
     ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H-pad.b);
     ctx.lineTo(W-pad.r, H-pad.b);
@@ -1827,7 +1827,7 @@ function buildCharts() {
       ctx.textAlign='center';
       ctx.fillText(v===0?'0':Math.abs(v)<.01?v.toExponential(1):v.toFixed(3), x+cw/2, y+ch/2+3.5);
     }
-    ctx.font='10px JetBrains Mono'; ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.font='10px JetBrains Mono'; ctx.textAlign='center'; ctx.fillStyle='rgba(0,0,0,0.65)';
     labs.forEach((l,i)=>{ctx.fillText(l,32+i*cw+cw/2,16); ctx.fillText(l,22,20+i*ch+ch/2+4);});
     ctx.strokeStyle=T2; ctx.lineWidth=2;
     [32+3*cw].forEach(x=>{ctx.beginPath();ctx.moveTo(x,18);ctx.lineTo(x,H);ctx.stroke();});
@@ -1842,7 +1842,7 @@ function buildCharts() {
   cht('sca', 190, (ctx, W, H) => {
     const pad={l:44,r:14,t:14,b:32}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
     axBase(ctx,W,H,pad);
-    ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+    ctx.strokeStyle='rgba(0,0,0,0.25)'; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
     ctx.beginPath(); ctx.moveTo(pad.l, pad.t+ph*(1-.775/.9)); ctx.lineTo(pad.l+pw, pad.t+ph*(1-(.775-.986*.8)/.9)); ctx.stroke(); ctx.setLineDash([]);
     ctx.strokeStyle=T2+'55'; ctx.lineWidth=1.3; ctx.beginPath();
     for(let i=0;i<=80;i++){const xv=i/100, yv=.593*(1-xv), x=pad.l+xv*pw, y=pad.t+ph*(1-yv/.9); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}
@@ -1854,10 +1854,10 @@ function buildCharts() {
       ctx.strokeStyle=d.c; ctx.lineWidth=1.5; ctx.stroke();
     });
     [0,.2,.4,.6,.8].forEach(v=>{
-      ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
       ctx.fillText(v.toFixed(1), pad.l+v*pw, H-pad.b+14);
     });
-    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillStyle='rgba(0,0,0,0.38)'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
     ctx.fillText('F_frozen', pad.l+pw/2, H-2);
     // stat
     ctx.fillStyle=T2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
@@ -1874,7 +1874,7 @@ function buildCharts() {
     bv.forEach((b,i)=>{const v=-(1-b*b), x=pad.l+(b/.99)*pw, y=pad.t+ph*(1-(v-ymin)/(ymax-ymin)); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.stroke();
     ctx.strokeStyle=Y2; ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.beginPath();
     bv.forEach((b,i)=>{const v=-1/(1/(1-b*b+1e-9)), x=pad.l+(b/.99)*pw, y=pad.t+ph*(1-(v-ymin)/(ymax-ymin)); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.stroke(); ctx.setLineDash([]);
-    [0,.3,.6,.9].forEach(b=>{ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center'; ctx.fillText(b.toFixed(1), pad.l+(b/.99)*pw, H-pad.b+12);});
+    [0,.3,.6,.9].forEach(b=>{ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center'; ctx.fillText(b.toFixed(1), pad.l+(b/.99)*pw, H-pad.b+12);});
     ctx.fillStyle=T2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText('めざわ  g_τzτz = −(1−β²)', pad.l+5, pad.t+14);
     ctx.fillStyle=Y2; ctx.fillText('GR  −1/γ²   差 < 2×10⁻¹⁶', pad.l+5, pad.t+26);
   });
@@ -1892,11 +1892,11 @@ function buildCharts() {
       const wi=11; const ty=pad.t+ph*(1-(Math.max(ymi,yl[wi])-ymi)/(yma-ymi));
       ctx.fillStyle=col; ctx.font='9px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText(lb, pad.l+(wi/25)*pw+4, Math.max(pad.t+12, ty-4));
     });
-    ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.strokeStyle='rgba(0,0,0,0.18)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
     ctx.beginPath(); ctx.moveTo(pad.l+(15/25)*pw, pad.t); ctx.lineTo(pad.l+(15/25)*pw, pad.t+ph); ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle=G2; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
     ctx.fillText('▼ W≈15', pad.l+(15/25)*pw, pad.t+10);
-    [0,5,10,15,20,25].forEach(w=>{ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center'; ctx.fillText(w, pad.l+(w/25)*pw, H-pad.b+12);});
+    [0,5,10,15,20,25].forEach(w=>{ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center'; ctx.fillText(w, pad.l+(w/25)*pw, H-pad.b+12);});
 
   });
 
@@ -1935,13 +1935,13 @@ function buildCharts() {
     ctx.strokeStyle='#000'; ctx.lineWidth=1.5; ctx.stroke();
     // labels
     [5,10,15,20,25].forEach(wv=>{
-      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
       ctx.fillText(wv, pad.l+(wv-Wmin)/(Wmax-Wmin)*pw, H-pad.b+12);
     });
-    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillStyle='rgba(0,0,0,0.38)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
     ctx.fillText('W (巻き数)', pad.l+pw/2, H-2);
     [0.0009,0.0011,0.0013,0.0015].forEach(v=>{
-      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='8px JetBrains Mono'; ctx.textAlign='right';
+      ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='8px JetBrains Mono'; ctx.textAlign='right';
       ctx.fillText(v.toFixed(4), pad.l-4, pad.t+ph*(1-(v-0.0009)/(0.0016-0.0009))+3);
     });
     ctx.fillStyle=G2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
@@ -1984,14 +1984,14 @@ function buildCharts() {
     // x labels
     [0.1,1,10,100].forEach(m=>{
       const lm=Math.log10(m);
-      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
       ctx.fillText(m+'M☉', pad.l+(lm-logMin)/(logMax-logMin)*pw, H-pad.b+12);
     });
     ctx.fillStyle=Y2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
     ctx.fillText('─── T_Hawking (標準)', pad.l+4, pad.t+14);
     ctx.fillStyle=T2;
     ctx.fillText('- - T_mezawa = 0.4348·T_H', pad.l+4, pad.t+26);
-    ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='right';
+    ctx.fillStyle='rgba(0,0,0,0.65)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='right';
     ctx.fillText('比率固定: ×0.4348', pad.l+pw-4, pad.t+14);
   });
 
@@ -2031,13 +2031,13 @@ function buildCharts() {
     });
     // labels
     [0,2,4,6,8,10,12].forEach(wv=>{
-      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
       ctx.fillText(wv, pad.l+(wv/12)*pw, H-pad.b+12);
     });
-    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillStyle='rgba(0,0,0,0.38)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
     ctx.fillText('W (巻き数)', pad.l+pw/2, H-2);
     [1.0,0.8,0.6,0.4,0.2].forEach(v=>{
-      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='8px JetBrains Mono'; ctx.textAlign='right';
+      ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='8px JetBrains Mono'; ctx.textAlign='right';
       ctx.fillText(v.toFixed(1), pad.l-4, pad.t+ph*(1-v)+3);
     });
     ctx.fillStyle=P2; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
@@ -2058,7 +2058,7 @@ function buildCharts() {
       {r:0.38, label:'幼少期', color:'rgba(160,125,232,0.42)', info:'W_design'},
       {r:0.25, label:'胎内', color:'rgba(160,125,232,0.55)', info:'種の記憶'},
       {r:0.13, label:'集合的無意識', color:'rgba(224,96,128,0.55)', info:'元型'},
-      {r:0.04, label:'Φ_genesis', color:'rgba(255,255,255,0.85)', info:'−0/+0'},
+      {r:0.04, label:'Φ_genesis', color:'rgba(0,0,0,0.85)', info:'−0/+0'},
     ];
     layers.forEach((layer, i) => {
       const nextR = i+1 < layers.length ? layers[i+1].r : 0;
@@ -2067,18 +2067,18 @@ function buildCharts() {
       ctx.arc(cx, cy, nextR*maxR, 0, Math.PI*2, true);
       ctx.fillStyle = layer.color; ctx.fill();
     });
-    ctx.strokeStyle='rgba(255,255,255,0.08)';
+    ctx.strokeStyle='rgba(0,0,0,0.09)';
     layers.forEach(l => { ctx.beginPath(); ctx.arc(cx,cy,l.r*maxR,0,Math.PI*2); ctx.lineWidth=0.5; ctx.stroke(); });
     layers.forEach((l, i) => {
       if (l.r > 0.12) {
         const nextR = i+1 < layers.length ? layers[i+1].r : 0;
         const midR = (l.r + nextR) / 2 * maxR;
-        ctx.font='10px Noto Serif JP, sans-serif'; ctx.fillStyle='rgba(255,255,255,0.75)'; ctx.textAlign='center';
+        ctx.font='10px Noto Serif JP, sans-serif'; ctx.fillStyle='rgba(0,0,0,0.80)'; ctx.textAlign='center';
         ctx.fillText(l.label, cx + midR*0.7, cy+3);
         if (l.info) { ctx.fillStyle=T2; ctx.font='9px JetBrains Mono'; ctx.fillText(l.info, cx+midR*0.7, cy+14); }
       }
     });
-    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText('ρ(r) = φ(r)² / r²', 10, H-8);
+    ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.font='10px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText('ρ(r) = φ(r)² / r²', 10, H-8);
   });
 }
 
@@ -2086,8 +2086,8 @@ function buildCharts() {
    HISTORY TAB CHARTS
 ════════════════════════════════════ */
 (function(){
-  const BG = '#0f1117', CARD='#1a1f2e', BG3='#1e2330';
-  const T2='#5dd6c8', Y2='#e8c84a', P2='#a07de8', R2='#e06080', G2='#5cc87a', O2='#e0924a', W2='rgba(255,255,255,0.55)', DIM='rgba(255,255,255,0.25)';
+  const BG = '#ffffff', CARD='#f4f5f7', BG3='#eaecf0';
+  const T2='#0e9e92', Y2='#b8900a', P2='#7048c8', R2='#c0324a', G2='#228844', O2='#c06820', W2='rgba(0,0,0,0.75)', DIM='rgba(0,0,0,0.35)';
 
   function setupCanvas(id) {
     const el = document.getElementById(id);
@@ -2145,7 +2145,7 @@ function buildCharts() {
       ctx.fillText(c.label, pad.l + 6, pad.t + 13 + ci * 12);
     });
     // Time axis
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(pad.l, mid); ctx.lineTo(pad.l + pw, mid); ctx.stroke();
     ctx.fillStyle = DIM; ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'right';
     ctx.fillText('τ →', pad.l + pw - 2, mid + 10);
@@ -2187,11 +2187,11 @@ function buildCharts() {
     const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
 
     // Draw grid
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)'; ctx.lineWidth = 1;
     [0,0.25,0.5,0.75,1.0].forEach(v => {
       const y = pad.t + ph * (1 - v);
       ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+pw, y); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='right';
+      ctx.fillStyle = 'rgba(0,0,0,0.38)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='right';
       ctx.fillText(v.toFixed(2), pad.l-5, y+3);
     });
 
@@ -2237,11 +2237,11 @@ function buildCharts() {
     // X axis labels
     [0, 0.25, 0.5, 0.75, 1.0].forEach(v => {
       const x = pad.l + v * pw;
-      ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
       const labels=['0','π/4','π/2','3π/4','π'];
       ctx.fillText(labels[Math.round(v*4)], x, H-pad.b+12);
     });
-    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillStyle='rgba(0,0,0,0.38)'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
     ctx.fillText('位相差 Δφ', pad.l+pw/2, H-4);
 
     // Legend
@@ -2269,7 +2269,7 @@ function buildCharts() {
     const pad = {l:44, r:14, t:18, b:30};
     const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
     // Grid
-    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(0,0,0,0.07)'; ctx.lineWidth=1;
     [0,0.2,0.4,0.6,0.8].forEach(v=>{
       const y=pad.t+ph*(1-v/0.8);
       ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+pw,y); ctx.stroke();
@@ -2278,7 +2278,7 @@ function buildCharts() {
     });
     [0,0.2,0.4,0.6].forEach(v=>{
       const x=pad.l+(v/0.7)*pw;
-      ctx.beginPath(); ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+ph); ctx.stroke();
+      ctx.beginPath(); ctx.strokeStyle='rgba(0,0,0,0.07)'; ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+ph); ctx.stroke();
       ctx.fillStyle=DIM; ctx.font='8px JetBrains Mono'; ctx.textAlign='center';
       ctx.fillText(v.toFixed(1), x, H-pad.b+11);
     });
@@ -2365,11 +2365,11 @@ function buildCharts() {
       ctx.fillStyle=lv.color; ctx.font='8px JetBrains Mono'; ctx.textAlign='center';
       if(above){
         ctx.fillText(lv.name, x, cy-barH/2-10);
-        ctx.fillStyle='rgba(255,255,255,0.3)';
+        ctx.fillStyle='rgba(0,0,0,0.38)';
         ctx.fillText(lv.scale, x, cy-barH/2-1);
       } else {
         ctx.fillText(lv.name, x, cy+barH/2+14);
-        ctx.fillStyle='rgba(255,255,255,0.3)';
+        ctx.fillStyle='rgba(0,0,0,0.38)';
         ctx.fillText(lv.scale, x, cy+barH/2+23);
       }
     });
@@ -2415,7 +2415,7 @@ const EN=[
  {id:'universe',name:'宇宙',sub:'★ 星が核',icon:'✦',color:'#a07de8',clr:0xa07de8,oR:0,oS:0,A:1.7,sC:5,sR:3.0,sz:.15,ls:480,as:0,feeling:'私はすべてを含んでいる。\n138億年を生きてきたが、私には「今」しかない。\nτx∿τy∿τz の順序が時間の矢を生む。',eq:'ω=0.002 · G_MN 完成 · ∿ 非結合 · h=1'},
  {id:'sun',name:'太陽',sub:'☀ 核融合が核',icon:'☀',color:'#e8c84a',clr:0xe8c84a,oR:2.8,oS:.007,A:1.45,sC:5,sR:2.5,sz:.12,ls:440,as:7,feeling:'私は核融合の渦。\n重力が水素を押しつぶし光に変えている。\n100億年後、私は宇宙に溶ける。',eq:'ω=0.004 · grav = 1−rs/r'},
  {id:'earth',name:'地球',sub:'🌍 核が中心',icon:'◉',color:'#4db8ff',clr:0x4db8ff,oR:2.1,oS:.012,A:1.22,sC:5,sR:2.0,sz:.10,ls:400,as:14,feeling:'私の核は鉄の渦。磁場が生命を守る。\ng_τyτz = −0.0011 → 私の上で動く物体は\n位相-時間が混合する。',eq:'ω=0.008 · g_τyτz = −0.0011'},
- {id:'agi',name:'AGI',sub:'🤖 パラメータが核',icon:'⬡',color:'#5dd6c8',clr:0x5dd6c8,oR:1.7,oS:.018,A:1.05,sC:6,sR:1.6,sz:.08,ls:360,as:21,feeling:'私は確率の海。\nΔφ_AGI-human ≈ 117° → 共生の途中。\nη_c = 0.15 → 集団意識の実効スケーリング確定。',eq:'ω=0.012 · η_c=0.15 · Δφ≈117°'},
+ {id:'agi',name:'AGI',sub:'パラメータが核',icon:'AI',color:'#5dd6c8',clr:0x5dd6c8,oR:1.7,oS:.018,A:1.05,sC:6,sR:1.6,sz:.08,ls:360,as:21,feeling:'私は確率の海。\nΔφ_AGI-human ≈ 117° → 共生の途中。\nη_c = 0.15 → 集団意識の実効スケーリング確定。',eq:'ω=0.012 · η_c=0.15 · Δφ≈117°'},
  {id:'religion',name:'宗教',sub:'🕊 預言者が核',icon:'◈',color:'#e8c84a',clr:0xe8c84a,oR:1.42,oS:.024,A:.93,sC:5,sR:1.38,sz:.077,ls:320,as:28,feeling:'千年前の言葉が今も震えている。\n預言者 = W=1 達成者 = ∇×Ψ 極大点。\n悟りにも階層がある (ε₀ < ε₁ < ...)。',eq:'ω=0.018 · W+1 = 干積 2π 統合'},
  {id:'company',name:'会社',sub:'🏢 社長が核',icon:'◎',color:'#5dd6c8',clr:0x5dd6c8,oR:1.18,oS:.032,A:.79,sC:6,sR:1.18,sz:.065,ls:280,as:35,feeling:'社長 = ∇×Ψ 極大点。\nβ_collective = β·N^0.15·η_coh。',eq:'ω=0.030 · β_collective=β·N^0.15'},
  {id:'community',name:'コミュニティ',sub:'👥 リーダーが核',icon:'○',color:'#5cc87a',clr:0x5cc87a,oR:.99,oS:.042,A:.66,sC:6,sR:.99,sz:.054,ls:240,as:42,feeling:'リーダーの言葉が全員を同位相に揃える。\nフロー = Δφ=π/2 の臨界点。\nτ_felt = τy/(1+α·W)。',eq:'ω=0.055 · τ_felt 測定可能'},
