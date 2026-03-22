@@ -489,6 +489,57 @@ body.lang-gr { font-family:var(--font-gr); }
   .cal-grid-wrap { overflow-x:auto; }
 }
 
+/* ── 人生シミュレーション TAB ── */
+.gs-wrap { max-width:760px; margin:0 auto; padding:28px 28px 48px; }
+.gs-header { margin-bottom:24px; }
+.gs-title { font:800 22px 'Syne',sans-serif; color:var(--head); letter-spacing:-.02em; }
+.gs-sub { font:13px var(--font-ja); color:var(--dim); margin-top:4px; line-height:1.7; }
+.gs-add-row { display:flex; gap:10px; margin-bottom:28px; }
+.gs-add-input { flex:1; padding:10px 14px; background:var(--bg2); border:1px solid var(--bdr2); border-radius:8px; font:13px var(--font-ja); color:var(--text); outline:none; }
+.gs-add-input:focus { border-color:var(--T); }
+.gs-add-date { padding:10px 10px; background:var(--bg2); border:1px solid var(--bdr2); border-radius:8px; font:12px var(--font-code); color:var(--text); outline:none; }
+.gs-add-date:focus { border-color:var(--T); }
+.gs-add-btn { padding:10px 18px; background:var(--T); color:#fff; border:none; border-radius:8px; font:600 13px var(--font-ja); cursor:pointer; white-space:nowrap; }
+.gs-add-btn:hover { opacity:.85; }
+/* goal card */
+.gs-card { background:var(--card); border:1px solid var(--bdr); border-radius:14px; margin-bottom:18px; overflow:hidden; transition:box-shadow .2s; }
+.gs-card:hover { box-shadow:0 4px 20px rgba(0,0,0,.07); }
+.gs-card-head { display:flex; align-items:flex-start; gap:12px; padding:16px 18px 14px; }
+.gs-card-icon { font-size:22px; flex-shrink:0; margin-top:2px; }
+.gs-card-info { flex:1; min-width:0; }
+.gs-card-title { font:600 15px var(--font-ja); color:var(--head); margin-bottom:3px; }
+.gs-card-meta { font:11px var(--font-code); color:var(--dim); display:flex; gap:10px; flex-wrap:wrap; }
+.gs-card-days { color:var(--T); font-weight:700; }
+.gs-card-days.urgent { color:var(--R); }
+.gs-card-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.gs-analyze-btn { padding:7px 14px; background:var(--T); color:#fff; border:none; border-radius:7px; font:600 12px var(--font-ja); cursor:pointer; transition:opacity .15s; }
+.gs-analyze-btn:hover { opacity:.85; }
+.gs-analyze-btn:disabled { opacity:.45; cursor:default; }
+.gs-del-btn { width:28px; height:28px; border:1px solid var(--bdr); border-radius:6px; background:transparent; color:var(--dim); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.gs-del-btn:hover { border-color:var(--R); color:var(--R); }
+/* suggestion area */
+.gs-result { border-top:1px solid var(--bdr); padding:16px 18px 18px; background:var(--bg2); }
+.gs-result-loading { display:flex; align-items:center; gap:10px; font:13px var(--font-ja); color:var(--dim); padding:8px 0; }
+.gs-spinner { width:16px; height:16px; border:2px solid var(--bdr2); border-top-color:var(--T); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+@keyframes spin{to{transform:rotate(360deg)}}
+.gs-analysis-text { font:13px var(--font-ja); color:var(--text); line-height:1.75; margin-bottom:14px; padding:12px 14px; background:var(--bg); border-radius:8px; border-left:3px solid var(--T); }
+.gs-habits-title { font:600 11px sans-serif; letter-spacing:.1em; color:var(--dim); text-transform:uppercase; margin-bottom:10px; }
+.gs-habit-chips { display:flex; flex-wrap:wrap; gap:8px; }
+.gs-habit-chip { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--bg); border:1px solid var(--bdr2); border-radius:10px; }
+.gs-habit-chip-icon { font-size:16px; }
+.gs-habit-chip-body { flex:1; min-width:0; }
+.gs-habit-chip-name { font:600 12px var(--font-ja); color:var(--head); }
+.gs-habit-chip-reason { font:11px var(--font-ja); color:var(--dim); margin-top:1px; }
+.gs-habit-add-btn { padding:4px 10px; background:rgba(14,158,146,.1); border:1px solid rgba(14,158,146,.3); border-radius:6px; font:600 11px var(--font-ja); color:var(--T); cursor:pointer; transition:.15s; white-space:nowrap; flex-shrink:0; }
+.gs-habit-add-btn:hover { background:var(--T); color:#fff; }
+.gs-habit-add-btn.added { background:rgba(34,136,68,.1); border-color:rgba(34,136,68,.3); color:var(--G); cursor:default; }
+.gs-error { font:12px var(--font-ja); color:var(--R); padding:10px 14px; background:rgba(192,50,74,.06); border-radius:8px; border:1px solid rgba(192,50,74,.15); }
+.gs-life-status { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+.gs-life-badge { background:rgba(14,158,146,.08); border:1px solid rgba(14,158,146,.2); border-radius:6px; padding:4px 10px; font:11px var(--font-code); color:var(--T); }
+.gs-empty { text-align:center; padding:48px 20px; color:var(--dim); }
+.gs-empty-icon { font-size:40px; margin-bottom:12px; }
+.gs-empty-text { font:14px var(--font-ja); line-height:1.8; }
+
 .lf-setting-group { margin-bottom:20px; padding:20px; background:var(--bg2); border-radius:8px; border:1px solid var(--bdr); }
 .lf-setting-title { font-size:11px; font-weight:700; color:var(--head); letter-spacing:.12em; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); text-transform:uppercase; }
 .lf-radio-row { display:flex; flex-direction:column; gap:8px; font-size:13px; }
@@ -564,6 +615,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="tab" onclick="sw('m')" id="tab-m"><span class="tab-lbl">学問</span></div>
   <div class="tab" onclick="sw('l')" id="tab-l"><span class="tab-lbl">生命</span></div>
   <div class="tab" onclick="sw('h')" id="tab-h"><span class="tab-lbl">習慣</span></div>
+  <div class="tab" onclick="sw('g')" id="tab-g"><span class="tab-lbl">人生</span></div>
   <div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
     <button class="lang-btn" onclick="setLang('en')">English</button>
@@ -582,6 +634,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="sep"></div>
   <div class="si" onclick="sw('l')" title="Ψ-生命体">生</div>
   <div class="si" onclick="sw('h')" title="習慣">習</div>
+  <div class="si" onclick="sw('g')" title="人生シミュレーション">人</div>
 </div>
 
 <div id="main">
@@ -1289,6 +1342,32 @@ body.lang-gr { font-family:var(--font-gr); }
   </div>
 </div>
 
+<!-- 人生シミュレーション TAB -->
+<div id="p-g" class="pn scroll" style="background:var(--bg)">
+  <div class="gs-wrap">
+    <div class="gs-header">
+      <div class="gs-title">人生シミュレーション</div>
+      <div class="gs-sub">目標と期日を設定すると、Ψ-生命体の状態をもとに AI が最適な習慣を提案します</div>
+    </div>
+
+    <!-- Ψ生命体の現在状態バッジ -->
+    <div id="gs-life-status" class="gs-life-status"></div>
+
+    <!-- 目標追加フォーム -->
+    <div class="gs-add-row">
+      <input id="gs-goal-input" class="gs-add-input" type="text" placeholder="目標を入力… 例：TOEIC 900点を取る、体重を5kg落とす"
+        onkeydown="if(event.key==='Enter')submitGoal()">
+      <input id="gs-goal-date" class="gs-add-date" type="date">
+      <button class="gs-add-btn" onclick="submitGoal()">追加</button>
+    </div>
+
+    <!-- 目標リスト -->
+    <div id="gs-goal-list">
+      <!-- filled by renderGoalTab() -->
+    </div>
+  </div>
+</div>
+
 </div><!-- /main -->
 </div><!-- /shell -->
 <div id="notif"></div>
@@ -1768,7 +1847,7 @@ function sw(n) {
   if (panel) panel.classList.add('on');
   const tab = document.getElementById('tab-' + n);
   if (tab) tab.classList.add('on');
-  const ord = ['u','t','e','n','m','l','h'];
+  const ord = ['u','t','e','n','m','l','h','g'];
   const sidx = ord.indexOf(n);
   const sis = document.querySelectorAll('.si');
   if (sidx >= 0 && sis[sidx]) sis[sidx].classList.add('on');
@@ -1781,6 +1860,7 @@ function sw(n) {
   }
   if (n === 'l') { setTimeout(initLifeTab, 80); }
   if (n === 'h') { setTimeout(initHabitTab, 80); }
+  if (n === 'g') { setTimeout(initGoalTab, 80); }
 }
 
 function swSub(main, sub) {
@@ -4291,6 +4371,209 @@ function submitCalTask(){
 function renderHabitTab(){renderCalendar();}
 function showHabitPicker(){}
 function addCustomHabit(){}
+
+/* ════════════════════════════════════
+   GOAL STATE — 人生シミュレーション
+════════════════════════════════════ */
+const GOAL_STATE=(function(){
+  let goals=[];
+  function key(){return AUTH.user?'mz_goals_'+AUTH.user.email:'mz_goals_guest';}
+  function load(){try{goals=JSON.parse(localStorage.getItem(key())||'[]');}catch(e){goals=[];}}
+  function save(){try{localStorage.setItem(key(),JSON.stringify(goals));}catch(e){}}
+  function add(title,deadline){
+    goals.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+      title,deadline,createdAt:new Date().toISOString(),analysis:null,habits:[],loading:false,error:null});
+    save();
+  }
+  function remove(id){goals=goals.filter(g=>g.id!==id);save();}
+  function setLoading(id,v){const g=goals.find(x=>x.id===id);if(g)g.loading=v;}
+  function setResult(id,analysis,habits){const g=goals.find(x=>x.id===id);if(g){g.analysis=analysis;g.habits=habits;g.error=null;save();}}
+  function setError(id,msg){const g=goals.find(x=>x.id===id);if(g){g.error=msg;save();}}
+  return{load,save,add,remove,setLoading,setResult,setError,get goals(){return goals;}};
+})();
+
+/* ── Goal tab rendering ── */
+let goalTabInited=false;
+function initGoalTab(){
+  if(!goalTabInited){GOAL_STATE.load();goalTabInited=true;}
+  renderGoalTab();
+}
+
+function renderGoalTab(){
+  const list=document.getElementById('gs-goal-list');
+  const status=document.getElementById('gs-life-status');
+  if(!list)return;
+
+  // Ψ生命体の状態バッジ
+  if(status&&typeof LIFE_STATE!=='undefined'){
+    const c=LIFE_STATE.coords||[];
+    const W=c[1]||0;
+    const phase=typeof currentPhase!=='undefined'?currentPhase:'—';
+    const ev=ENV_STATE?.e||{};
+    const phLabel={'fluid':'流動相','gas':'気体相','solid':'固体相','burning':'燃焼相','frozen':'凍結相'};
+    status.innerHTML=
+      `<span class="gs-life-badge">W = ${W.toFixed(1)}</span>`+
+      `<span class="gs-life-badge">${phLabel[phase]||phase}</span>`+
+      (ev.quality!=null?`<span class="gs-life-badge">質 ${(ev.quality*100).toFixed(0)}%</span>`:'')+
+      (ev.cogLoad!=null?`<span class="gs-life-badge">認知負荷 ${(ev.cogLoad*100).toFixed(0)}%</span>`:'');
+  }
+
+  const goals=GOAL_STATE.goals;
+  if(!goals.length){
+    list.innerHTML=`<div class="gs-empty"><div class="gs-empty-icon">🎯</div><div class="gs-empty-text">まだ目標がありません。<br>上のフォームから最初の目標を追加しましょう。</div></div>`;
+    return;
+  }
+
+  const today=new Date(); today.setHours(0,0,0,0);
+  list.innerHTML=goals.map(g=>{
+    const dl=new Date(g.deadline);
+    const days=Math.ceil((dl-today)/(1000*60*60*24));
+    const daysLabel=days>0?`残り${days}日`:days===0?'今日が期日':`${Math.abs(days)}日超過`;
+    const daysClass=days<=7?'urgent':'';
+
+    let resultHtml='';
+    if(g.loading){
+      resultHtml=`<div class="gs-result"><div class="gs-result-loading"><div class="gs-spinner"></div>Ψ-生命体が目標を解析しています…</div></div>`;
+    } else if(g.error){
+      resultHtml=`<div class="gs-result"><div class="gs-error">${escH(g.error)}</div></div>`;
+    } else if(g.analysis){
+      const habitCards=(g.habits||[]).map((h,i)=>{
+        const existing=HABIT_STATE.habits.find(x=>x.name===h.name);
+        const addedClass=existing?'added':'';
+        const addedLabel=existing?'追加済み':'＋ 習慣に追加';
+        return`<div class="gs-habit-chip">
+          <span class="gs-habit-chip-icon">${h.icon||'✦'}</span>
+          <div class="gs-habit-chip-body">
+            <div class="gs-habit-chip-name">${escH(h.name)} <span style="font:10px var(--font-code);color:var(--dim);font-weight:400">${escH(h.frequency||'')}</span></div>
+            <div class="gs-habit-chip-reason">${escH(h.reason||'')}</div>
+          </div>
+          <button class="gs-habit-add-btn ${addedClass}" onclick="addGoalHabit('${g.id}',${i})" ${existing?'disabled':''}>${addedLabel}</button>
+        </div>`;
+      }).join('');
+      resultHtml=`<div class="gs-result">
+        <div class="gs-analysis-text">${escH(g.analysis)}</div>
+        ${g.habits?.length?`<div class="gs-habits-title">推奨習慣</div><div class="gs-habit-chips">${habitCards}</div>`:''}
+      </div>`;
+    }
+
+    return`<div class="gs-card" id="gs-card-${g.id}">
+      <div class="gs-card-head">
+        <div class="gs-card-icon">🎯</div>
+        <div class="gs-card-info">
+          <div class="gs-card-title">${escH(g.title)}</div>
+          <div class="gs-card-meta">
+            <span>期日: ${g.deadline}</span>
+            <span class="gs-card-days ${daysClass}">${daysLabel}</span>
+          </div>
+        </div>
+        <div class="gs-card-actions">
+          <button class="gs-analyze-btn" onclick="generateGoalSuggestion('${g.id}')" ${g.loading?'disabled':''}>
+            ${g.analysis&&!g.loading?'再分析':'AIに提案してもらう'}
+          </button>
+          <button class="gs-del-btn" onclick="removeGoal('${g.id}')" title="削除">×</button>
+        </div>
+      </div>
+      ${resultHtml}
+    </div>`;
+  }).join('');
+}
+
+function submitGoal(){
+  const title=(document.getElementById('gs-goal-input')?.value||'').trim();
+  const deadline=document.getElementById('gs-goal-date')?.value||'';
+  if(!title){notify('目標を入力してください');return;}
+  if(!deadline){notify('達成期日を選択してください');return;}
+  GOAL_STATE.add(title,deadline);
+  document.getElementById('gs-goal-input').value='';
+  document.getElementById('gs-goal-date').value='';
+  renderGoalTab();
+}
+
+function removeGoal(id){
+  GOAL_STATE.remove(id);
+  renderGoalTab();
+}
+
+function addGoalHabit(goalId,habitIdx){
+  const g=GOAL_STATE.goals.find(x=>x.id===goalId);
+  if(!g||!g.habits[habitIdx])return;
+  const h=g.habits[habitIdx];
+  const preset={id:'goal_'+Date.now().toString(36),name:h.name,icon:h.icon||'✦',cat:'目標',
+    ef:{W:0.2,quality:0.08}};
+  HABIT_STATE.add(preset);
+  notify(`「${h.name}」を習慣に追加しました`);
+  renderGoalTab();
+}
+
+async function generateGoalSuggestion(goalId){
+  const g=GOAL_STATE.goals.find(x=>x.id===goalId);
+  if(!g)return;
+
+  const cfg=LIFE_CFG.get();
+  if(!cfg.userApiKey){
+    GOAL_STATE.setError(goalId,'APIキーが設定されていません。生命タブ → 設定 からAPIキーを追加してください。');
+    renderGoalTab();return;
+  }
+
+  GOAL_STATE.setLoading(goalId,true);
+  renderGoalTab();
+
+  try{
+    const c=LIFE_STATE.coords||[];
+    const W=(c[1]||0).toFixed(1);
+    const ev=ENV_STATE?.e||{};
+    const phLabel={'fluid':'流動相','gas':'気体相','solid':'固体相','burning':'燃焼相','frozen':'凍結相'};
+    const phase=phLabel[typeof currentPhase!=='undefined'?currentPhase:'fluid']||'流動相';
+    const existingHabits=HABIT_STATE.habits.map(h=>h.name).join('、')||'なし';
+    const today=new Date(); today.setHours(0,0,0,0);
+    const dl=new Date(g.deadline);
+    const daysLeft=Math.ceil((dl-today)/(1000*60*60*24));
+
+    const prompt=`あなたはΨ統一波動理論に基づく人生設計AIです。ユーザーのΨ-生命体の状態と目標をもとに、最適な習慣を提案してください。
+
+【Ψ-生命体の現在状態】
+- W（生命波動量）: ${W}
+- フェーズ: ${phase}
+- 環境・熱レベル: ${((ev.heatLevel||0.3)*100).toFixed(0)}%
+- 生活の質: ${((ev.quality||0.7)*100).toFixed(0)}%
+- 認知負荷: ${((ev.cogLoad||0.2)*100).toFixed(0)}%
+
+【現在の習慣】${existingHabits}
+
+【ユーザーの目標】
+「${g.title}」
+達成期日: ${g.deadline}（残り${daysLeft}日）
+
+この目標を達成するために最も効果的な習慣を3〜5個提案してください。
+必ずJSON形式のみで回答してください（前後に説明文不要）:
+{
+  "analysis": "目標とΨ-生命体状態を踏まえた分析コメント（100〜150字）",
+  "habits": [
+    {"name": "習慣名（短く）", "icon": "絵文字1文字", "reason": "理由（40字以内）", "frequency": "毎日/週3回など"}
+  ]
+}`;
+
+    const res=await fetch(cfg.userApiEndpoint||'https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':cfg.userApiKey,
+        'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,
+        messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error?.message||`HTTP ${res.status}`);
+    const text=data.content?.[0]?.text||'';
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('レスポンスの解析に失敗しました');
+    const parsed=JSON.parse(m[0]);
+    GOAL_STATE.setResult(goalId,parsed.analysis||'',parsed.habits||[]);
+  }catch(e){
+    GOAL_STATE.setError(goalId,'エラー: '+e.message);
+  }finally{
+    GOAL_STATE.setLoading(goalId,false);
+    renderGoalTab();
+  }
+}
 
 function initLifeTab(){
   if(lifeTabInited)return; lifeTabInited=true;
