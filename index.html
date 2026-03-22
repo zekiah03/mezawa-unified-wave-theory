@@ -422,6 +422,73 @@ body.lang-gr { font-family:var(--font-gr); }
   #life-detail-side { display:contents; }
   .life-detail-nav { display:none !important; }
 }
+
+/* ── WEEKLY CALENDAR (習慣タブ) ── */
+.cal-topbar { flex-shrink:0; padding:12px 16px 8px; background:var(--bg2); border-bottom:1px solid var(--bdr); }
+.cal-nav-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.cal-nav-btn { width:30px; height:30px; border:1px solid var(--bdr2); border-radius:7px; background:var(--bg); color:var(--dim); font-size:18px; line-height:1; cursor:pointer; transition:.15s; display:flex; align-items:center; justify-content:center; }
+.cal-nav-btn:hover { border-color:var(--T); color:var(--T); }
+.cal-week-label { flex:1; text-align:center; font:600 13px var(--font-ja); color:var(--head); letter-spacing:.04em; }
+.cal-today-btn { padding:5px 13px; background:var(--T); color:#fff; border:none; border-radius:7px; font:600 11px var(--font-ja); cursor:pointer; letter-spacing:.06em; }
+.cal-today-btn:hover { opacity:.85; }
+.cal-life-bar { display:flex; gap:6px; flex-wrap:wrap; min-height:20px; align-items:center; }
+.cal-life-badge { background:rgba(14,158,146,.1); border:1px solid rgba(14,158,146,.22); border-radius:5px; padding:2px 7px; font:11px var(--font-code); color:var(--T); }
+.cal-grid-wrap { flex:1; overflow:hidden; min-height:0; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); height:100%; }
+.cal-day { display:flex; flex-direction:column; border-right:1px solid var(--bdr); overflow:hidden; }
+.cal-day:last-child { border-right:none; }
+.cal-day-hd { flex-shrink:0; padding:8px 4px 6px; text-align:center; background:var(--bg2); border-bottom:1px solid var(--bdr); }
+.cal-day-name { font:700 9px sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); margin-bottom:2px; }
+.cal-day-num { font:700 20px var(--font-ja); color:var(--head); line-height:1; }
+.cal-day-hd.is-today .cal-day-name { color:var(--T); }
+.cal-day-hd.is-today .cal-day-num { color:var(--T); }
+.cal-day-hd.is-today .cal-day-dot { display:block; }
+.cal-day-dot { display:none; width:5px; height:5px; border-radius:50%; background:var(--T); margin:3px auto 0; }
+.cal-day-hd.is-weekend .cal-day-name { color:var(--R); }
+.cal-day-hd.is-weekend:not(.is-today) .cal-day-num { color:var(--R); opacity:.7; }
+.cal-day-body { flex:1; overflow-y:auto; padding:4px 3px; display:flex; flex-direction:column; gap:3px; }
+.cal-day-body::-webkit-scrollbar { width:3px; }
+.cal-day-body::-webkit-scrollbar-thumb { background:var(--bdr2); border-radius:2px; }
+/* habit chips */
+.cal-habit-chip { display:flex; align-items:center; gap:4px; padding:3px 5px; border-radius:5px; background:var(--bg3); border:1px solid var(--bdr); cursor:pointer; transition:.15s; }
+.cal-habit-chip:hover { border-color:var(--T); }
+.cal-habit-chip.is-done { background:rgba(14,158,146,.1); border-color:rgba(14,158,146,.3); }
+.cal-habit-chip.is-done .cal-hc-name { text-decoration:line-through; opacity:.6; }
+.cal-hc-icon { font-size:12px; flex-shrink:0; }
+.cal-hc-name { font:11px var(--font-ja); color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:68px; }
+/* todo tasks */
+.cal-task { display:flex; align-items:flex-start; gap:4px; padding:4px 5px; border-radius:5px; background:var(--card); border:1px solid var(--bdr); cursor:pointer; transition:.15s; }
+.cal-task:hover { border-color:var(--bdr2); }
+.cal-task.is-done .cal-task-title { text-decoration:line-through; opacity:.5; }
+.cal-task-check { width:13px; height:13px; border-radius:3px; border:1.5px solid var(--bdr2); flex-shrink:0; margin-top:1px; transition:.15s; }
+.cal-task.is-done .cal-task-check { background:var(--T); border-color:var(--T); }
+.cal-task-body { flex:1; min-width:0; }
+.cal-task-time { font:9px var(--font-code); color:var(--T); margin-bottom:1px; }
+.cal-task-title { font:11px var(--font-ja); color:var(--text); line-height:1.4; word-break:break-all; }
+.cal-task-del { font-size:13px; color:var(--dim); opacity:0; transition:.15s; flex-shrink:0; padding:0 1px; }
+.cal-task:hover .cal-task-del { opacity:.5; }
+/* add button */
+.cal-day-add { flex-shrink:0; padding:3px; }
+.cal-add-btn { width:100%; padding:4px 0; background:transparent; border:1px dashed var(--bdr); border-radius:5px; font:11px sans-serif; color:var(--dim); cursor:pointer; transition:.15s; }
+.cal-add-btn:hover { border-color:var(--T); color:var(--T); }
+/* modal */
+.cal-modal-overlay { position:absolute; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:200; }
+.cal-modal-box { background:var(--bg); border:1px solid var(--bdr2); border-radius:14px; padding:24px 22px; width:min(340px,92vw); box-shadow:0 8px 40px rgba(0,0,0,.18); display:flex; flex-direction:column; gap:10px; }
+.cal-modal-title { font:700 15px var(--font-ja); color:var(--head); margin-bottom:2px; }
+.cal-modal-input { width:100%; padding:9px 11px; background:var(--bg2); border:1px solid var(--bdr2); border-radius:7px; font:13px var(--font-ja); color:var(--text); outline:none; box-sizing:border-box; }
+.cal-modal-input:focus { border-color:var(--T); }
+.cal-modal-row { display:flex; flex-direction:column; gap:3px; }
+.cal-modal-lbl { font:11px sans-serif; color:var(--dim); letter-spacing:.05em; }
+.cal-modal-actions { display:flex; gap:8px; margin-top:4px; }
+.cal-modal-btn-primary { flex:1; padding:10px; background:var(--T); color:#fff; border:none; border-radius:8px; font:600 13px var(--font-ja); cursor:pointer; }
+.cal-modal-btn-primary:hover { opacity:.85; }
+.cal-modal-btn-ghost { flex:1; padding:10px; background:transparent; border:1px solid var(--bdr2); border-radius:8px; font:600 13px var(--font-ja); color:var(--dim); cursor:pointer; }
+.cal-modal-btn-ghost:hover { border-color:var(--T); color:var(--T); }
+@media (max-width:767px){
+  .cal-grid { grid-template-columns:repeat(7,minmax(90px,1fr)); overflow-x:auto; }
+  .cal-grid-wrap { overflow-x:auto; }
+}
+
 .lf-setting-group { margin-bottom:20px; padding:20px; background:var(--bg2); border-radius:8px; border:1px solid var(--bdr); }
 .lf-setting-title { font-size:11px; font-weight:700; color:var(--head); letter-spacing:.12em; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); text-transform:uppercase; }
 .lf-radio-row { display:flex; flex-direction:column; gap:8px; font-size:13px; }
@@ -1170,34 +1237,55 @@ body.lang-gr { font-family:var(--font-gr); }
   </div>
 </div>
 
-<!-- HABIT TAB — 習慣 -->
-<div id="p-h" class="pn scroll" style="padding:0;overflow-y:auto;background:var(--bg)">
-  <div style="max-width:600px;margin:0 auto;padding:24px 20px">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-      <div>
-        <div style="font:700 20px 'Noto Sans JP',sans-serif;color:var(--fg)">習慣</div>
-        <div style="font:13px sans-serif;color:var(--muted);margin-top:2px">継続が生命体を育てる — 習慣が Ψ-生命体に直結</div>
+<!-- HABIT / CALENDAR TAB — 習慣 -->
+<div id="p-h" class="pn" style="background:var(--bg);display:flex;flex-direction:column;overflow:hidden">
+
+  <!-- ── Top bar ── -->
+  <div class="cal-topbar">
+    <div class="cal-nav-row">
+      <button class="cal-nav-btn" onclick="calPrevWeek()" title="前の週">‹</button>
+      <span id="cal-week-label" class="cal-week-label">―</span>
+      <button class="cal-nav-btn" onclick="calNextWeek()" title="次の週">›</button>
+      <button class="cal-today-btn" onclick="calToday()">今日</button>
+    </div>
+    <!-- Habit life-effect summary bar -->
+    <div id="habit-life-bar" class="cal-life-bar"></div>
+  </div>
+
+  <!-- ── 7-day grid ── -->
+  <div class="cal-grid-wrap">
+    <div class="cal-grid" id="cal-grid">
+      <!-- filled by renderCalendar() -->
+    </div>
+  </div>
+
+  <!-- ── Add task modal ── -->
+  <div id="cal-modal" class="cal-modal-overlay" style="display:none" onclick="if(event.target===this)closeCalModal()">
+    <div class="cal-modal-box">
+      <div class="cal-modal-title">やることを追加</div>
+      <input id="cal-add-title" type="text" class="cal-modal-input" placeholder="タイトルを入力…" onkeydown="if(event.key==='Enter')submitCalTask()">
+      <div class="cal-modal-row">
+        <label class="cal-modal-lbl">日付</label>
+        <input id="cal-add-date" type="date" class="cal-modal-input">
       </div>
-      <div id="habit-score-ring" style="width:56px;height:56px;flex-shrink:0"></div>
-    </div>
-    <!-- Life link preview bar -->
-    <div id="habit-life-bar" style="background:var(--srf);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;margin-bottom:18px;font:12px sans-serif;color:var(--muted);display:flex;gap:12px;align-items:center;flex-wrap:wrap"></div>
-    <!-- Habit list -->
-    <div id="habit-list" style="display:flex;flex-direction:column;gap:10px"></div>
-    <!-- Add habit -->
-    <div style="margin-top:18px">
-      <button onclick="showHabitPicker()" style="width:100%;background:transparent;border:1.5px dashed var(--bdr);border-radius:10px;padding:12px;font:14px sans-serif;color:var(--muted);cursor:pointer;transition:.2s" onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--bdr)'">＋ 習慣を追加</button>
-    </div>
-    <!-- Habit picker (hidden) -->
-    <div id="habit-picker" style="display:none;margin-top:12px;background:var(--srf);border:1px solid var(--bdr);border-radius:12px;padding:16px">
-      <div style="font:600 13px sans-serif;color:var(--fg);margin-bottom:12px">プリセットから選ぶ</div>
-      <div id="habit-preset-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px"></div>
-      <div style="display:flex;gap:8px">
-        <input id="habit-custom-name" placeholder="カスタム習慣を入力..." style="flex:1;background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:8px 12px;font:13px sans-serif;color:var(--fg)">
-        <button onclick="addCustomHabit()" style="background:var(--acc);color:#fff;border:none;border-radius:8px;padding:8px 16px;font:13px sans-serif;cursor:pointer">追加</button>
+      <div class="cal-modal-row">
+        <label class="cal-modal-lbl">時間</label>
+        <input id="cal-add-time" type="time" class="cal-modal-input">
+      </div>
+      <div class="cal-modal-actions">
+        <button class="cal-modal-btn-primary" onclick="submitCalTask()">追加</button>
+        <button class="cal-modal-btn-ghost" onclick="closeCalModal()">キャンセル</button>
       </div>
     </div>
+  </div>
+
+  <!-- Legacy DOM nodes kept for HABIT_STATE JS (hidden) -->
+  <div style="display:none">
+    <div id="habit-list"></div>
+    <div id="habit-score-ring"></div>
+    <div id="habit-picker"></div>
+    <div id="habit-preset-grid"></div>
+    <input id="habit-custom-name">
   </div>
 </div>
 
@@ -4036,68 +4124,173 @@ const HABIT_STATE=(function(){
   };
 })();
 
-let habitTabInited=false;
+/* ════════════════════════════════════
+   CALENDAR STATE
+════════════════════════════════════ */
+const CALENDAR_STATE=(function(){
+  let tasks=[];
+  let weekOff=0;
+  const DAY_NAMES=['日','月','火','水','木','金','土'];
+
+  function storageKey(){return AUTH.user?'mz_cal_'+AUTH.user.email:'mz_cal_guest';}
+  function load(){try{tasks=JSON.parse(localStorage.getItem(storageKey())||'[]');}catch(e){tasks=[]; }}
+  function save(){try{localStorage.setItem(storageKey(),JSON.stringify(tasks));}catch(e){}}
+
+  function toDateStr(d){
+    const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+    return`${y}-${m}-${dd}`;
+  }
+  function getWeekDates(){
+    const now=new Date();
+    const dow=now.getDay(); // 0=Sun
+    const mon=new Date(now);
+    mon.setDate(now.getDate()-(dow===0?6:dow-1)+weekOff*7);
+    return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
+  }
+  function weekLabel(){
+    const days=getWeekDates();
+    const s=days[0],e=days[6];
+    const sm=s.getMonth()+1,em=e.getMonth()+1;
+    if(sm===em)return`${s.getFullYear()}年${sm}月 ${s.getDate()}日–${e.getDate()}日`;
+    return`${s.getFullYear()}年${sm}月${s.getDate()}日 – ${em}月${e.getDate()}日`;
+  }
+  function addTask(title,dateStr,timeStr){
+    const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+    tasks.push({id,title,date:dateStr,time:timeStr||'',done:false});
+    save();
+  }
+  function toggleTask(id){const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
+  function removeTask(id){tasks=tasks.filter(x=>x.id!==id);save();}
+  function getForDate(dateStr){return tasks.filter(t=>t.date===dateStr).sort((a,b)=>a.time.localeCompare(b.time));}
+
+  return{load,save,addTask,toggleTask,removeTask,getForDate,getWeekDates,weekLabel,DAY_NAMES,
+    get weekOff(){return weekOff;},set weekOff(v){weekOff=v;}};
+})();
+
+/* ── Calendar rendering ── */
+let calInited=false;
+let _calPendingDate='';
+
 function initHabitTab(){
-  if(!AUTH.user){renderHabitTab();return;}
-  if(!habitTabInited){HABIT_STATE.load();habitTabInited=true;}
-  renderHabitTab();
+  if(!calInited){
+    CALENDAR_STATE.load();
+    if(AUTH.user) HABIT_STATE.load();
+    calInited=true;
+  }
+  renderCalendar();
 }
 
-function renderHabitTab(){
-  const list=document.getElementById('habit-list');
+function renderCalendar(){
+  const grid=document.getElementById('cal-grid');
+  const label=document.getElementById('cal-week-label');
   const bar=document.getElementById('habit-life-bar');
-  const ring=document.getElementById('habit-score-ring');
-  if(!list)return;
-  if(!AUTH.user){list.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px 0;font:14px sans-serif">ログインして習慣を始めよう<br><br><button onclick="sw(\'l\')" style="background:var(--acc);color:#fff;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font:14px sans-serif">ログイン</button></div>';return;}
-  const habits=HABIT_STATE.habits;
-  const score=HABIT_STATE.getScore();
-  const ef=HABIT_STATE.getTodayEffect();
-  // Score ring (SVG)
-  const r=22,c=28,circ=2*Math.PI*r;
-  const dash=circ*score;
-  if(ring)ring.innerHTML=`<svg width="56" height="56"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--bdr)" stroke-width="4"/><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--acc)" stroke-width="4" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-dashoffset="${(circ/4).toFixed(1)}" stroke-linecap="round"/><text x="${c}" y="${c+5}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fg)">${Math.round(score*100)}%</text></svg>`;
+  if(!grid)return;
+
+  if(label) label.textContent=CALENDAR_STATE.weekLabel();
+
   // Life effect bar
-  const efKeys={W:'W↑',heatLevel:'熱↑',quality:'質↑',cogLoad:'集中',hostility:'敵意',socialDensity:'社会'};
-  const efBadges=Object.entries(ef).filter(([k,v])=>Math.abs(v)>.01).map(([k,v])=>`<span style="background:var(--srf);border:1px solid var(--bdr);border-radius:6px;padding:3px 8px;white-space:nowrap">${efKeys[k]||k} <b style="color:${v>0?'#4af':'#f88'}">${v>0?'+':''}${v.toFixed(2)}</b></span>`).join('');
-  if(bar)bar.innerHTML=efBadges?`<span style="color:var(--muted)">今日の生命効果</span>${efBadges}`:'<span style="color:var(--muted)">習慣を完了すると生命体に影響します</span>';
-  // Habit list
-  list.innerHTML=habits.map(h=>{
-    const streak=h.streak||0;
-    const streakColor=streak>=7?'#f0a':streak>=3?'#fa0':streak>=1?'#4af':'var(--muted)';
-    return`<div style="background:var(--srf);border:1px solid ${h.doneToday?'var(--acc)':'var(--bdr)'};border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:.2s;cursor:pointer" onclick="HABIT_STATE.toggle('${h.id}')">
-      <div style="font:26px sans-serif;flex-shrink:0">${h.icon}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font:600 14px 'Noto Sans JP',sans-serif;color:var(--fg);display:flex;align-items:center;gap:8px">
-          ${h.name}
-          <span style="font:11px sans-serif;color:var(--muted);font-weight:400">${h.cat}</span>
+  if(bar&&AUTH.user){
+    const ef=HABIT_STATE.getTodayEffect();
+    const efKeys={W:'W↑',heatLevel:'熱↑',quality:'質↑',cogLoad:'集中↓',hostility:'敵意↓',socialDensity:'社会↑'};
+    const badges=Object.entries(ef).filter(([,v])=>Math.abs(v)>.005)
+      .map(([k,v])=>`<span class="cal-life-badge">${efKeys[k]||k} ${v>0?'+':''}${v.toFixed(2)}</span>`).join('');
+    bar.innerHTML=badges||'<span style="font:11px sans-serif;color:var(--dim)">習慣を記録すると生命体に影響します</span>';
+  } else if(bar){
+    bar.innerHTML='<span style="font:11px sans-serif;color:var(--dim)">ログインすると生命体と連携します</span>';
+  }
+
+  const todayStr=CALENDAR_STATE.getWeekDates()[0].constructor===Date?
+    (()=>{const n=new Date();const y=n.getFullYear(),m=String(n.getMonth()+1).padStart(2,'0'),d=String(n.getDate()).padStart(2,'0');return`${y}-${m}-${d}`;})():'';
+  const days=CALENDAR_STATE.getWeekDates();
+  const habits=AUTH.user?(HABIT_STATE.habits||[]):[];
+
+  grid.innerHTML=days.map((d,di)=>{
+    const ds=CALENDAR_STATE.getWeekDates()[di];
+    const y=ds.getFullYear(),m=String(ds.getMonth()+1).padStart(2,'0'),dd=String(ds.getDate()).padStart(2,'0');
+    const dateStr=`${y}-${m}-${dd}`;
+    const isToday=(dateStr===todayStr);
+    const isWeekend=(di===5||di===6);
+    const tasks=CALENDAR_STATE.getForDate(dateStr);
+
+    const habitChips=habits.map(h=>`
+      <div class="cal-habit-chip${h.doneToday?' is-done':''}" onclick="calToggleHabit('${h.id}')" title="${h.name}">
+        <span class="cal-hc-icon">${h.icon}</span>
+        <span class="cal-hc-name">${h.name}</span>
+      </div>`).join('');
+
+    const taskItems=tasks.map(t=>`
+      <div class="cal-task${t.done?' is-done':''}" onclick="calToggleTask('${t.id}')">
+        <div class="cal-task-check"></div>
+        <div class="cal-task-body">
+          ${t.time?`<div class="cal-task-time">${t.time}</div>`:''}
+          <div class="cal-task-title">${escH(t.title)}</div>
         </div>
-        <div style="font:11px sans-serif;color:${streakColor};margin-top:2px">${streak>0?'🔥 '+streak+'日連続':'まだ始まっていない'}</div>
+        <div class="cal-task-del" onclick="event.stopPropagation();calRemoveTask('${t.id}')">×</div>
+      </div>`).join('');
+
+    return`<div class="cal-day">
+      <div class="cal-day-hd${isToday?' is-today':''}${isWeekend?' is-weekend':''}">
+        <div class="cal-day-name">${CALENDAR_STATE.DAY_NAMES[d.getDay()]}</div>
+        <div class="cal-day-num">${d.getDate()}</div>
+        <div class="cal-day-dot"></div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-        ${h.doneToday?`<div style="width:28px;height:28px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font:14px sans-serif;color:#fff">✓</div>`:`<div style="width:28px;height:28px;border-radius:50%;border:2px solid var(--bdr)"></div>`}
-        <div onclick="event.stopPropagation();HABIT_STATE.remove('${h.id}');renderHabitTab()" style="color:var(--muted);font:16px sans-serif;cursor:pointer;opacity:.4" title="削除">×</div>
+      <div class="cal-day-body">${habitChips}${taskItems}</div>
+      <div class="cal-day-add">
+        <button class="cal-add-btn" onclick="openCalModal('${dateStr}')">＋</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function showHabitPicker(){
-  const p=document.getElementById('habit-picker');
-  const g=document.getElementById('habit-preset-grid');
-  if(!p||!g)return;
-  p.style.display=p.style.display==='none'?'block':'none';
-  const existing=new Set(HABIT_STATE.habits.map(h=>h.id));
-  g.innerHTML=HABIT_STATE.PRESETS.filter(p=>!existing.has(p.id)).map(pr=>`<div onclick="HABIT_STATE.add(${JSON.stringify(pr)});renderHabitTab();document.getElementById('habit-picker').style.display='none'" style="background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font:13px sans-serif;color:var(--fg);transition:.15s" onmouseover="this.style.background='var(--srf)'" onmouseout="this.style.background='var(--bg)'"><span style="font:22px sans-serif">${pr.icon}</span><span>${pr.name}</span><span style="font:10px sans-serif;color:var(--muted)">${pr.cat}</span></div>`).join('');
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function calPrevWeek(){CALENDAR_STATE.weekOff--;renderCalendar();}
+function calNextWeek(){CALENDAR_STATE.weekOff++;renderCalendar();}
+function calToday(){CALENDAR_STATE.weekOff=0;renderCalendar();}
+
+function calToggleHabit(id){
+  HABIT_STATE.toggle(id);
+  renderCalendar();
+}
+function calToggleTask(id){
+  CALENDAR_STATE.toggleTask(id);
+  renderCalendar();
+}
+function calRemoveTask(id){
+  CALENDAR_STATE.removeTask(id);
+  renderCalendar();
 }
 
-function addCustomHabit(){
-  const inp=document.getElementById('habit-custom-name');
-  const n=inp?.value?.trim();
-  if(!n)return;
-  HABIT_STATE.addCustom(n);inp.value='';
-  document.getElementById('habit-picker').style.display='none';
-  renderHabitTab();
+function openCalModal(dateStr){
+  _calPendingDate=dateStr||'';
+  const modal=document.getElementById('cal-modal');
+  const dateInput=document.getElementById('cal-add-date');
+  const timeInput=document.getElementById('cal-add-time');
+  const titleInput=document.getElementById('cal-add-title');
+  if(!modal)return;
+  if(dateInput) dateInput.value=dateStr||'';
+  if(timeInput) timeInput.value='';
+  if(titleInput){titleInput.value='';setTimeout(()=>titleInput.focus(),80);}
+  modal.style.display='flex';
 }
+function closeCalModal(){
+  const modal=document.getElementById('cal-modal');
+  if(modal) modal.style.display='none';
+}
+function submitCalTask(){
+  const title=(document.getElementById('cal-add-title')?.value||'').trim();
+  const date=document.getElementById('cal-add-date')?.value||_calPendingDate;
+  const time=document.getElementById('cal-add-time')?.value||'';
+  if(!title||!date){notify('タイトルと日付を入力してください');return;}
+  CALENDAR_STATE.addTask(title,date,time);
+  closeCalModal();
+  renderCalendar();
+}
+
+// Legacy stubs kept to avoid JS errors from HABIT_STATE callbacks
+function renderHabitTab(){renderCalendar();}
+function showHabitPicker(){}
+function addCustomHabit(){}
 
 function initLifeTab(){
   if(lifeTabInited)return; lifeTabInited=true;
