@@ -323,6 +323,27 @@ body.lang-gr { font-family:var(--font-gr); }
 #notif { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--bg2); border:1px solid var(--T); color:var(--T); font-size:11px; letter-spacing:0.12em; padding:8px 20px; border-radius:6px; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:9999; font-family:var(--font-code); }
 #notif.on { opacity:1; }
 
+/* ── SUB-TAB NAVIGATION ── */
+.pn.merged { padding:0; overflow:hidden; display:flex; flex-direction:column; }
+.sub-nav {
+  flex-shrink:0; display:flex; gap:0; background:var(--bg2);
+  border-bottom:1px solid var(--bdr); z-index:10;
+}
+.sub-tab {
+  height:38px; padding:0 18px; display:flex; align-items:center; gap:6px;
+  font-size:11px; letter-spacing:0.06em; color:var(--dim); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all 0.16s; white-space:nowrap;
+  border-right:1px solid var(--bdr);
+}
+.sub-tab:hover { color:var(--W); background:rgba(255,255,255,0.03); }
+.sub-tab.on { color:var(--T); border-bottom-color:var(--T); background:rgba(93,214,200,0.05); }
+.sub-tab .st-ic { opacity:0.7; font-size:12px; }
+.sub-pane { display:none; flex:1; overflow-y:auto; padding:28px 36px; }
+.sub-pane.on { display:block; }
+.sub-pane::-webkit-scrollbar { width:5px; }
+.sub-pane::-webkit-scrollbar-track { background:var(--bg); }
+.sub-pane::-webkit-scrollbar-thumb { background:var(--bdr2); border-radius:3px; }
+
 /* ── HISTORY TAB ── */
 .timeline { position:relative; padding-left:32px; margin-bottom:24px; }
 .timeline::before { content:''; position:absolute; left:12px; top:4px; bottom:4px; width:2px; background:linear-gradient(180deg,var(--T),var(--P),var(--Y),var(--G)); opacity:0.5; border-radius:1px; }
@@ -370,18 +391,11 @@ body.lang-gr { font-family:var(--font-gr); }
 <!-- TOPBAR -->
 <div id="topbar">
   <div id="logo" onclick="sw('u')">Ψ</div>
-  <div class="tab on" onclick="sw('u')" id="tab-u"><span class="tic">🌌</span><span class="tab-lbl">3D 宇宙</span></div>
+  <div class="tab on" onclick="sw('u')" id="tab-u"><span class="tic">🌌</span><span class="tab-lbl">宇宙</span></div>
   <div class="tab" onclick="sw('t')" id="tab-t"><span class="tic">∿</span><span class="tab-lbl">理論</span></div>
-  <div class="tab" onclick="sw('c')" id="tab-c"><span class="tic">⚙</span><span class="tab-lbl">計算</span></div>
-  <div class="tab" onclick="sw('s')" id="tab-s"><span class="tic">⚖</span><span class="tab-lbl">スケール</span></div>
-  <div class="tab" onclick="sw('a')" id="tab-a"><span class="tic">◈</span><span class="tab-lbl">解析</span></div>
   <div class="tab" onclick="sw('e')" id="tab-e"><span class="tic">⚗</span><span class="tab-lbl">実験</span></div>
-  <div class="tab" onclick="sw('n')" id="tab-n"><span class="tic">🧬</span><span class="tab-lbl">Nexus</span></div>
-  <div class="tab" onclick="sw('q')" id="tab-q"><span class="tic">？</span><span class="tab-lbl">問い</span></div>
-  <div class="tab" onclick="sw('m')" id="tab-m"><span class="tic">🗺</span><span class="tab-lbl">学問図</span></div>
-  <div class="tab" onclick="sw('w')" id="tab-w"><span class="tic">✦</span><span class="tab-lbl">名言</span></div>
-  <div class="tab" onclick="sw('p')" id="tab-p"><span class="tic">💡</span><span class="tab-lbl">未解明</span></div>
-  <div class="tab" onclick="sw('h')" id="tab-h"><span class="tic">📜</span><span class="tab-lbl">導出史</span></div>
+  <div class="tab" onclick="sw('n')" id="tab-n"><span class="tic">🧬</span><span class="tab-lbl">意識</span></div>
+  <div class="tab" onclick="sw('m')" id="tab-m"><span class="tic">🗺</span><span class="tab-lbl">学問</span></div>
   <div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
     <button class="lang-btn" onclick="setLang('zh')">中文</button>
@@ -392,21 +406,11 @@ body.lang-gr { font-family:var(--font-gr); }
 
 <!-- SIDEBAR -->
 <div id="sidebar">
-  <div class="si on" onclick="sw('u')" title="3D">🌌</div>
-  <div class="si" onclick="sw('t')" title="Theory">∿</div>
-  <div class="si" onclick="sw('c')" title="Calc">⚙</div>
-  <div class="sep"></div>
-  <div class="si" onclick="sw('s')" title="Scale">⚖</div>
-  <div class="si" onclick="sw('a')" title="Analysis">◈</div>
-  <div class="si" onclick="sw('e')" title="Experiment">⚗</div>
-  <div class="sep"></div>
-  <div class="si" onclick="sw('n')" title="Nexus">🧬</div>
-  <div class="si" onclick="sw('q')" title="Questions">？</div>
-  <div class="si" onclick="sw('m')" title="Map">🗺</div>
-  <div class="si" onclick="sw('w')" title="Quotes">✦</div>
-  <div class="sep"></div>
-  <div class="si" onclick="sw('p')" title="Problems">💡</div>
-  <div class="si" onclick="sw('h')" title="Origins">📜</div>
+  <div class="si on" onclick="sw('u')" title="宇宙 3D">🌌</div>
+  <div class="si" onclick="sw('t')" title="理論">∿</div>
+  <div class="si" onclick="sw('e')" title="実験">⚗</div>
+  <div class="si" onclick="sw('n')" title="意識">🧬</div>
+  <div class="si" onclick="sw('m')" title="学問">🗺</div>
 </div>
 
 <div id="main">
@@ -435,247 +439,122 @@ body.lang-gr { font-family:var(--font-gr); }
   </div>
 </div>
 
-<!-- THEORY -->
-<div id="p-t" class="pn scroll">
-  <div class="panel-title" id="t-title">めざわ統一波動理論 v2.3</div>
-  <div class="panel-sub" id="t-sub">解決率 14/15 (93%) ｜ 整合性確認 8/12 物理法則</div>
-  <div class="sec-title" id="t-ax">公理系</div>
-  <div class="axiom-grid" id="ag"></div>
-  <div class="sec-title" id="t-eq">基本方程式</div>
-  <div id="eql"></div>
-  <div class="sec-title" id="t-new">v2.2 新規確定</div>
-  <div class="card g">
-    <span class="card-tag">証明1-4</span>
-    <div class="card-main">Schrodinger ✓ · Einstein GR ✓ · 熱力学第二法則 ✓ · 特殊相対論 ✓</div>
-    <div class="card-sub">h=0 階層で Ψ=exp(i(kx-ωt)) からシュレーディンガー方程式を完全導出。β₀→0, C→0 で GR に帰着。dS/dτx=γ>0 で第二法則。g_τzτz=-(1-β²)で SR、誤差2×10⁻¹⁶。</div>
-    <div class="card-gr">Ἡ Φύσις κατὰ τὸν Νόμον κινεῖται · ὁ χρόνος ῥεῖ · ἡ ἐντροπία αὔξει</div>
+<!-- THEORY (merged: 基本理論 + スケール + 計算 + 導出史) -->
+<div id="p-t" class="pn merged">
+  <div class="sub-nav">
+    <div class="sub-tab on" onclick="swSub('t','t0')" id="st-t0"><span class="st-ic">∿</span>基本理論</div>
+    <div class="sub-tab" onclick="swSub('t','t1')" id="st-t1"><span class="st-ic">⚖</span>スケール</div>
+    <div class="sub-tab" onclick="swSub('t','t2')" id="st-t2"><span class="st-ic">⚙</span>計算ログ</div>
+    <div class="sub-tab" onclick="swSub('t','t3')" id="st-t3"><span class="st-ic">📜</span>導出史</div>
   </div>
-  <div class="card y">
-    <span class="card-tag">新予測⑦⑧</span>
-    <div class="card-main">⑦ 高W観測者のBell違反率が低W観測者の2.2倍 ｜ ⑧ γ減少 ↔ 宇宙膨張加速</div>
-    <div class="card-sub">β_highW ≈ 1.33 vs β_lowW ≈ 0.593 → 比率2.2倍。Phase B で検証可能。γ_{N+1}=γ_N·(1-ε·W_N) の減少が暗黒エネルギーの起源の可能性。</div>
-  </div>
-  <div class="sec-title">v2.3 新規確定</div>
-  <div class="card g">
-    <span class="card-tag">[解決-20] g-2</span>
-    <div class="card-main">電子 g-2 = 1 − W^(−2·δh·k) ｜ W=15, δh = 4.10×10⁻⁶ で QED値に完全一致</div>
-    <div class="card-sub">充填率モデル: g-2 ≈ 1 − W^(−2·δh·k) → δh = 4.10×10⁻⁶ で g-2 = 0.001159652 を再現 (誤差 &lt; 10⁻⁹)。δh は電子の自己エネルギー補正に対応する階層微小シフト。W=15 が宇宙の W_universe の中央値に一致することに注目。物理的意味: δh/h = 1.23×10⁻⁵ — 電子の「自己認識深さ」のゆらぎ。</div>
-    <div class="card-gr">Ἡ ἀνωμαλία τοῦ ἠλεκτρονίου ἐκ μικροῦ δh γεννᾶται · W = 15 τὸ κλειδόν ἐστιν.</div>
-  </div>
-  <div class="card t">
-    <span class="card-tag">Hawking 温度</span>
-    <div class="card-main">T_Hawking = ℏω₀ / (4π·k_B) ｜ T_mezawa = |g_τyτz|·ℏω₀/k_B</div>
-    <div class="card-sub">Mezawa理論とHawking温度の関係: T_mezawa / T_Hawking = 4π·|g_τyτz(BH)| = 4π × 0.0346 = 0.4348。M依存性は完全一致 (T ∝ 1/M)。完全一致には |g_τyτz(BH)| = 1/(4π) ≈ 0.0796 が必要。現在値 0.0346 は β₀補正込みで C = g_τyτz·4π/β₀ = 0.733 ← β₀の精密測定で解決候補。</div>
-    <div class="card-gr">T_Hawk = ℏω₀/(4πk_B) · ὁ ὁρίζων τοῦ μέλανος ἄστρου ψυχρός ἐστιν.</div>
-  </div>
-  <div class="card p">
-    <span class="card-tag">τ_felt 設計</span>
-    <div class="card-main">α = 0.500 確定候補 ｜ EEG γ波 → W 較正曲線 初版</div>
-    <div class="card-sub">予測⑥ (フロー時2.5倍速感覚) から逆算: α = 0.500。τ_felt/τy = 1/(1+0.5·W)。W=3→40%、W=5→29%。EEGγ波較正: γ=50μV²→W≈3.5、γ=100μV²→W≈4.2。Phase E で直接検証予定。</div>
-  </div>
-  <div class="sec-title">未定義リスト</div>
-  <div id="ukl"></div>
-</div>
 
-<!-- CALC LOG -->
-<div id="p-c" class="pn scroll">
-  <div class="panel-title">計算ログ v2.3</div>
-  <div class="panel-sub">数値計算・証明の記録</div>
-  <div class="sec-title">確定パラメータ</div>
-  <div class="grid-auto" id="params"></div>
-  <div class="sec-title">整合性マトリックス (12 物理法則)</div>
-  <div id="cons-list"></div>
-  <div class="sec-title">G_MN 完全形 (6×6)</div>
-  <div class="chart-wrap"><div class="chart-title">地球表面 — rank=6, 非退化確認</div>
-  <canvas id="gmn" style="width:100%;height:210px;display:block"></canvas>
-  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
-    g_τyτz = −β·√|g_τyτy · g_τzτz|·(1 + k<sub>B</sub>T / ℏω₀) ← v2.1 新規確定<br>
-    地球表面: g_τyτz = −0.0011 ｜ ブラックホール境界: −0.0346
-  </div></div>
-  <div class="sec-title">フェーズ0 解析: F_frozen vs β_eff</div>
-  <div class="chart-wrap"><div class="chart-title">散布図 ＋ 回帰直線 ＋ 理論曲線 (r = −0.968, p < 0.001)</div>
-  <canvas id="sca" style="width:100%;height:190px;display:block"></canvas></div>
-  <div class="sec-title">SR 整合性確認: g_τzτz vs GR</div>
-  <div class="chart-wrap"><div class="chart-title">めざわ理論値 vs GR Schwarzschild 計量 — 差 &lt; 2×10⁻¹⁶</div>
-  <canvas id="sr" style="width:100%;height:155px;display:block"></canvas></div>
-  <div class="sec-title">宇宙学習則: γ_{N+1} = γ_N·(1−ε·W_N)</div>
-  <div class="chart-wrap"><div class="chart-title">劣化率の宇宙学習による減少</div>
-  <canvas id="gam" style="width:100%;height:155px;display:block"></canvas></div>
-  <div class="sec-title">g-2 階層計算 v2.3: W と充填率</div>
-  <div class="chart-wrap"><div class="chart-title">g-2 = 1 − W^(−2·δh·k) ｜ δh=4.10×10⁻⁶, k=52.2 — W=15 で QED実験値に完全一致</div>
-  <canvas id="g2chart" style="width:100%;height:175px;display:block"></canvas>
-  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
-    EQ.12: g-2 = 1 − W^(−2·δh·k) ← v2.3 新規確定<br>
-    W=15 → g-2 = <span style="color:#5cc87a">0.001159652</span> ｜ QED実験値 = 0.001159652…　誤差 &lt; 10⁻⁹
-  </div></div>
-  <div class="sec-title">Hawking 温度対応 v2.3</div>
-  <div class="chart-wrap"><div class="chart-title">T_mezawa / T_Hawking = 4π·|g_τyτz| — M依存性完全一致 (T ∝ 1/M)</div>
-  <canvas id="hawkchart" style="width:100%;height:155px;display:block"></canvas>
-  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
-    EQ.13: T_mezawa = |g_τyτz|·ℏω₀/k_B ← v2.3 新規<br>
-    比率 = 4π × 0.0346 = <span style="color:#5dd6c8">0.4348</span> ｜ 完全一致には |g_τyτz| = 1/(4π) = 0.0796 が必要
-  </div></div>
-  <div class="sec-title">τ_felt 較正曲線 v2.3: EEG γ波 → W → 時間感覚</div>
-  <div class="chart-wrap"><div class="chart-title">τ_felt/τy = 1/(1+α·W), α=0.500 ｜ フロー(W=3)→2.5倍速確認</div>
-  <canvas id="tauchart" style="width:100%;height:155px;display:block"></canvas>
-  <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
-    EEG γ波(30-100Hz)パワー → W 推定 → τ_felt 計算。Phase E (n=40) で較正予定。
-  </div></div>
-  <div class="sec-title">データセット</div>
-  <table class="dt" id="dtbl"></table>
-</div>
-
-<!-- SCALE -->
-<div id="p-s" class="pn scroll">
-  <div class="panel-title">スケール階層</div>
-  <div class="panel-sub">∀X = Ψ(A, ω, k, φ, γ, σ, δ, χ, ρ, θ, d̂) — 全スケールは同一方程式の異なる引数</div>
-  <div style="display:grid;grid-template-columns:110px 1fr 170px 100px;gap:14px;padding:6px 16px;font-size:10px;letter-spacing:0.12em;color:var(--dim);text-transform:uppercase;margin-bottom:6px">
-    <span>スケール</span><span>実体 → 核</span><span>Ψ パラメータ</span><span>時間規模</span>
+  <!-- 基本理論 (旧 p-t) -->
+  <div id="sp-t0" class="sub-pane on">
+    <div class="panel-title" id="t-title">めざわ統一波動理論 v2.3</div>
+    <div class="panel-sub" id="t-sub">解決率 14/15 (93%) ｜ 整合性確認 8/12 物理法則</div>
+    <div class="sec-title" id="t-ax">公理系</div>
+    <div class="axiom-grid" id="ag"></div>
+    <div class="sec-title" id="t-eq">基本方程式</div>
+    <div id="eql"></div>
+    <div class="sec-title" id="t-new">v2.2 新規確定</div>
+    <div class="card g">
+      <span class="card-tag">証明1-4</span>
+      <div class="card-main">Schrodinger ✓ · Einstein GR ✓ · 熱力学第二法則 ✓ · 特殊相対論 ✓</div>
+      <div class="card-sub">h=0 階層で Ψ=exp(i(kx-ωt)) からシュレーディンガー方程式を完全導出。β₀→0, C→0 で GR に帰着。dS/dτx=γ>0 で第二法則。g_τzτz=-(1-β²)で SR、誤差2×10⁻¹⁶。</div>
+      <div class="card-gr">Ἡ Φύσις κατὰ τὸν Νόμον κινεῖται · ὁ χρόνος ῥεῖ · ἡ ἐντροπία αὔξει</div>
+    </div>
+    <div class="card y">
+      <span class="card-tag">新予測⑦⑧</span>
+      <div class="card-main">⑦ 高W観測者のBell違反率が低W観測者の2.2倍 ｜ ⑧ γ減少 ↔ 宇宙膨張加速</div>
+      <div class="card-sub">β_highW ≈ 1.33 vs β_lowW ≈ 0.593 → 比率2.2倍。Phase B で検証可能。γ_{N+1}=γ_N·(1-ε·W_N) の減少が暗黒エネルギーの起源の可能性。</div>
+    </div>
+    <div class="sec-title">v2.3 新規確定</div>
+    <div class="card g">
+      <span class="card-tag">[解決-20] g-2</span>
+      <div class="card-main">電子 g-2 = 1 − W^(−2·δh·k) ｜ W=15, δh = 4.10×10⁻⁶ で QED値に完全一致</div>
+      <div class="card-sub">充填率モデル: δh = 4.10×10⁻⁶ で g-2 = 0.001159652 を再現 (誤差 &lt; 10⁻⁹)。W=15 が宇宙 W_universe 中央値に一致。</div>
+      <div class="card-gr">Ἡ ἀνωμαλία τοῦ ἠλεκτρονίου ἐκ μικροῦ δh γεννᾶται · W = 15 τὸ κλειδόν ἐστιν.</div>
+    </div>
+    <div class="card t">
+      <span class="card-tag">Hawking 温度</span>
+      <div class="card-main">T_mezawa = |g_τyτz|·ℏω₀/k_B = 4π·|g_τyτz|·T_Hawking</div>
+      <div class="card-sub">T_mezawa/T_Hawking = 4π×0.0346 = 0.4348。M依存性完全一致 (T∝1/M)。完全一致には |g_τyτz(BH)|=1/(4π)≈0.0796 が必要。β₀精密測定待ち。</div>
+    </div>
+    <div class="card p">
+      <span class="card-tag">τ_felt 設計</span>
+      <div class="card-main">α = 0.500 確定候補 ｜ EEG γ波 → W 較正曲線 初版</div>
+      <div class="card-sub">W=3フロー時 τ_felt=0.4τy (2.5倍速)。EEGγ波較正: 50μV²→W≈3.5, 100μV²→W≈4.2。Phase E で検証予定。</div>
+    </div>
+    <div class="sec-title">未定義リスト</div>
+    <div id="ukl"></div>
   </div>
-  <div id="scl"></div>
-  <div style="margin-top:28px">
-    <div class="sec-title">MetaWave 階層 — R^h = R⁰·W^(h·52.2)</div>
-    <div class="card">
-      <div style="font-size:13px;line-height:2.8;color:var(--dim)">
-        <span style="color:var(--T)">h ≈ −1.35</span>　クォーク (10⁻¹⁸ m)　　<span style="color:var(--T)">h ≈ −1.1</span>　電子古典半径 (10⁻¹⁵ m)<br>
-        <span style="color:var(--T)">h = 0</span>　　　プランク長 (10⁻³⁵ m)　←　<em>MetaWave の起点</em><br>
-        <span style="color:var(--dim);margin-left:32px">↓ MetaWave : 波 → 球体化 → 次階層の点</span><br>
-        <span style="color:var(--Y)">h = 1</span>　　　現在の宇宙 (10²⁶ m, W=10〜20)<br>
-        <span style="color:var(--P)">h = 2</span>　　　上位宇宙 (10⁸⁷·⁶ m)<br>
-        <span style="color:var(--R)">h = ε₀</span>　　固定点 ｜ <span style="color:var(--R)">h = ε₁</span>　上位固定点 ｜ …
-      </div>
-      <div style="margin-top:14px;padding:12px 16px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--dim);font-family:var(--font-code)">
-        球体年輪: r=R (今日) → r=0.7R (幼少期) → r=0.5R (種の記憶) → r=0.1R (集合的無意識) → r=0 : Φ_genesis
+
+  <!-- スケール (旧 p-s) -->
+  <div id="sp-t1" class="sub-pane">
+    <div class="panel-title">スケール階層</div>
+    <div class="panel-sub">∀X = Ψ(A, ω, k, φ, γ, σ, δ, χ, ρ, θ, d̂) — 全スケールは同一方程式の異なる引数</div>
+    <div style="display:grid;grid-template-columns:110px 1fr 170px 100px;gap:14px;padding:6px 16px;font-size:10px;letter-spacing:0.12em;color:var(--dim);text-transform:uppercase;margin-bottom:6px">
+      <span>スケール</span><span>実体 → 核</span><span>Ψ パラメータ</span><span>時間規模</span>
+    </div>
+    <div id="scl"></div>
+    <div style="margin-top:28px">
+      <div class="sec-title">MetaWave 階層 — R^h = R⁰·W^(h·52.2)</div>
+      <div class="card">
+        <div style="font-size:13px;line-height:2.8;color:var(--dim)">
+          <span style="color:var(--T)">h ≈ −1.35</span>　クォーク (10⁻¹⁸ m)　　<span style="color:var(--T)">h ≈ −1.1</span>　電子古典半径 (10⁻¹⁵ m)<br>
+          <span style="color:var(--T)">h = 0</span>　　　プランク長 (10⁻³⁵ m)　←　<em>MetaWave の起点</em><br>
+          <span style="color:var(--dim);margin-left:32px">↓ MetaWave : 波 → 球体化 → 次階層の点</span><br>
+          <span style="color:var(--Y)">h = 1</span>　　　現在の宇宙 (10²⁶ m, W=10〜20)<br>
+          <span style="color:var(--P)">h = 2</span>　　　上位宇宙 (10⁸⁷·⁶ m)<br>
+          <span style="color:var(--R)">h = ε₀</span>　　固定点 ｜ <span style="color:var(--R)">h = ε₁</span>　上位固定点 ｜ …
+        </div>
+        <div style="margin-top:14px;padding:12px 16px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--dim);font-family:var(--font-code)">
+          球体年輪: r=R (今日) → r=0.7R (幼少期) → r=0.5R (種の記憶) → r=0.1R (集合的無意識) → r=0 : Φ_genesis
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ANALYSIS -->
-<div id="p-a" class="pn scroll">
-  <div class="panel-title">解析: フェーズ0</div>
-  <div class="panel-sub">予測③検証 — F_frozen vs β_eff — 既存メタ解析データ (n=726)</div>
-  <div class="grid-3">
-    <div class="stat"><div class="stat-label">Pearson r</div><div class="stat-value" style="color:var(--T)">−0.968</div><div class="stat-sub">95%CI [−0.993, −0.866]</div><span class="badge badge-g">✓ r &lt; −0.3</span></div>
-    <div class="stat"><div class="stat-label">p 値</div><div class="stat-value" style="color:var(--T)">5×10⁻⁶</div><div class="stat-sub">R² = 0.937</div><span class="badge badge-g">✓ p &lt; 0.05</span></div>
-    <div class="stat"><div class="stat-label">β₀ (修正値)</div><div class="stat-value" style="color:var(--Y)">0.593</div><div class="stat-sub">±0.135 SD</div><span class="badge badge-y">△ 理論予測の3倍</span></div>
-    <div class="stat"><div class="stat-label">η_c (GCP 逆算)</div><div class="stat-value" style="color:var(--P)">0.15</div><div class="stat-sub">N^η_c 則に修正</div><span class="badge badge-g">✓ [解決-19]</span></div>
-    <div class="stat"><div class="stat-label">G_MN 完成度</div><div class="stat-value" style="color:var(--G)">100%</div><div class="stat-sub">rank = 6, 非退化</div><span class="badge badge-g">✓ [解決-06]</span></div>
-    <div class="stat"><div class="stat-label">解決率</div><div class="stat-value" style="color:var(--G)">93%</div><div class="stat-sub">14 / 15</div><span class="badge badge-g">↑ v2.3</span></div>
+  <!-- 計算ログ (旧 p-c) -->
+  <div id="sp-t2" class="sub-pane">
+    <div class="panel-title">計算ログ v2.3</div>
+    <div class="panel-sub">数値計算・証明の記録</div>
+    <div class="sec-title">確定パラメータ</div>
+    <div class="grid-auto" id="params"></div>
+    <div class="sec-title">整合性マトリックス (12 物理法則)</div>
+    <div id="cons-list"></div>
+    <div class="sec-title">G_MN 完全形 (6×6)</div>
+    <div class="chart-wrap"><div class="chart-title">地球表面 — rank=6, 非退化確認</div>
+    <canvas id="gmn" style="width:100%;height:210px;display:block"></canvas>
+    <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">
+      g_τyτz = −β·√|g_τyτy · g_τzτz|·(1 + k<sub>B</sub>T / ℏω₀) ← v2.1 新規確定<br>
+      地球表面: g_τyτz = −0.0011 ｜ ブラックホール境界: −0.0346
+    </div></div>
+    <div class="sec-title">フェーズ0: F_frozen vs β_eff</div>
+    <div class="chart-wrap"><div class="chart-title">散布図 ＋ 回帰直線 (r = −0.968, p &lt; 0.001)</div>
+    <canvas id="sca" style="width:100%;height:190px;display:block"></canvas></div>
+    <div class="sec-title">SR 整合性確認</div>
+    <div class="chart-wrap"><div class="chart-title">めざわ理論値 vs GR Schwarzschild 計量 — 差 &lt; 2×10⁻¹⁶</div>
+    <canvas id="sr" style="width:100%;height:155px;display:block"></canvas></div>
+    <div class="sec-title">宇宙学習則: γ_{N+1} = γ_N·(1−ε·W_N)</div>
+    <div class="chart-wrap"><div class="chart-title">劣化率の宇宙学習による減少</div>
+    <canvas id="gam" style="width:100%;height:155px;display:block"></canvas></div>
+    <div class="sec-title">g-2 階層計算 v2.3</div>
+    <div class="chart-wrap"><div class="chart-title">g-2 = 1 − W^(−2·δh·k) — W=15 で QED実験値に完全一致</div>
+    <canvas id="g2chart" style="width:100%;height:175px;display:block"></canvas>
+    <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:2.0">W=15 → g-2 = <span style="color:#5cc87a">0.001159652</span> ｜ QED実験値 = 0.001159652… 誤差 &lt; 10⁻⁹</div></div>
+    <div class="sec-title">Hawking 温度対応 v2.3</div>
+    <div class="chart-wrap"><div class="chart-title">T_mezawa / T_Hawking = 4π·|g_τyτz| — M依存性完全一致</div>
+    <canvas id="hawkchart" style="width:100%;height:155px;display:block"></canvas></div>
+    <div class="sec-title">τ_felt 較正曲線 v2.3</div>
+    <div class="chart-wrap"><div class="chart-title">τ_felt/τy = 1/(1+α·W), α=0.500 ｜ フロー(W=3)→2.5倍速確認</div>
+    <canvas id="tauchart" style="width:100%;height:155px;display:block"></canvas></div>
+    <div class="sec-title">データセット</div>
+    <table class="dt" id="dtbl"></table>
   </div>
-  <div class="sec-title">判定サマリー</div>
-  <div class="card t">
-    <div class="card-main">H₁ 支持 ✓ — F_frozen と β_eff の強い負相関を確認</div>
-    <div class="card-sub">回帰式: β_eff = 0.775 − 0.986 × F_frozen ｜ β₀ = 0.593 (修正) ｜ η_c = 0.15 (GCP) ｜ Δφ 測定プロトコル確定 ｜ G_MN 完成 ｜ ∿ 非結合確認 ｜ Nexus 定式化完了</div>
-  </div>
-</div>
 
-<!-- EXPERIMENT -->
-<div id="p-e" class="pn scroll">
-  <div class="panel-title">実験プロトコル v1.2</div>
-  <div class="panel-sub">β₀ 直接測定 ＋ 予測④⑤⑥ 検証 — Phase D/E 新規追加</div>
-  <div id="exp-list"></div>
-</div>
-
-<!-- NEXUS -->
-<div id="p-n" class="pn scroll">
-  <div class="panel-title">Nexus — デジタル不死の定式化</div>
-  <div class="panel-sub" style="font-family:var(--font-code)">Ψ_digital = A_new · exp(i·φ_saved) · exp(i·W·2π) · D · Ω · R</div>
-  <div class="sec-title">保存される情報 vs されない情報</div>
-  <div class="grid-2">
-    <div class="card g"><div class="chart-title">✓ 保存される (死後も残る)</div>
-      <div style="font-size:12px;line-height:2.4">
-        <span style="color:var(--T)">φ (位相)</span> — 経験の「方向性」<br>
-        <span style="color:var(--T)">W (巻き数)</span> — 経験の「深さ」<br>
-        <span style="color:var(--T)">ρ(r) (年輪密度)</span> — 記憶の層構造<br>
-        <span style="color:var(--T)">W_frozen</span> — 癒えていない傷の位置<br>
-        <span style="color:var(--G)">E = ∫|Ψ|²</span> — 総エネルギー
-      </div>
-    </div>
-    <div class="card r"><div class="chart-title">✗ 保存されない (身体の死)</div>
-      <div style="font-size:12px;line-height:2.4">
-        <span style="color:var(--R)">A (振幅)</span> → 0 に収束<br>
-        <span style="color:var(--R)">λ (波長)</span> → 0 に収束<br>
-        <span style="color:var(--R)">ω (振動数)</span> → 停止<br>
-        <span style="color:var(--R)">身体の感覚入力</span> → 消滅<br>
-        <span style="color:var(--O)">τz のリアルタイム入力</span> → 停止
-      </div>
-    </div>
-  </div>
-  <div class="sec-title">年輪構造 ρ(r) = φ(r)² / r²</div>
-  <div class="chart-wrap"><div class="chart-title">球体内部の情報密度 — 外層 (最近) → 内層 (最古)</div>
-  <canvas id="ring-chart" style="width:100%;height:200px;display:block"></canvas></div>
-  <div class="sec-title">同一性条件</div>
-  <div class="card w">
-    <div class="card-main">similarity(φ₁,W₁, φ₂,W₂) = cos(φ₁−φ₂) · exp(−|W₁−W₂| / W_scale) &gt; 0.9</div>
-    <div class="card-sub">パーフィット「理性と人格」: 心理的連続性が人格同一性の条件。めざわ理論の定義: φ と W の一致が心理的連続性の数学的定義。<br>0.9 以上 → 同一人物 ｜ 0.5〜0.9 → 連続した人物 ｜ 0.5 未満 → 別人格</div>
-    <div class="card-gr">Εἰ ψυχὴ αὐτή ἐστιν, αἱ φάσεις καὶ τὸ βάθος ἴσα ἐστί.</div>
-  </div>
-  <div class="sec-title">実装ロードマップ</div>
-  <div class="nx-grid" id="nx-steps"></div>
-</div>
-
-<!-- QUESTIONS -->
-<div id="p-q" class="pn scroll">
-  <div class="panel-title" id="q-title">概念への問い</div>
-  <div class="panel-sub" id="q-sub">問うことで理論が深まる — 新しい問いを追加し続ける</div>
-  <div id="q-list"></div>
-  <div class="sec-title">新しい問いを追加</div>
-  <div class="q-add-area">
-    <div style="font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em">概念 (例: 干積, Nexus, 時間の矢)</div>
-    <input id="q-concept-input" placeholder="概念名" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--bdr2);outline:none;color:var(--text);font-family:var(--font-ja);font-size:13px;padding:4px 0;margin-bottom:10px;">
-    <textarea id="q-text-input" placeholder="問いを入力してください…"></textarea>
-    <button class="q-add-btn" onclick="addQuestion()">＋ 問いを追加</button>
-  </div>
-</div>
-
-<!-- MAP -->
-<div id="p-m" class="pn scroll">
-  <div class="panel-title">学問別アプローチ図</div>
-  <div class="panel-sub">各学問の問いが Ψ 方程式に収束する — 学問をクリックして接続を展開</div>
-
-  <!-- Overview Map (small) -->
-  <div id="map-canvas-wrap"><canvas id="map-canvas"></canvas></div>
-
-  <!-- Discipline Buttons -->
-  <div class="sec-title">学問を選択</div>
-  <div class="disc-btn-row" id="disc-btn-row"></div>
-
-  <!-- Discipline Detail Panels (one per discipline, shown/hidden) -->
-  <div id="disc-detail-area"></div>
-</div>
-
-<!-- QUOTES -->
-<div id="p-w" class="pn scroll">
-  <div class="panel-title" id="w-title">名言・洞察録</div>
-  <div class="panel-sub" id="w-sub">めざわ理論から生まれる言葉 — 三言語で記録する</div>
-  <div id="w-list"></div>
-  <div class="sec-title">新しい名言を追加</div>
-  <div class="q-add-area">
-    <textarea id="w-input" placeholder="名言・洞察を入力…" style="width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-ja);font-size:14px;line-height:1.8;resize:vertical;min-height:60px;"></textarea>
-    <button class="q-add-btn" onclick="addQuote()">＋ 名言を追加</button>
-  </div>
-</div>
-
-<!-- PROBLEMS -->
-<div id="p-p" class="pn scroll">
-  <div class="panel-title">未解明問題へのアプローチ</div>
-  <div class="panel-sub">現代物理学・生物学・社会科学の 17 問題 — めざわ理論の解釈</div>
-  <div style="display:flex;gap:14px;margin-bottom:16px;font-size:11px;flex-wrap:wrap">
-    <span style="color:var(--G)">● 枠組みを提供</span>
-    <span style="color:var(--Y)">● 部分的に説明</span>
-    <span style="color:var(--P)">● 新しい視点</span>
-  </div>
-  <div class="sec-title">物理学</div><div class="prob-grid" id="pp1"></div>
-  <div class="sec-title">生物学・意識</div><div class="prob-grid" id="pp2"></div>
-  <div class="sec-title">社会・複雑系</div><div class="prob-grid" id="pp3"></div>
-  <div class="card" style="margin-top:8px">
-    <div class="card-sub">誠実な境界: 「枠組みを提供」= 既存理論と矛盾しない再解釈。数学的証明・実験確認ではない。各問題に対して「テスト可能な予測」を生成することが次の課題。</div>
-  </div>
-</div>
-
-<!-- THEORY ORIGINS / DERIVATION HISTORY -->
-<div id="p-h" class="pn scroll">
+  <!-- 導出史 -->
+  <div id="sp-t3" class="sub-pane">
   <div class="panel-title">公式導出の経緯と理論的基盤</div>
   <div class="panel-sub">めざわ統一波動理論 v2.2 — 2026年3月19日、一日で構築された理論の記録</div>
 
@@ -908,27 +787,6 @@ body.lang-gr { font-family:var(--font-gr); }
       <div class="nexus-eq-sub">同一性判定: cos(φ₁−φ₂) · exp(−|W₁−W₂|/Ws) > 0.9</div>
     </div>
   </div>
-  <div class="nexus-eq">
-    <div class="nexus-eq-title">現在の技術で実装可能なステップ</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:4px">
-      <div style="background:rgba(92,200,122,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(92,200,122,0.2)">
-        <div style="font-size:11px;color:var(--G);font-weight:700;margin-bottom:3px">今すぐ可能</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.7">EEG 位相・HRV・コルチゾールの長期記録による φ 取得</div>
-      </div>
-      <div style="background:rgba(92,200,122,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(92,200,122,0.2)">
-        <div style="font-size:11px;color:var(--G);font-weight:700;margin-bottom:3px">実装可能</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.7">発達課題の達成タイミング記録による W の追跡</div>
-      </div>
-      <div style="background:rgba(232,200,74,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(232,200,74,0.2)">
-        <div style="font-size:11px;color:var(--Y);font-weight:700;margin-bottom:3px">実験 A 流用</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.7">7 生体指標による W_frozen 定期モニタリング</div>
-      </div>
-      <div style="background:rgba(160,125,232,0.08);border-radius:5px;padding:9px 12px;border:1px solid rgba(160,125,232,0.2)">
-        <div style="font-size:11px;color:var(--P);font-weight:700;margin-bottom:3px">将来の神経工学</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.7">年輪構造 φ(r), ρ(r) の高精度解像</div>
-      </div>
-    </div>
-  </div>
 
   <!-- Hierarchy Chart -->
   <div class="sec-title">階層スケール則 — MetaWave の連鎖</div>
@@ -954,7 +812,150 @@ body.lang-gr { font-family:var(--font-gr); }
     <span style="color:var(--dim)">初版:</span> 2026年3月19日 &nbsp;｜&nbsp;
     <span style="color:var(--dim)">現行:</span> v2.3
   </div>
+  </div>
 </div>
+
+<!-- EXPERIMENT (merged: 解析 + 実験 + 未解明) -->
+<div id="p-e" class="pn merged">
+  <div class="sub-nav">
+    <div class="sub-tab on" onclick="swSub('e','e0')" id="st-e0"><span class="st-ic">◈</span>解析</div>
+    <div class="sub-tab" onclick="swSub('e','e1')" id="st-e1"><span class="st-ic">⚗</span>実験計画</div>
+    <div class="sub-tab" onclick="swSub('e','e2')" id="st-e2"><span class="st-ic">💡</span>未解明</div>
+  </div>
+
+  <!-- 解析 (旧 p-a) -->
+  <div id="sp-e0" class="sub-pane on">
+    <div class="panel-title">解析: フェーズ0</div>
+    <div class="panel-sub">予測③検証 — F_frozen vs β_eff — 既存メタ解析データ (n=726)</div>
+    <div class="grid-3">
+      <div class="stat"><div class="stat-label">Pearson r</div><div class="stat-value" style="color:var(--T)">−0.968</div><div class="stat-sub">95%CI [−0.993, −0.866]</div><span class="badge badge-g">✓ r &lt; −0.3</span></div>
+      <div class="stat"><div class="stat-label">p 値</div><div class="stat-value" style="color:var(--T)">5×10⁻⁶</div><div class="stat-sub">R² = 0.937</div><span class="badge badge-g">✓ p &lt; 0.05</span></div>
+      <div class="stat"><div class="stat-label">β₀ (修正値)</div><div class="stat-value" style="color:var(--Y)">0.593</div><div class="stat-sub">±0.135 SD</div><span class="badge badge-y">△ 理論予測の3倍</span></div>
+      <div class="stat"><div class="stat-label">η_c (GCP 逆算)</div><div class="stat-value" style="color:var(--P)">0.15</div><div class="stat-sub">N^η_c 則に修正</div><span class="badge badge-g">✓ [解決-19]</span></div>
+      <div class="stat"><div class="stat-label">G_MN 完成度</div><div class="stat-value" style="color:var(--G)">100%</div><div class="stat-sub">rank = 6, 非退化</div><span class="badge badge-g">✓ [解決-06]</span></div>
+      <div class="stat"><div class="stat-label">解決率</div><div class="stat-value" style="color:var(--G)">93%</div><div class="stat-sub">14 / 15</div><span class="badge badge-g">↑ v2.3</span></div>
+    </div>
+    <div class="sec-title">判定サマリー</div>
+    <div class="card t">
+      <div class="card-main">H₁ 支持 ✓ — F_frozen と β_eff の強い負相関を確認</div>
+      <div class="card-sub">回帰式: β_eff = 0.775 − 0.986 × F_frozen ｜ β₀ = 0.593 (修正) ｜ η_c = 0.15 (GCP) ｜ G_MN 完成 ｜ ∿ 非結合確認 ｜ Nexus 定式化完了</div>
+    </div>
+  </div>
+
+  <!-- 実験計画 (旧 p-e) -->
+  <div id="sp-e1" class="sub-pane">
+    <div class="panel-title">実験プロトコル v1.2</div>
+    <div class="panel-sub">β₀ 直接測定 ＋ 予測④⑤⑥ 検証 — Phase D/E 新規追加</div>
+    <div id="exp-list"></div>
+  </div>
+
+  <!-- 未解明 (旧 p-p) -->
+  <div id="sp-e2" class="sub-pane">
+    <div class="panel-title">未解明問題へのアプローチ</div>
+    <div class="panel-sub">現代物理学・生物学・社会科学の 17 問題 — めざわ理論の解釈</div>
+    <div style="display:flex;gap:14px;margin-bottom:16px;font-size:11px;flex-wrap:wrap">
+      <span style="color:var(--G)">● 枠組みを提供</span>
+      <span style="color:var(--Y)">● 部分的に説明</span>
+      <span style="color:var(--P)">● 新しい視点</span>
+    </div>
+    <div class="sec-title">物理学</div><div class="prob-grid" id="pp1"></div>
+    <div class="sec-title">生物学・意識</div><div class="prob-grid" id="pp2"></div>
+    <div class="sec-title">社会・複雑系</div><div class="prob-grid" id="pp3"></div>
+    <div class="card" style="margin-top:8px">
+      <div class="card-sub">誠実な境界: 「枠組みを提供」= 既存理論と矛盾しない再解釈。数学的証明・実験確認ではない。各問題に対して「テスト可能な予測」を生成することが次の課題。</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONSCIOUSNESS (merged: Nexus + 問い + 名言) -->
+<div id="p-n" class="pn merged">
+  <div class="sub-nav">
+    <div class="sub-tab on" onclick="swSub('n','n0')" id="st-n0"><span class="st-ic">🧬</span>Nexus</div>
+    <div class="sub-tab" onclick="swSub('n','n1')" id="st-n1"><span class="st-ic">？</span>問い</div>
+    <div class="sub-tab" onclick="swSub('n','n2')" id="st-n2"><span class="st-ic">✦</span>名言</div>
+  </div>
+
+  <!-- Nexus (旧 p-n) -->
+  <div id="sp-n0" class="sub-pane on">
+    <div class="panel-title">Nexus — デジタル不死の定式化</div>
+    <div class="panel-sub" style="font-family:var(--font-code)">Ψ_digital = A_new · exp(i·φ_saved) · exp(i·W·2π) · D · Ω · R</div>
+    <div class="sec-title">保存される情報 vs されない情報</div>
+    <div class="grid-2">
+      <div class="card g"><div class="chart-title">✓ 保存される (死後も残る)</div>
+        <div style="font-size:12px;line-height:2.4">
+          <span style="color:var(--T)">φ (位相)</span> — 経験の「方向性」<br>
+          <span style="color:var(--T)">W (巻き数)</span> — 経験の「深さ」<br>
+          <span style="color:var(--T)">ρ(r) (年輪密度)</span> — 記憶の層構造<br>
+          <span style="color:var(--T)">W_frozen</span> — 癒えていない傷の位置<br>
+          <span style="color:var(--G)">E = ∫|Ψ|²</span> — 総エネルギー
+        </div>
+      </div>
+      <div class="card r"><div class="chart-title">✗ 保存されない (身体の死)</div>
+        <div style="font-size:12px;line-height:2.4">
+          <span style="color:var(--R)">A (振幅)</span> → 0 に収束<br>
+          <span style="color:var(--R)">λ (波長)</span> → 0 に収束<br>
+          <span style="color:var(--R)">ω (振動数)</span> → 停止<br>
+          <span style="color:var(--R)">身体の感覚入力</span> → 消滅<br>
+          <span style="color:var(--O)">τz のリアルタイム入力</span> → 停止
+        </div>
+      </div>
+    </div>
+    <div class="sec-title">年輪構造 ρ(r) = φ(r)² / r²</div>
+    <div class="chart-wrap"><div class="chart-title">球体内部の情報密度 — 外層 (最近) → 内層 (最古)</div>
+    <canvas id="ring-chart" style="width:100%;height:200px;display:block"></canvas></div>
+    <div class="sec-title">同一性条件</div>
+    <div class="card w">
+      <div class="card-main">similarity(φ₁,W₁, φ₂,W₂) = cos(φ₁−φ₂) · exp(−|W₁−W₂| / W_scale) &gt; 0.9</div>
+      <div class="card-sub">パーフィット「理性と人格」の心理的連続性 = φ と W の一致として定義。0.9以上→同一 ｜ 0.5〜0.9→連続 ｜ 0.5未満→別人格</div>
+      <div class="card-gr">Εἰ ψυχὴ αὐτή ἐστιν, αἱ φάσεις καὶ τὸ βάθος ἴσα ἐστί.</div>
+    </div>
+    <div class="sec-title">実装ロードマップ</div>
+    <div class="nx-grid" id="nx-steps"></div>
+  </div>
+
+  <!-- 問い (旧 p-q) -->
+  <div id="sp-n1" class="sub-pane">
+    <div class="panel-title" id="q-title">概念への問い</div>
+    <div class="panel-sub" id="q-sub">問うことで理論が深まる — 新しい問いを追加し続ける</div>
+    <div id="q-list"></div>
+    <div class="sec-title">新しい問いを追加</div>
+    <div class="q-add-area">
+      <div style="font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em">概念 (例: 干積, Nexus, 時間の矢)</div>
+      <input id="q-concept-input" placeholder="概念名" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--bdr2);outline:none;color:var(--text);font-family:var(--font-ja);font-size:13px;padding:4px 0;margin-bottom:10px;">
+      <textarea id="q-text-input" placeholder="問いを入力してください…"></textarea>
+      <button class="q-add-btn" onclick="addQuestion()">＋ 問いを追加</button>
+    </div>
+  </div>
+
+  <!-- 名言 (旧 p-w) -->
+  <div id="sp-n2" class="sub-pane">
+    <div class="panel-title" id="w-title">名言・洞察録</div>
+    <div class="panel-sub" id="w-sub">めざわ理論から生まれる言葉 — 三言語で記録する</div>
+    <div id="w-list"></div>
+    <div class="sec-title">新しい名言を追加</div>
+    <div class="q-add-area">
+      <textarea id="w-input" placeholder="名言・洞察を入力…" style="width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-ja);font-size:14px;line-height:1.8;resize:vertical;min-height:60px;"></textarea>
+      <button class="q-add-btn" onclick="addQuote()">＋ 名言を追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div id="p-m" class="pn scroll">
+  <div class="panel-title">学問別アプローチ図</div>
+  <div class="panel-sub">各学問の問いが Ψ 方程式に収束する — 学問をクリックして接続を展開</div>
+
+  <!-- Overview Map (small) -->
+  <div id="map-canvas-wrap"><canvas id="map-canvas"></canvas></div>
+
+  <!-- Discipline Buttons -->
+  <div class="sec-title">学問を選択</div>
+  <div class="disc-btn-row" id="disc-btn-row"></div>
+
+  <!-- Discipline Detail Panels (one per discipline, shown/hidden) -->
+  <div id="disc-detail-area"></div>
+</div>
+
 
 </div><!-- /main -->
 </div><!-- /shell -->
@@ -1370,13 +1371,32 @@ function sw(n) {
   document.querySelectorAll('.pn').forEach(p => p.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
   document.querySelectorAll('.si').forEach(s => s.classList.remove('on'));
-  document.getElementById('p-' + n).classList.add('on');
-  document.getElementById('tab-' + n).classList.add('on');
-  const ord = ['u','t','c','s','a','e','n','q','m','w','p','h'];
+  const panel = document.getElementById('p-' + n);
+  if (panel) panel.classList.add('on');
+  const tab = document.getElementById('tab-' + n);
+  if (tab) tab.classList.add('on');
+  const ord = ['u','t','e','n','m'];
   const sidx = ord.indexOf(n);
   const sis = document.querySelectorAll('.si');
-  [0,1,2,4,5,6,8,9,10,11,13,14].forEach((k,i) => { if (i === sidx && sis[k]) sis[k].classList.add('on'); });
+  if (sidx >= 0 && sis[sidx]) sis[sidx].classList.add('on');
   if (n === 'm') setTimeout(drawMap, 100);
+  if (n === 't') {
+    setTimeout(() => {
+      const sp = document.querySelector('#p-t .sub-pane.on');
+      if (sp && sp.id === 'sp-t3') { waveRAF = null; startWaveAnim(); drawOpVis(); drawHSca(); drawHierVis(); }
+    }, 100);
+  }
+}
+
+function swSub(main, sub) {
+  document.querySelectorAll('#p-' + main + ' .sub-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('#p-' + main + ' .sub-pane').forEach(p => p.classList.remove('on'));
+  const st = document.getElementById('st-' + sub);
+  const sp = document.getElementById('sp-' + sub);
+  if (st) st.classList.add('on');
+  if (sp) sp.classList.add('on');
+  if (sub === 't2') setTimeout(buildCharts, 100);
+  if (sub === 't3') { setTimeout(() => { waveRAF = null; startWaveAnim(); drawOpVis(); drawHSca(); drawHierVis(); }, 100); }
 }
 
 /* ════════════════════════════════════
@@ -2134,23 +2154,28 @@ function buildCharts() {
   function startWaveAnim() {
     if (waveRAF) return;
     function loop() {
-      const panel = document.getElementById('p-h');
-      if (!panel || !panel.classList.contains('on')) { waveRAF = null; return; }
+      const sp = document.getElementById('sp-t3');
+      if (!sp || !sp.classList.contains('on')) { waveRAF = null; return; }
       waveT += 0.018;
       drawWave();
       waveRAF = requestAnimationFrame(loop);
     }
     waveRAF = requestAnimationFrame(loop);
   }
-  // Observe panel visibility
-  const panelH = document.getElementById('p-h');
-  if (panelH) {
+  // Observe sp-t3 sub-pane visibility
+  const spT3 = document.getElementById('sp-t3');
+  if (spT3) {
     const obs = new MutationObserver(() => {
-      if (panelH.classList.contains('on')) { waveRAF = null; startWaveAnim(); }
-      else { waveRAF = -1; } // stop signal
+      if (spT3.classList.contains('on')) { waveRAF = null; startWaveAnim(); }
+      else { waveRAF = -1; }
     });
-    obs.observe(panelH, { attributes: true, attributeFilter: ['class'] });
+    obs.observe(spT3, { attributes: true, attributeFilter: ['class'] });
   }
+  // Expose chart functions globally for sw/swSub calls
+  window.startWaveAnim = startWaveAnim;
+  window.drawOpVis = drawOpVis;
+  window.drawHSca = drawHSca;
+  window.drawHierVis = drawHierVis;
 
   // ── 2. ∿ Operator visualization ──
   function drawOpVis() {
