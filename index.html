@@ -2770,11 +2770,11 @@ function ageToLifeState(age){
 // ── 11-DIMENSIONAL LIFE STATE ──
 const LIFE_STATE=(function(){
   const STAGE=[
-    {n:1,label:'単細胞',   W:0,  cells:8,  desc:'原始の波動'},
-    {n:2,label:'多細胞',   W:5,  cells:16, desc:'細胞が繋がり始める'},
-    {n:3,label:'原始生命', W:15, cells:28, desc:'触手を伸ばす'},
-    {n:4,label:'複合生命', W:35, cells:44, desc:'軌道と環を持つ'},
-    {n:5,label:'超生命',   W:70, cells:60, desc:'11次元に展開する'},
+    {n:1,label:'単細胞',   W:0,  cells:30,  desc:'原始の波動'},
+    {n:2,label:'多細胞',   W:5,  cells:65,  desc:'細胞が繋がり始める'},
+    {n:3,label:'原始生命', W:15, cells:100, desc:'触手を伸ばす'},
+    {n:4,label:'複合生命', W:35, cells:150, desc:'軌道と環を持つ'},
+    {n:5,label:'超生命',   W:70, cells:200, desc:'11次元に展開する'},
   ];
   let c=[0,0,0,0,1,1,1,1,0.593,0.15,117];
   let prevN=1;
@@ -2850,19 +2850,51 @@ function analyzeEnvironment(text){
   ENV_STATE.save();
 }
 
-// ── LIFE SIMULATION (Three.js 3D) ──
+// ── LIFE SIMULATION (Three.js 3D) HOLOGRAPHIC PHASE SYSTEM ──
 const LIFE=(function(){
   let pts=[],energy=1,t=0,raf=null,W=0,H=0,cv=null;
   let evoFlash=0,evoMsg='',autoGrow=0;
   let renderer=null,scene=null,camera=null;
   let cellGroup=null,blobMesh=null,blobInner=null,haloMesh=null;
-  let ringGroup=null,rippleGroup=null,starField=null;
+  let ringGroup=null,rippleGroup=null,starField=null,gridMesh=null;
   let camTheta=0;
-  let evoDiv=null,nameDiv3d=null;
-  // Pre-allocated connection buffer
-  const MAX_CONN=220;
-  let connGeo=null,connMat=null,connLine=null;
-  let connPos=null,connCol=null;
+  let evoDiv=null,nameDiv3d=null,phaseDiv=null;
+  const MAX_CONN=380;
+  let connGeo=null,connMat=null,connLine=null,connPos=null,connCol=null;
+
+  // ── Phase system ──
+  const PHASE_VIS={
+    fluid:  {hue:195,sat:.85,lit:.58,opLo:.32,opHi:.62,szLo:4.5,szHi:9,  damp:.82,turb:.26,pull:.016,rep:1.0, bound:90, connD:80, emMul:.55,bH:0x003366,bOp:.11},
+    gas:    {hue:40, sat:.90,lit:.62,opLo:.08,opHi:.22,szLo:1.8,szHi:4.5,damp:.93,turb:1.65,pull:.003,rep:.4,  bound:150,connD:40, emMul:.90,bH:0x441100,bOp:.04},
+    solid:  {hue:220,sat:.55,lit:.74,opLo:.70,opHi:.92,szLo:8,  szHi:15, damp:.60,turb:.03, pull:.048,rep:1.8, bound:64, connD:96, emMul:.28,bH:0x112299,bOp:.20},
+    burning:{hue:12, sat:.95,lit:.60,opLo:.20,opHi:.42,szLo:3,  szHi:7,  damp:.90,turb:2.2, pull:.006,rep:.6,  bound:132,connD:46, emMul:1.0, bH:0x881100,bOp:.08},
+    frozen: {hue:202,sat:.45,lit:.82,opLo:.75,opHi:.95,szLo:9,  szHi:16, damp:.52,turb:.015,pull:.055,rep:2.2, bound:58, connD:100,emMul:.18,bH:0x66aaff,bOp:.25},
+  };
+  const PHASE_LABEL={fluid:'流体',gas:'気体',solid:'固体',burning:'燃焼',frozen:'凍結'};
+  const PHASE_DESC={fluid:'粘性·表面張力',gas:'高速·拡散',solid:'結晶·剛体',burning:'燃焼·カオス',frozen:'凍結·結晶'};
+  let currentPhase='fluid',prevPhase='fluid',phaseBlend=1.0;
+
+  function lV(a,b,k){return a*(1-k)+b*k;}
+  function getPV(){
+    const pa=PHASE_VIS[prevPhase],pb=PHASE_VIS[currentPhase],k=phaseBlend;
+    return{
+      hue:lV(pa.hue,pb.hue,k),sat:lV(pa.sat,pb.sat,k),lit:lV(pa.lit,pb.lit,k),
+      opLo:lV(pa.opLo,pb.opLo,k),opHi:lV(pa.opHi,pb.opHi,k),
+      szLo:lV(pa.szLo,pb.szLo,k),szHi:lV(pa.szHi,pb.szHi,k),
+      damp:lV(pa.damp,pb.damp,k),turb:lV(pa.turb,pb.turb,k),
+      pull:lV(pa.pull,pb.pull,k),rep:lV(pa.rep,pb.rep,k),
+      bound:lV(pa.bound,pb.bound,k),connD:lV(pa.connD,pb.connD,k),
+      emMul:lV(pa.emMul,pb.emMul,k),
+    };
+  }
+  function detectPhase(ev){
+    const hl=ev.heatLevel,cl=ev.cogLoad,ho=ev.hostility,qu=ev.quality;
+    if(hl>.72&&ho>.55)return'burning';
+    if(hl<.15||(qu<.25&&cl<.2))return'frozen';
+    if(hl>.62||cl>.68)return'gas';
+    if(ho>.52&&qu<.38)return'solid';
+    return'fluid';
+  }
 
   function mkPt(par,sn){
     const ox=par?par.px:(Math.random()-.5)*50;
@@ -2870,127 +2902,113 @@ const LIFE=(function(){
     const oz=par?par.pz:(Math.random()-.5)*50;
     return{px:ox+(Math.random()-.5)*22,py:oy+(Math.random()-.5)*22,pz:oz+(Math.random()-.5)*22,
       vx:(Math.random()-.5)*2.5,vy:(Math.random()-.5)*2.5,vz:(Math.random()-.5)*2.5,
-      r:par?par.r*(0.65+Math.random()*.35):(6+Math.random()*8+sn*.5),
-      h:(LIFE_STATE.coords[0]*57+Math.random()*80+360)%360,
+      r:5,h:(LIFE_STATE.coords[0]*57+Math.random()*80+360)%360,
       ph:Math.random()*Math.PI*2,fr:.7+Math.random()*1.3,
       age:0,born:true,orb:Math.random()*Math.PI*2,depth:Math.random()};
   }
 
   function buildScene(){
     scene=new THREE.Scene();
-    scene.fog=new THREE.FogExp2(0x020810,0.0032);
-    camera=new THREE.PerspectiveCamera(55,W/H,0.1,1200);
-    camera.position.set(0,0,185);
-
-    // Lights
-    const ambL=new THREE.AmbientLight(0x112244,0.75); scene.add(ambL);
-    const pL1=new THREE.PointLight(0x6699ff,4,520); pL1.position.set(90,90,90); scene.add(pL1);
-    const pL2=new THREE.PointLight(0xff88cc,2,350); pL2.position.set(-70,-60,60); scene.add(pL2);
-    const pL3=new THREE.PointLight(0x44ffbb,1.5,300); pL3.position.set(0,-110,30); scene.add(pL3);
+    scene.fog=new THREE.FogExp2(0x000510,0.0016);
+    camera=new THREE.PerspectiveCamera(55,W/H,0.1,1500);
+    camera.position.set(0,0,205);
+    const ambL=new THREE.AmbientLight(0x071428,1.4); scene.add(ambL);
+    const pL1=new THREE.PointLight(0x00ddff,7,650); pL1.position.set(80,80,80); scene.add(pL1);
+    const pL2=new THREE.PointLight(0xff3388,3.5,450); pL2.position.set(-70,-60,60); scene.add(pL2);
+    const pL3=new THREE.PointLight(0x44ffcc,2,380); pL3.position.set(0,-120,30); scene.add(pL3);
     scene.userData.pL1=pL1; scene.userData.pL2=pL2;
 
-    // Starfield
-    const sPos=new Float32Array(900*3);
-    for(let i=0;i<900;i++){
-      const r=300+Math.random()*700,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
-      sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);
-    }
-    const sGeo=new THREE.BufferGeometry();
-    sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
-    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x8899cc,size:1.2,transparent:true,opacity:0.55}));
+    // Starfield (1400 stars, additive)
+    const sPos=new Float32Array(1400*3);
+    for(let i=0;i<1400;i++){const r=340+Math.random()*900,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);}
+    const sGeo=new THREE.BufferGeometry(); sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x4488cc,size:1.1,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(starField);
 
-    // Organism blob (outer)
+    // Hologram background grid (icosahedron wireframe)
+    gridMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(175,2),
+      new THREE.MeshBasicMaterial({color:0x003355,wireframe:true,transparent:true,opacity:.05,blending:THREE.AdditiveBlending,depthWrite:false}));
+    scene.add(gridMesh);
+
+    // Organism blob — additive blending for glow
     blobMesh=new THREE.Mesh(new THREE.SphereGeometry(50,32,32),
-      new THREE.MeshPhongMaterial({color:0x224488,transparent:true,opacity:0.09,side:THREE.DoubleSide}));
+      new THREE.MeshPhongMaterial({color:0x003366,transparent:true,opacity:.10,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(blobMesh);
-    // Blob inner glow
     blobInner=new THREE.Mesh(new THREE.SphereGeometry(35,24,24),
-      new THREE.MeshPhongMaterial({color:0x3366bb,transparent:true,opacity:0.06,side:THREE.BackSide}));
+      new THREE.MeshPhongMaterial({color:0x1144aa,transparent:true,opacity:.07,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(blobInner);
-    // Halo (Stage 3+)
-    haloMesh=new THREE.Mesh(new THREE.SphereGeometry(75,20,20),
-      new THREE.MeshPhongMaterial({color:0x4466ff,transparent:true,opacity:0.03,side:THREE.BackSide}));
+    haloMesh=new THREE.Mesh(new THREE.SphereGeometry(82,20,20),
+      new THREE.MeshPhongMaterial({color:0x2255ff,transparent:true,opacity:.03,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));
     haloMesh.visible=false; scene.add(haloMesh);
 
     // Cell group
     cellGroup=new THREE.Group(); scene.add(cellGroup);
 
-    // Connection lines (pre-allocated double-buffer)
-    connPos=new Float32Array(MAX_CONN*2*3);
-    connCol=new Float32Array(MAX_CONN*2*3);
+    // Connection lines (pre-allocated, additive)
+    connPos=new Float32Array(MAX_CONN*2*3); connCol=new Float32Array(MAX_CONN*2*3);
     connGeo=new THREE.BufferGeometry();
     connGeo.setAttribute('position',new THREE.BufferAttribute(connPos,3));
     connGeo.setAttribute('color',new THREE.BufferAttribute(connCol,3));
-    connMat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:0.28});
-    connLine=new THREE.LineSegments(connGeo,connMat);
-    connLine.frustumCulled=false; scene.add(connLine);
+    connMat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.38,blending:THREE.AdditiveBlending,depthWrite:false});
+    connLine=new THREE.LineSegments(connGeo,connMat); connLine.frustumCulled=false; scene.add(connLine);
 
-    // Elliptic rings (Stage 4+)
+    // Rings (Stage 4+, additive)
     ringGroup=new THREE.Group(); ringGroup.visible=false; scene.add(ringGroup);
     for(let ri=0;ri<3;ri++){
-      const rPts=[];for(let j=0;j<=72;j++){const a=(j/72)*Math.PI*2;rPts.push(new THREE.Vector3(Math.cos(a)*95*(0.9+ri*.12),Math.sin(a)*55*(0.9+ri*.1),0));}
-      const rLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(rPts),
-        new THREE.LineBasicMaterial({color:new THREE.Color().setHSL(.62+ri*.08,.7,.5),transparent:true,opacity:.1}));
-      ringGroup.add(rLine);
+      const rPts=[];for(let j=0;j<=80;j++){const a=(j/80)*Math.PI*2;rPts.push(new THREE.Vector3(Math.cos(a)*105*(0.9+ri*.12),Math.sin(a)*62*(0.9+ri*.1),0));}
+      ringGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rPts),
+        new THREE.LineBasicMaterial({color:new THREE.Color().setHSL(.62+ri*.08,.7,.5),transparent:true,opacity:.12,blending:THREE.AdditiveBlending,depthWrite:false})));
     }
 
-    // Concentric ripple spheres (Stage 5+)
+    // Ripple spheres (Stage 5+, additive)
     rippleGroup=new THREE.Group(); rippleGroup.visible=false; scene.add(rippleGroup);
     for(let ri=0;ri<4;ri++){
-      rippleGroup.add(new THREE.Mesh(new THREE.SphereGeometry(55+ri*38,14,14),
-        new THREE.MeshPhongMaterial({color:0x8899ff,transparent:true,opacity:.025,wireframe:true})));
+      rippleGroup.add(new THREE.Mesh(new THREE.SphereGeometry(58+ri*42,14,14),
+        new THREE.MeshPhongMaterial({color:0x0088ff,transparent:true,opacity:.022,wireframe:true,blending:THREE.AdditiveBlending,depthWrite:false})));
     }
   }
 
-  function syncCells(sn,hue){
-    // Add new cell meshes
+  function syncCells(sn,pv){
+    const ev=ENV_STATE.e;
+    // Add new cell meshes (standardized r=5, use scale for size)
     while(cellGroup.children.length<pts.length){
-      const p=pts[cellGroup.children.length];
-      const col=new THREE.Color().setHSL(p.h/360,.78+sn*.02,.62+sn*.02);
-      const mesh=new THREE.Mesh(new THREE.SphereGeometry(p.r,14,14),
-        new THREE.MeshPhongMaterial({color:col,emissive:col.clone().multiplyScalar(.45),
-          transparent:true,opacity:.92,shininess:90}));
-      cellGroup.add(mesh);
+      cellGroup.add(new THREE.Mesh(new THREE.SphereGeometry(5,12,12),
+        new THREE.MeshPhongMaterial({transparent:true,opacity:.5,shininess:140,blending:THREE.AdditiveBlending,depthWrite:false})));
     }
-    // Remove excess
     while(cellGroup.children.length>pts.length){
       const m=cellGroup.children[cellGroup.children.length-1];
-      m.geometry.dispose();m.material.dispose();
-      cellGroup.remove(m);
+      m.geometry.dispose();m.material.dispose();cellGroup.remove(m);
     }
-    // Update positions + colors
+    const hologram=0.93+0.07*Math.sin(t*7.7)*Math.sin(t*13.1);
+    const envHShift=ev.hostility*30-ev.socialDensity*15;
     pts.forEach((p,i)=>{
       const m=cellGroup.children[i]; if(!m)return;
       m.position.set(p.px,p.py,p.pz);
-      const pulse=1+.09*Math.sin(t*p.fr+p.ph);
-      m.scale.setScalar(pulse);
-      const envEv=ENV_STATE.e;
-      const envHShift=envEv.hostility*30-envEv.socialDensity*15;
-      p.h=(hue+i*17+envHShift)%360;
-      const envSat=Math.min(1,.78+sn*.02+envEv.heatLevel*.15);
-      const envLit=Math.min(.9,Math.max(.3,.62+sn*.02-envEv.hostility*.15+envEv.quality*.1));
-      const col=new THREE.Color().setHSL(p.h/360,envSat,envLit);
+      const targetSz=pv.szLo+p.depth*(pv.szHi-pv.szLo);
+      const pulse=1+0.10*Math.sin(t*p.fr+p.ph);
+      m.scale.setScalar(targetSz/5*pulse);
+      const cellHue=(pv.hue+i*13+envHShift+720)%360;
+      const col=new THREE.Color().setHSL(cellHue/360,pv.sat,pv.lit);
       m.material.color.copy(col);
-      m.material.emissive.copy(col).multiplyScalar(.45);
-      m.material.opacity=p.born?Math.min(.92,p.age*2.5):.92;
+      m.material.emissive.copy(col).multiplyScalar(pv.emMul);
+      const rawOp=p.born?Math.min(pv.opHi,p.age*3.0):(pv.opLo+p.depth*(pv.opHi-pv.opLo));
+      m.material.opacity=rawOp*hologram;
     });
   }
 
-  function syncConnections(sn){
-    const envC=ENV_STATE.e;
-    const baseD=sn>=3?88:66;
-    const maxD=baseD*(1+envC.socialDensity*.4-envC.hostility*.2);
+  function syncConnections(sn,pv){
+    const ev=ENV_STATE.e;
+    const maxD=pv.connD*(1+ev.socialDensity*.3-ev.hostility*.15);
     let cnt=0;
     for(let i=0;i<pts.length&&cnt<MAX_CONN;i++){
       for(let j=i+1;j<pts.length&&cnt<MAX_CONN;j++){
         const p=pts[i],q=pts[j];
         const d=Math.hypot(p.px-q.px,p.py-q.py,p.pz-q.pz);
         if(d<maxD){
-          const al=(1-d/maxD);
+          const al=(1-d/maxD)*(pv.opLo+.18);
           const ci=cnt*6;
-          const cP=new THREE.Color().setHSL(p.h/360,.65,.5*al);
-          const cQ=new THREE.Color().setHSL(q.h/360,.65,.5*al);
+          const cP=new THREE.Color().setHSL((pv.hue+i*13+720)%360/360,.72,pv.lit*al*2.5);
+          const cQ=new THREE.Color().setHSL((pv.hue+j*13+720)%360/360,.72,pv.lit*al*2.5);
           connPos[ci]=p.px;connPos[ci+1]=p.py;connPos[ci+2]=p.pz;
           connPos[ci+3]=q.px;connPos[ci+4]=q.py;connPos[ci+5]=q.pz;
           connCol[ci]=cP.r;connCol[ci+1]=cP.g;connCol[ci+2]=cP.b;
@@ -3003,96 +3021,110 @@ const LIFE=(function(){
     connGeo.attributes.position.needsUpdate=true;
     connGeo.attributes.color.needsUpdate=true;
     connGeo.setDrawRange(0,cnt*2);
-    connMat.opacity=sn>=3?.32:.18;
+    connMat.opacity=.32+pv.opLo*.22;
   }
 
   function update(){
     t+=.016; LIFE_STATE.drift(.016);
     const c=LIFE_STATE.coords; energy=Math.max(.3,Math.min(2,c[4]));
-    // Slow camera orbit
-    const envU2=ENV_STATE.e;camTheta+=.003+c[6]*.0008+envU2.cogLoad*.003;
-    const camY=28*Math.sin(t*.07);
-    camera.position.set(185*Math.sin(camTheta),camY,185*Math.cos(camTheta));
+    const ev=ENV_STATE.e; const pv=getPV();
+    camTheta+=.0022+c[6]*.0005+ev.cogLoad*.0018;
+    const camY=32*Math.sin(t*.06);
+    camera.position.set(205*Math.sin(camTheta),camY,205*Math.cos(camTheta));
     camera.lookAt(0,0,0);
-    // Cell physics
     pts.forEach((p,i)=>{
       p.age+=.016; if(p.born&&p.age>.5)p.born=false;
       const d=Math.hypot(p.px,p.py,p.pz)||1;
-      const pull=Math.min(.14,d*.002)*energy;
+      const pull=Math.min(pv.pull*3.5,d*pv.pull);
       p.vx-=(p.px/d)*pull; p.vy-=(p.py/d)*pull; p.vz-=(p.pz/d)*pull;
       pts.forEach((q,j)=>{
         if(j===i)return;
         const rx=p.px-q.px,ry=p.py-q.py,rz=p.pz-q.pz;
-        const rd=Math.hypot(rx,ry,rz)||.001,md=p.r+q.r+12;
-        if(rd<md){const f=(md-rd)/md*2;p.vx+=(rx/rd)*f;p.vy+=(ry/rd)*f;p.vz+=(rz/rd)*f;}
+        const rd=Math.hypot(rx,ry,rz)||.001;
+        const minD=(pv.szLo+pv.szHi)*pv.rep;
+        if(rd<minD){const f=(minD-rd)/minD*1.9;p.vx+=(rx/rd)*f;p.vy+=(ry/rd)*f;p.vz+=(rz/rd)*f;}
       });
-      const envU=ENV_STATE.e;const turb=.45*(1+envU.hostility*.5+envU.cogLoad*.4);
-      p.vx+=(Math.random()-.5)*turb*energy; p.vy+=(Math.random()-.5)*turb*energy; p.vz+=(Math.random()-.5)*turb*energy;
-      p.vx*=.88; p.vy*=.88; p.vz*=.88;
+      const turb=pv.turb*(1+ev.hostility*.4+ev.cogLoad*.3)*energy;
+      p.vx+=(Math.random()-.5)*turb; p.vy+=(Math.random()-.5)*turb; p.vz+=(Math.random()-.5)*turb;
+      p.vx*=pv.damp; p.vy*=pv.damp; p.vz*=pv.damp;
       p.px+=p.vx; p.py+=p.vy; p.pz+=p.vz;
       const pr=Math.hypot(p.px,p.py,p.pz);
-      const envBound=100*(1-envU.socialDensity*.3+envU.hostility*.15);
-      if(pr>envBound){const sc=envBound/pr;p.px*=sc;p.py*=sc;p.pz*=sc;p.vx*=-.5;p.vy*=-.5;p.vz*=-.5;}
-      p.orb+=.012*(1+p.depth);
+      const bound=pv.bound*(1-ev.socialDensity*.22+ev.hostility*.10);
+      if(pr>bound){const sc=bound/pr;p.px*=sc;p.py*=sc;p.pz*=sc;p.vx*=-.42;p.vy*=-.42;p.vz*=-.42;}
+      p.orb+=.01*(1+p.depth);
     });
     autoGrow+=.016;
-    if(autoGrow>5){autoGrow=0;const tgt=LIFE_STATE.stage.cells;if(pts.length<tgt){divide();if(pts.length<tgt-5)divide();}}
-    if(evoFlash>0)evoFlash-=.028;
+    if(autoGrow>4){autoGrow=0;const tgt=LIFE_STATE.stage.cells;if(pts.length<tgt){divide();if(pts.length<tgt-10)divide();if(pts.length<tgt-25)divide();}}
+    if(evoFlash>0)evoFlash-=.022;
+    phaseBlend=Math.min(1,phaseBlend+.018);
   }
 
   function render(){
     const stg=LIFE_STATE.stage,c=LIFE_STATE.coords,sn=stg.n;
-    const bp=computeBioParams(c);
-    const ev=ENV_STATE.e;
-    const hue=(c[0]*57+ev.hostility*40)%360;
-    const nm=AUTH.user?.lifeName||'';
-
-    // Blob scale from cell spread
+    const bp=computeBioParams(c); const ev=ENV_STATE.e;
+    // Phase transition
+    const newPhase=detectPhase(ev);
+    if(newPhase!==currentPhase){
+      prevPhase=currentPhase; currentPhase=newPhase; phaseBlend=0;
+      if(phaseDiv){
+        phaseDiv.textContent=PHASE_LABEL[currentPhase]+' — '+PHASE_DESC[currentPhase];
+        phaseDiv.style.opacity='1';
+        setTimeout(()=>{if(phaseDiv)phaseDiv.style.opacity='0';},2500);
+      }
+    }
+    const pv=getPV(); const hue=pv.hue;
+    // Blob
     const spread=pts.reduce((mx,p)=>Math.max(mx,Math.hypot(p.px,p.py,p.pz)),0)||40;
-    const bR=Math.max(32,spread*1.2+22)/50;
-    const bPulse=1+.1*Math.sin(t*.38)+.05*Math.sin(t*.62);
-    blobMesh.scale.setScalar(bR*bPulse); blobInner.scale.setScalar(bR*bPulse*.82);
-    // Bio-param blob color
-    const isStress=bp._stress>.4, isHot=parseFloat(bp.temperature)>37.5;
-    const bH=ev.hostility>.6?(isHot?.02:.04):ev.quality>.7?((hue+120)%360/360):hue/360;
-    blobMesh.material.color.setHSL(bH,.6+ev.heatLevel*.15,isStress?.22:Math.max(.18,.28+ev.quality*.1-ev.hostility*.1));
-    blobMesh.material.opacity=.08+sn*.012;
-    blobInner.material.color.setHSL(bH,.55,.2);
-    blobMesh.rotation.y=t*.08; blobMesh.rotation.x=t*.04;
-    blobInner.rotation.y=-t*.06;
-
+    const gasScale=currentPhase==='gas'?1.55:currentPhase==='frozen'?.70:1.0;
+    const bR=Math.max(26,spread*1.12+16)/50;
+    const bPulse=1+.08*Math.sin(t*.33)+.04*Math.sin(t*.55);
+    blobMesh.scale.setScalar(bR*bPulse*gasScale);
+    blobInner.scale.setScalar(bR*bPulse*.78);
+    const pvC=PHASE_VIS[currentPhase];
+    blobMesh.material.color.setHex(pvC.bH);
+    blobMesh.material.opacity=pvC.bOp*(0.88+0.12*Math.sin(t*.38));
+    blobInner.material.color.setHex(pvC.bH);
+    blobInner.material.opacity=pvC.bOp*.6;
+    blobMesh.rotation.y=t*.065; blobMesh.rotation.x=t*.032;
+    blobInner.rotation.y=-t*.052;
     // Halo (Stage 3+)
     haloMesh.visible=sn>=3;
-    if(sn>=3){haloMesh.scale.setScalar(bR*1.38);haloMesh.material.color.setHSL(hue/360,.55,.38);haloMesh.material.opacity=.03+.01*Math.sin(t*.5);}
-
+    if(sn>=3){haloMesh.scale.setScalar(bR*1.42);haloMesh.material.color.setHSL(hue/360,.55,.4);haloMesh.material.opacity=.025+.01*Math.sin(t*.48);}
     // Rings (Stage 4+)
     ringGroup.visible=sn>=4;
-    if(sn>=4){ringGroup.rotation.y=t*.22;ringGroup.rotation.x=t*.1;
-      ringGroup.children.forEach((l,i)=>{l.material.color.setHSL(((hue+i*55)%360)/360,.65,.5);l.material.opacity=.1+.04*Math.sin(t*.5+i);});}
-
+    if(sn>=4){ringGroup.rotation.y=t*.18;ringGroup.rotation.x=t*.085;
+      ringGroup.children.forEach((l,i)=>{l.material.color.setHSL(((hue+i*55)%360)/360,.65,.5);l.material.opacity=.10+.04*Math.sin(t*.48+i);});}
     // Ripples (Stage 5+)
     rippleGroup.visible=sn>=5;
-    if(sn>=5){rippleGroup.children.forEach((m,i)=>{m.scale.setScalar(1+.12*Math.sin(t*.7+i*.9));m.material.color.setHSL(((hue+i*30)%360)/360,.7,.6);});}
-
-    // Neural / temperature light effects
+    if(sn>=5){rippleGroup.children.forEach((m,i)=>{m.scale.setScalar(1+.10*Math.sin(t*.62+i*.82));m.material.color.setHSL(((hue+i*30)%360)/360,.7,.55);});}
+    // Hologram grid
+    if(gridMesh){gridMesh.rotation.y=t*.0035;gridMesh.rotation.x=t*.0025;
+      gridMesh.material.opacity=.03+.02*Math.sin(t*.22);}
+    // Lights
     {const nl=scene.userData.pL1;
-     if(nl){const ni=Math.max(0,bp._neural-.5)*2;
-       nl.intensity=3+ni*4*Math.abs(Math.sin(t*parseFloat(bp.brainWave)*.3));
-       nl.color.setHSL(hue/360,.7,.55);}
-     if(isHot){const pl2=scene.userData.pL2;if(pl2)pl2.color.setHSL(.04,.9,.5);}
+     if(nl){const ni=Math.max(0,(bp._neural||.5)-.3)*2.5;
+       nl.intensity=5+ni*6*Math.abs(Math.sin(t*(parseFloat(bp.brainWave)||5)*.22));
+       nl.color.setHSL(hue/360,.75,.55);}
+     const pl2=scene.userData.pL2;
+     if(pl2){
+       if(currentPhase==='burning'){pl2.color.setHSL(.04,.9,.5);pl2.intensity=6+2*Math.abs(Math.sin(t*4.2));}
+       else if(currentPhase==='frozen'){pl2.color.setHSL(.6,.8,.7);pl2.intensity=2.5;}
+       else if(currentPhase==='gas'){pl2.color.setHSL(.1,.9,.55);pl2.intensity=4;}
+       else{pl2.color.setHSL(.9,.8,.5);pl2.intensity=3;}
+     }
     }
-
-    starField.rotation.y=t*.008;
-    syncCells(sn,hue);
-    syncConnections(sn);
+    starField.rotation.y=t*.005;
+    syncCells(sn,pv); syncConnections(sn,pv);
     renderer.render(scene,camera);
-
     // CSS overlays
     if(evoDiv){evoDiv.style.opacity=evoFlash>0?Math.min(1,evoFlash):'0';if(evoFlash>0)evoDiv.textContent=evoMsg;}
+    const nm=AUTH.user?.lifeName||'';
     if(nameDiv3d)nameDiv3d.textContent=nm;
-
     const badge=document.getElementById('life-badge');
-    if(badge){const tag=nm?`<b>${nm}</b> · `:'';badge.innerHTML=`${tag}${stg.label} · 細胞 ${pts.length} · W=${Math.floor(c[1])} · ${bp.temperature}°C`;}
+    if(badge){
+      const tag=nm?`<b>${nm}</b> · `:'';
+      badge.innerHTML=`${tag}${stg.label} [${PHASE_LABEL[currentPhase]}] · 細胞 ${pts.length} · W=${Math.floor(c[1])} · ${bp.temperature}°C`;
+    }
     const stgEl=document.getElementById('life-stage-lbl');
     if(stgEl)stgEl.textContent=`Stage ${sn} · ${stg.label}`;
   }
@@ -3104,7 +3136,8 @@ const LIFE=(function(){
   }
 
   function divide(){
-    if(pts.length>=65)return;
+    const maxCells=LIFE_STATE.stage.cells;
+    if(pts.length>=maxCells)return;
     const p=pts[Math.floor(Math.random()*pts.length)],stg=LIFE_STATE.stage;
     pts.push(mkPt(p,stg.n));
     AUTH.save('cells',pts.length);AUTH.save('gen',(AUTH.user?.gen||0)+1);
@@ -3120,26 +3153,34 @@ const LIFE=(function(){
       renderer=new THREE.WebGLRenderer({canvas:c3,alpha:false,antialias:true,powerPreference:'high-performance'});
       renderer.setPixelRatio(Math.min(devicePixelRatio,2));
       renderer.setSize(W,H);
-      renderer.setClearColor(0x060d18,1);
+      renderer.setClearColor(0x000510,1);
       buildScene();
       LIFE_STATE.load(); ENV_STATE.load();
       pts=[];
-      const stg=LIFE_STATE.stage,n=Math.max(5,Math.min(stg.cells,AUTH.user?.cells||8));
+      const stg=LIFE_STATE.stage,n=Math.max(8,Math.min(stg.cells,AUTH.user?.cells||15));
       for(let i=0;i<n;i++){
         const p=mkPt(null,stg.n);
-        const a=(i/n)*Math.PI*2,b=(i/n)*Math.PI,d=20+Math.random()*35;
+        const a=(i/n)*Math.PI*2,b=(i/n)*Math.PI,d=18+Math.random()*32;
         p.px=Math.sin(b)*Math.cos(a)*d; p.py=Math.cos(b)*d*.6; p.pz=Math.sin(b)*Math.sin(a)*d;
         pts.push(p);
       }
       // Evolution flash overlay
       evoDiv=document.createElement('div');
-      evoDiv.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:bold 22px sans-serif;color:#fff8a0;pointer-events:none;opacity:0;transition:opacity .3s;text-shadow:0 0 20px #ffd700;z-index:10';
+      evoDiv.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:bold 22px sans-serif;color:#a0f8ff;pointer-events:none;opacity:0;transition:opacity .3s;text-shadow:0 0 24px #00eeff,0 0 8px #fff;z-index:10';
       wrap.appendChild(evoDiv);
+      // Phase indicator overlay
+      phaseDiv=document.createElement('div');
+      phaseDiv.style.cssText='position:absolute;bottom:52px;left:50%;transform:translateX(-50%);font:600 13px sans-serif;color:#00ddff;pointer-events:none;opacity:0;transition:opacity .5s;text-shadow:0 0 12px #00ccff;z-index:10;letter-spacing:.1em;background:rgba(0,20,40,.55);padding:4px 14px;border-radius:20px;border:1px solid rgba(0,200,255,.2)';
+      wrap.appendChild(phaseDiv);
       // 3D life name label
       nameDiv3d=document.createElement('div');
-      nameDiv3d.style.cssText='position:absolute;top:44px;width:100%;text-align:center;font:bold 15px Georgia,serif;color:rgba(220,200,255,0.72);pointer-events:none;z-index:5;text-shadow:0 0 12px rgba(160,120,255,.8)';
+      nameDiv3d.style.cssText='position:absolute;top:44px;width:100%;text-align:center;font:bold 15px Georgia,serif;color:rgba(180,240,255,0.72);pointer-events:none;z-index:5;text-shadow:0 0 14px rgba(0,220,255,.8)';
       wrap.appendChild(nameDiv3d);
-      // Resize
+      // Scanline overlay (hologram effect)
+      const scanDiv=document.createElement('div');
+      scanDiv.style.cssText='position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,220,200,.016) 2px,rgba(0,220,200,.016) 4px);pointer-events:none;z-index:3;';
+      wrap.appendChild(scanDiv);
+      // Resize observer
       new ResizeObserver(()=>{
         const nb2=wrap.querySelector('.life-name-bar');
         W=wrap.clientWidth||600;
@@ -3151,18 +3192,18 @@ const LIFE=(function(){
     start(){if(!raf&&renderer)raf=requestAnimationFrame(loop);},
     stop(){raf=-1;},
     divide,
-    shrink(){if(pts.length>5)pts.splice(Math.floor(Math.random()*pts.length),1);},
+    shrink(){if(pts.length>8)pts.splice(Math.floor(Math.random()*pts.length),1);},
     applyResponse(text,sent){
       LIFE_STATE.applyChat(sent);
       if(sent.score>=2){divide();divide();divide();energy=Math.min(1.8,energy+.3);}
       else if(sent.score===1){divide();divide();energy=Math.min(1.5,energy+.18);}
       else if(sent.score<=-2){this.shrink();energy=Math.max(.4,energy-.2);}
-      else if(sent.score===-1){energy=Math.max(.5,energy-.08);}
-      else{divide();}
+      else{divide();energy=Math.min(1.3,energy+.08);}
+      analyzeLifeText(text);analyzeEnvironment(text);
       const evo=LIFE_STATE.checkEvolution();
       if(evo.evolved){
         evoFlash=1.5;evoMsg=`⬡ Stage ${evo.to} — ${evo.label} に進化！`;
-        for(let i=0;i<12;i++)divide();
+        for(let i=0;i<16;i++)divide();
         setTimeout(()=>updateLifeStatus(),200);
       }
       LIFE_STATE.save();
@@ -3170,6 +3211,7 @@ const LIFE=(function(){
     getStatus(){return{cells:pts.length,energy:energy.toFixed(1),gen:AUTH.user?.gen||0,stage:LIFE_STATE.stage};}
   };
 })();
+
 
 // ── SENTIMENT & 11D TEXT ANALYSIS ──
 function analyzeSentiment(text){
