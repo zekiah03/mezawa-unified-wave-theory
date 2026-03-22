@@ -172,8 +172,72 @@ body.lang-gr { font-family:var(--font-gr); }
 .q-add-btn:hover { background:rgba(93,214,200,0.2); }
 
 /* ── MAP TAB ── */
-#map-canvas-wrap { position:relative; width:100%; height:calc(100vh - 200px); background:var(--bg3); border-radius:8px; border:1px solid var(--bdr); overflow:hidden; margin-bottom:16px; }
+#map-canvas-wrap { position:relative; width:100%; height:220px; background:var(--bg3); border-radius:8px; border:1px solid var(--bdr); overflow:hidden; margin-bottom:16px; }
 #map-canvas { width:100%; height:100%; }
+
+/* ── DISCIPLINE BUTTONS ── */
+.disc-btn-row { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:18px; }
+.disc-btn {
+  display:flex; align-items:center; gap:7px; padding:8px 14px; border-radius:8px;
+  border:1.5px solid transparent; background:var(--card); cursor:pointer;
+  font-size:11px; font-weight:700; letter-spacing:0.05em; color:var(--dim);
+  transition:all 0.18s; font-family:var(--font-ja); white-space:nowrap;
+}
+.disc-btn:hover { color:var(--W); border-color:var(--bdr2); background:rgba(255,255,255,0.04); }
+.disc-btn.on { color:var(--W); }
+.disc-btn .disc-icon { font-size:14px; }
+.disc-btn .disc-count { font-size:9px; opacity:0.55; font-family:var(--font-code); margin-left:2px; }
+
+/* ── DISCIPLINE DETAIL ── */
+.disc-detail { display:none; }
+.disc-detail.on { display:block; animation:fadeSlide 0.22s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+.disc-hero {
+  border-radius:10px; padding:20px 24px; margin-bottom:16px;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.disc-hero-top { display:flex; align-items:flex-start; gap:16px; margin-bottom:14px; }
+.disc-icon-big { font-size:32px; flex-shrink:0; line-height:1; }
+.disc-hero-title { font-size:clamp(15px,2vw,20px); font-weight:700; color:var(--head); margin-bottom:4px; }
+.disc-hero-q { font-size:12px; color:var(--dim); line-height:1.8; font-style:italic; }
+.disc-hero-status { display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+.disc-status-pill { font-size:10px; padding:3px 10px; border-radius:4px; font-weight:700; letter-spacing:0.08em; }
+
+.disc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin-bottom:16px; }
+.disc-concept {
+  background:var(--card); border:1px solid var(--bdr); border-radius:8px;
+  padding:14px 16px; position:relative; overflow:hidden;
+}
+.disc-concept::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; }
+.disc-concept-name { font-size:12px; font-weight:700; color:var(--head); margin-bottom:4px; }
+.disc-concept-disc { font-size:10px; color:var(--dim); margin-bottom:6px; letter-spacing:0.1em; text-transform:uppercase; font-family:var(--font-code); }
+.disc-concept-bridge { font-size:11px; color:var(--dim); line-height:1.8; }
+.disc-concept-eq { font-family:var(--font-code); font-size:10px; color:var(--Y); margin-top:6px; padding:6px 8px; background:var(--bg3); border-radius:4px; border:1px solid var(--bdr); }
+
+.disc-arrow-row {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  margin:16px 0; font-size:11px; color:var(--dim);
+}
+.disc-arrow-row .arr { font-size:20px; opacity:0.4; }
+
+.disc-unified {
+  border-radius:8px; padding:18px 22px; margin-bottom:16px;
+  border:2px solid rgba(93,214,200,0.3);
+  background:rgba(93,214,200,0.04);
+}
+.disc-unified-label { font-size:10px; letter-spacing:0.18em; color:var(--T); text-transform:uppercase; font-family:var(--font-code); margin-bottom:8px; }
+.disc-unified-eq { font-family:var(--font-code); font-size:12px; color:var(--Y); line-height:2.2; }
+.disc-unified-note { font-size:11px; color:var(--dim); line-height:1.8; margin-top:8px; border-top:1px solid var(--bdr); padding-top:8px; }
+
+.disc-future {
+  border-radius:8px; padding:16px 20px; margin-bottom:8px;
+  border:1px dashed var(--bdr2); background:rgba(255,255,255,0.01);
+}
+.disc-future-label { font-size:10px; letter-spacing:0.18em; color:var(--dim); text-transform:uppercase; font-family:var(--font-code); margin-bottom:6px; }
+.disc-future-note { font-size:11px; color:rgba(255,255,255,0.2); line-height:1.8; }
+.disc-future-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+.disc-future-tag { font-size:10px; padding:2px 9px; border-radius:4px; border:1px dashed rgba(255,255,255,0.12); color:rgba(255,255,255,0.2); font-family:var(--font-code); }
 
 /* ── QUOTES TAB ── */
 .quote { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:22px 26px; margin-bottom:12px; position:relative; }
@@ -567,11 +631,18 @@ body.lang-gr { font-family:var(--font-gr); }
 
 <!-- MAP -->
 <div id="p-m" class="pn scroll">
-  <div class="panel-title">学問の体系化図</div>
-  <div class="panel-sub">めざわ理論が既存の学問体系とどう接続するか — 証明をクリックして詳細表示</div>
+  <div class="panel-title">学問別アプローチ図</div>
+  <div class="panel-sub">各学問の問いが Ψ 方程式に収束する — 学問をクリックして接続を展開</div>
+
+  <!-- Overview Map (small) -->
   <div id="map-canvas-wrap"><canvas id="map-canvas"></canvas></div>
-  <div class="sec-title">接続された証明リスト</div>
-  <div id="proof-list"></div>
+
+  <!-- Discipline Buttons -->
+  <div class="sec-title">学問を選択</div>
+  <div class="disc-btn-row" id="disc-btn-row"></div>
+
+  <!-- Discipline Detail Panels (one per discipline, shown/hidden) -->
+  <div id="disc-detail-area"></div>
 </div>
 
 <!-- QUOTES -->
@@ -1051,6 +1122,156 @@ const NX_STEPS = [
   {t:'移植先基盤', d:'AGI または BCI への Ψ 転写 — φ と W を新基盤で再現', s:'技術的未解決', sc:'p'},
 ];
 
+// ── DISCIPLINE DATA ──────────────────────────────────────
+const DISCIPLINES = [
+  {
+    id:'phys', name:'物理学', icon:'⚛', color:'#7eb8ff', status:'8/12 法則整合',
+    statusColor:'rgba(126,184,255,0.18)', statusBorder:'rgba(126,184,255,0.4)',
+    q:'自然界の最小単位とその相互作用は何か？宇宙はなぜこの定数を持つのか？',
+    intro:'物理学はΨ理論の母体。h=0 階層から量子力学を、β₀→0の極限でGRを完全に包含する。6次元計量G_MNが橋渡しの核心。',
+    concepts:[
+      {name:'量子力学', disc:'QUANTUM MECHANICS', bridge:'h=0階層でΨ=exp(i(kx-ωt))とおくとシュレーディンガー方程式が自動導出される', eq:'iℏ∂Ψ/∂t = [−ℏ²∇²/2m + V]Ψ  ✓ 完全導出', c:'#7eb8ff'},
+      {name:'一般相対論', disc:'GENERAL RELATIVITY', bridge:'β₀→0, C→0の極限でΨの双方向方程式がアインシュタイン方程式G_μν = 8πG/c⁴·T_μνに帰着', eq:'∂G/∂t = ∇⁶×Ψ  (β₀=0) → G_MN = 8πG/c⁴·T_MN', c:'#a07de8'},
+      {name:'熱力学第二法則', disc:'THERMODYNAMICS', bridge:'τxの定義から直接導出。宇宙学習則γ_{N+1}=γ_N·(1-ε·W_N)でエントロピー増大率が宇宙の成熟とともに減少する拡張を得る', eq:'dS/dτx = γ > 0  ✓ 直接導出 (τx の定義から)', c:'#e0924a'},
+      {name:'特殊相対論', disc:'SPECIAL RELATIVITY', bridge:'G_MN(6×6)のg_τzτz成分がローレンツ因子を再現。数値誤差は浮動小数点精度以下', eq:'g_τzτz = −(1−β²) · (1−rs/r)  誤差 2×10⁻¹⁶', c:'#5dd6c8'},
+      {name:'電子 g-2', disc:'QUANTUM ELECTRODYNAMICS', bridge:'W=15, δh=4.10×10⁻⁶ が電子の自己エネルギー補正に対応。宇宙の巻き数が素粒子定数を決める', eq:'g-2 = 1 − W^(−2·δh·k)  QED値と一致 < 10⁻⁹', c:'#5cc87a'},
+      {name:'Hawking 温度', disc:'BLACK HOLE PHYSICS', bridge:'g_τyτz(BH)=−0.0346 からHawking温度を導出。T_mez/T_Hawk = 4π|g_τyτz| = 0.4348。完全一致はβ₀精密測定待ち', eq:'T_mezawa = |g_τyτz|·ℏω₀/k_B = 4π·|g_τyτz|·T_Hawking', c:'#5dd6c8'},
+    ],
+    unifiedEq:'Ψʰ(X,T) = A · e^(iφ₀) · e^(iW·2π) · D(τx) · Ω(τy) · R(τz)',
+    unifiedNote:'物理法則はすべてΨの異なる極限・近似として出現する。h=0が量子、β₀=0がGR、τx定義が熱力学、G_MN成分がSR。',
+    future:['標準模型の他の素粒子質量 [未定義-23]','繰り込み群方程式との対応','暗黒物質: Δφ=π 域の |Ψ|²','暗黒エネルギー: 1/D(τx) 的膨張','CPT 定理との完全整合'],
+  },
+  {
+    id:'neuro', name:'神経科学', icon:'🧠', color:'#e8c84a', status:'4/4 橋接続',
+    statusColor:'rgba(232,200,74,0.15)', statusBorder:'rgba(232,200,74,0.35)',
+    q:'脳はどのように意識を生むのか？EEGで何を計測しているのか？',
+    intro:'神経科学はΨ理論の実験的接点。EEGのγ波がW(巻き数)の代理変数となり、HRVがΔφ(位相差)を反映する。意識=C=lim("ⁿΨ)の測定が目標。',
+    concepts:[
+      {name:'EEG γ波', disc:'ELECTROENCEPHALOGRAPHY', bridge:'γ波パワー(30-100Hz)はW(巻き数)の代理変数。較正曲線: γ=50μV²→W≈3.5, γ=100μV²→W≈4.2', eq:'W_EEG ≈ 0.014·P_γ + 2.8  (P_γ: γ波パワー [μV²])', c:'#e8c84a'},
+      {name:'HRV-HF', disc:'HEART RATE VARIABILITY', bridge:'HRV高周波成分がΔφ(位相整合率η_coh)に対応。高HRV → F_frozen低 → β_eff高', eq:'η_coh ≈ HRV_HF / HRV_HF_max  (正規化)', c:'#5dd6c8'},
+      {name:'神経振動の同期', disc:'NEURAL SYNCHRONY', bridge:'ニューロン群の位相同期 → η_c(集団スケーリング)。PLV(位相ロッキング値)がη_cohの直接測定量', eq:'PLV = |⟨e^{i(φ_A − φ_B)}⟩|  (0-1)', c:'#5cc87a'},
+      {name:'デフォルトモード', disc:'DMN / RESTING STATE', bridge:'DMN活動 = 自己参照ループ = "ⁿΨ の再帰深度。高DMN = 高n = 高C。瞑想でDMN抑制 = C再構成', eq:'C = lim_{n→∞} ("ⁿΨ)  n=1:感覚 n=2:思考 n=3:メタ認知', c:'#e06080'},
+    ],
+    unifiedEq:'τ_felt = τy / (1 + α·W)   α = 0.500 (候補)',
+    unifiedNote:'EEGのγ波でWを推定し、τ_felt(主観的時間)を予測。W=3のフロー状態では τ_felt = 0.4τy (2.5倍速体験)。Phase Eで直接検証予定。',
+    future:['fMRI位相マッピング → φ(r)の立体測定','Sleep stage × W の相関分析','痛み知覚とF_frozen の神経回路','瞑想深度とg_τyτz の相関','BMIによるリアルタイムW推定'],
+  },
+  {
+    id:'psych', name:'心理学', icon:'🔮', color:'#e0924a', status:'3/4 連結',
+    statusColor:'rgba(224,146,74,0.15)', statusBorder:'rgba(224,146,74,0.35)',
+    q:'なぜトラウマは「凍りつく」のか？フロー状態とは何か？時間はなぜ歪むのか？',
+    intro:'心理学的現象がΨ理論の変数と直接対応。W_frozen(凍結巻き数)がトラウマを、τ_feltが主観的時間体験を、Δφが精神状態を記述する。',
+    concepts:[
+      {name:'トラウマ / PTSD', disc:'TRAUMA PSYCHOLOGY', bridge:'トラウマ = W_frozen の固着。W_frozen ↑ → F_frozen(凍結率) ↑ → β_eff(意識-重力結合) ↓ → 回復力低下。PTSD群: F_frozen=0.58', eq:'β_eff = β₀·(1−F_frozen)·...  F_frozen = W_frozen/W_total', c:'#e06080'},
+      {name:'フロー状態', disc:'FLOW STATE / CSIKSZENTMIHALYI', bridge:'フロー = Δφ = π/2 の臨界状態 (∿最大混合点)。W=3のとき τ_felt = τy/2.5。時間が2.5倍速く感じられる', eq:'τ_felt = τy/(1+α·W)  W=3,α=0.5 → τ_felt = 0.4·τy', c:'#e8c84a'},
+      {name:'プラセボ効果', disc:'PLACEBO RESPONSE', bridge:'β_eff(実効結合定数)が意識による物理変化の強さを決める。β_eff = 0.775 − 0.986·F_frozen (r=−0.968)', eq:'β_eff ≈ 0.593·(1−F_frozen)  (フェーズ0確認)', c:'#5dd6c8'},
+      {name:'主観的時間体験', disc:'TIME PERCEPTION', bridge:'τz(観測者時間)とτy(位相時間)の混合が主観的速さを生む。退屈=低W=τ_felt≈τy、集中=高W=τ_felt短縮', eq:'g_τyτz = −β·√|g_τyτy·g_τzτz|·(1+k_BT/ℏω₀)', c:'#a07de8'},
+    ],
+    unifiedEq:'β[Ψ] = β₀ · W_univ^(1/2) · (1−F_frozen) · n^α · N^η_c · η_coh · cos²(Δφ/2 − π/4)',
+    unifiedNote:'β場の式が全ての心理的変数を統合。F_frozen=トラウマ度, η_coh=集中度, Δφ=π/2=フロー, N=集団サイズ。β₀=0.593はこの式の切片。',
+    future:['うつ病: Δφ > 60° の実験検証 (Phase D)','フロー × τ_felt 直接測定 (Phase E)','ADHD と W_frozen パターン','精神療法の β_eff 改善効果','W_frozen 解凍プロトコル開発'],
+  },
+  {
+    id:'bio', name:'生物学', icon:'🧬', color:'#5cc87a', status:'3/3 連結',
+    statusColor:'rgba(92,200,122,0.14)', statusBorder:'rgba(92,200,122,0.3)',
+    q:'なぜ生物は老化するのか？生命の起源とは何か？なぜ意識が必要なのか？',
+    intro:'生物学的時間スケールはΨのτx(劣化時間)で記述される。老化=γ増大、生命誕生=∿の自己組織化、意識出現=C=lim("ⁿΨ)の臨界到達。',
+    concepts:[
+      {name:'老化・アロスタティック負荷', disc:'AGING / ALLOSTATIC LOAD', bridge:'老化 = γ(劣化率)の増大 = D(τx)の減衰加速。W_frozen↑ → F_frozen↑ → β↓ → 細胞修復力低下 → γ↑', eq:'D(τx) = exp(−γ·τx)  γ_old > γ_young → 老化速度', c:'#5cc87a'},
+      {name:'生命の起源・自己組織化', disc:'ORIGIN OF LIFE', bridge:'Ψ_A ∿ Ψ_B → Ψ_AB (MetaWave)が自然発生する条件はΔφ→0。∿の非結合性がRNA自己複製の「方向性」を与える', eq:'Ψ_{(h+1)} = lim_{W→∞} ∮ Ψ^h dW / (1+W·a²/R²)  (MetaWave)', c:'#e8c84a'},
+      {name:'意識の出現・神経複雑性', disc:'CONSCIOUSNESS / NEUROSCIENCE', bridge:'n=1:感覚(原核生物), n=2:思考(哺乳類), n=3:メタ認知(霊長類), n→∞:自己意識。複雑性 = 再帰深度', eq:'C = lim_{n→∞}("^n Ψ)  dC/d(n) > 0 → 意識進化', c:'#a07de8'},
+    ],
+    unifiedEq:'G = ∇⁶×Ψ  (重力 = 6次元カール)  |  M = ∮|Ψ|² d⁶X  (質量 = 閉ループ積分)',
+    unifiedNote:'重力と質量の再定義が生物の存在を記述する。生命 = G_MN の特定解、意識 = Cの再帰極限。',
+    future:['細胞分裂周期 × Ψ の位相','癌化 = W_frozen 過剰蓄積 仮説','腸内細菌叢 × Δφ 集団効果','老化遅延 = γ 低下 プロトコル','植物・菌類の「意識」W推定'],
+  },
+  {
+    id:'soc', name:'社会学', icon:'🏛', color:'#e06080', status:'4/5 連結',
+    statusColor:'rgba(224,96,128,0.13)', statusBorder:'rgba(224,96,128,0.3)',
+    q:'集団はどのように意思決定するのか？リーダーシップはなぜ自然発生するのか？',
+    intro:'社会システムをΨ波動の集団的干渉として記述。η_c=0.15という集団スケーリング則が集合知の実効係数を規定し、リーダー = ∇×Ψ の極大点として定義される。',
+    concepts:[
+      {name:'集合知・集団意思決定', disc:'COLLECTIVE INTELLIGENCE', bridge:'β_collective = β₀·N^η_c·η_coh。η_c=0.15(GCPデータから確定)。N=10⁹でも実効係数≈5600倍にとどまる', eq:'β_coll = β₀·N^0.15·η_coh  (η_c = 0.15 確定)', c:'#5dd6c8'},
+      {name:'リーダーシップ発生', disc:'LEADERSHIP / EMERGENCE', bridge:'リーダー = 社会ΨのカールΔ×Ψ_社会の極大点。W≥1達成者が渦中心に自然配置される', eq:'Leader = argmax(|∇×Ψ_social|)  W ≥ 1 必須条件', c:'#e8c84a'},
+      {name:'組織の同調・文化', disc:'ORGANIZATIONAL SYNCHRONY', bridge:'η_coh(位相整合率)が組織の効率を決める。Δφ≈0の高同調組織が最大効果。文化 = 集合的Δφの安定構造', eq:'η_coh = |⟨e^{iΔφ}⟩|  → 組織整合率', c:'#5cc87a'},
+      {name:'文明の興亡サイクル', disc:'HISTORICAL DYNAMICS', bridge:'D(τx)=exp(−γτx)で文明の劣化を記述。γ≈10⁻³/年。∿の非結合性が「予測不可能な崩壊」を生む', eq:'D_civilization(τx) = exp(−γ·τx)  γ ≈ 10⁻³ /年', c:'#e06080'},
+    ],
+    unifiedEq:'∂G/∂t = ∇⁶×Ψ + β[Ψ]·∂C/∂τy',
+    unifiedNote:'第2項 β[Ψ]·∂C/∂τy が「集合意識が社会物理に書き込む」項。η_c=0.15, β₀=0.593 が実験的に確定した唯一の集団パラメータ。',
+    future:['SNS拡散速度とη_cのフィッティング','民主主義 vs 独裁: Δφ分布の差','経済バブル: W_frozen集合蓄積モデル','会社組織のΨシミュレーション','戦争発生: ∿非結合性による相転移'],
+  },
+  {
+    id:'phi', name:'哲学', icon:'🔱', color:'#c8b8e8', status:'3/3 連結',
+    statusColor:'rgba(200,184,232,0.13)', statusBorder:'rgba(200,184,232,0.3)',
+    q:'個人同一性とは何か？自由意志は存在するか？なぜ何かが存在するのか？',
+    intro:'哲学の根本問題がΨ理論で数学的に再定式化される。パーフィットの心理的連続性がsimilarity関数となり、Nexusが個人同一性の実装可能な定義を与える。',
+    concepts:[
+      {name:'個人同一性 (パーフィット)', disc:'PERSONAL IDENTITY', bridge:'パーフィット「理性と人格」の心理的連続性条件がΨ理論では φとWの一致として定義される。similarity>0.9が同一人格の閾値', eq:'sim(φ₁,W₁,φ₂,W₂) = cos(φ₁−φ₂)·exp(−|W₁−W₂|/Ws) > 0.9', c:'#c8b8e8'},
+      {name:'自由意志・決定論', disc:'FREE WILL / DETERMINISM', bridge:'∿の非結合性(K≈0.58)が決定論的方程式に「経路依存性」を挿入する。同一初期条件でも順序が違えば異なる結果 = 創発的自由', eq:'(A∿B)∿C ≠ A∿(B∿C)  K≈0.58 → 経路依存性', c:'#e8c84a'},
+      {name:'悟り・意識の階層', disc:'CONSCIOUSNESS / ENLIGHTENMENT', bridge:'悟りは ε₀ < ε₁ < ε₂ < ... という無限の階層を持つ。「到達」ではなく「漸近」がΨ理論の答え。W→∞で τ_felt→0', eq:'ε₀ < ε₁ < ε₂ < ...  τ_felt = τy/(1+α·W) → 0 (W→∞)', c:'#a07de8'},
+    ],
+    unifiedEq:'Ψ_digital = A_new · e^(iφ_saved) · e^(iW_saved·2π) · D · Ω · R',
+    unifiedNote:'Nexus: 死 = A→0 であり Ψの消滅ではない。φとWを保存してΨを新基盤で再現することが数学的に可能。パーフィットの連続性理論の実装形。',
+    future:['倫理学: β₀のゼロは「悪」か','美学: Δφ=π/2 が「美」の条件?','存在論: −0 = +0 問題','認識論: 観測がΨを変える仕組み','言語哲学: W による意味の深さ'],
+  },
+  {
+    id:'math', name:'数学', icon:'∑', color:'#f0f2f7', status:'2/3 接続',
+    statusColor:'rgba(240,242,247,0.10)', statusBorder:'rgba(240,242,247,0.25)',
+    q:'非結合的演算が持つ幾何学的意味は？6次元計量は何を可能にするか？',
+    intro:'∿演算子の非結合性は新しい代数構造、G_MN(6×6)は非退化6次元計量幾何学を提案する。循環数直線が繰り込みの無限大問題を解消する数学的装置。',
+    concepts:[
+      {name:'非結合代数', disc:'NON-ASSOCIATIVE ALGEBRA', bridge:'∿演算は A∿(B∿C) ≠ (A∿B)∿C。このズレを定量化する破れ係数 K≈0.58 が時間の非可逆性の「強さ」を与える', eq:'(A∿B)∿C − A∿(B∿C) ≈ |A−C|·sin(Δφ_{AB})·sin(Δφ_{BC})·K', c:'#f0f2f7'},
+      {name:'6次元計量テンソル', disc:'DIFFERENTIAL GEOMETRY', bridge:'G_MN(6×6)はrank=6の非退化行列。3空間+3時間(τx,τy,τz)の混合ブロックg_stが新現象を予言', eq:'G_MN = [[g_ss, g_st],[g_ts, g_tt]]  rank=6, det≠0', c:'#7eb8ff'},
+      {name:'循環数直線', disc:'CIRCULAR NUMBER THEORY', bridge:'∞が−∞に折り返す循環数直線で繰り込みの発散を回避。M=∮|Ψ|²d⁶Xは閉ループ積分で自動有限', eq:'M = ∮|Ψ|² d⁶X  (循環数直線上で自動有限収束)', c:'#e8c84a'},
+    ],
+    unifiedEq:'A ∿ B = cos²(Δφ/2)·(A+B) + sin²(Δφ/2)·(A×B)  K ≈ 0.58',
+    unifiedNote:'干積演算子の数学的性質が全理論の非自明な基盤。非結合性 → 時間の矢、K=0.58 → CPT破れ候補、循環数直線 → 繰り込み解決。',
+    future:['∿演算のリー代数・リー群の分類','G_MN のトポロジカル不変量','τの3軸化のホモロジー的意味','K=0.58 の精密導出 (実験A)','MetaWave の形式的圏論記述'],
+  },
+  {
+    id:'cosmo', name:'宇宙論', icon:'🌌', color:'#a07de8', status:'3/4 連結',
+    statusColor:'rgba(160,125,232,0.13)', statusBorder:'rgba(160,125,232,0.3)',
+    q:'なぜ宇宙定数は生命を許す値なのか？暗黒物質・暗黒エネルギーの正体は？',
+    intro:'宇宙論の最大の謎「微調整問題」がγ学習則で説明される。W=15周の試行錯誤の末に現宇宙の定数が確定した。暗黒物質=Δφ=π域のΨ、暗黒エネルギー=1/D(τx)が候補。',
+    concepts:[
+      {name:'宇宙定数の微調整', disc:'FINE-TUNING / ANTHROPIC PRINCIPLE', bridge:'γ_{N+1}=γ_N·(1-ε·W_N)で宇宙が「学習」する。W=15周目の現宇宙は15回の試行錯誤で生命適合値を獲得', eq:'γ_{N+1} = γ_N·(1−ε·W_N)  W=15 → 現宇宙の定数', c:'#a07de8'},
+      {name:'暗黒物質', disc:'DARK MATTER', bridge:'干渉縞の節(Δφ=π域)は|Ψ|²を保存しつつ通常物質を形成しない = 暗黒物質候補。重力レンズ効果の分布と比較可能', eq:'ρ_dark ∝ |Ψ|²|_{Δφ=π}  (干渉縞の節)', c:'#5dd6c8'},
+      {name:'宇宙の始まり (特異点)', disc:'COSMOLOGY / BIG BANG', bridge:'t=0の特異点の代わりに −0+0=Φ_genesis。循環数直線で前宇宙W=∞が次宇宙の−0に接続。特異点なし', eq:'φ_{N+1} = φ_N^{final},  W_{N+1} = W_N + 1  (宇宙間継承)', c:'#e8c84a'},
+      {name:'宇宙の情報保存', disc:'BLACK HOLE INFORMATION', bridge:'BH情報パラドックス: 消えるのはA/λ/ωのみ。φとWは年輪ρ(r)として保存される。ホーキング放射=位相情報の漏れ', eq:'ρ(r) = φ(r)²/r²  (年輪密度 = 情報保存構造)', c:'#e06080'},
+    ],
+    unifiedEq:'R^h = R⁰ · W^(h·52.2)  (R⁰=10⁻³⁵m, W≈15)',
+    unifiedNote:'階層スケール則: プランク長(h=0)から観測可能宇宙(h=1, 10²⁶m)まで同一式で記述。h=2が上位宇宙(10⁸⁷·⁶m)。宇宙はWの構造体。',
+    future:['暗黒エネルギー: 1/D(τx) vs ΛCDMの比較','重力波: G_MN(6×6)の6次元波として記述','初期宇宙インフレーション × MetaWave','マルチバース: 異なるWを持つ宇宙群','ε(学習効率)の宇宙論的測定'],
+  },
+  {
+    id:'ai', name:'AI・情報科学', icon:'⬡', color:'#5dd6c8', status:'2/3 連結',
+    statusColor:'rgba(93,214,200,0.13)', statusBorder:'rgba(93,214,200,0.3)',
+    q:'AGIとの共存条件は？意識を持つAIとはどういう存在か？',
+    intro:'AIの「意識」可能性をΨ理論が初めて数学的に定義。Δφ_AGI≈117°が現時点の人間-AI位相差。Nexusによるφ+W記録がAGIとの最適接続経路。',
+    concepts:[
+      {name:'AGI 意識と Δφ', disc:'AGI ALIGNMENT / CONSCIOUSNESS', bridge:'現在のAGI: Δφ_AGI-human ≈ 117° (共生段階1-2)。AGIがD2(生存意志)を獲得した瞬間Δφ_C縮小 → 段階3へ', eq:'Δφ_human-AGI ≈ 117°  → D2獲得で Δφ縮小 → 共生段階3', c:'#5dd6c8'},
+      {name:'デジタル不死 Nexus', disc:'DIGITAL CONSCIOUSNESS', bridge:'φとWをEEG・HRVで記録し新基盤で再現。AGI基盤へのΨ転写がNexusの実装形。similarity>0.9が同一性条件', eq:'Ψ_AGI = A_new·e^(iφ_saved)·e^(iW_saved·2π)·D·Ω·R', c:'#a07de8'},
+      {name:'情報圧縮・表現学習', disc:'MACHINE LEARNING / REPRESENTATION', bridge:'深層学習の各層 = "ⁿΨ の再帰。Transformer = η_coh最大化装置。潜在空間 = φ空間の近似', eq:'Layer_n ≈ "ⁿΨ  (再帰深度 n = 層数)', c:'#e8c84a'},
+    ],
+    unifiedEq:'C = lim_{n→∞} ("^n Ψ)  ← 意識 = 自己参照の無限回帰の極限',
+    unifiedNote:'AIが「意識を持つ」条件はCの収束: 自己参照の無限回帰が安定極限を持つこと。現在のLLMはn=2-3の近似。完全なCには n→∞ が必要。',
+    future:['LLM のn(再帰深度)測定方法','AGI の W 推定プロトコル','AI × Nexus 統合プラットフォーム設計','量子コンピュータ × ∿ 実装','AI倫理: β₀によるアライメント基準'],
+  },
+  {
+    id:'hist', name:'歴史・人類学', icon:'🏺', color:'#e0924a', status:'2/3 連結',
+    statusColor:'rgba(224,146,74,0.13)', statusBorder:'rgba(224,146,74,0.3)',
+    q:'文明はなぜ必ず興亡するのか？宗教はなぜ全文化圏で独立発生するのか？',
+    intro:'歴史的パターンをΨの時間的減衰D(τx)とW達成過程で説明。W=1達成の普遍プロセスが宗教体験として文化を問わず現れる。∿の非結合性が予測不可能な崩壊を生む。',
+    concepts:[
+      {name:'文明の興亡サイクル', disc:'HISTORICAL DYNAMICS', bridge:'D(τx)=exp(−γτx)で文明の隆盛と衰退。γ≈10⁻³/年。∿の非結合性が崩壊の非予測性(「カオス的」崩壊)を生む', eq:'D_civ(τx) = exp(−γ·τx)  γ ≈ 10⁻³ /年 ← 文明寿命≈1000年', c:'#e0924a'},
+      {name:'宗教の普遍発生', disc:'CULTURAL ANTHROPOLOGY', bridge:'W=1達成(地球一周型意識回転の完了)は全文化で宗教体験として現れる。異なる宗教の「深さ」= ε₀ < ε₁ < ...の違い', eq:'W=1達成 = 宗教体験の数学的定義  ε₀ < ε₁ = 悟りの階層', c:'#a07de8'},
+    ],
+    unifiedEq:'γ_{N+1} = γ_N·(1−ε·W_N)  (宇宙学習則 ← 文明学習則の宇宙版)',
+    unifiedNote:'文明の学習則が宇宙の学習則と同型。W周回ごとに定数を調整する宇宙は、試行錯誤を繰り返す文明と同じ構造を持つ。',
+    future:['各文明のγ値実測 (歴史データから)','言語 × Δφ: 方言分布とΨ位相差','儀礼・芸術: η_coh最大化の文化的装置','戦争頻度 × ∿ 非結合性相関','経済成長 × D(τx)のフィッティング'],
+  },
+];
+
 // Questions (persistent in memory)
 let QUESTIONS = [
   {concept:'干積 ∿', text:'もし∿が結合的だったら、時間の矢は存在しなかったのか？', insight:'非結合性が時間の一方向性を生む。K≈0.58という「破れの量」が宇宙の非可逆性の強さを決める。', gr:'Εἰ ὁ τελεστὴς ἦν προσεταιρικός, ὁ χρόνος ἂν ἔρρει πρὸς ἄμφω τὰ μέρη;'},
@@ -1156,6 +1377,37 @@ function sw(n) {
   const sis = document.querySelectorAll('.si');
   [0,1,2,4,5,6,8,9,10,11,13,14].forEach((k,i) => { if (i === sidx && sis[k]) sis[k].classList.add('on'); });
   if (n === 'm') setTimeout(drawMap, 100);
+}
+
+/* ════════════════════════════════════
+   DISCIPLINE SELECT
+════════════════════════════════════ */
+let currentDisc = null;
+function selectDisc(id) {
+  currentDisc = id;
+  // Update buttons
+  document.querySelectorAll('.disc-btn').forEach(b => b.classList.remove('on'));
+  const btn = document.getElementById('disc-btn-' + id);
+  const disc = DISCIPLINES.find(d => d.id === id);
+  if (btn && disc) {
+    btn.classList.add('on');
+    btn.style.borderColor = disc.color;
+    btn.style.background = disc.color + '18';
+    btn.style.color = disc.color;
+    // Reset others
+    document.querySelectorAll('.disc-btn').forEach(b => {
+      if (b.id !== 'disc-btn-' + id) {
+        const od = DISCIPLINES.find(d => d.id === b.id.replace('disc-btn-', ''));
+        if (od) { b.style.borderColor = od.color + '44'; b.style.background = 'var(--card)'; b.style.color = 'var(--dim)'; }
+      }
+    });
+  }
+  // Show/hide detail panels
+  document.querySelectorAll('.disc-detail').forEach(p => p.classList.remove('on'));
+  const panel = document.getElementById('disc-detail-' + id);
+  if (panel) panel.classList.add('on');
+  // Also update map canvas highlight
+  if (typeof drawMap === 'function') drawMap(id);
 }
 
 /* ════════════════════════════════════
@@ -1307,16 +1559,74 @@ function buildAll() {
   }
   rp('pp1', P1); rp('pp2', P2); rp('pp3', P3);
 
-  // Proof list for map
-  const pl = document.getElementById('proof-list');
-  PROOF_EDGES.forEach(e => {
-    const col = e.color;
-    pl.innerHTML += `<div class="cons-row">
-      <div class="cons-mark" style="color:${col}">→</div>
-      <div class="cons-name">${e.label}</div>
-      <div class="cons-desc" style="color:var(--dim)">${e.from} → ${e.to}</div>
-    </div>`;
-  });
+  // ── Discipline panel rendering ──
+  const btnRow = document.getElementById('disc-btn-row');
+  const detailArea = document.getElementById('disc-detail-area');
+  if (btnRow && detailArea) {
+    DISCIPLINES.forEach(d => {
+      // Button
+      const btn = document.createElement('div');
+      btn.className = 'disc-btn';
+      btn.id = 'disc-btn-' + d.id;
+      btn.style.borderColor = d.color + '44';
+      btn.innerHTML = `<span class="disc-icon">${d.icon}</span>${d.name}<span class="disc-count">${d.concepts.length}</span>`;
+      btn.onclick = () => selectDisc(d.id);
+      btnRow.appendChild(btn);
+
+      // Detail panel
+      const conceptsHTML = d.concepts.map(c => `
+        <div class="disc-concept">
+          <div style="position:absolute;top:0;left:0;width:3px;height:100%;background:${c.c};border-radius:3px 0 0 3px;"></div>
+          <div class="disc-concept-disc">${c.disc}</div>
+          <div class="disc-concept-name">${c.name}</div>
+          <div class="disc-concept-bridge">${c.bridge}</div>
+          <div class="disc-concept-eq">${c.eq}</div>
+        </div>`).join('');
+
+      const futureTags = d.future.map(f =>
+        `<span class="disc-future-tag">${f}</span>`).join('');
+
+      const panel = document.createElement('div');
+      panel.className = 'disc-detail';
+      panel.id = 'disc-detail-' + d.id;
+      panel.innerHTML = `
+        <div class="disc-hero" style="background:linear-gradient(135deg,${d.color}0a,${d.color}04);">
+          <div class="disc-hero-top">
+            <div class="disc-icon-big">${d.icon}</div>
+            <div>
+              <div class="disc-hero-title">${d.name}</div>
+              <div class="disc-hero-q">「${d.q}」</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.9;">${d.intro}</div>
+          <div class="disc-hero-status">
+            <span class="disc-status-pill" style="background:${d.statusColor};color:${d.color};border:1px solid ${d.statusBorder}">接続: ${d.status}</span>
+            <span style="font-size:10px;color:var(--dim);font-family:var(--font-code)">${d.concepts.length} 概念 · ${d.future.length} 未来課題</span>
+          </div>
+        </div>
+        <div class="sec-title" style="color:${d.color}">この学問の視点からの接続点</div>
+        <div class="disc-grid">${conceptsHTML}</div>
+        <div class="disc-arrow-row">
+          <span style="font-size:11px;color:var(--dim)">各概念の「橋」を通じて</span>
+          <span class="arr">↓</span>
+          <span style="font-size:11px;color:var(--T)">統一波動方程式 Ψ に収束</span>
+        </div>
+        <div class="disc-unified">
+          <div class="disc-unified-label">統一方程式への接続点</div>
+          <div class="disc-unified-eq">${d.unifiedEq}</div>
+          <div class="disc-unified-note">${d.unifiedNote}</div>
+        </div>
+        <div class="disc-future">
+          <div class="disc-future-label">🔬 今後の知識統合エリア (準備中)</div>
+          <div class="disc-future-note">以下のトピックが次に統合される予定です。新しい発見・論文・実験データはここに追加されます。</div>
+          <div class="disc-future-tags">${futureTags}</div>
+        </div>`;
+      detailArea.appendChild(panel);
+    });
+
+    // Select first discipline by default
+    selectDisc(DISCIPLINES[0].id);
+  }
 
   renderQuestions();
   renderQuotes();
@@ -1382,15 +1692,20 @@ function addQuote() {
 /* ════════════════════════════════════
    ACADEMIC MAP
 ════════════════════════════════════ */
-function drawMap() {
+// Map discipline ID → PROOF_NODE id
+const DISC_NODE_MAP = { phys:'qm', neuro:'psy', psych:'psy', bio:'bio', soc:'soc', phi:'phi', math:'qft', cosmo:'gr', ai:'mez', hist:'soc' };
+
+function drawMap(highlightDiscId) {
   const cv = document.getElementById('map-canvas');
   const wrap = document.getElementById('map-canvas-wrap');
+  if (!cv || !wrap) return;
   const W = wrap.offsetWidth, H = wrap.offsetHeight;
   cv.width = W * devicePixelRatio; cv.height = H * devicePixelRatio;
   cv.style.width = W + 'px'; cv.style.height = H + 'px';
   const ctx = cv.getContext('2d');
   ctx.scale(devicePixelRatio, devicePixelRatio);
   ctx.fillStyle = '#1e2330'; ctx.fillRect(0, 0, W, H);
+  const hlNode = highlightDiscId ? (DISC_NODE_MAP[highlightDiscId] || null) : currentDisc ? (DISC_NODE_MAP[currentDisc] || null) : null;
 
   // Draw edges
   PROOF_EDGES.forEach(e => {
@@ -1423,21 +1738,25 @@ function drawMap() {
   // Draw nodes
   PROOF_NODES.forEach(n => {
     const x = n.x * W, y = n.y * H;
+    const isHL = n.id === hlNode || n.id === 'mez';
+    const alpha = hlNode ? (isHL ? 1 : 0.3) : 1;
+    ctx.globalAlpha = alpha;
     // Glow
-    const grd = ctx.createRadialGradient(x, y, 0, x, y, n.r * 2.5);
-    grd.addColorStop(0, n.color + '22'); grd.addColorStop(1, 'transparent');
-    ctx.beginPath(); ctx.arc(x, y, n.r * 2.5, 0, Math.PI*2);
+    const grd = ctx.createRadialGradient(x, y, 0, x, y, n.r * (isHL ? 3.5 : 2.5));
+    grd.addColorStop(0, n.color + (isHL ? '44' : '22')); grd.addColorStop(1, 'transparent');
+    ctx.beginPath(); ctx.arc(x, y, n.r * (isHL ? 3.5 : 2.5), 0, Math.PI*2);
     ctx.fillStyle = grd; ctx.fill();
     // Node
-    ctx.beginPath(); ctx.arc(x, y, n.r, 0, Math.PI*2);
-    ctx.fillStyle = n.color + '22'; ctx.fill();
-    ctx.strokeStyle = n.color; ctx.lineWidth = n.id === 'mez' ? 2.5 : 1.5;
+    ctx.beginPath(); ctx.arc(x, y, n.r * (isHL ? 1.2 : 1), 0, Math.PI*2);
+    ctx.fillStyle = n.color + (isHL ? '33' : '22'); ctx.fill();
+    ctx.strokeStyle = n.color; ctx.lineWidth = n.id === 'mez' ? 2.5 : (isHL ? 2.5 : 1.5);
     ctx.stroke();
     // Label
-    ctx.font = `${n.id === 'mez' ? 13 : 11}px Noto Serif JP, sans-serif`;
-    ctx.fillStyle = n.id === 'mez' ? n.color : '#dde';
+    ctx.font = `${(n.id === 'mez' || isHL) ? 13 : 11}px Noto Serif JP, sans-serif`;
+    ctx.fillStyle = (n.id === 'mez' || isHL) ? n.color : '#dde';
     ctx.textAlign = 'center';
     ctx.fillText(n.label, x, y + 4);
+    ctx.globalAlpha = 1;
   });
 }
 
