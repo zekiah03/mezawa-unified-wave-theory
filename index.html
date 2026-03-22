@@ -1140,6 +1140,19 @@ const LANG_DATA = {
     qSub: '問うことで理論が深まる — 新しい問いを追加し続ける',
     wTitle: '名言・洞察録',
     wSub: 'めざわ理論から生まれる言葉',
+    tabs: {u:'宇宙', t:'理論', e:'実験', n:'意識', m:'学問', l:'生命'},
+    uName: '万物波動',
+    uSub: 'クリック: ロックオン ｜ ドラッグ: 回転 ｜ スクロール: ズーム',
+    uBack: '← フリーカメラ',
+    uFeel: '体感',
+    uSlow: '宇宙速',
+    uFast: '光速',
+    tAx: '公理系',
+    tEq: '基本方程式',
+    eTitle: '実験・検証',
+    nTitle: '意識と時間',
+    mTitle: '学問との統合',
+    lTitle: '生命体',
   },
   en: {
     tTitle: 'Mezawa Unified Wave Theory v2.3',
@@ -1148,6 +1161,19 @@ const LANG_DATA = {
     qSub: 'Questions deepen the theory — keep adding new ones',
     wTitle: 'Insights & Aphorisms',
     wSub: 'Words born from Mezawa Theory',
+    tabs: {u:'Universe', t:'Theory', e:'Exp.', n:'Noesis', m:'Disc.', l:'Life'},
+    uName: 'Universal Wave Field',
+    uSub: 'Click: Lock-On ｜ Drag: Rotate ｜ Scroll: Zoom',
+    uBack: '← Free Camera',
+    uFeel: 'Feel',
+    uSlow: 'Cosmic',
+    uFast: 'Light',
+    tAx: 'Axioms',
+    tEq: 'Basic Equations',
+    eTitle: 'Experiments & Verification',
+    nTitle: 'Consciousness & Time',
+    mTitle: 'Integration with Disciplines',
+    lTitle: 'Life Form',
   },
   gr: {
     tTitle: 'Θεωρία τοῦ Παγκοσμίου Κύματος (Mezawa) v2.3',
@@ -1156,6 +1182,19 @@ const LANG_DATA = {
     qSub: 'Τὸ ἐρωτᾶν βαθύνει τὴν ἐπιστήμην',
     wTitle: 'Ἀποφθέγματα καὶ Γνῶσις',
     wSub: 'Λόγοι γεννηθέντες ἐκ τῆς θεωρίας',
+    tabs: {u:'Κόσμος', t:'Θεωρία', e:'Πεῖρα', n:'Νόησις', m:'Μάθησ.', l:'Ζωή'},
+    uName: 'Κοσμικὸν Κῦμα',
+    uSub: 'Κλικ: Κλείδ. ｜ Σύρσιμο: Στροφή ｜ Κύλιση: Ζουμ',
+    uBack: '← Ἐλεύθερα',
+    uFeel: 'Αἴσθ.',
+    uSlow: 'Κοσμ.',
+    uFast: 'Φῶς',
+    tAx: 'Ἀξιώματα',
+    tEq: 'Βασικαὶ Ἐξισώσεις',
+    eTitle: 'Πειράματα καὶ Ἐλέγχοι',
+    nTitle: 'Συνείδησις καὶ Χρόνος',
+    mTitle: 'Ἐπιστῆμαι καὶ Θεωρία',
+    lTitle: 'Ζωντανὸν Ὄν',
   }
 };
 
@@ -1510,18 +1549,40 @@ const PROOF_EDGES = [
    LANGUAGE
 ════════════════════════════════════ */
 let currentLang = 'ja';
+function _setText(id, val){ const el=document.getElementById(id); if(el&&val) el.textContent=val; }
 function setLang(lang) {
   currentLang = lang;
   document.body.className = 'lang-' + lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
-  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('on');
+  const activeBtn = document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`);
+  if(activeBtn) activeBtn.classList.add('on');
   const d = LANG_DATA[lang] || LANG_DATA.ja;
-  if (d.tTitle) document.getElementById('t-title').textContent = d.tTitle;
-  if (d.tSub) document.getElementById('t-sub').textContent = d.tSub;
-  if (d.qTitle) document.getElementById('q-title').textContent = d.qTitle;
-  if (d.qSub) document.getElementById('q-sub').textContent = d.qSub;
-  if (d.wTitle) document.getElementById('w-title').textContent = d.wTitle;
-  if (d.wSub) document.getElementById('w-sub').textContent = d.wSub;
+  // Theory panel
+  _setText('t-title', d.tTitle);
+  _setText('t-sub', d.tSub);
+  _setText('t-ax', d.tAx);
+  _setText('t-eq', d.tEq);
+  // Questions panel
+  _setText('q-title', d.qTitle);
+  _setText('q-sub', d.qSub);
+  // Wisdom/quotes panel
+  _setText('w-title', d.wTitle);
+  _setText('w-sub', d.wSub);
+  // Universe panel
+  _setText('u-name', d.uName);
+  _setText('u-sub', d.uSub);
+  _setText('u-back', d.uBack);
+  _setText('u-ft', d.uFeel);
+  // Universe speed labels
+  if(d.uSlow){ const els=document.querySelectorAll('.u-sl'); if(els[0]) els[0].textContent=d.uSlow; }
+  if(d.uFast){ const els=document.querySelectorAll('.u-sl'); if(els[1]) els[1].textContent=d.uFast; }
+  // Tab labels (top nav)
+  if(d.tabs){
+    ['u','t','e','n','m','l'].forEach(k=>{
+      const tab=document.querySelector(`#tab-${k} .tab-lbl`);
+      if(tab && d.tabs[k]) tab.textContent = d.tabs[k];
+    });
+  }
   // Re-render quotes and questions for language
   renderQuotes();
   renderQuestions();
