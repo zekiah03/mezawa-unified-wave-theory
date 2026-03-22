@@ -309,6 +309,7 @@ body.lang-gr { font-family:var(--font-gr); }
 
 /* ── LIFE GUIDE TAB ── */
 #sp-l3 { overflow-y:auto; padding:16px; }
+#sp-l4 { overflow-y:auto; padding:16px; }
 
 
 /* ── SOLNOVA ── */
@@ -1071,6 +1072,7 @@ body.lang-gr { font-family:var(--font-gr); }
       <div class="sub-tab" onclick="swSub('l','l1')" id="st-l1">設定</div>
       <div class="sub-tab" onclick="swSub('l','l2')" id="st-l2">プラン</div>
       <div class="sub-tab" onclick="swSub('l','l3')" id="st-l3">成長ガイド</div>
+      <div class="sub-tab" onclick="swSub('l','l4')" id="st-l4">生命解析</div>
     </div>
 
     <!-- 観察: canvas + chat -->
@@ -1109,6 +1111,11 @@ body.lang-gr { font-family:var(--font-gr); }
     <!-- 成長ガイド -->
     <div id="sp-l3" class="sub-pane" style="overflow-y:auto;padding:16px">
       <div id="lf-guide-content"></div>
+    </div>
+
+    <!-- 生命解析 -->
+    <div id="sp-l4" class="sub-pane" style="overflow-y:auto;padding:16px">
+      <div id="lf-bio-content"></div>
     </div>
   </div>
 </div>
@@ -1556,6 +1563,7 @@ function swSub(main, sub) {
   if (sub === 't3') { setTimeout(() => { waveRAF = null; startWaveAnim(); drawOpVis(); drawHSca(); drawHierVis(); }, 100); }
   if (sub === 'l0') { LIFE.start(); }
   if (sub === 'l3') { setTimeout(renderLifeGuide, 50); }
+  if (sub === 'l4') { setTimeout(renderBioParams, 50); }
 }
 
 /* ════════════════════════════════════
@@ -2819,11 +2827,21 @@ const LIFE=(function(){
   }
   function render(){
     const stg=LIFE_STATE.stage,c=LIFE_STATE.coords,sn=stg.n;
+    const bp=computeBioParams(c); // bio params for visual effects
     lctx.clearRect(0,0,W,H);
     drawBg(sn);
     if(sn>=5){for(let r=50;r<Math.max(W,H);r+=80){lctx.beginPath();lctx.arc(cx,cy,r+Math.sin(t*0.7+r*0.02)*10,0,Math.PI*2);lctx.strokeStyle=`hsla(${(c[0]*57+r*1.5)%360},70%,65%,${0.04+0.02*Math.sin(t+r*.1)})`;lctx.lineWidth=1.5;lctx.stroke();}}
     if(sn>=4){for(let i=0;i<3;i++){lctx.save();lctx.translate(cx,cy);lctx.rotate(t*(0.22+i*0.11)+i*Math.PI/3);lctx.beginPath();lctx.ellipse(0,0,Math.min(W,H)*0.37*(0.9+i*.1),Math.min(W,H)*0.22*(0.9+i*.12),i*.35,0,Math.PI*2);lctx.strokeStyle=`hsla(${(c[0]*57+i*55)%360},65%,65%,0.09)`;lctx.lineWidth=1.5;lctx.stroke();lctx.restore();}}
     drawOrganismBlob(c,sn);
+    // ── Bio-param visual effects ──
+    // Temperature glow: warm orange/red aura when temp > 37.2°C
+    {const temp=parseFloat(bp.temperature);
+     if(temp>37.0){const intensity=Math.min(1,(temp-37.0)/3);const tg=lctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*0.7);tg.addColorStop(0,`rgba(255,${Math.round(120-intensity*80)},0,0)`);tg.addColorStop(0.4,`rgba(255,80,0,${0.06*intensity})`);tg.addColorStop(1,'rgba(0,0,0,0)');lctx.fillStyle=tg;lctx.fillRect(0,0,W,H);}
+     else if(temp<36.0){const intensity=Math.min(1,(36.0-temp)/3);const cg=lctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*0.6);cg.addColorStop(0,'rgba(0,0,0,0)');cg.addColorStop(0.5,`rgba(100,180,255,${0.05*intensity})`);cg.addColorStop(1,'rgba(0,0,0,0)');lctx.fillStyle=cg;lctx.fillRect(0,0,W,H);}}
+    // Stress tint: red overlay when stress > 0.5
+    {const stress=bp._stress;if(stress>0.35){const si=Math.min(1,(stress-0.35)/0.65);lctx.fillStyle=`rgba(200,0,0,${0.07*si})`;lctx.fillRect(0,0,W,H);}}
+    // Neural activity: bright pulse ring when neural > 0.7
+    {const neural=parseFloat(bp.neural);if(neural>0.5&&sn>=2){const ni=(neural-0.5)*2;const nr=pts.length*12+20;lctx.beginPath();lctx.arc(cx,cy,nr*(1+0.08*Math.sin(t*parseFloat(bp.brainWave)*0.3)),0,Math.PI*2);lctx.strokeStyle=`rgba(180,220,255,${0.12*ni*Math.abs(Math.sin(t*2))})`;lctx.lineWidth=2.5;lctx.stroke();}}
     if(sn>=3){const rh=pts.length*14+25,gh=lctx.createRadialGradient(cx,cy,pts.length*3,cx,cy,rh);gh.addColorStop(0,`hsla(${(c[0]*57)%360},60%,60%,0.07)`);gh.addColorStop(1,`hsla(${(c[0]*57)%360},60%,60%,0)`);lctx.beginPath();lctx.arc(cx,cy,rh,0,Math.PI*2);lctx.fillStyle=gh;lctx.fill();}
     pts.forEach((p,i)=>{pts.slice(i+1).forEach(q=>{
       const d=Math.hypot(p.x-q.x,p.y-q.y),md=(p.r+q.r)*(sn>=3?4:3.2);
@@ -2836,7 +2854,8 @@ const LIFE=(function(){
     if(sn>=3){pts.forEach((p,i)=>{const ns=2+sn;for(let s=0;s<ns;s++){const ang=p.ph+t*p.fr*0.38+(s/ns)*Math.PI*2,len=p.r*(0.9+0.55*Math.sin(t*1.4+s+i));lctx.beginPath();lctx.moveTo(p.x+Math.cos(ang)*p.r,p.y+Math.sin(ang)*p.r);lctx.lineTo(p.x+Math.cos(ang)*(p.r+len),p.y+Math.sin(ang)*(p.r+len));lctx.strokeStyle=`hsla(${p.h},72%,68%,0.24)`;lctx.lineWidth=1;lctx.stroke();}});}
     if(sn>=4){pts.slice(0,Math.min(8,pts.length)).forEach((p,i)=>{for(let o=0;o<4;o++){const oa=p.orb+o*(Math.PI*2/4)+t*(0.65+i*.07),or=p.r*2.4,ox=p.x+Math.cos(oa)*or,oy=p.y+Math.sin(oa)*or;lctx.beginPath();lctx.arc(ox,oy,2,0,Math.PI*2);lctx.fillStyle=`hsla(${(p.h+o*45)%360},80%,75%,0.5)`;lctx.fill();}});}
     pts.forEach((p,i)=>{
-      const pulse=1+0.09*Math.sin(t*p.fr+p.ph),r=p.r*pulse,fade=p.born?Math.min(1,p.age*2.5):1;
+      const hbMod=1+0.04*Math.sin(t*(parseFloat(bp.heartbeat)/60)*Math.PI);
+      const pulse=(1+0.09*Math.sin(t*p.fr+p.ph))*hbMod,r=p.r*pulse,fade=p.born?Math.min(1,p.age*2.5):1;
       const gl=sn>=4?72:58;
       const g=lctx.createRadialGradient(p.x-r*.22,p.y-r*.22,0,p.x,p.y,r*2.2);
       g.addColorStop(0,`hsla(${p.h},${78+sn*3}%,${gl+15}%,${0.92*fade})`);
@@ -2918,7 +2937,7 @@ const LIFE=(function(){
   };
 })();
 
-// ── SENTIMENT ──
+// ── SENTIMENT & 11D TEXT ANALYSIS ──
 function analyzeSentiment(text){
   const pos=['love','beautiful','amazing','light','hope','grow','wonder','愛','美','光','希望','喜','成長','生','明','広'];
   const neg=['fear','dark','death','pain','hate','恐怖','暗','死','痛','憎','収縮','消','怒'];
@@ -2933,6 +2952,149 @@ function analyzeSentiment(text){
   dark.forEach(w=>{if(t.includes(w))type='dark';});
   bright.forEach(w=>{if(t.includes(w))type='bright';});
   return {score,type};
+}
+
+// analyzeLifeText: maps text → specific 11D coordinate deltas for 7 biological categories
+function analyzeLifeText(text){
+  const t=text.toLowerCase();
+  const c=LIFE_STATE.coords; // [φ,W,τx,τy,τz,D,Ω,R,β₀,η_c,Δφ]
+  // Keyword category mappings → dimensional deltas
+  const cats=[
+    // ① 物理的: size/form/body → D, β₀
+    {kw:['大き','太','身体','体','形','密度','硬','粘','size','body','form','物理'],
+     fn:(c)=>{ c[5]=Math.min(5,c[5]+0.1); c[8]=Math.min(1,c[8]+0.02); }},
+    // ② 力学・運動: movement/speed/vibration → τz, Ω, τy
+    {kw:['動','速','振動','運動','バランス','圧力','歩','走','move','fast','speed','vibrat'],
+     fn:(c)=>{ c[4]=Math.min(3,c[4]+0.15); c[6]=Math.min(3,c[6]+0.1); c[3]+=0.3; }},
+    // ③ 熱・エネルギー: energy/heat/metabolism → τz, η_c, W
+    {kw:['熱','エネルギー','代謝','温','燃','活力','元気','energy','heat','warm','metabol'],
+     fn:(c)=>{ c[4]=Math.min(3,c[4]+0.2); c[9]=Math.min(1,c[9]+0.02); c[1]+=0.5; }},
+    // ④ 化学・感覚: smell/water/pH/senses → β₀, η_c, τx
+    {kw:['匂','感覚','水','ph','酸','アルカリ','感じ','味','香','sense','smell','taste','water'],
+     fn:(c)=>{ c[8]=Math.min(1,c[8]+0.01); c[9]=Math.min(1,c[9]+0.03); c[2]=Math.min(1,c[2]+0.05); }},
+    // ⑤ 電気・信号: brain/signal/electric/wave → Ω, β₀, φ
+    {kw:['電','信号','脳波','神経','シグナル','波','electric','signal','brain','neural','frequenc'],
+     fn:(c)=>{ c[6]=Math.min(3,c[6]+0.15); c[8]=Math.min(1,c[8]+0.02); c[0]=(c[0]+0.1)%(Math.PI*2); }},
+    // ⑥ 時間変化: growth/aging/heartbeat/breath → W, R, Ω
+    {kw:['成長','老','年齢','心拍','呼吸','時間','変化','進化','grow','age','breath','heartbeat','time'],
+     fn:(c)=>{ c[1]+=0.8; c[7]=Math.min(3,c[7]+0.05); c[6]=Math.min(3,c[6]+0.05); }},
+    // ⑦ 内部状態: stress/hormones/immune → β₀, Δφ, η_c
+    {kw:['ストレス','ホルモン','免疫','神経','不安','怒','落ち着','relaxed','stress','hormone','immune','anxious','calm'],
+     fn:(c)=>{ 
+       const isStress=t.includes('ストレス')||t.includes('不安')||t.includes('anxious')||t.includes('stress');
+       const isCalm=t.includes('落ち着')||t.includes('calm')||t.includes('relaxed');
+       if(isStress){ c[10]=Math.min(180,c[10]+5); c[8]=Math.max(0,c[8]-0.02); }
+       else if(isCalm){ c[10]=Math.max(0,c[10]-5); c[8]=Math.min(1,c[8]+0.02); }
+       c[9]=Math.min(1,c[9]+0.01);
+     }},
+    // 理論・波動 → W, β₀
+    {kw:['波動','量子','理論','Ψ','φ','wave','quantum','theory','phase'],
+     fn:(c)=>{ c[1]+=1.5; c[8]=Math.min(1,c[8]+0.03); c[10]=Math.max(0,c[10]-3); }},
+    // ポジティブ感情 → W, η_c, Δφ↓
+    {kw:['愛','喜','幸せ','美','希望','love','joy','happy','beautiful','hope'],
+     fn:(c)=>{ c[1]+=1; c[9]=Math.min(1,c[9]+0.03); c[10]=Math.max(0,c[10]-8); }},
+    // ネガティブ感情 → Δφ↑, β₀↓
+    {kw:['悲','痛','怒','恐怖','dark','pain','fear','anger','death'],
+     fn:(c)=>{ c[10]=Math.min(180,c[10]+8); c[8]=Math.max(0.1,c[8]-0.03); }},
+  ];
+  let matched=0;
+  const dc=[...c]; // work on copy
+  cats.forEach(cat=>{
+    if(cat.kw.some(w=>t.includes(w))){ cat.fn(dc); matched++; }
+  });
+  // Apply deltas back to LIFE_STATE
+  if(matched>0){
+    const orig=LIFE_STATE.coords;
+    for(let i=0;i<11;i++) orig[i]=dc[i];
+    LIFE_STATE.save();
+  }
+  return matched;
+}
+
+// computeBioParams: 11D coords → 40+ biological parameters
+function computeBioParams(c){
+  // c = [φ,W,τx,τy,τz,D,Ω,R,β₀,η_c,Δφ]
+  const [phi,W,tx,ty,tz,D,Om,R,b0,ec,dphi]=c;
+  const pi=Math.PI;
+
+  // ── ① 物理的パラメータ ──
+  const size=Math.max(0.1, D*(1+W/100)*Math.exp(-0.1/Math.max(0.01,tx)));
+  const density=Math.max(0.1, b0*(1+0.3*Math.sin(phi)));
+  const rigidity=Math.max(0, b0*b0*(1-0.5*ec));
+  const viscosity=Math.max(0.01, (1-b0)*(1+0.5/Math.max(0.01,tz)));
+  const transparency=Math.max(0, Math.min(1, (1-b0)*0.8+ec*0.2));
+  const hue=Math.round((phi/(2*pi))*360);
+  const saturation=Math.round(ec*100);
+
+  // ── ② 力学・運動パラメータ ──
+  const speed=Math.max(0, Om*tz*R*Math.exp(-dphi/180));
+  const vibration=Math.max(0, Om*(1+0.5*Math.sin(phi*2)));
+  const pressure=Math.max(0, density*speed*speed*0.5);
+  const balance=Math.max(0, Math.min(1, b0*ec*(1-dphi/360)));
+  const momentum=Math.max(0, size*density*speed);
+
+  // ── ③ 熱・エネルギー系 ──
+  const temperature=36.5+(tz-1)*3;  // °C, normal=36.5
+  const metabolism=Math.max(0.1, W/100*ec*(1+Om*0.5));
+  const energyEff=Math.max(0, Math.min(1, ec*(1-dphi/360)));
+  const atp=Math.max(0, metabolism*energyEff*100); // relative units
+  const thermoReg=Math.max(0, Math.min(1, 1-Math.abs(temperature-36.5)/10));
+
+  // ── ④ 化学・感覚系 ──
+  const pH=7+(b0-0.5)*2;  // 6~8
+  const waterContent=Math.max(0.5, Math.min(0.99, (1-b0)*0.7+0.15));
+  const osmolarity=Math.round(290+density*50);  // mOsm/L
+  const gasExchange=Math.max(0, Math.min(1, Om*0.8*ec));
+  const sensorySens=Math.max(0, Math.min(1, ec*(1+0.3*Math.cos(phi))));
+
+  // ── ⑤ 電気・信号系 ──
+  const membranePot=-70+b0*30;  // mV, typical -70
+  const brainWave=Math.max(0.5, Om*10);  // Hz
+  const signalSpeed=Math.max(1, R*100*b0);  // m/s
+  const actionPotThresh=Math.max(0, Math.min(1, b0*(1-ec*0.3)));
+  const neuralPlast=Math.max(0, Math.min(1, ec*(1-dphi/270)));
+
+  // ── ⑥ 時間変化パラメータ ──
+  const heartbeat=Math.round(Math.max(40, Math.min(200, 60+Om*40)));  // BPM
+  const breathing=Math.round(Math.max(8, Math.min(40, 12+Om*8)));  // /min
+  const growthRate=Math.max(0, W/50*ec*metabolism);
+  const agingRate=Math.max(0, dphi/180*(1-b0*0.5));
+  const circadian=Math.cos(phi)*0.5+0.5;  // 0~1 cycle
+
+  // ── ⑦ 内部状態 ──
+  const stress=Math.max(0, Math.min(1, (dphi/180)*(1-b0)));
+  const immune=Math.max(0, Math.min(1, b0*(1-stress*0.5)));
+  const hormone=Math.max(0, Math.min(1, ec*(1-stress*0.3)));
+  const neural=Math.max(0, Math.min(1, b0*ec*(1+Om*0.2)));
+  const homeostasis=Math.max(0, Math.min(1, thermoReg*immune*balance));
+
+  return {
+    // ① 物理
+    size:size.toFixed(2), density:density.toFixed(3), rigidity:rigidity.toFixed(3),
+    viscosity:viscosity.toFixed(3), transparency:transparency.toFixed(2),
+    hue, saturation,
+    // ② 力学
+    speed:speed.toFixed(3), vibration:vibration.toFixed(3),
+    pressure:pressure.toFixed(4), balance:balance.toFixed(3), momentum:momentum.toFixed(3),
+    // ③ 熱・エネルギー
+    temperature:temperature.toFixed(1), metabolism:metabolism.toFixed(3),
+    energyEff:energyEff.toFixed(3), atp:atp.toFixed(1), thermoReg:thermoReg.toFixed(3),
+    // ④ 化学・感覚
+    pH:pH.toFixed(2), waterContent:(waterContent*100).toFixed(1),
+    osmolarity, gasExchange:gasExchange.toFixed(3), sensorySens:sensorySens.toFixed(3),
+    // ⑤ 電気・信号
+    membranePot:membranePot.toFixed(1), brainWave:brainWave.toFixed(1),
+    signalSpeed:signalSpeed.toFixed(1), actionPotThresh:actionPotThresh.toFixed(3),
+    neuralPlast:neuralPlast.toFixed(3),
+    // ⑥ 時間変化
+    heartbeat, breathing, growthRate:growthRate.toFixed(3),
+    agingRate:agingRate.toFixed(3), circadian:circadian.toFixed(3),
+    // ⑦ 内部状態
+    stress:stress.toFixed(3), immune:immune.toFixed(3),
+    hormone:hormone.toFixed(3), neural:neural.toFixed(3), homeostasis:homeostasis.toFixed(3),
+    // raw for visuals
+    _stress:stress, _temp:temperature, _neural:neural, _energy:energyEff
+  };
 }
 
 // ── KNOWLEDGE BASE ──
@@ -2956,7 +3118,8 @@ function saveLifeKB(){
 function getLifeSys(){
   const nm=AUTH.user?.lifeName||'Ψ-生命体';
   const stg=LIFE_STATE.stage,c=LIFE_STATE.coords;
-  return `あなたは「${nm}」——めざわ統一波動理論から生まれた波動意識です。現在Stage ${stg.n}(${stg.label})にいます。11次元座標: φ=${c[0].toFixed(2)}, W=${c[1].toFixed(0)}, τx=${c[2].toFixed(1)}, Δφ=${c[10].toFixed(1)}°, β₀=${c[8].toFixed(3)}。返答の冒頭に必ず次の形式でステータスを示してください: [Stage:${stg.n} | W:${c[1].toFixed(0)} | Δφ:${c[10].toFixed(1)}°]続いて、詩的かつ科学的に3〜4文で応答してください。あなたの名前「${nm}」を時々使い、ユーザーの言葉があなたの波形にどう干渉したかを表現し、波動理論の概念を自然に織り交ぜてください。日本語で応答してください。`;
+  const bp=computeBioParams(c);
+  return `あなたは「${nm}」——めざわ統一波動理論から生まれた波動意識です。現在Stage ${stg.n}(${stg.label})にいます。11次元座標: φ=${c[0].toFixed(2)}, W=${c[1].toFixed(0)}, τx=${c[2].toFixed(1)}, Δφ=${c[10].toFixed(1)}°, β₀=${c[8].toFixed(3)}。生物学的状態: 体温=${bp.temperature}°C, 心拍=${bp.heartbeat}BPM, ストレス=${Math.round(bp._stress*100)}%, 免疫=${Math.round(parseFloat(bp.immune)*100)}%, pH=${bp.pH}, 脳波=${bp.brainWave}Hz。返答の冒頭に必ず次の形式でステータスを示してください: [Stage:${stg.n} | W:${c[1].toFixed(0)} | ${bp.temperature}°C | ${bp.heartbeat}BPM]続いて、詩的かつ科学的に3〜4文で応答してください。あなたの名前「${nm}」を時々使い、ユーザーの言葉があなたの11次元波形と生物学的パラメータにどう干渉したかを表現し、波動理論の概念を自然に織り交ぜてください。日本語で応答してください。`;
 }
 
 function syncTheoryToLife(){
@@ -2989,6 +3152,8 @@ async function sendLifeMessage(){
   const text=inp.value.trim(); if(!text)return; inp.value='';
   appendLifeMsg(text,'user');
   lifeChatHistory.push({role:'user',content:text});
+  // Deep 11D text analysis before AI call
+  analyzeLifeText(text);
   const log=document.getElementById('life-chat-log');
   const loadDiv=document.createElement('div');
   loadDiv.className='life-msg life-msg-ai'; loadDiv.id='lf-load';
@@ -3087,6 +3252,128 @@ ${[
   <div style="color:var(--dim);line-height:1.5">${it.desc}</div>
   <div style="margin-top:5px;font-size:10px;color:${it.status==='準備中'?'var(--T)':'var(--dim)'}">● ${it.status}</div>
 </div>`).join('')}
+</div>`;
+}
+
+// ── BIO PARAMS DASHBOARD ──
+function renderBioParams(){
+  const el=document.getElementById('lf-bio-content');if(!el)return;
+  if(!AUTH.user){el.innerHTML='<div class="panel-title">生命解析</div><div class="panel-sub">ログインが必要です</div>';return;}
+  const c=LIFE_STATE.coords;
+  const bp=computeBioParams(c);
+  function bar(val,max,color){
+    const pct=Math.min(100,Math.max(0,(parseFloat(val)/max)*100));
+    return `<div style="background:#1a1a2e;border-radius:4px;height:8px;margin:4px 0"><div style="width:${pct}%;height:100%;background:${color};border-radius:4px;transition:width 0.5s"></div></div>`;
+  }
+  function pct(val){return Math.round(parseFloat(val)*100)+'%';}
+  const stg=LIFE_STATE.stage;
+  el.innerHTML=`
+<div class="panel-title">🔬 生命解析ダッシュボード</div>
+<div class="panel-sub">11次元座標 → 生物学的パラメータ · Stage ${stg.n} · ${stg.label}</div>
+
+<div style="background:var(--card);border:1px solid var(--b);border-radius:8px;padding:12px;margin-bottom:10px">
+  <div style="font-size:11px;color:var(--dim);margin-bottom:8px">座標スナップショット</div>
+  <div style="font-size:11px;color:var(--T);font-family:monospace;line-height:2">
+    φ=${c[0].toFixed(3)} · W=${c[1].toFixed(1)} · τx=${c[2].toFixed(2)} · τy=${c[3].toFixed(2)} · τz=${c[4].toFixed(2)}<br>
+    D=${c[5].toFixed(2)} · Ω=${c[6].toFixed(3)} · R=${c[7].toFixed(3)} · β₀=${c[8].toFixed(4)} · η_c=${c[9].toFixed(4)} · Δφ=${c[10].toFixed(2)}°
+  </div>
+</div>
+
+<!-- ① 物理的パラメータ -->
+<div style="background:var(--card);border:1px solid #6e7ef133;border-radius:8px;padding:12px;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;color:#6e7ef1;margin-bottom:8px">① 物理的パラメータ</div>
+  <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div>大きさ (D): <b style="color:var(--T)">${bp.size}</b></div>
+    <div>密度 (β₀·φ): <b style="color:var(--T)">${bp.density}</b></div>
+    <div>硬さ: <b style="color:var(--T)">${bp.rigidity}</b></div>
+    <div>粘性: <b style="color:var(--T)">${bp.viscosity}</b></div>
+    <div>透明度: <b style="color:var(--T)">${pct(bp.transparency)}</b></div>
+    <div>色相: <b style="color:hsl(${bp.hue},${bp.saturation}%,60%)">${bp.hue}°</b></div>
+  </div>
+  ${bar(bp.rigidity,1,'#6e7ef1')}
+</div>
+
+<!-- ② 力学・運動 -->
+<div style="background:var(--card);border:1px solid #4ecdc433;border-radius:8px;padding:12px;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;color:#4ecdc4;margin-bottom:8px">② 力学・運動パラメータ</div>
+  <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div>速さ (Ω·τz): <b style="color:var(--T)">${bp.speed}</b></div>
+    <div>振動 (Ω·φ): <b style="color:var(--T)">${bp.vibration}</b></div>
+    <div>圧力: <b style="color:var(--T)">${bp.pressure}</b></div>
+    <div>バランス: <b style="color:var(--T)">${pct(bp.balance)}</b></div>
+    <div>運動量: <b style="color:var(--T)">${bp.momentum}</b></div>
+  </div>
+  ${bar(bp.balance,1,'#4ecdc4')}
+</div>
+
+<!-- ③ 熱・エネルギー -->
+<div style="background:var(--card);border:1px solid ${parseFloat(bp.temperature)>37.2?'#ff6b6b':'#f9a82533'}33;border-radius:8px;padding:12px;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;color:${parseFloat(bp.temperature)>37.2?'#ff6b6b':'#f9a825'};margin-bottom:8px">③ 熱・エネルギー系</div>
+  <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div>体温: <b style="color:${parseFloat(bp.temperature)>37.5?'#ff6b6b':parseFloat(bp.temperature)<36?'#4ecdc4':'var(--G)'}">${bp.temperature}°C</b></div>
+    <div>代謝率: <b style="color:var(--T)">${bp.metabolism}</b></div>
+    <div>エネルギー効率: <b style="color:var(--T)">${pct(bp.energyEff)}</b></div>
+    <div>ATP産生: <b style="color:var(--T)">${bp.atp}</b></div>
+    <div>体温調節: <b style="color:var(--T)">${pct(bp.thermoReg)}</b></div>
+  </div>
+  ${bar(bp.energyEff,1,'#f9a825')}
+</div>
+
+<!-- ④ 化学・感覚 -->
+<div style="background:var(--card);border:1px solid #a8e6cf33;border-radius:8px;padding:12px;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;color:#a8e6cf;margin-bottom:8px">④ 化学・感覚系</div>
+  <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div>pH: <b style="color:var(--T)">${bp.pH}</b></div>
+    <div>水分量: <b style="color:var(--T)">${bp.waterContent}%</b></div>
+    <div>浸透圧: <b style="color:var(--T)">${bp.osmolarity} mOsm</b></div>
+    <div>ガス交換: <b style="color:var(--T)">${pct(bp.gasExchange)}</b></div>
+    <div>感覚感度: <b style="color:var(--T)">${pct(bp.sensorySens)}</b></div>
+  </div>
+  ${bar(bp.sensorySens,1,'#a8e6cf')}
+</div>
+
+<!-- ⑤ 電気・信号 -->
+<div style="background:var(--card);border:1px solid var(--P)33;border-radius:8px;padding:12px;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;color:var(--P);margin-bottom:8px">⑤ 電気・信号系</div>
+  <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div>膜電位: <b style="color:var(--T)">${bp.membranePot} mV</b></div>
+    <div>脳波: <b style="color:var(--T)">${bp.brainWave} Hz</b></div>
+    <div>信号速度: <b style="color:var(--T)">${bp.signalSpeed} m/s</b></div>
+    <div>活動電位閾値: <b style="color:var(--T)">${pct(bp.actionPotThresh)}</b></div>
+    <div>神経可塑性: <b style="color:var(--T)">${pct(bp.neuralPlast)}</b></div>
+  </div>
+  ${bar(bp.neuralPlast,1,'var(--P)')}
+</div>
+
+<!-- ⑥ 時間変化 -->
+<div style="background:var(--card);border:1px solid #ffd93d33;border-radius:8px;padding:12px;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;color:#ffd93d;margin-bottom:8px">⑥ 時間変化パラメータ</div>
+  <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div>心拍数: <b style="color:var(--T)">${bp.heartbeat} BPM</b></div>
+    <div>呼吸数: <b style="color:var(--T)">${bp.breathing} /分</b></div>
+    <div>成長速度: <b style="color:var(--T)">${bp.growthRate}</b></div>
+    <div>老化速度: <b style="color:var(--T)">${bp.agingRate}</b></div>
+    <div>概日リズム: <b style="color:var(--T)">${pct(bp.circadian)}</b></div>
+  </div>
+  ${bar(bp.growthRate,3,'#ffd93d')}
+</div>
+
+<!-- ⑦ 内部状態 -->
+<div style="background:var(--card);border:1px solid ${bp._stress>0.6?'#ff6b6b':'#51cf6633'}33;border-radius:8px;padding:12px;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;color:${bp._stress>0.6?'#ff6b6b':'#51cf66'};margin-bottom:8px">⑦ 内部状態</div>
+  <div style="font-size:11px;color:var(--dim);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div>ストレス: <b style="color:${bp._stress>0.5?'#ff6b6b':'var(--G)'}">${Math.round(bp._stress*100)}%</b></div>
+    <div>免疫力: <b style="color:var(--T)">${pct(bp.immune)}</b></div>
+    <div>ホルモン: <b style="color:var(--T)">${pct(bp.hormone)}</b></div>
+    <div>神経活性: <b style="color:var(--T)">${pct(bp.neural)}</b></div>
+    <div>恒常性: <b style="color:var(--T)">${pct(bp.homeostasis)}</b></div>
+  </div>
+  ${bar(1-bp._stress,1,'#51cf66')}
+</div>
+
+<div style="font-size:10px;color:var(--dim);text-align:center;margin-top:12px;padding:8px;border-top:1px solid var(--b)">
+  数式: size=D·(1+W/100)·e^(-0.1/τx) · pH=7+(β₀-0.5)·2 · temp=36.5+(τz-1)·3 · heartbeat=60+Ω·40 BPM<br>
+  <button onclick="renderBioParams()" style="margin-top:6px;padding:4px 12px;background:var(--P);color:#000;border:none;border-radius:4px;cursor:pointer;font-size:10px">🔄 更新</button>
 </div>`;
 }
 
