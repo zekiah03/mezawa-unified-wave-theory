@@ -3309,83 +3309,120 @@ function computeHumanScale(c, ev){
 }
 
 // ── ユニバーサル生命スペクトル (ウイルス → 銀河) ──
-// W軸で全スペクトルを管理。人間ゾーン(W 5〜70)はHUMAN_TYPESで細分化。
+// 判定軸:
+//   W (経験・スケール) ... 主軸
+//   chaosIdx = cogLoad*0.5 + (1-quality)*0.3 + (1-social)*0.2
+//             高い = 脳が高速回転・落ち着きない・他者を巻き込みにくい → 虫・微生物圏
+//
+// 微小・虫圏は「Wが低い」だけでなく「chaosIdxが高い」でも判定される。
+// 例: W=20 でも cogLoad が極端に高く quality が低ければ ゴキブリ/昆虫 になる。
 const LIFE_FORMS_SPECTRUM = [
-  // ── 微小圏 (W < 5) ──
-  {ja:'ウイルス',       en:'Virus',          gr:'Ἰός',       badge:'◇',
-   wMax:2.5, qualMax:0.35,
-   desc_ja:'宿主依存の凝縮体。閉じた世界に棲み、静止と爆発を繰り返す。',
-   desc_en:'Host-dependent particle. Dormant, then explosive.'},
-  {ja:'古細菌',         en:'Archaea',        gr:'Ἀρχαῖα',    badge:'△',
-   wMin:1.5, wMax:4, qualMax:0.5,
-   desc_ja:'極限環境でも生きる最古の生命。だが影響圏はまだ狭い。',
-   desc_en:'Ancient life in extreme conditions. Influence still narrow.'},
-  {ja:'細菌',           en:'Bacterium',      gr:'Βακτήριο',  badge:'○',
-   wMin:3, wMax:6,
-   desc_ja:'高速で複製・適応する。範囲はまだ小さいが勢いがある。',
-   desc_en:'Fast-replicating adapter. Small range but energetic.'},
-  // ── 人間ゾーン (W 5〜70) → HUMAN_TYPESで細分化 ──
-  // ── ポスト・ヒューマン圏 (W 70〜) ──
+  // ── 微小・虫圏 ──
+  // chaosMin: この値以上のchaosIdxで選ばれやすくなる
+  {ja:'ウイルス',   en:'Virus',     gr:'Ἰός',     badge:'◇',
+   wMax:4,  chaosMin:0.70,
+   desc_ja:'宿主に依存し爆発・静止を繰り返す。他者を巻き込むと感染が広がる。',
+   desc_en:'Explosive and dormant cycles. Infects those who get too close.'},
+  {ja:'古細菌',     en:'Archaea',   gr:'Ἀρχαῖα', badge:'△',
+   wMax:6,  chaosMin:0.62,
+   desc_ja:'極限環境で猛烈に動く。エネルギーはあるが影響圏は閉じている。',
+   desc_en:'Furious in extremes. Energy without outward reach.'},
+  {ja:'細菌',       en:'Bacterium', gr:'Βακτήριο',badge:'○',
+   wMax:10, chaosMin:0.55,
+   desc_ja:'高速で複製・適応する。範囲は狭いが勢いが凄まじい。',
+   desc_en:'Replicates at speed. Narrow range, intense drive.'},
+  {ja:'ゴキブリ',   en:'Cockroach', gr:'Κατσαρίδα',badge:'▷',
+   wMin:5, wMax:30, chaosMin:0.52,
+   desc_ja:'どこにでも潜り込み高速で動く落ち着きない生存者。脳は常にフル回転。',
+   desc_en:'Gets everywhere, moves fast. Brain always spinning at full speed.'},
+  {ja:'昆虫',       en:'Insect',    gr:'Ἔντομο',  badge:'▲',
+   wMin:10, wMax:40, chaosMin:0.46,
+   desc_ja:'思考が速く行動力はある。しかし他者を巻き込む方向には向かいにくい。',
+   desc_en:'Fast-thinking, high-action. Hard to involve others constructively.'},
+  // ── 人間ゾーン (W 5〜72, chaosIdx < 0.46) → HUMAN_TYPESで細分化 ──
+  // ── ポスト・ヒューマン圏 (W > 72) ──
   {ja:'菌類ネットワーク', en:'Fungal Network', gr:'Μυκητο-Δίκτυο', badge:'⬡',
    wMin:65, wMax:130, socMin:0.4,
    desc_ja:'地下で広がる接続網。他者を介して力を蓄え、森を束ねる。',
    desc_en:'Underground web. Power flows through others. Binds the forest.'},
-  {ja:'生態系',         en:'Ecosystem',      gr:'Οἰκοσύστημα', badge:'◉',
+  {ja:'生態系',     en:'Ecosystem', gr:'Οἰκοσύστημα',badge:'◉',
    wMin:100, wMax:200, socMin:0.5,
    desc_ja:'無数の命が連鎖し支え合う複雑系。その中心として機能する。',
    desc_en:'Complex web of interdependent life. You are its axis.'},
-  {ja:'惑星大気',       en:'Atmosphere',     gr:'Ἀτμόσφαιρα', badge:'◎',
+  {ja:'惑星大気',   en:'Atmosphere',gr:'Ἀτμόσφαιρα',badge:'◎',
    wMin:160, wMax:280,
    desc_ja:'惑星全体を包む生命維持の場。あらゆる呼吸がここを通る。',
    desc_en:'Life-support layer of a world. All breath passes through you.'},
-  {ja:'惑星',           en:'Planet',         gr:'Πλανήτης',  badge:'✦',
+  {ja:'惑星',       en:'Planet',    gr:'Πλανήτης', badge:'✦',
    wMin:240,
    desc_ja:'自転・磁場・大陸漂移で動く岩の巨大生命体。宗教を超えた存在。',
    desc_en:'Rotating rock of immense gravity. Beyond religion and nation.'},
-  {ja:'恒星',           en:'Star',           gr:'Ἄστρον',    badge:'✸',
+  {ja:'恒星',       en:'Star',      gr:'Ἄστρον',   badge:'✸',
    wMin:340,
    desc_ja:'核融合で1000万度。全生命のエネルギー源として輝く。',
    desc_en:'Fusion at 10 million degrees. Source of all life\'s energy.'},
-  {ja:'銀河',           en:'Galaxy',         gr:'Γαλαξίας',  badge:'❋',
+  {ja:'銀河',       en:'Galaxy',    gr:'Γαλαξίας', badge:'❋',
    wMin:600,
    desc_ja:'1000億の恒星が織りなす重力の渦巻き。波動の極致。',
    desc_en:'100 billion stars in gravitational spirals. The peak of waves.'},
 ];
 
 // 人間ゾーンの境界値
-const HUMAN_W_MIN = 4.5;   // これ未満 → 微小圏
-const HUMAN_W_MAX = 72;    // これ超 → ポスト・ヒューマン圏
+const HUMAN_W_MIN = 4.5;   // W これ未満 → 微小圏へ
+const HUMAN_W_MAX = 72;    // W これ超 → ポスト・ヒューマン圏へ
+const INSECT_CHAOS_MAX = 0.46; // chaosIdx これ以上 → 虫・微生物圏へ (W < 40でも)
 
-// W + hScale + 環境から最適な生命体タイプを返す統合関数
+// W + hScale + 環境 → 最適な生命体タイプを返す統合関数
 function matchLifeType(W, hScale, ev){
-  const qual = ev?.quality != null ? ev.quality : 0.5;
-  const soc  = ev?.socialDensity != null ? ev.socialDensity : 0.3;
+  const qual     = ev?.quality      != null ? ev.quality      : 0.5;
+  const soc      = ev?.socialDensity!= null ? ev.socialDensity: 0.3;
+  const cogLoad  = ev?.cogLoad      != null ? ev.cogLoad      : 0.2;
+  // 混乱指数: 高い = 脳が高速回転・落ち着きない・他者を巻き込みにくい
+  const chaosIdx = cogLoad*0.50 + (1-qual)*0.30 + (1-soc)*0.20;
 
-  // 人間ゾーン: HUMAN_TYPESで細分化
-  if(W >= HUMAN_W_MIN && W <= HUMAN_W_MAX){
-    const ht = matchHumanType(hScale);
-    return {ja:ht.ja, en:ht.en, gr:ht.gr||ht.en, badge:ht.badge,
-            desc_ja:ht.desc_ja, desc_en:ht.desc_en, isHuman:true};
+  // ① ポスト・ヒューマン圏 (W > HUMAN_W_MAX)
+  if(W > HUMAN_W_MAX){
+    const cosmic=LIFE_FORMS_SPECTRUM.filter(lf=>lf.wMin!==undefined&&lf.wMin>=65&&!lf.chaosMin);
+    let best=cosmic[0],bestS=-Infinity;
+    cosmic.forEach(lf=>{
+      let s=0;
+      if(lf.wMin!==undefined&&W<lf.wMin)s-=60;
+      if(lf.wMax!==undefined&&W>lf.wMax)s-=60;
+      if(lf.socMin!==undefined&&soc<lf.socMin)s-=20;
+      const lo=lf.wMin??0,hi=lf.wMax??(lo+200);
+      s+=30-Math.min(30,Math.abs(W-(lo+hi)/2)*0.3);
+      if(s>bestS){bestS=s;best=lf;}
+    });
+    return {ja:best.ja,en:best.en,gr:best.gr||best.en,badge:best.badge,
+            desc_ja:best.desc_ja,desc_en:best.desc_en,isHuman:false};
   }
 
-  // 微小圏 / 宇宙圏: LIFE_FORMS_SPECTRUMから最適マッチ
-  let best=null, bestScore=-Infinity;
-  LIFE_FORMS_SPECTRUM.forEach(lf=>{
-    let s=0;
-    if(lf.wMin!==undefined && W < lf.wMin) s-=60;
-    if(lf.wMax!==undefined && W > lf.wMax) s-=60;
-    if(lf.qualMax!==undefined && qual > lf.qualMax) s-=25;
-    if(lf.socMin!==undefined && soc < lf.socMin) s-=20;
-    // W軸上の中心への近さ
-    const lo=lf.wMin??0, hi=lf.wMax??(lo+100);
-    const center=(lo+hi)/2;
-    s += 30 - Math.min(30, Math.abs(W-center)*0.4);
-    if(s>bestScore){bestScore=s;best=lf;}
-  });
-  return best
-    ? {ja:best.ja, en:best.en, gr:best.gr||best.en, badge:best.badge,
-       desc_ja:best.desc_ja, desc_en:best.desc_en, isHuman:false}
-    : matchLifeType(HUMAN_W_MIN, hScale, ev); // fallback
+  // ② 虫・微生物圏: W が低い、または chaosIdx が高くて W < 40
+  const isMicro = W < HUMAN_W_MIN || (chaosIdx > INSECT_CHAOS_MAX && W < 40);
+  if(isMicro){
+    const micro=LIFE_FORMS_SPECTRUM.filter(lf=>lf.chaosMin!==undefined||lf.wMax!==undefined&&lf.wMax<=40);
+    let best=micro[0],bestS=-Infinity;
+    micro.forEach(lf=>{
+      let s=0;
+      if(lf.wMin!==undefined&&W<lf.wMin)s-=50;
+      if(lf.wMax!==undefined&&W>lf.wMax)s-=50;
+      // chaosMin: 混乱指数との一致度
+      if(lf.chaosMin!==undefined){
+        if(chaosIdx>=lf.chaosMin)s+=30;
+        else s-=Math.round((lf.chaosMin-chaosIdx)*60);
+      }
+      const lo=lf.wMin??0,hi=lf.wMax??(lo+10);
+      s+=20-Math.min(20,Math.abs(W-(lo+hi)/2)*0.5);
+      if(s>bestS){bestS=s;best=lf;}
+    });
+    return {ja:best.ja,en:best.en,gr:best.gr||best.en,badge:best.badge,
+            desc_ja:best.desc_ja,desc_en:best.desc_en,isHuman:false};
+  }
+
+  // ③ 人間ゾーン: HUMAN_TYPESで細分化
+  const ht=matchHumanType(hScale);
+  return {ja:ht.ja,en:ht.en,gr:ht.gr||ht.en,badge:ht.badge,
+          desc_ja:ht.desc_ja,desc_en:ht.desc_en,isHuman:true};
 }
 
 // ── 人間タイプ定義 ──
@@ -3579,19 +3616,29 @@ const LIFE=(function(){
     const ev=ENV_STATE.e;
     const W_val=LIFE_STATE.coords[1]||0;
     const hScale=computeHumanScale(LIFE_STATE.coords, ev);
-    // ユニバーサルスケール: 微小圏 0〜0.5, 人間ゾーン 0.5, 宇宙圏 0.5〜1.0
-    const univScale = W_val < HUMAN_W_MIN
-      ? Math.max(0, W_val/HUMAN_W_MIN) * 0.5               // 0→0.5 (micro)
-      : W_val > HUMAN_W_MAX
-      ? 0.5 + Math.min(0.5, (W_val-HUMAN_W_MAX)/350)       // 0.5→1.0 (cosmic)
-      : 0.5 * hScale + 0.5 * (hScale * 0.5);               // human zone blended
+    const cogLoad = ev.cogLoad!=null?ev.cogLoad:0.2;
+    const qual    = ev.quality!=null?ev.quality:0.5;
+    const soc     = ev.socialDensity!=null?ev.socialDensity:0.3;
+    const chaosIdx= cogLoad*0.50+(1-qual)*0.30+(1-soc)*0.20;
+    const isMicro = W_val < HUMAN_W_MIN || (chaosIdx > INSECT_CHAOS_MAX && W_val < 40);
+    const isCosmic= W_val > HUMAN_W_MAX;
+    // ユニバーサルスケール: 0(虫/ウイルス) → 0.5(人間中盤) → 1.0(銀河)
+    const univScale = isMicro
+      ? Math.max(0, Math.min(0.45, W_val/HUMAN_W_MIN*0.45 + (1-chaosIdx)*0.1))
+      : isCosmic
+      ? 0.55 + Math.min(0.45, (W_val-HUMAN_W_MAX)/350)
+      : 0.45 + hScale*0.15; // human zone: 0.45〜0.60
     const baseSzLo=lV(pa.szLo,pb.szLo,k), baseSzHi=lV(pa.szHi,pb.szHi,k);
-    const scaledSzLo = 0.15 + univScale * 1.20;  // 微小=0.15 → 宇宙=1.35
-    const scaledSzHi = 0.35 + univScale * 1.80;  // 微小=0.35 → 宇宙=2.15
+    // 微小・虫圏: 細胞が小さく密集 (落ち着きなく動き回るイメージ)
+    // 宇宙圏: 細胞が大きく広がる
+    const scaledSzLo = 0.12 + univScale * 1.30;
+    const scaledSzHi = 0.28 + univScale * 1.90;
     const szLo = baseSzLo * 0.40 + scaledSzLo * 0.60;
     const szHi = baseSzHi * 0.40 + scaledSzHi * 0.60;
-    // Bound: 微小圏=密集, 人間ゾーン=中, 宇宙圏=広大
-    const humanBound = 45 + univScale * 80;  // 45 (micro tight) → 125 (cosmic spread)
+    // Bound(広がり): 微小=密集, 人間=中, 宇宙=広大
+    const humanBound = isMicro
+      ? 30 + univScale*40   // 虫/ウイルス: 30〜48 (密集)
+      : 48 + univScale*80;  // 人間〜宇宙: 48〜128
     return{
       hue:lV(pa.hue,pb.hue,k),sat:lV(pa.sat,pb.sat,k),lit:lV(pa.lit,pb.lit,k),
       opLo:lV(pa.opLo,pb.opLo,k),opHi:lV(pa.opHi,pb.opHi,k),
