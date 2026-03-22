@@ -2859,16 +2859,16 @@ const LIFE=(function(){
   let ringGroup=null,rippleGroup=null,starField=null,gridMesh=null;
   let camTheta=0;
   let evoDiv=null,nameDiv3d=null,phaseDiv=null;
-  const MAX_CONN=380;
+  const MAX_CONN=650;
   let connGeo=null,connMat=null,connLine=null,connPos=null,connCol=null;
 
   // ── Phase system ──
   const PHASE_VIS={
-    fluid:  {hue:195,sat:.85,lit:.58,opLo:.32,opHi:.62,szLo:4.5,szHi:9,  damp:.82,turb:.26,pull:.016,rep:1.0, bound:90, connD:80, emMul:.55,bH:0x003366,bOp:.11},
-    gas:    {hue:40, sat:.90,lit:.62,opLo:.08,opHi:.22,szLo:1.8,szHi:4.5,damp:.93,turb:1.65,pull:.003,rep:.4,  bound:150,connD:40, emMul:.90,bH:0x441100,bOp:.04},
-    solid:  {hue:220,sat:.55,lit:.74,opLo:.70,opHi:.92,szLo:8,  szHi:15, damp:.60,turb:.03, pull:.048,rep:1.8, bound:64, connD:96, emMul:.28,bH:0x112299,bOp:.20},
-    burning:{hue:12, sat:.95,lit:.60,opLo:.20,opHi:.42,szLo:3,  szHi:7,  damp:.90,turb:2.2, pull:.006,rep:.6,  bound:132,connD:46, emMul:1.0, bH:0x881100,bOp:.08},
-    frozen: {hue:202,sat:.45,lit:.82,opLo:.75,opHi:.95,szLo:9,  szHi:16, damp:.52,turb:.015,pull:.055,rep:2.2, bound:58, connD:100,emMul:.18,bH:0x66aaff,bOp:.25},
+    fluid:  {hue:188,sat:.95,lit:.82,opLo:.55,opHi:.92,szLo:.35,szHi:.80,damp:.82,turb:.26,pull:.016,rep:1.0, bound:90, connD:95, emMul:.50,bH:0x001122,bOp:.08},
+    gas:    {hue:195,sat:.88,lit:.85,opLo:.25,opHi:.55,szLo:.18,szHi:.42,damp:.93,turb:1.65,pull:.003,rep:.4,  bound:155,connD:55, emMul:.60,bH:0x000a12,bOp:.03},
+    solid:  {hue:182,sat:.90,lit:.88,opLo:.72,opHi:.98,szLo:.45,szHi:1.0,damp:.60,turb:.03, pull:.048,rep:1.8, bound:64, connD:110,emMul:.40,bH:0x001133,bOp:.14},
+    burning:{hue:175,sat:.92,lit:.80,opLo:.35,opHi:.75,szLo:.22,szHi:.55,damp:.90,turb:2.2, pull:.006,rep:.6,  bound:135,connD:60, emMul:.65,bH:0x080012,bOp:.06},
+    frozen: {hue:200,sat:.85,lit:.92,opLo:.80,opHi:.99,szLo:.50,szHi:1.1,damp:.52,turb:.015,pull:.055,rep:2.2, bound:58, connD:115,emMul:.35,bH:0x001122,bOp:.18},
   };
   const PHASE_LABEL={fluid:'流体',gas:'気体',solid:'固体',burning:'燃焼',frozen:'凍結'};
   const PHASE_DESC={fluid:'粘性·表面張力',gas:'高速·拡散',solid:'結晶·剛体',burning:'燃焼·カオス',frozen:'凍結·結晶'};
@@ -2909,7 +2909,7 @@ const LIFE=(function(){
 
   function buildScene(){
     scene=new THREE.Scene();
-    scene.fog=new THREE.FogExp2(0x000510,0.0016);
+    scene.fog=new THREE.FogExp2(0x000000,0.0008);
     camera=new THREE.PerspectiveCamera(55,W/H,0.1,1500);
     camera.position.set(0,0,205);
     const ambL=new THREE.AmbientLight(0x071428,1.4); scene.add(ambL);
@@ -2922,12 +2922,12 @@ const LIFE=(function(){
     const sPos=new Float32Array(1400*3);
     for(let i=0;i<1400;i++){const r=340+Math.random()*900,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);}
     const sGeo=new THREE.BufferGeometry(); sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
-    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x4488cc,size:1.1,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false}));
+    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x220033,size:0.9,transparent:true,opacity:.22,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(starField);
 
     // Hologram background grid (icosahedron wireframe)
     gridMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(175,2),
-      new THREE.MeshBasicMaterial({color:0x003355,wireframe:true,transparent:true,opacity:.05,blending:THREE.AdditiveBlending,depthWrite:false}));
+      new THREE.MeshBasicMaterial({color:0x220044,wireframe:true,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(gridMesh);
 
     // Organism blob — additive blending for glow
@@ -2979,20 +2979,22 @@ const LIFE=(function(){
       const m=cellGroup.children[cellGroup.children.length-1];
       m.geometry.dispose();m.material.dispose();cellGroup.remove(m);
     }
-    const hologram=0.93+0.07*Math.sin(t*7.7)*Math.sin(t*13.1);
-    const envHShift=ev.hostility*30-ev.socialDensity*15;
+    const hologram=0.92+0.08*Math.sin(t*7.7)*Math.sin(t*13.1);
     pts.forEach((p,i)=>{
       const m=cellGroup.children[i]; if(!m)return;
       m.position.set(p.px,p.py,p.pz);
       const targetSz=pv.szLo+p.depth*(pv.szHi-pv.szLo);
-      const pulse=1+0.10*Math.sin(t*p.fr+p.ph);
+      const pulse=1+0.12*Math.sin(t*p.fr+p.ph);
       m.scale.setScalar(targetSz/5*pulse);
-      const cellHue=(pv.hue+i*13+envHShift+720)%360;
-      const col=new THREE.Color().setHSL(cellHue/360,pv.sat,pv.lit);
+      // Always cyan-white nodes (neon hologram aesthetic)
+      const nodeHue=(186+i*2)%360;
+      const nodeLit=0.82+p.depth*0.16;
+      const col=new THREE.Color().setHSL(nodeHue/360,0.92,nodeLit);
       m.material.color.copy(col);
       m.material.emissive.copy(col).multiplyScalar(pv.emMul);
-      const rawOp=p.born?Math.min(pv.opHi,p.age*3.0):(pv.opLo+p.depth*(pv.opHi-pv.opLo));
+      const rawOp=p.born?Math.min(pv.opHi,p.age*4.0):(pv.opLo+p.depth*(pv.opHi-pv.opLo));
       m.material.opacity=rawOp*hologram;
+      m.material.shininess=200;
     });
   }
 
@@ -3007,8 +3009,11 @@ const LIFE=(function(){
         if(d<maxD){
           const al=(1-d/maxD)*(pv.opLo+.18);
           const ci=cnt*6;
-          const cP=new THREE.Color().setHSL((pv.hue+i*13+720)%360/360,.72,pv.lit*al*2.5);
-          const cQ=new THREE.Color().setHSL((pv.hue+j*13+720)%360/360,.72,pv.lit*al*2.5);
+          // Magenta-violet network lines (neon hologram aesthetic)
+          const mHue=(302+i*.5)%360;
+          const mLit=Math.min(0.75, al*1.2+0.08);
+          const cP=new THREE.Color().setHSL(mHue/360,.98,mLit);
+          const cQ=new THREE.Color().setHSL((mHue+4)%360/360,.98,mLit);
           connPos[ci]=p.px;connPos[ci+1]=p.py;connPos[ci+2]=p.pz;
           connPos[ci+3]=q.px;connPos[ci+4]=q.py;connPos[ci+5]=q.pz;
           connCol[ci]=cP.r;connCol[ci+1]=cP.g;connCol[ci+2]=cP.b;
@@ -3021,7 +3026,7 @@ const LIFE=(function(){
     connGeo.attributes.position.needsUpdate=true;
     connGeo.attributes.color.needsUpdate=true;
     connGeo.setDrawRange(0,cnt*2);
-    connMat.opacity=.32+pv.opLo*.22;
+    connMat.opacity=.72+pv.opLo*.18;
   }
 
   function update(){
@@ -3153,7 +3158,7 @@ const LIFE=(function(){
       renderer=new THREE.WebGLRenderer({canvas:c3,alpha:false,antialias:true,powerPreference:'high-performance'});
       renderer.setPixelRatio(Math.min(devicePixelRatio,2));
       renderer.setSize(W,H);
-      renderer.setClearColor(0x000510,1);
+      renderer.setClearColor(0x000000,1);
       buildScene();
       LIFE_STATE.load(); ENV_STATE.load();
       pts=[];
@@ -3178,7 +3183,7 @@ const LIFE=(function(){
       wrap.appendChild(nameDiv3d);
       // Scanline overlay (hologram effect)
       const scanDiv=document.createElement('div');
-      scanDiv.style.cssText='position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,220,200,.016) 2px,rgba(0,220,200,.016) 4px);pointer-events:none;z-index:3;';
+      scanDiv.style.cssText='position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(180,0,255,.028) 3px,rgba(180,0,255,.028) 4px);pointer-events:none;z-index:3;mix-blend-mode:screen';
       wrap.appendChild(scanDiv);
       // Resize observer
       new ResizeObserver(()=>{
