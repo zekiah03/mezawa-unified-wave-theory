@@ -3289,20 +3289,87 @@ const LIFE_CFG = (function(){
 function ageToLifeState(age){
   const a=Math.max(1,Math.min(120,parseInt(age)||25));
   const W=Math.max(0,(a-10)*0.45);
-  const cells=Math.min(50,Math.max(5,Math.floor((a-5)*0.7)+5));
+  const cells=9; // always FIXED
   const phi=(a/80)*Math.PI*2;
   const tau_x=a/80;
   return{W,cells,phi,tau_x};
 }
 
+// ── 人間スケール計算 ──
+// Returns 0(小スケール)→1(大スケール) based on 11D coords + environment
+function computeHumanScale(c, ev){
+  const W    = Math.min(1, (c[1]||0) / 60);           // 経験の深さ (W=60で最大)
+  const qual = ev?.quality != null ? ev.quality : 0.5; // 生活の質・実行力
+  const soc  = ev?.socialDensity != null ? ev.socialDensity : 0.3; // 社会的密度
+  const beta = Math.min(1,(c[8]||0.593)/1.0);          // β₀ 意識-重力結合 (想像力)
+  const free = 1 - Math.min(1,(ev?.cogLoad != null ? ev.cogLoad : 0.2)); // 認知的余裕
+  return Math.min(1, Math.max(0,
+    W * 0.35 + qual * 0.25 + soc * 0.20 + beta * 0.10 + free * 0.10
+  ));
+}
+
+// ── 人間タイプ定義 ──
+// 現時点では人間に固定。将来: 大→植物, 小→ゴキブリ
+const HUMAN_TYPES = [
+  {
+    ja:'個人事業主',   en:'Sole Proprietor', gr:'Αὐτοαπασχολ.',
+    scaleMin:0, scaleMax:0.28,
+    desc_ja:'自力で全てを動かす。道具そのものが細胞の形で広がる。',
+    desc_en:'Moves everything alone. Tools manifest as cells.',
+    badge:'⚙',
+  },
+  {
+    ja:'従業員・メンバー', en:'Employee / Member', gr:'Ὑπάλληλος',
+    scaleMin:0.12, scaleMax:0.45,
+    desc_ja:'組織の内側で力を発揮する。内的なスケール感。',
+    desc_en:'Operates within the organization. Inner-directed scale.',
+    badge:'🔩',
+  },
+  {
+    ja:'チームリーダー', en:'Team Leader', gr:'Ὁμαδάρχης',
+    scaleMin:0.35, scaleMax:0.62,
+    desc_ja:'幹部を束ね始める。周囲を巻き込む力が芽生える。',
+    desc_en:'Begins to coordinate executives. Drawing others in.',
+    badge:'🌿',
+  },
+  {
+    ja:'マネージャー・部長', en:'Manager / Director', gr:'Διευθυντής',
+    scaleMin:0.52, scaleMax:0.78,
+    desc_ja:'幹部の大きさが増す。判断が組織の深部まで影響する。',
+    desc_en:'Executives grow. Decisions reach deep into the org.',
+    badge:'🌳',
+  },
+  {
+    ja:'社長・CEO', en:'CEO / Founder', gr:'Πρόεδρος',
+    scaleMin:0.68, scaleMax:1.0,
+    desc_ja:'幹部たちが大きな細胞として輝く。外的なスケール感。',
+    desc_en:'Executives shine as large cells. External-scale presence.',
+    badge:'🌐',
+  },
+];
+
+function matchHumanType(scale){
+  // Pick best match based on scale, preferring the widest-centered match
+  let best=HUMAN_TYPES[0], bestScore=-1;
+  HUMAN_TYPES.forEach(ht=>{
+    const inRange=(scale>=ht.scaleMin&&scale<=ht.scaleMax)?1:0;
+    const center=(ht.scaleMin+ht.scaleMax)/2;
+    const proximity=1-Math.abs(scale-center);
+    const score=inRange*2+proximity;
+    if(score>bestScore){bestScore=score;best=ht;}
+  });
+  return best;
+}
+
 // ── 11-DIMENSIONAL LIFE STATE ──
 const LIFE_STATE=(function(){
+  const FIXED_CELLS=9; // 細胞数固定 — 幹部の数を表す
   const STAGE=[
-    {n:1,label:'単細胞',   W:0,  cells:30,  desc:'原始の波動'},
-    {n:2,label:'多細胞',   W:5,  cells:65,  desc:'細胞が繋がり始める'},
-    {n:3,label:'原始生命', W:15, cells:100, desc:'触手を伸ばす'},
-    {n:4,label:'複合生命', W:35, cells:150, desc:'軌道と環を持つ'},
-    {n:5,label:'超生命',   W:70, cells:200, desc:'11次元に展開する'},
+    {n:1,label:'新人',    W:0,  cells:FIXED_CELLS, desc:'波動の芽吹き'},
+    {n:2,label:'中堅',    W:8,  cells:FIXED_CELLS, desc:'経験が積み重なる'},
+    {n:3,label:'幹部',    W:22, cells:FIXED_CELLS, desc:'他者を束ねる力'},
+    {n:4,label:'経営者',  W:45, cells:FIXED_CELLS, desc:'組織が細胞として輝く'},
+    {n:5,label:'創業者',  W:80, cells:FIXED_CELLS, desc:'11次元のスケール感'},
   ];
   let c=[0,0,0,0,1,1,1,1,0.593,0.15,117];
   let prevN=1;
@@ -3409,42 +3476,7 @@ const LIFE=(function(){
   const PHASE_LABEL=new Proxy({},{get(_,k){ return getPhaseLabel()[k]; }});
   const PHASE_DESC=new Proxy({},{get(_,k){ return getPhaseDesc()[k]; }});
 
-  // ── Life form comparison data (microbe → cosmic scale) ──
-  const LIFE_FORMS=[
-    {ja:'ウイルス',       en:'Virus',           phases:['frozen'],          wMax:12,  cMax:25,  hoMin:.3,  desc:'宿主依存の凝縮体。静止と爆発的複製を繰り返す'},
-    {ja:'古細菌',         en:'Archaea',          phases:['burning'],         wMax:20,  cMax:50,  hoMin:.25, desc:'極限環境に棲む最古の生命体。高熱・酸・塩に耐える'},
-    {ja:'細菌',           en:'Bacterium',        phases:['fluid'],           wMax:22,  cMax:50,            desc:'高速分裂・環境適応の王者。1gの土壌に10億個'},
-    {ja:'渦鞭毛藻',       en:'Dinoflagellate',   phases:['burning','fluid'], wMax:45,  cMax:90,            desc:'海を光らせる単細胞。毒素と発光を武器に'},
-    {ja:'アメーバ',       en:'Amoeba',           phases:['fluid'],           wMin:5,   wMax:35,  cMin:20,  desc:'仮足で流れ、囲んで消化する。形を持たない知性'},
-    {ja:'放線菌',         en:'Actinomycetes',    phases:['solid'],           wMin:8,   wMax:50,  cMin:40,  desc:'土壌に地下ネットワーク。抗生物質の主な供給源'},
-    {ja:'粘菌',           en:'Slime Mold',       phases:['fluid','solid'],   wMin:15,  wMax:60,  cMin:60,  desc:'個と集合を行き来する。迷路を最短経路で解く'},
-    {ja:'クラゲ',         en:'Jellyfish',        phases:['fluid'],           wMin:28,  wMax:100, cMin:65,  desc:'95%が水。電気パルスで波打ち、毒糸で捕食する'},
-    {ja:'菌類ネットワーク',en:'Fungal Network',  phases:['solid'],           wMin:25,  wMax:90,  cMin:90,  desc:'地下数百kmのネット。森の栄養を仲介する分解者'},
-    {ja:'プランクトン群', en:'Plankton Bloom',   phases:['gas','fluid'],     wMin:20,  wMax:80,  cMin:50,  desc:'大気酸素の半分を生産。海を緑に染める爆発的繁殖'},
-    {ja:'サンゴ群体',     en:'Coral Colony',     phases:['solid'],           wMin:55,  wMax:140, cMin:140, desc:'群体として岩礁を形成。石灰化で骨格を積み上げる'},
-    {ja:'魚群',           en:'Fish Shoal',       phases:['fluid'],           wMin:60,  wMax:200, cMin:100, desc:'1つの巨大な知性として動く流体型集合体'},
-    {ja:'蟻コロニー',     en:'Ant Colony',       phases:['solid'],           wMin:40,  wMax:130, cMin:100, hoMin:.3, desc:'個体を超えた集合的超生命体。女王と1億の分散脳'},
-    {ja:'雲',             en:'Cloud',            phases:['gas'],             wMin:80,  wMax:220,           desc:'水蒸気が形を持つ流動の彫刻。数百億個の水滴'},
-    {ja:'嵐',             en:'Storm',            phases:['burning','gas'],   wMin:100, wMax:350, hoMin:.4, desc:'熱と圧差が生む惑星規模の循環生命体'},
-    {ja:'海流',           en:'Ocean Current',    phases:['fluid'],           wMin:120, wMax:500,           desc:'地球の体温を調整する血液循環。千年で一周する'},
-    {ja:'惑星大気',       en:'Atmosphere',       phases:['gas'],             wMin:200, wMax:700,           desc:'惑星を包む生命維持装置。数十億年かけて形成'},
-    {ja:'惑星',           en:'Planet',           phases:['solid','frozen'],  wMin:500,                    desc:'自転・磁場・大陸漂移で動く岩の巨大生命体'},
-    {ja:'恒星',           en:'Star',             phases:['burning'],         wMin:2000,                   desc:'核融合で1000万度。全生命のエネルギー源'},
-    {ja:'星雲',           en:'Nebula',           phases:['gas'],             wMin:3000,                   desc:'次の星系を産む宇宙の揺籃。数光年の規模'},
-    {ja:'銀河',           en:'Galaxy',           phases:['fluid','gas'],     wMin:10000,                  desc:'1000億の恒星が織りなす重力の渦巻き'},
-  ];
-  function matchLifeForm(phase,W,cells,ev){
-    return LIFE_FORMS.map(lf=>{
-      let s=0;
-      if(lf.phases.includes(phase))s+=40; else if(lf.phases.some(p=>Math.abs(PHASE_VIS[p].hue-PHASE_VIS[phase].hue)<30))s+=15;
-      if(lf.wMin===undefined||W>=lf.wMin)s+=15;
-      if(lf.wMax===undefined||W<=lf.wMax)s+=15;
-      if(lf.cMin===undefined||cells>=lf.cMin)s+=10;
-      if(lf.cMax===undefined||cells<=lf.cMax)s+=10;
-      if(lf.hoMin!==undefined&&ev.hostility>=lf.hoMin)s+=8;
-      return{lf,s};
-    }).filter(x=>x.s>=40).sort((a,b)=>b.s-a.s).slice(0,1);
-  }
+  // LIFE_FORMS / matchLifeForm removed — replaced by HUMAN_TYPES / matchHumanType (see global scope)
   // ── Environment simulation (auto-vary when idle) ──
   function simEnv(dt){
     envSimT+=dt;
@@ -3465,13 +3497,27 @@ const LIFE=(function(){
   function lV(a,b,k){return a*(1-k)+b*k;}
   function getPV(){
     const pa=PHASE_VIS[prevPhase],pb=PHASE_VIS[currentPhase],k=phaseBlend;
+    const ev=ENV_STATE.e;
+    const hScale=computeHumanScale(LIFE_STATE.coords, ev);
+    // Cell size: driven by human scale (小スケール=小, 大スケール=大)
+    // Base from phase, then stretched by scale
+    const baseSzLo=lV(pa.szLo,pb.szLo,k), baseSzHi=lV(pa.szHi,pb.szHi,k);
+    const scaledSzLo = 0.22 + hScale * 0.90;   // 0.22 (new employee) → 1.12 (CEO)
+    const scaledSzHi = 0.50 + hScale * 1.40;   // 0.50 → 1.90
+    // Blend: 40% phase character, 60% scale
+    const szLo = baseSzLo * 0.40 + scaledSzLo * 0.60;
+    const szHi = baseSzHi * 0.40 + scaledSzHi * 0.60;
+    // Bound: fixed to human visual range (no satellite/microbe extremes)
+    // Small scale: cells orbit tightly (自分で全部動かす)
+    // Large scale: cells spread wider (組織の広がり)
+    const humanBound = 62 + hScale * 38;  // 62 (tight/small) → 100 (spread/large)
     return{
       hue:lV(pa.hue,pb.hue,k),sat:lV(pa.sat,pb.sat,k),lit:lV(pa.lit,pb.lit,k),
       opLo:lV(pa.opLo,pb.opLo,k),opHi:lV(pa.opHi,pb.opHi,k),
-      szLo:lV(pa.szLo,pb.szLo,k),szHi:lV(pa.szHi,pb.szHi,k),
+      szLo,szHi,
       damp:lV(pa.damp,pb.damp,k),turb:lV(pa.turb,pb.turb,k),
       pull:lV(pa.pull,pb.pull,k),rep:lV(pa.rep,pb.rep,k),repR:lV(pa.repR,pb.repR,k),
-      bound:lV(pa.bound,pb.bound,k),connD:lV(pa.connD,pb.connD,k),
+      bound:humanBound,connD:lV(pa.connD,pb.connD,k),
       emMul:lV(pa.emMul,pb.emMul,k),
     };
   }
@@ -3739,19 +3785,26 @@ const LIFE=(function(){
     lifeFormTimer-=.016;
     if(lifeFormTimer<=0){
       lifeFormTimer=4.0;
-      const matches=matchLifeForm(currentPhase,LIFE_STATE.coords[1],pts.length,ev);
-      if(lifeFormDiv&&matches.length>0){
-        const top=matches[0].lf;
+      const hScale=computeHumanScale(LIFE_STATE.coords, ev);
+      const ht=matchHumanType(hScale);
+      if(lifeFormDiv){
+        const isEn=(typeof currentLang!=='undefined'&&currentLang==='en');
+        const isGr=(typeof currentLang!=='undefined'&&currentLang==='gr');
+        const typeName = isGr ? (ht.gr||ht.en) : isEn ? ht.en : ht.ja;
+        const desc = isEn ? (ht.desc_en||ht.desc_ja) : ht.desc_ja;
+        const scaleBar = Math.round(hScale*100);
         const phN=PHASE_LABEL[currentPhase]||currentPhase;
+        const typeLabel=(typeof currentLang!=='undefined'&&LANG_DATA[currentLang]?.lifeFormType)||'生命体タイプ';
         lifeFormDiv.innerHTML=
-          `<div style="font:600 10px 'Noto Sans JP',sans-serif;color:#88c8e8;letter-spacing:.12em;margin-bottom:5px">${(typeof currentLang!=='undefined'&&LANG_DATA[currentLang]?.lifeFormType)||'生命体タイプ'}</div>`+
-          `<div style="font:bold 16px 'Noto Sans JP',sans-serif;color:#e8f4ff;line-height:1.2;margin-bottom:2px">${top.ja}</div>`+
-          `<div style="font:11px sans-serif;color:#6699bb;margin-bottom:6px">${top.en} &nbsp;·&nbsp; ${phN}相</div>`+
-          `<div style="font:11px 'Noto Sans JP',sans-serif;color:#8aaabb;line-height:1.6;max-width:190px">${top.desc}</div>`;
-        // Save life form type to user profile
-        if(AUTH.user&&AUTH.user.lifeFormType!==top.en){
-          AUTH.save('lifeFormType',top.en);
-          AUTH.save('lifeFormJa',top.ja);
+          `<div style="font:600 10px 'Noto Sans JP',sans-serif;color:#88c8e8;letter-spacing:.12em;margin-bottom:5px">${typeLabel}</div>`+
+          `<div style="font:bold 16px 'Noto Sans JP',sans-serif;color:#e8f4ff;line-height:1.2;margin-bottom:2px">${ht.badge} ${typeName}</div>`+
+          `<div style="font:11px sans-serif;color:#6699bb;margin-bottom:5px">${phN}相 &nbsp;·&nbsp; Scale ${scaleBar}%</div>`+
+          `<div style="width:100%;height:4px;background:rgba(0,80,140,.3);border-radius:2px;margin-bottom:6px"><div style="width:${scaleBar}%;height:100%;background:linear-gradient(90deg,#2288cc,#00e8ff);border-radius:2px;transition:width 1s"></div></div>`+
+          `<div style="font:11px 'Noto Sans JP',sans-serif;color:#8aaabb;line-height:1.6;max-width:190px">${desc}</div>`;
+        // Save human type to user profile
+        if(AUTH.user&&AUTH.user.lifeFormType!==ht.en){
+          AUTH.save('lifeFormType',ht.en);
+          AUTH.save('lifeFormJa',ht.ja);
         }
       }
     }
@@ -3796,7 +3849,7 @@ const LIFE=(function(){
       buildScene();
       LIFE_STATE.load(); ENV_STATE.load();
       pts=[];
-      const stg=LIFE_STATE.stage,n=Math.max(8,Math.min(stg.cells,AUTH.user?.cells||15));
+      const stg=LIFE_STATE.stage,n=LIFE_STATE.stage.cells; // FIXED_CELLS=9
       for(let i=0;i<n;i++){
         const p=mkPt(null,stg.n);
         const a=(i/n)*Math.PI*2,b=(i/n)*Math.PI,d=22+Math.random()*55;
@@ -3846,7 +3899,7 @@ const LIFE=(function(){
       const evo=LIFE_STATE.checkEvolution();
       if(evo.evolved){
         evoFlash=1.5;evoMsg=`⬡ Stage ${evo.to} — ${evo.label} に進化！`;
-        for(let i=0;i<16;i++)divide();
+        // 細胞数は固定(9)なのでdivideは呼ばない — サイズ変化で表現
         setTimeout(()=>updateLifeStatus(),200);
       }
       LIFE_STATE.save();
