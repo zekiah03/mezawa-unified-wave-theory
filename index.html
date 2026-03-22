@@ -2864,11 +2864,11 @@ const LIFE=(function(){
 
   // ── Phase system ──
   const PHASE_VIS={
-    fluid:  {hue:188,sat:.95,lit:.82,opLo:.55,opHi:.92,szLo:.35,szHi:.80,damp:.82,turb:.26,pull:.006,rep:1.0, repR:18,bound:105,connD:48, emMul:.50,bH:0x001122,bOp:.08},
-    gas:    {hue:195,sat:.88,lit:.85,opLo:.25,opHi:.55,szLo:.18,szHi:.42,damp:.93,turb:1.65,pull:.002,rep:.4,  repR:22,bound:165,connD:38, emMul:.60,bH:0x000a12,bOp:.03},
-    solid:  {hue:182,sat:.90,lit:.88,opLo:.72,opHi:.98,szLo:.45,szHi:1.0,damp:.60,turb:.03, pull:.028,rep:1.8, repR:12,bound:72, connD:40, emMul:.40,bH:0x001133,bOp:.14},
-    burning:{hue:175,sat:.92,lit:.80,opLo:.35,opHi:.75,szLo:.22,szHi:.55,damp:.90,turb:2.2, pull:.002,rep:.6,  repR:20,bound:148,connD:42, emMul:.65,bH:0x080012,bOp:.06},
-    frozen: {hue:200,sat:.85,lit:.92,opLo:.80,opHi:.99,szLo:.50,szHi:1.1,damp:.52,turb:.015,pull:.030,rep:2.2, repR:10,bound:66, connD:36, emMul:.35,bH:0x001122,bOp:.18},
+    fluid:  {hue:190,sat:.85,lit:.72,opLo:.50,opHi:.88,szLo:.35,szHi:.80,damp:.82,turb:.26,pull:.006,rep:1.0, repR:18,bound:105,connD:48, emMul:.45,bH:0x001122,bOp:.08},
+    gas:    {hue:38, sat:.88,lit:.72,opLo:.22,opHi:.50,szLo:.18,szHi:.42,damp:.93,turb:1.65,pull:.002,rep:.4,  repR:22,bound:165,connD:38, emMul:.55,bH:0x100a00,bOp:.03},
+    solid:  {hue:218,sat:.75,lit:.70,opLo:.70,opHi:.95,szLo:.45,szHi:1.0,damp:.60,turb:.03, pull:.028,rep:1.8, repR:12,bound:72, connD:40, emMul:.35,bH:0x000a22,bOp:.14},
+    burning:{hue:14, sat:.92,lit:.68,opLo:.32,opHi:.70,szLo:.22,szHi:.55,damp:.90,turb:2.2, pull:.002,rep:.6,  repR:20,bound:148,connD:42, emMul:.60,bH:0x180400,bOp:.06},
+    frozen: {hue:202,sat:.70,lit:.80,opLo:.78,opHi:.97,szLo:.50,szHi:1.1,damp:.52,turb:.015,pull:.030,rep:2.2, repR:10,bound:66, connD:36, emMul:.30,bH:0x001122,bOp:.18},
   };
   const PHASE_LABEL={fluid:'流体',gas:'気体',solid:'固体',burning:'燃焼',frozen:'凍結'};
   const PHASE_DESC={fluid:'粘性·表面張力',gas:'高速·拡散',solid:'結晶·剛体',burning:'燃焼·カオス',frozen:'凍結·結晶'};
@@ -2980,21 +2980,26 @@ const LIFE=(function(){
       m.geometry.dispose();m.material.dispose();cellGroup.remove(m);
     }
     const hologram=0.92+0.08*Math.sin(t*7.7)*Math.sin(t*13.1);
+    const cv=LIFE_STATE.coords;
+    // φ座標(c[0])でhueシフト, W(c[1])でsaturation強化
+    const phiShift=(cv[0]*(180/Math.PI)*0.12)%360;
+    const wSat=Math.min(0.12,cv[1]/700);
     pts.forEach((p,i)=>{
       const m=cellGroup.children[i]; if(!m)return;
       m.position.set(p.px,p.py,p.pz);
       const targetSz=pv.szLo+p.depth*(pv.szHi-pv.szLo);
       const pulse=1+0.12*Math.sin(t*p.fr+p.ph);
       m.scale.setScalar(targetSz/5*pulse);
-      // Always cyan-white nodes (neon hologram aesthetic)
-      const nodeHue=(186+i*2)%360;
-      const nodeLit=0.82+p.depth*0.16;
-      const col=new THREE.Color().setHSL(nodeHue/360,0.92,nodeLit);
+      // 分析座標ベースのノード色: フェーズhue + φシフト + depth変化
+      const nodeHue=(pv.hue+phiShift+i*1.5+720)%360;
+      const nodeSat=Math.min(0.98,pv.sat+wSat);
+      const nodeLit=0.68+p.depth*0.22;
+      const col=new THREE.Color().setHSL(nodeHue/360,nodeSat,nodeLit);
       m.material.color.copy(col);
       m.material.emissive.copy(col).multiplyScalar(pv.emMul);
       const rawOp=p.born?Math.min(pv.opHi,p.age*4.0):(pv.opLo+p.depth*(pv.opHi-pv.opLo));
       m.material.opacity=rawOp*hologram;
-      m.material.shininess=200;
+      m.material.shininess=180;
     });
   }
 
@@ -3009,11 +3014,12 @@ const LIFE=(function(){
         if(d<maxD){
           const al=(1-d/maxD)*(pv.opLo+.18);
           const ci=cnt*6;
-          // Magenta-violet network lines (neon hologram aesthetic)
-          const mHue=(302+i*.5)%360;
-          const mLit=Math.min(0.75, al*1.2+0.08);
-          const cP=new THREE.Color().setHSL(mHue/360,.98,mLit);
-          const cQ=new THREE.Color().setHSL((mHue+4)%360/360,.98,mLit);
+          // 分析座標ベースのライン色: hostility→赤シフト, quality→輝度, cogLoad→青シフト
+          const lineHue=(pv.hue+ev.hostility*40-ev.quality*20+ev.cogLoad*(-25)+720)%360;
+          const lineSat=Math.min(0.88,0.55+ev.hostility*0.25+ev.quality*0.15);
+          const lineLit=Math.min(0.42, al*0.8+0.04);
+          const cP=new THREE.Color().setHSL(lineHue/360,lineSat,lineLit);
+          const cQ=new THREE.Color().setHSL((lineHue+3)%360/360,lineSat,lineLit);
           connPos[ci]=p.px;connPos[ci+1]=p.py;connPos[ci+2]=p.pz;
           connPos[ci+3]=q.px;connPos[ci+4]=q.py;connPos[ci+5]=q.pz;
           connCol[ci]=cP.r;connCol[ci+1]=cP.g;connCol[ci+2]=cP.b;
@@ -3026,7 +3032,7 @@ const LIFE=(function(){
     connGeo.attributes.position.needsUpdate=true;
     connGeo.attributes.color.needsUpdate=true;
     connGeo.setDrawRange(0,cnt*2);
-    connMat.opacity=.72+pv.opLo*.18;
+    connMat.opacity=.38+pv.opLo*.12;
   }
 
   function update(){
