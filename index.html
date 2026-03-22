@@ -399,6 +399,27 @@ body.lang-gr { font-family:var(--font-gr); }
 .life-chat-input-field:focus { border-color:var(--T); }
 .life-send-btn { padding:8px 14px; background:var(--T); color:#fff; border:none; border-radius:5px; font-size:12px; cursor:pointer; font-family:var(--font-ja); font-weight:700; }
 .life-send-btn:hover { opacity:.85; }
+/* ── LIFE SPLIT LAYOUT ── */
+.life-split { flex:1; display:flex; overflow:hidden; min-height:0; }
+.life-canvas-col { flex:1; min-width:0; }
+/* Desktop: canvas left, detail panel right */
+@media (min-width:768px){
+  .life-mob-nav { display:none !important; }
+  #sp-l0.life-canvas-col { display:flex !important; padding:0 !important; overflow:hidden; }
+  #life-detail-side { width:320px; flex-shrink:0; display:flex; flex-direction:column; border-left:1px solid var(--bdr); background:var(--bg); overflow:hidden; }
+  .life-detail-nav { flex-shrink:0; display:flex; background:var(--bg2); border-bottom:1px solid var(--bdr); overflow-x:auto; }
+  .ldt { height:36px; padding:0 14px; display:flex; align-items:center; font-size:11px; letter-spacing:.06em; color:var(--dim); cursor:pointer; border-bottom:2px solid transparent; border-right:1px solid var(--bdr); white-space:nowrap; transition:all .16s; flex-shrink:0; }
+  .ldt:hover { color:var(--W); background:rgba(255,255,255,.03); }
+  .ldt.on { color:var(--T); border-bottom-color:var(--T); background:rgba(93,214,200,.05); }
+  .ldp { display:none !important; overflow-y:auto; padding:20px 22px; }
+  .ldp.ldp-on { display:block !important; }
+}
+/* Mobile: stacked sub-panes */
+@media (max-width:767px){
+  .life-split { flex-direction:column; }
+  #life-detail-side { display:contents; }
+  .life-detail-nav { display:none !important; }
+}
 .lf-setting-group { margin-bottom:20px; padding:20px; background:var(--bg2); border-radius:8px; border:1px solid var(--bdr); }
 .lf-setting-title { font-size:11px; font-weight:700; color:var(--head); letter-spacing:.12em; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--bdr); text-transform:uppercase; }
 .lf-radio-row { display:flex; flex-direction:column; gap:8px; font-size:13px; }
@@ -1073,7 +1094,8 @@ body.lang-gr { font-family:var(--font-gr); }
   <div id="life-main" class="life-main" style="display:none">
     <div id="life-status-bar" class="life-status-bar">起動中...</div>
 
-    <div class="sub-nav">
+    <!-- Mobile-only top nav -->
+    <div class="sub-nav life-mob-nav">
       <div class="sub-tab on" onclick="swSub('l','l0')" id="st-l0">観察</div>
       <div class="sub-tab" onclick="swSub('l','l1')" id="st-l1">設定</div>
       <div class="sub-tab" onclick="swSub('l','l2')" id="st-l2">プラン</div>
@@ -1081,48 +1103,54 @@ body.lang-gr { font-family:var(--font-gr); }
       <div class="sub-tab" onclick="swSub('l','l4')" id="st-l4">生命解析</div>
     </div>
 
-    <!-- 観察: canvas + chat -->
-    <div id="sp-l0" class="sub-pane on life-observe">
-      <div class="life-canvas-wrap">
-        <div class="life-name-bar"><span id="life-name-txt" onclick="promptLifeName()" title="クリックして名前をつける" style="cursor:pointer">✏ 名前をつける</span><span id="life-stage-lbl" class="life-stage-pill">Stage 1 · 単細胞</span></div>
-        <canvas id="life-canvas"></canvas>
-        <div class="life-canvas-badge" id="life-badge">細胞数: — | 世代: 0</div>
-      </div>
-      <div class="life-chat-panel">
-        <div class="life-chat-header">Ψ-生命体との対話</div>
-        <div id="life-chat-log" class="life-chat-log">
-          <div class="life-msg life-msg-ai">やあ。最近、なんかいいことあった？</div>
-        </div>
-        <div class="life-chat-foot">
-          <input id="life-input" class="life-chat-input-field" type="text" placeholder="生命体に語りかける..." onkeydown="if(event.key==='Enter')sendLifeMessage()">
-          <button class="life-send-btn" onclick="sendLifeMessage()">送信</button>
+    <!-- Desktop: canvas left + detail right / Mobile: stacked via sub-panes -->
+    <div class="life-split">
+
+      <!-- Canvas (always visible on desktop; toggleable sub-pane on mobile) -->
+      <div id="sp-l0" class="sub-pane on life-observe life-canvas-col">
+        <div class="life-canvas-wrap">
+          <div class="life-name-bar"><span id="life-name-txt" onclick="promptLifeName()" title="クリックして名前をつける" style="cursor:pointer">✏ 名前をつける</span><span id="life-stage-lbl" class="life-stage-pill">Stage 1 · 単細胞</span></div>
+          <canvas id="life-canvas"></canvas>
+          <div class="life-canvas-badge" id="life-badge">細胞数: — | 世代: 0</div>
         </div>
       </div>
-    </div>
 
-    <!-- 設定 -->
-    <div id="sp-l1" class="sub-pane">
-      <div class="panel-title">API ＆ ナレッジベース設定</div>
-      <div class="panel-sub">接続先とデータ保存先を選択してください</div>
-      <div id="lf-settings-form"></div>
-    </div>
+      <!-- Detail side panel (desktop: right column always visible; mobile: transparent wrapper) -->
+      <div id="life-detail-side">
+        <!-- Desktop detail nav (hidden on mobile) -->
+        <div class="life-detail-nav">
+          <div class="ldt on" onclick="swLifeDetail('l1')" id="ldt-l1">設定</div>
+          <div class="ldt" onclick="swLifeDetail('l2')" id="ldt-l2">プラン</div>
+          <div class="ldt" onclick="swLifeDetail('l3')" id="ldt-l3">成長ガイド</div>
+          <div class="ldt" onclick="swLifeDetail('l4')" id="ldt-l4">生命解析</div>
+        </div>
 
-    <!-- プラン -->
-    <div id="sp-l2" class="sub-pane">
-      <div class="panel-title">ご利用プラン</div>
-      <div class="panel-sub">Ψ-生命体への完全アクセス</div>
-      <div id="lf-plan-content"></div>
-    </div>
+        <!-- 設定 -->
+        <div id="sp-l1" class="sub-pane ldp ldp-on">
+          <div class="panel-title">API ＆ ナレッジベース設定</div>
+          <div class="panel-sub">接続先とデータ保存先を選択してください</div>
+          <div id="lf-settings-form"></div>
+        </div>
 
-    <!-- 成長ガイド -->
-    <div id="sp-l3" class="sub-pane" style="overflow-y:auto;padding:16px">
-      <div id="lf-guide-content"></div>
-    </div>
+        <!-- プラン -->
+        <div id="sp-l2" class="sub-pane ldp">
+          <div class="panel-title">ご利用プラン</div>
+          <div class="panel-sub">Ψ-生命体への完全アクセス</div>
+          <div id="lf-plan-content"></div>
+        </div>
 
-    <!-- 生命解析 -->
-    <div id="sp-l4" class="sub-pane" style="overflow-y:auto;padding:16px">
-      <div id="lf-bio-content"></div>
-    </div>
+        <!-- 成長ガイド -->
+        <div id="sp-l3" class="sub-pane ldp" style="overflow-y:auto;padding:16px">
+          <div id="lf-guide-content"></div>
+        </div>
+
+        <!-- 生命解析 -->
+        <div id="sp-l4" class="sub-pane ldp" style="overflow-y:auto;padding:16px">
+          <div id="lf-bio-content"></div>
+        </div>
+      </div><!-- /life-detail-side -->
+
+    </div><!-- /life-split -->
   </div>
 </div>
 
@@ -1663,6 +1691,19 @@ function swSub(main, sub) {
   if (sub === 'l0') { LIFE.start(); }
   if (sub === 'l3') { setTimeout(renderLifeGuide, 50); }
   if (sub === 'l4') { setTimeout(renderBioParams, 50); }
+}
+
+/* Switch detail pane in right panel (desktop) */
+function swLifeDetail(id) {
+  document.querySelectorAll('#life-detail-side .ldt').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('#life-detail-side .ldp').forEach(p => p.classList.remove('ldp-on'));
+  const ldt = document.getElementById('ldt-' + id);
+  if (ldt) ldt.classList.add('on');
+  const ldp = document.getElementById('sp-' + id);
+  if (ldp) ldp.classList.add('ldp-on');
+  if (id === 'l1') setTimeout(renderLifeSettings, 50);
+  if (id === 'l3') setTimeout(renderLifeGuide, 50);
+  if (id === 'l4') setTimeout(renderBioParams, 50);
 }
 
 /* ════════════════════════════════════
