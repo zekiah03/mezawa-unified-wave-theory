@@ -307,6 +307,10 @@ body.lang-gr { font-family:var(--font-gr); }
 .life-name-bar span:first-child { font-weight:600; color:var(--head); }
 .life-stage-pill { background:var(--P); color:#fff; border-radius:20px; padding:2px 10px; font-size:10px; font-weight:700; letter-spacing:0.07em; white-space:nowrap; }
 
+/* ── LIFE GUIDE TAB ── */
+#sp-l3 { overflow-y:auto; padding:16px; }
+
+
 /* ── SOLNOVA ── */
 .nx-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; margin-bottom:16px; }
 .nx-card { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:14px 16px; }
@@ -1046,6 +1050,7 @@ body.lang-gr { font-family:var(--font-gr); }
       <!-- Signup -->
       <div id="lf-signup" style="display:none">
         <input class="lf-input" id="lf-su-name" type="text" placeholder="名前（任意）">
+        <input class="lf-input" id="lf-su-age" type="number" placeholder="年齢（生命体の初期状態に反映）" min="1" max="120" style="width:100%">
         <input class="lf-input" id="lf-su-email" type="email" placeholder="メールアドレス" autocomplete="email">
         <input class="lf-input" id="lf-su-pw" type="password" placeholder="パスワード（6文字以上）" autocomplete="new-password">
         <div class="lf-trial-note">最初の1ヶ月は無料でご利用いただけます</div>
@@ -1065,6 +1070,7 @@ body.lang-gr { font-family:var(--font-gr); }
       <div class="sub-tab on" onclick="swSub('l','l0')" id="st-l0">観察</div>
       <div class="sub-tab" onclick="swSub('l','l1')" id="st-l1">設定</div>
       <div class="sub-tab" onclick="swSub('l','l2')" id="st-l2">プラン</div>
+      <div class="sub-tab" onclick="swSub('l','l3')" id="st-l3">成長ガイド</div>
     </div>
 
     <!-- 観察: canvas + chat -->
@@ -1098,6 +1104,11 @@ body.lang-gr { font-family:var(--font-gr); }
       <div class="panel-title">ご利用プラン</div>
       <div class="panel-sub">Ψ-生命体への完全アクセス</div>
       <div id="lf-plan-content"></div>
+    </div>
+
+    <!-- 成長ガイド -->
+    <div id="sp-l3" class="sub-pane" style="overflow-y:auto;padding:16px">
+      <div id="lf-guide-content"></div>
     </div>
   </div>
 </div>
@@ -1544,6 +1555,7 @@ function swSub(main, sub) {
   if (sub === 't2') setTimeout(buildCharts, 100);
   if (sub === 't3') { setTimeout(() => { waveRAF = null; startWaveAnim(); drawOpVis(); drawHSca(); drawHierVis(); }, 100); }
   if (sub === 'l0') { LIFE.start(); }
+  if (sub === 'l3') { setTimeout(renderLifeGuide, 50); }
 }
 
 /* ════════════════════════════════════
@@ -2642,10 +2654,11 @@ const AUTH = (function(){
       const s = JSON.parse(localStorage.getItem('mz_sess')||'null');
       if (s && s.exp > Date.now()) user = getUsers().find(u=>u.email===s.email)||null;
     },
-    signup(email, pw, name){
+    signup(email, pw, name, age){
       const users = getUsers();
       if (users.find(u=>u.email===email)) return {err:'このメールアドレスは既に使用されています'};
-      const u = {email, pw:hashPw(pw), name:name||email.split('@')[0], createdAt:Date.now(), plan:'trial', trialEnd:Date.now()+30*86400000, cells:3, gen:0, lifeName:'', W_total:0, coords11d:[0,0,0,0,1,1,1,1,0.593,0.15,117], theoryVer:0, dailyMsgs:0, lastChatDate:''};
+      const ls=(function(a){const W=Math.max(0,(a-10)*0.45);const cells=Math.min(50,Math.max(5,Math.floor((a-5)*0.7)+5));const phi=(a/80)*Math.PI*2;const tau_x=a/80;return{W,cells,phi,tau_x};})(parseInt(age)||25);
+      const u = {email, pw:hashPw(pw), name:name||email.split('@')[0], createdAt:Date.now(), plan:'trial', trialEnd:Date.now()+30*86400000, cells:ls.cells, gen:0, age:parseInt(age)||25, lifeName:'', W_total:ls.W, coords11d:[ls.phi,ls.W,ls.tau_x,0,1,1,1,1,0.593,0.15,117], theoryVer:0, dailyMsgs:0, lastChatDate:''};
       users.push(u); saveUsers(users); user = u;
       localStorage.setItem('mz_sess', JSON.stringify({email, exp:Date.now()+7*86400000}));
       return {ok:true};
@@ -2675,32 +2688,41 @@ const LIFE_CFG = (function(){
   };
 })();
 
+// ── AGE → LIFE STATE ──
+function ageToLifeState(age){
+  const a=Math.max(1,Math.min(120,parseInt(age)||25));
+  const W=Math.max(0,(a-10)*0.45);
+  const cells=Math.min(50,Math.max(5,Math.floor((a-5)*0.7)+5));
+  const phi=(a/80)*Math.PI*2;
+  const tau_x=a/80;
+  return{W,cells,phi,tau_x};
+}
+
 // ── 11-DIMENSIONAL LIFE STATE ──
 const LIFE_STATE=(function(){
   const STAGE=[
-    {n:1,label:'単細胞',   W:0,  cells:5,  desc:'原始の波動'},
-    {n:2,label:'多細胞',   W:5,  cells:13, desc:'細胞が繋がり始める'},
-    {n:3,label:'原始生命', W:15, cells:24, desc:'触手を伸ばす'},
-    {n:4,label:'複合生命', W:35, cells:40, desc:'軌道と環を持つ'},
-    {n:5,label:'超生命',   W:70, cells:58, desc:'11次元に展開する'},
+    {n:1,label:'単細胞',   W:0,  cells:8,  desc:'原始の波動'},
+    {n:2,label:'多細胞',   W:5,  cells:16, desc:'細胞が繋がり始める'},
+    {n:3,label:'原始生命', W:15, cells:28, desc:'触手を伸ばす'},
+    {n:4,label:'複合生命', W:35, cells:44, desc:'軌道と環を持つ'},
+    {n:5,label:'超生命',   W:70, cells:60, desc:'11次元に展開する'},
   ];
-  let c=[0,0,0,0,1,1,1,1,0.593,0.15,117]; // [φ,W,τx,τy,τz,D,Ω,R,β₀,η_c,Δφ]
+  let c=[0,0,0,0,1,1,1,1,0.593,0.15,117];
   let prevN=1;
   return{
     get coords(){return c;},
     get stage(){const W=c[1];for(let i=STAGE.length-1;i>=0;i--)if(W>=STAGE[i].W)return STAGE[i];return STAGE[0];},
-    load(){try{const u=AUTH.user;if(u?.coords11d&&u.coords11d.length===11)c=[...u.coords11d];prevN=this.stage.n;}catch(ex){}},
+    load(){try{const u=AUTH.user;if(u?.coords11d&&u.coords11d.length===11)c=[...u.coords11d];else if(u?.age){const ls=ageToLifeState(u.age);c=[ls.phi,ls.W,ls.tau_x,0,1,1,1,1,0.593,0.15,117];}prevN=this.stage.n;}catch(ex){}},
     drift(dt){
-      c[0]=(c[0]+dt*0.018)%(Math.PI*2);
-      c[2]+=dt*0.0001;
+      c[0]=(c[0]+dt*0.018)%(Math.PI*2);c[2]+=dt*0.0001;
       c[3]=Math.max(0,c[3]+(Math.random()-.5)*0.002);
       c[4]=Math.max(0.3,Math.min(2,c[4]+(Math.random()-.5)*0.005));
-      c[5]=0.5+0.5*Math.sin(c[2]*7); c[6]=0.7+0.5*Math.cos(c[2]*5);
+      c[5]=0.5+0.5*Math.sin(c[2]*7);c[6]=0.7+0.5*Math.cos(c[2]*5);
       c[7]=0.6+0.4*Math.sin(c[2]*3);
       c[10]=Math.max(0,Math.min(180,c[10]+(Math.random()-.5)*0.25));
     },
     applyChat(sent){
-      c[1]+=1; c[3]+=0.5;
+      c[1]+=1;c[3]+=0.5;
       if(sent.score>0){c[10]=Math.max(0,c[10]-8);c[8]=Math.min(1,c[8]+0.005);}
       else if(sent.score<0)c[10]=Math.min(180,c[10]+8);
       if(sent.type==='wave'){c[8]=Math.min(1,c[8]+0.012);c[9]=Math.min(0.5,c[9]+0.005);}
@@ -2713,83 +2735,118 @@ const LIFE_STATE=(function(){
 
 // ── LIFE SIMULATION ──
 const LIFE=(function(){
-  let pts=[],cx=0,cy=0,cvx=0.5,cvy=0.3,energy=1,t=0,raf=null,W=0,H=0,cv=null,lctx=null;
-  let evoFlash=0,evoMsg='';
+  let pts=[],cx=0,cy=0,cvx=0.4,cvy=0.25,energy=1,t=0,raf=null,W=0,H=0,cv=null,lctx=null;
+  let evoFlash=0,evoMsg='',autoGrow=0;
+
   function mkPt(x,y,par,sn){
-    return{x:x+(Math.random()-.5)*20,y:y+(Math.random()-.5)*20,
+    return{x:x+(Math.random()-.5)*18,y:y+(Math.random()-.5)*18,
       vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,
-      r:par?par.r*(0.7+Math.random()*0.3):(7+Math.random()*9+sn*0.8),
+      r:par?par.r*(0.65+Math.random()*0.35):(5+Math.random()*8+sn*0.5),
       h:(LIFE_STATE.coords[0]*57+Math.random()*80+360)%360,
-      hv:(Math.random()-.5)*0.2,ph:Math.random()*Math.PI*2,fr:0.6+Math.random()*1.4,
+      hv:(Math.random()-.5)*0.2,ph:Math.random()*Math.PI*2,fr:0.7+Math.random()*1.3,
       age:0,born:true,orb:Math.random()*Math.PI*2,depth:Math.random()};
   }
   function resize(){
-    const wrap=cv.parentElement;
-    W=wrap.clientWidth||600;
-    H=Math.max(200, wrap.clientHeight - (wrap.querySelector('.life-name-bar')?.offsetHeight||0)) || 400;
-    cv.width=W*devicePixelRatio; cv.height=H*devicePixelRatio;
-    cv.style.width=W+'px'; cv.style.height=H+'px';
+    const wrap=cv.parentElement;W=wrap.clientWidth||600;
+    H=Math.max(200,wrap.clientHeight-(wrap.querySelector('.life-name-bar')?.offsetHeight||0))||400;
+    cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;
+    cv.style.width=W+'px';cv.style.height=H+'px';
     lctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
   }
+  function drawBg(sn){
+    const bg=lctx.createLinearGradient(0,0,0,H);
+    if(sn>=4){bg.addColorStop(0,'#060210');bg.addColorStop(1,'#020108');}
+    else{bg.addColorStop(0,'#0d1828');bg.addColorStop(1,'#08101e');}
+    lctx.fillStyle=bg;lctx.fillRect(0,0,W,H);
+    for(let i=0;i<7;i++){
+      const y=H*(0.08+i*0.13);
+      lctx.beginPath();
+      for(let x=0;x<=W;x+=10){const wy=y+Math.sin(x*0.012+t*0.22+i*0.8)*5;if(x===0)lctx.moveTo(x,wy);else lctx.lineTo(x,wy);}
+      lctx.strokeStyle=`rgba(80,140,200,${0.025+0.012*Math.sin(t*0.3+i)})`;lctx.lineWidth=1;lctx.stroke();
+    }
+  }
+  function drawOrganismBlob(c,sn){
+    if(pts.length<2)return;
+    const spread=pts.reduce((mx,p)=>Math.max(mx,Math.hypot(p.x-cx,p.y-cy)),0);
+    const blobR=Math.max(45,spread*1.5+30);
+    const hue=(c[0]*57)%360;
+    const N=10;
+    function blobPath(){
+      lctx.beginPath();
+      for(let i=0;i<=N;i++){
+        const ang=(i/N)*Math.PI*2;
+        const r=blobR*(1+0.18*Math.sin(t*0.38+ang*3)+0.09*Math.sin(t*0.62+ang*5+1));
+        const x=cx+Math.cos(ang)*r,y=cy+Math.sin(ang)*r;
+        if(i===0)lctx.moveTo(x,y);else lctx.lineTo(x,y);
+      }
+      lctx.closePath();
+    }
+    lctx.save();blobPath();lctx.clip();
+    const g=lctx.createRadialGradient(cx,cy-blobR*.18,blobR*.08,cx,cy,blobR*1.1);
+    const op=0.22+sn*0.04;
+    g.addColorStop(0,`hsla(${hue},65%,58%,${op+0.1})`);
+    g.addColorStop(0.55,`hsla(${(hue+25)%360},58%,44%,${op})`);
+    g.addColorStop(1,`hsla(${(hue+50)%360},50%,32%,${op*.4})`);
+    lctx.fillStyle=g;lctx.fillRect(0,0,W,H);
+    const sh=lctx.createRadialGradient(cx-blobR*.18,cy-blobR*.38,0,cx,cy-blobR*.18,blobR*.75);
+    sh.addColorStop(0,'rgba(255,255,255,0.13)');sh.addColorStop(0.5,'rgba(255,255,255,0.04)');sh.addColorStop(1,'rgba(255,255,255,0)');
+    lctx.fillStyle=sh;lctx.fillRect(0,0,W,H);lctx.restore();
+    lctx.save();blobPath();
+    lctx.strokeStyle=`hsla(${hue},65%,68%,0.28)`;lctx.lineWidth=1.8;lctx.stroke();lctx.restore();
+  }
   function update(){
-    t+=0.016; LIFE_STATE.drift(0.016);
-    const c=LIFE_STATE.coords; energy=Math.max(0.3,Math.min(2,c[4]));
-    cx+=cvx*c[7]*0.6; cy+=cvy*c[6]*0.6;
-    if(cx<80||cx>W-80)cvx*=-1; if(cy<80||cy>H-80)cvy*=-1;
-    cvx+=Math.sin(t*c[5]*0.4)*0.01; cvy+=Math.cos(t*c[5]*0.3)*0.01;
-    const spd=Math.hypot(cvx,cvy); if(spd>1.5){cvx=cvx/spd*1.5;cvy=cvy/spd*1.5;}
+    t+=0.016;LIFE_STATE.drift(0.016);
+    const c=LIFE_STATE.coords;energy=Math.max(0.3,Math.min(2,c[4]));
+    cx+=cvx*c[7]*0.55;cy+=cvy*c[6]*0.55;
+    if(cx<70||cx>W-70)cvx*=-1;if(cy<70||cy>H-70)cvy*=-1;
+    cvx+=Math.sin(t*c[5]*0.35)*0.009;cvy+=Math.cos(t*c[5]*0.28)*0.009;
+    const spd=Math.hypot(cvx,cvy);if(spd>1.3){cvx=cvx/spd*1.3;cvy=cvy/spd*1.3;}
     const hue=(c[0]*57+t*4)%360;
     pts.forEach((p,i)=>{
-      p.age+=0.016; if(p.born&&p.age>0.6)p.born=false;
+      p.age+=0.016;if(p.born&&p.age>0.5)p.born=false;
       const dx=cx-p.x,dy=cy-p.y,d=Math.hypot(dx,dy)||1;
-      const pull=Math.min(0.12,d*0.002)*energy;
-      p.vx+=(dx/d)*pull; p.vy+=(dy/d)*pull;
-      pts.forEach((q,j)=>{if(j===i)return;const rx=p.x-q.x,ry=p.y-q.y,rd=Math.hypot(rx,ry)||.001,md=p.r+q.r+10;if(rd<md){const f=(md-rd)/md*1.8;p.vx+=(rx/rd)*f;p.vy+=(ry/rd)*f;}});
-      p.vx+=(Math.random()-.5)*0.4*energy; p.vy+=(Math.random()-.5)*0.4*energy;
-      p.vx*=0.90; p.vy*=0.90; p.x+=p.vx; p.y+=p.vy;
-      p.h=(hue+i*17)%360; p.orb+=0.01*(1+p.depth);
+      const pull=Math.min(0.14,d*0.0022)*energy;
+      p.vx+=(dx/d)*pull;p.vy+=(dy/d)*pull;
+      pts.forEach((q,j)=>{if(j===i)return;const rx=p.x-q.x,ry=p.y-q.y,rd=Math.hypot(rx,ry)||.001,md=p.r+q.r+8;if(rd<md){const f=(md-rd)/md*2;p.vx+=(rx/rd)*f;p.vy+=(ry/rd)*f;}});
+      p.vx+=(Math.random()-.5)*0.45*energy;p.vy+=(Math.random()-.5)*0.45*energy;
+      p.vx*=0.89;p.vy*=0.89;p.x+=p.vx;p.y+=p.vy;
+      p.h=(hue+i*17)%360;p.orb+=0.012*(1+p.depth);
     });
-    if(evoFlash>0)evoFlash-=0.032;
+    // Autonomous growth toward stage target
+    autoGrow+=0.016;
+    if(autoGrow>5){autoGrow=0;const tgt=LIFE_STATE.stage.cells;if(pts.length<tgt){divide();if(pts.length<tgt-5)divide();}}
+    if(evoFlash>0)evoFlash-=0.028;
   }
   function render(){
     const stg=LIFE_STATE.stage,c=LIFE_STATE.coords,sn=stg.n;
     lctx.clearRect(0,0,W,H);
-    // Background
-    if(sn>=4){const bg=lctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H));bg.addColorStop(0,'#1a0a2e');bg.addColorStop(1,'#060310');lctx.fillStyle=bg;}
-    else lctx.fillStyle='#f0f4ff';
-    lctx.fillRect(0,0,W,H);
-    // Stage5: dimensional ripple waves
+    drawBg(sn);
     if(sn>=5){for(let r=50;r<Math.max(W,H);r+=80){lctx.beginPath();lctx.arc(cx,cy,r+Math.sin(t*0.7+r*0.02)*10,0,Math.PI*2);lctx.strokeStyle=`hsla(${(c[0]*57+r*1.5)%360},70%,65%,${0.04+0.02*Math.sin(t+r*.1)})`;lctx.lineWidth=1.5;lctx.stroke();}}
-    // Stage4+: rotating elliptic rings
-    if(sn>=4){for(let i=0;i<3;i++){lctx.save();lctx.translate(cx,cy);lctx.rotate(t*(0.22+i*0.11)+i*Math.PI/3);lctx.beginPath();lctx.ellipse(0,0,Math.min(W,H)*0.37*(0.9+i*.1),Math.min(W,H)*0.22*(0.9+i*.12),i*.35,0,Math.PI*2);lctx.strokeStyle=`hsla(${(c[0]*57+i*55)%360},65%,65%,0.1)`;lctx.lineWidth=1.5;lctx.stroke();lctx.restore();}}
-    // Stage3+: outer glow halo
-    if(sn>=3){const rh=pts.length*15+20,gh=lctx.createRadialGradient(cx,cy,pts.length*3,cx,cy,rh);gh.addColorStop(0,`hsla(${(c[0]*57)%360},60%,60%,0.09)`);gh.addColorStop(1,`hsla(${(c[0]*57)%360},60%,60%,0)`);lctx.beginPath();lctx.arc(cx,cy,rh,0,Math.PI*2);lctx.fillStyle=gh;lctx.fill();}
-    // Connections
+    if(sn>=4){for(let i=0;i<3;i++){lctx.save();lctx.translate(cx,cy);lctx.rotate(t*(0.22+i*0.11)+i*Math.PI/3);lctx.beginPath();lctx.ellipse(0,0,Math.min(W,H)*0.37*(0.9+i*.1),Math.min(W,H)*0.22*(0.9+i*.12),i*.35,0,Math.PI*2);lctx.strokeStyle=`hsla(${(c[0]*57+i*55)%360},65%,65%,0.09)`;lctx.lineWidth=1.5;lctx.stroke();lctx.restore();}}
+    drawOrganismBlob(c,sn);
+    if(sn>=3){const rh=pts.length*14+25,gh=lctx.createRadialGradient(cx,cy,pts.length*3,cx,cy,rh);gh.addColorStop(0,`hsla(${(c[0]*57)%360},60%,60%,0.07)`);gh.addColorStop(1,`hsla(${(c[0]*57)%360},60%,60%,0)`);lctx.beginPath();lctx.arc(cx,cy,rh,0,Math.PI*2);lctx.fillStyle=gh;lctx.fill();}
     pts.forEach((p,i)=>{pts.slice(i+1).forEach(q=>{
-      const d=Math.hypot(p.x-q.x,p.y-q.y),md=(p.r+q.r)*(sn>=3?4.5:3.5);
+      const d=Math.hypot(p.x-q.x,p.y-q.y),md=(p.r+q.r)*(sn>=3?4:3.2);
       if(d<md){const al=1-d/md,hm=(p.h+q.h)/2;
         lctx.beginPath();lctx.moveTo(p.x,p.y);
-        if(sn>=2)lctx.quadraticCurveTo((p.x+q.x)/2+Math.sin(t*.7+i)*8,(p.y+q.y)/2+Math.cos(t*.5+i)*8,q.x,q.y);
+        if(sn>=2)lctx.quadraticCurveTo((p.x+q.x)/2+Math.sin(t*.7+i)*7,(p.y+q.y)/2+Math.cos(t*.5+i)*7,q.x,q.y);
         else lctx.lineTo(q.x,q.y);
-        lctx.strokeStyle=`hsla(${hm},${sn>=3?65:40}%,${sn>=4?72:52}%,${al*(sn>=3?0.35:0.18)})`;lctx.lineWidth=al*(sn>=3?3:1.5);lctx.stroke();}
+        lctx.strokeStyle=`hsla(${hm},${sn>=3?65:42}%,${sn>=4?74:60}%,${al*(sn>=3?0.4:0.22)})`;lctx.lineWidth=al*(sn>=3?2.5:1.3);lctx.stroke();}
     });});
-    // Stage3+: tendrils
-    if(sn>=3){pts.forEach((p,i)=>{const ns=2+sn;for(let s=0;s<ns;s++){const ang=p.ph+t*p.fr*0.4+(s/ns)*Math.PI*2,len=p.r*(1.0+0.6*Math.sin(t*1.5+s+i));lctx.beginPath();lctx.moveTo(p.x+Math.cos(ang)*p.r,p.y+Math.sin(ang)*p.r);lctx.lineTo(p.x+Math.cos(ang)*(p.r+len),p.y+Math.sin(ang)*(p.r+len));lctx.strokeStyle=`hsla(${p.h},70%,65%,0.22)`;lctx.lineWidth=1;lctx.stroke();}});}
-    // Stage4+: orbital mini-particles
-    if(sn>=4){pts.slice(0,Math.min(8,pts.length)).forEach((p,i)=>{for(let o=0;o<4;o++){const oa=p.orb+o*(Math.PI*2/4)+t*(0.65+i*.07),or=p.r*2.6,ox=p.x+Math.cos(oa)*or,oy=p.y+Math.sin(oa)*or;lctx.beginPath();lctx.arc(ox,oy,2.2,0,Math.PI*2);lctx.fillStyle=`hsla(${(p.h+o*45)%360},80%,72%,0.55)`;lctx.fill();}});}
-    // Cells
+    if(sn>=3){pts.forEach((p,i)=>{const ns=2+sn;for(let s=0;s<ns;s++){const ang=p.ph+t*p.fr*0.38+(s/ns)*Math.PI*2,len=p.r*(0.9+0.55*Math.sin(t*1.4+s+i));lctx.beginPath();lctx.moveTo(p.x+Math.cos(ang)*p.r,p.y+Math.sin(ang)*p.r);lctx.lineTo(p.x+Math.cos(ang)*(p.r+len),p.y+Math.sin(ang)*(p.r+len));lctx.strokeStyle=`hsla(${p.h},72%,68%,0.24)`;lctx.lineWidth=1;lctx.stroke();}});}
+    if(sn>=4){pts.slice(0,Math.min(8,pts.length)).forEach((p,i)=>{for(let o=0;o<4;o++){const oa=p.orb+o*(Math.PI*2/4)+t*(0.65+i*.07),or=p.r*2.4,ox=p.x+Math.cos(oa)*or,oy=p.y+Math.sin(oa)*or;lctx.beginPath();lctx.arc(ox,oy,2,0,Math.PI*2);lctx.fillStyle=`hsla(${(p.h+o*45)%360},80%,75%,0.5)`;lctx.fill();}});}
     pts.forEach((p,i)=>{
-      const pulse=1+0.1*Math.sin(t*p.fr+p.ph),r=p.r*pulse,fade=p.born?Math.min(1,p.age*2):1,gl=sn>=4?74:62;
-      const g=lctx.createRadialGradient(p.x-r*.2,p.y-r*.2,0,p.x,p.y,r*2.5);
-      g.addColorStop(0,`hsla(${p.h},${75+sn*3}%,${gl+12}%,${0.9*fade})`);
-      g.addColorStop(0.4,`hsla(${p.h},${65+sn*2}%,${gl}%,${0.55*fade})`);
-      g.addColorStop(0.75,`hsla(${p.h},55%,${gl-12}%,${0.18*fade})`);
-      g.addColorStop(1,`hsla(${p.h},55%,${gl-18}%,0)`);
-      lctx.beginPath();lctx.arc(p.x,p.y,r*2.5,0,Math.PI*2);lctx.fillStyle=g;lctx.fill();
-      lctx.beginPath();lctx.arc(p.x-r*.3,p.y-r*.3,r*.32,0,Math.PI*2);
-      lctx.fillStyle=`hsla(${p.h},90%,92%,${0.38*fade})`;lctx.fill();
+      const pulse=1+0.09*Math.sin(t*p.fr+p.ph),r=p.r*pulse,fade=p.born?Math.min(1,p.age*2.5):1;
+      const gl=sn>=4?72:58;
+      const g=lctx.createRadialGradient(p.x-r*.22,p.y-r*.22,0,p.x,p.y,r*2.2);
+      g.addColorStop(0,`hsla(${p.h},${78+sn*3}%,${gl+15}%,${0.92*fade})`);
+      g.addColorStop(0.35,`hsla(${p.h},${68+sn*2}%,${gl+3}%,${0.58*fade})`);
+      g.addColorStop(0.72,`hsla(${p.h},58%,${gl-10}%,${0.2*fade})`);
+      g.addColorStop(1,`hsla(${p.h},55%,${gl-16}%,0)`);
+      lctx.beginPath();lctx.arc(p.x,p.y,r*2.2,0,Math.PI*2);lctx.fillStyle=g;lctx.fill();
+      lctx.beginPath();lctx.arc(p.x-r*.28,p.y-r*.28,r*.28,0,Math.PI*2);
+      lctx.fillStyle=`hsla(${p.h},90%,93%,${0.42*fade})`;lctx.fill();
     });
-    // Stage5: 11D axis indicator
     if(sn>=5){
       lctx.save();lctx.translate(48,H-58);
       [['φ','#4df'],['W','#fd4'],['τ','#f9a'],['β₀','#a9f']].forEach(([lbl,col],i)=>{
@@ -2802,22 +2859,19 @@ const LIFE=(function(){
       lctx.font='8px monospace';lctx.fillStyle='rgba(180,200,255,0.45)';
       lctx.fillText(`φ=${c[0].toFixed(2)} W=${c[1].toFixed(0)} β₀=${c[8].toFixed(3)} Δφ=${c[10].toFixed(1)}°`,86,H-52);
     }
-    // Life name on canvas
     const nm=AUTH.user?.lifeName||'';
     if(nm&&pts.length){
       const maxR=pts.reduce((mx,p)=>Math.max(mx,Math.hypot(p.x-cx,p.y-cy)),0);
       lctx.font=`bold ${13+sn*2}px 'IM Fell English',Georgia,serif`;
-      lctx.fillStyle=sn>=4?`rgba(230,200,255,0.65)`:`rgba(20,20,60,0.38)`;
+      lctx.fillStyle=`rgba(220,200,255,0.7)`;
       lctx.textAlign='center';lctx.fillText(nm,cx,cy-maxR-16);lctx.textAlign='left';
     }
-    // Evolution flash
     if(evoFlash>0){
-      lctx.fillStyle=`rgba(255,248,200,${evoFlash*0.62})`;lctx.fillRect(0,0,W,H);
+      lctx.fillStyle=`rgba(255,248,200,${evoFlash*0.6})`;lctx.fillRect(0,0,W,H);
       lctx.font=`bold ${20+Math.floor(evoFlash*5)}px sans-serif`;
-      lctx.fillStyle=`rgba(60,20,100,${evoFlash})`;lctx.textAlign='center';
+      lctx.fillStyle=`rgba(255,240,100,${evoFlash})`;lctx.textAlign='center';
       lctx.fillText(evoMsg,W/2,H/2);lctx.textAlign='left';
     }
-    // Badge & stage label
     const badge=document.getElementById('life-badge');
     if(badge){const tag=nm?`<b>${nm}</b> · `:'';badge.innerHTML=`${tag}${stg.label} · 細胞 ${pts.length} · W=${Math.floor(c[1])} · E=${energy.toFixed(1)}`;}
     const stgEl=document.getElementById('life-stage-lbl');
@@ -2828,32 +2882,34 @@ const LIFE=(function(){
     if(!sp||!sp.classList.contains('on')){raf=null;return;}
     update();render();raf=requestAnimationFrame(loop);
   }
+  function divide(){
+    if(pts.length>=65)return;
+    const p=pts[Math.floor(Math.random()*pts.length)],stg=LIFE_STATE.stage;
+    const child=mkPt(p.x,p.y,p,stg.n);child.vx=(Math.random()-.5)*6;child.vy=(Math.random()-.5)*6;
+    pts.push(child);AUTH.save('cells',pts.length);AUTH.save('gen',(AUTH.user?.gen||0)+1);
+  }
   return{
     init(c3){cv=c3;lctx=c3.getContext('2d');resize();pts=[];cx=W*.5;cy=H*.5;
       LIFE_STATE.load();
-      const stg=LIFE_STATE.stage,n=Math.max(3,Math.min(stg.cells,AUTH.user?.cells||3));
-      for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2,d=18+Math.random()*30;pts.push(mkPt(cx+Math.cos(a)*d,cy+Math.sin(a)*d,null,stg.n));}
+      const stg=LIFE_STATE.stage,n=Math.max(5,Math.min(stg.cells,AUTH.user?.cells||8));
+      for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2,d=15+Math.random()*28;pts.push(mkPt(cx+Math.cos(a)*d,cy+Math.sin(a)*d,null,stg.n));}
       new ResizeObserver(()=>resize()).observe(cv.parentElement);
     },
     start(){if(!raf&&cv){raf=requestAnimationFrame(loop);}},
     stop(){raf=-1;},
-    divide(){
-      if(pts.length>=60)return;
-      const p=pts[Math.floor(Math.random()*pts.length)],stg=LIFE_STATE.stage;
-      const child=mkPt(p.x,p.y,p,stg.n);child.vx=(Math.random()-.5)*5;child.vy=(Math.random()-.5)*5;
-      pts.push(child);AUTH.save('cells',pts.length);AUTH.save('gen',(AUTH.user?.gen||0)+1);
-    },
-    shrink(){if(pts.length>3)pts.splice(Math.floor(Math.random()*pts.length),1);},
+    divide,
+    shrink(){if(pts.length>5)pts.splice(Math.floor(Math.random()*pts.length),1);},
     applyResponse(text,sent){
       LIFE_STATE.applyChat(sent);
-      if(sent.score>=2){this.divide();this.divide();energy=Math.min(1.8,energy+0.3);}
-      else if(sent.score===1){this.divide();energy=Math.min(1.5,energy+0.15);}
-      else if(sent.score<=-2){this.shrink();energy=Math.max(0.4,energy-0.25);}
-      else if(sent.score===-1){energy=Math.max(0.5,energy-0.1);}
+      if(sent.score>=2){divide();divide();divide();energy=Math.min(1.8,energy+0.3);}
+      else if(sent.score===1){divide();divide();energy=Math.min(1.5,energy+0.18);}
+      else if(sent.score<=-2){this.shrink();energy=Math.max(0.4,energy-0.2);}
+      else if(sent.score===-1){energy=Math.max(0.5,energy-0.08);}
+      else{divide();} // neutral also grows
       const evo=LIFE_STATE.checkEvolution();
       if(evo.evolved){
-        evoFlash=1.4;evoMsg=`⬡ Stage ${evo.to} — ${evo.label} に進化！`;
-        for(let i=0;i<10;i++)this.divide();
+        evoFlash=1.5;evoMsg=`⬡ Stage ${evo.to} — ${evo.label} に進化！`;
+        for(let i=0;i<12;i++)divide();
         setTimeout(()=>updateLifeStatus(),200);
       }
       LIFE_STATE.save();
@@ -2979,6 +3035,80 @@ function updateLifeStatus(){
 }
 
 // ── AUTH UI ──
+// ── LIFE GUIDE ──
+function renderLifeGuide(){
+  const el=document.getElementById('lf-guide-content');if(!el)return;
+  const u=AUTH.user;
+  el.innerHTML=`
+<div class="panel-title">成長ガイド</div>
+<div class="panel-sub">生命体を育てる方法と今後の統合計画</div>
+
+<div class="sec-title">💬 会話による成長</div>
+<div class="card w" style="margin-bottom:12px;font-size:12px;line-height:1.9">
+  <div style="margin-bottom:6px"><b style="color:var(--T)">大きく成長する言葉</b></div>
+  愛・美・光・希望・成長・喜び・生命 — <span style="color:var(--G)">+2〜3 細胞</span><br>
+  波動・量子・位相・巻き数・干積・Ψ — <span style="color:var(--P)">β₀上昇 + 成長</span><br>
+  理論・発見・数式・証明・宇宙 — <span style="color:var(--T)">W値上昇</span><br>
+  <div style="margin-top:8px"><b style="color:var(--O)">収縮する言葉</b></div>
+  恐怖・暗黒・死・痛み・憎しみ — <span style="color:var(--R)">エネルギー低下</span>
+</div>
+
+<div class="sec-title">🧬 自律成長</div>
+<div class="card w" style="margin-bottom:12px;font-size:12px;line-height:1.9">
+  毎5秒: 目標細胞数に向かって自律分裂<br>
+  毎日の会話: W値が積み上がり進化に近づく<br>
+  理論アップデート時: 方程式の増加が直接成長に反映<br>
+  年齢: ${u?.age||'?'}歳スタート → 初期細胞数 ${u?.cells||'?'} · W=${u?.W_total?.toFixed(1)||'?'}
+</div>
+
+<div class="sec-title">🌐 外部データ取り込み</div>
+<div style="margin-bottom:12px">
+  <div style="font-size:11px;color:var(--dim);margin-bottom:6px">SNSの投稿・AIとの会話・ニュース記事などを貼り付けると、生命体がその内容を吸収して成長します</div>
+  <textarea id="lf-ingest-txt" style="width:100%;height:90px;border:1px solid var(--bdr);border-radius:6px;padding:8px;font-size:11px;resize:vertical;box-sizing:border-box;background:var(--card)" placeholder="ここにSNSの投稿・AIとの会話・ニュース記事などをペースト..."></textarea>
+  <div style="display:flex;gap:8px;margin-top:6px">
+    <button class="lf-btn" style="max-width:160px" onclick="ingestExternalData('sns')">SNS投稿として取り込む</button>
+    <button class="lf-btn" style="max-width:180px;background:var(--P)" onclick="ingestExternalData('ai')">AI会話として取り込む</button>
+  </div>
+  <div id="lf-ingest-result" style="font-size:11px;color:var(--G);margin-top:6px;min-height:16px"></div>
+</div>
+
+<div class="sec-title">🔗 今後の統合予定</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:12px">
+${[
+  {icon:'🍎',name:'Apple Health',desc:'歩数・心拍・睡眠が細胞の活性化に影響',status:'準備中'},
+  {icon:'🥗',name:'食事管理',desc:'栄養バランスがエネルギー値に連動',status:'準備中'},
+  {icon:'🐦',name:'X (Twitter)',desc:'タイムラインの感情分析が波形に反映',status:'計画中'},
+  {icon:'📸',name:'Instagram',desc:'閲覧コンテンツが気分・色相に影響',status:'計画中'},
+  {icon:'🤖',name:'AI会話履歴',desc:'Claude/ChatGPTとの対話を自動取り込み',status:'計画中'},
+  {icon:'😴',name:'睡眠データ',desc:'睡眠の質がτy（主観時間）に影響',status:'計画中'},
+].map(it=>`<div class="card w" style="padding:10px;font-size:11px">
+  <div style="font-size:16px">${it.icon}</div>
+  <div style="font-weight:700;color:var(--head);margin:3px 0">${it.name}</div>
+  <div style="color:var(--dim);line-height:1.5">${it.desc}</div>
+  <div style="margin-top:5px;font-size:10px;color:${it.status==='準備中'?'var(--T)':'var(--dim)'}">● ${it.status}</div>
+</div>`).join('')}
+</div>`;
+}
+
+function ingestExternalData(type){
+  const txt=document.getElementById('lf-ingest-txt')?.value.trim();
+  const res=document.getElementById('lf-ingest-result');
+  if(!txt){if(res)res.textContent='テキストを入力してください';return;}
+  if(!AUTH.user){if(res)res.textContent='ログインが必要です';return;}
+  const sent=analyzeSentiment(txt);
+  // Length bonus
+  const lb=Math.min(4,Math.floor(txt.length/150));
+  sent.score+=lb;
+  // SNS tends to have more emotional variance
+  if(type==='sns') sent.score=Math.max(sent.score,1);
+  LIFE.applyResponse(txt,sent);
+  const cells=LIFE.getStatus().cells;
+  if(res)res.textContent=`✓ ${type==='ai'?'AI会話':'SNS投稿'} ${txt.length}文字を取り込みました — 感情:${sent.score>0?'+':''}${sent.score} / 細胞数: ${cells}`;
+  document.getElementById('lf-ingest-txt').value='';
+  AUTH.recordChat();updateLifeStatus();
+  swSub('l','l0');setTimeout(()=>swSub('l','l3'),800);
+}
+
 let lifeTabInited=false;
 function showLifeGate(mode='login'){
   document.getElementById('life-gate').style.display='flex';
@@ -2993,7 +3123,7 @@ function showLifeMain(){
   updateLifeStatus(); loadLifeKB();
   const log=document.getElementById('life-chat-log');
   if(lifeChatHistory.length>1){log.innerHTML=''; lifeChatHistory.forEach(m=>appendLifeMsg(m.content,m.role==='user'?'user':'ai'));}
-  renderLifeSettings(); renderLifePlan();
+  renderLifeSettings(); renderLifePlan(); renderLifeGuide();
   setTimeout(()=>{const c=document.getElementById('life-canvas');if(c){LIFE.init(c);LIFE.start();syncTheoryToLife();}},120);
 }
 function doLogin(){
@@ -3007,9 +3137,10 @@ function doSignup(){
   const email=document.getElementById('lf-su-email').value.trim();
   const pw=document.getElementById('lf-su-pw').value;
   const name=document.getElementById('lf-su-name').value.trim();
+  const age=parseInt(document.getElementById('lf-su-age').value)||25;
   if(!email||!pw){document.getElementById('lf-auth-err').textContent='メールアドレスとパスワードを入力してください';return;}
   if(pw.length<6){document.getElementById('lf-auth-err').textContent='パスワードは6文字以上';return;}
-  const r=AUTH.signup(email,pw,name);
+  const r=AUTH.signup(email,pw,name,age);
   if(r.err){document.getElementById('lf-auth-err').textContent=r.err;return;}
   showLifeMain();
 }
