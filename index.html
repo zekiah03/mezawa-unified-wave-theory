@@ -469,6 +469,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="tab" onclick="sw('n')" id="tab-n"><span class="tab-lbl">意識</span></div>
   <div class="tab" onclick="sw('m')" id="tab-m"><span class="tab-lbl">学問</span></div>
   <div class="tab" onclick="sw('l')" id="tab-l"><span class="tab-lbl">生命</span></div>
+  <div class="tab" onclick="sw('h')" id="tab-h"><span class="tab-lbl">習慣</span></div>
   <div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
     <button class="lang-btn" onclick="setLang('en')">English</button>
@@ -486,6 +487,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="si" onclick="sw('m')" title="学問">学</div>
   <div class="sep"></div>
   <div class="si" onclick="sw('l')" title="Ψ-生命体">生</div>
+  <div class="si" onclick="sw('h')" title="習慣">習</div>
 </div>
 
 <div id="main">
@@ -1120,6 +1122,37 @@ body.lang-gr { font-family:var(--font-gr); }
   </div>
 </div>
 
+<!-- HABIT TAB — 習慣 -->
+<div id="p-h" class="pn scroll" style="padding:0;overflow-y:auto">
+  <div style="max-width:600px;margin:0 auto;padding:24px 20px">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div>
+        <div style="font:700 20px 'Noto Sans JP',sans-serif;color:var(--fg)">習慣</div>
+        <div style="font:13px sans-serif;color:var(--muted);margin-top:2px">継続が生命体を育てる — 習慣が Ψ-生命体に直結</div>
+      </div>
+      <div id="habit-score-ring" style="width:56px;height:56px;flex-shrink:0"></div>
+    </div>
+    <!-- Life link preview bar -->
+    <div id="habit-life-bar" style="background:var(--srf);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;margin-bottom:18px;font:12px sans-serif;color:var(--muted);display:flex;gap:12px;align-items:center;flex-wrap:wrap"></div>
+    <!-- Habit list -->
+    <div id="habit-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    <!-- Add habit -->
+    <div style="margin-top:18px">
+      <button onclick="showHabitPicker()" style="width:100%;background:transparent;border:1.5px dashed var(--bdr);border-radius:10px;padding:12px;font:14px sans-serif;color:var(--muted);cursor:pointer;transition:.2s" onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--bdr)'">＋ 習慣を追加</button>
+    </div>
+    <!-- Habit picker (hidden) -->
+    <div id="habit-picker" style="display:none;margin-top:12px;background:var(--srf);border:1px solid var(--bdr);border-radius:12px;padding:16px">
+      <div style="font:600 13px sans-serif;color:var(--fg);margin-bottom:12px">プリセットから選ぶ</div>
+      <div id="habit-preset-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px"></div>
+      <div style="display:flex;gap:8px">
+        <input id="habit-custom-name" placeholder="カスタム習慣を入力..." style="flex:1;background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:8px 12px;font:13px sans-serif;color:var(--fg)">
+        <button onclick="addCustomHabit()" style="background:var(--acc);color:#fff;border:none;border-radius:8px;padding:8px 16px;font:13px sans-serif;cursor:pointer">追加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div><!-- /main -->
 </div><!-- /shell -->
 <div id="notif"></div>
@@ -1599,7 +1632,7 @@ function sw(n) {
   if (panel) panel.classList.add('on');
   const tab = document.getElementById('tab-' + n);
   if (tab) tab.classList.add('on');
-  const ord = ['u','t','e','n','m','l'];
+  const ord = ['u','t','e','n','m','l','h'];
   const sidx = ord.indexOf(n);
   const sis = document.querySelectorAll('.si');
   if (sidx >= 0 && sis[sidx]) sis[sidx].classList.add('on');
@@ -1611,6 +1644,7 @@ function sw(n) {
     }, 100);
   }
   if (n === 'l') { setTimeout(initLifeTab, 80); }
+  if (n === 'h') { setTimeout(initHabitTab, 80); }
 }
 
 function swSub(main, sub) {
@@ -3857,6 +3891,143 @@ function doSignup(){
   showLifeMain();
 }
 function doLogout(){LIFE.stop();AUTH.logout();}
+
+// ════════════════════════════════════
+// HABIT STATE & TAB
+// ════════════════════════════════════
+const HABIT_STATE=(function(){
+  const PRESETS=[
+    {id:'exercise',  name:'運動',       icon:'🏃', cat:'身体', ef:{W:.35,heatLevel:.14,quality:.08}},
+    {id:'water',     name:'水を飲む',   icon:'💧', cat:'身体', ef:{quality:.06,cogLoad:-.04}},
+    {id:'sleep',     name:'良い睡眠',   icon:'🌙', cat:'身体', ef:{quality:.13,hostility:-.09}},
+    {id:'meal',      name:'食事・栄養', icon:'🍱', cat:'身体', ef:{W:.18,quality:.05}},
+    {id:'meditation',name:'瞑想',       icon:'🧘', cat:'精神', ef:{cogLoad:-.13,quality:.09}},
+    {id:'reading',   name:'読書',       icon:'📚', cat:'精神', ef:{W:.28,cogLoad:.04}},
+    {id:'journal',   name:'日記・記録', icon:'✏️', cat:'精神', ef:{W:.22,quality:.06}},
+    {id:'gratitude', name:'感謝する',   icon:'🙏', cat:'社会', ef:{hostility:-.11,quality:.09}},
+    {id:'talk',      name:'対話・会話', icon:'💬', cat:'社会', ef:{socialDensity:.16}},
+    {id:'walk',      name:'外出・散歩', icon:'🚶', cat:'社会', ef:{heatLevel:.06,W:.16,socialDensity:.08}},
+  ];
+  let habits=[];
+  const today=()=>new Date().toISOString().slice(0,10);
+  function load(){
+    const u=AUTH.user;
+    habits=JSON.parse(JSON.stringify(u?.habits||[]));
+    if(habits.length===0){
+      const defs=['meditation','reading','exercise'];
+      defs.forEach(id=>{const p=PRESETS.find(x=>x.id===id);if(p)habits.push({...p,streak:0,doneToday:false,lastDone:''});});
+    }
+    checkNewDay();
+  }
+  function checkNewDay(){
+    const t=today(),y=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    habits.forEach(h=>{
+      if(h.lastDone&&h.lastDone!==t){
+        h.doneToday=false;
+        if(h.lastDone!==y)h.streak=0;
+      }
+    });
+  }
+  function save(){AUTH.save('habits',JSON.parse(JSON.stringify(habits)));}
+  function toggle(id){
+    const h=habits.find(x=>x.id===id);if(!h)return;
+    h.doneToday=!h.doneToday;
+    if(h.doneToday){h.lastDone=today();h.streak=(h.streak||0)+1;}
+    else{h.streak=Math.max(0,(h.streak||0)-1);}
+    save();
+    applyToLife(h,h.doneToday);
+    renderHabitTab();
+  }
+  function applyToLife(habit,done){
+    const e=ENV_STATE.e,s=done?1:-1,ef=habit.ef||{};
+    const cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+    if(ef.heatLevel!==undefined)e.heatLevel=cl((e.heatLevel||.3)+ef.heatLevel*s*.6,0,1);
+    if(ef.quality!==undefined)e.quality=cl((e.quality||.7)+ef.quality*s*.6,0,1);
+    if(ef.hostility!==undefined)e.hostility=cl((e.hostility||.1)+ef.hostility*s*.6,0,1);
+    if(ef.cogLoad!==undefined)e.cogLoad=cl((e.cogLoad||.2)+ef.cogLoad*s*.6,0,1);
+    if(ef.socialDensity!==undefined)e.socialDensity=cl((e.socialDensity||.3)+ef.socialDensity*s*.6,0,1);
+    if(ef.W&&done){const c=LIFE_STATE.coords;c[1]=Math.min(c[1]+ef.W*.4,9999);LIFE_STATE.save();}
+    if(done&&typeof LIFE!=='undefined'){LIFE.divide();LIFE.divide();if(ef.W>.25)LIFE.divide();}
+  }
+  function getScore(){const d=habits.filter(h=>h.doneToday).length;return habits.length>0?d/habits.length:0;}
+  function getTodayEffect(){
+    const r={};
+    habits.filter(h=>h.doneToday).forEach(h=>Object.entries(h.ef||{}).forEach(([k,v])=>{r[k]=(r[k]||0)+v;}));
+    return r;
+  }
+  return{
+    load,save,toggle,getScore,getTodayEffect,
+    get habits(){return habits;},
+    get PRESETS(){return PRESETS;},
+    add(preset){if(!habits.find(h=>h.id===preset.id)){habits.push({...preset,streak:0,doneToday:false,lastDone:''});save();}},
+    addCustom(name){const id='c_'+Date.now();habits.push({id,name,icon:'⭐',cat:'カスタム',ef:{W:.15,quality:.05},streak:0,doneToday:false,lastDone:''});save();},
+    remove(id){habits=habits.filter(h=>h.id!==id);save();}
+  };
+})();
+
+let habitTabInited=false;
+function initHabitTab(){
+  if(!AUTH.user){renderHabitTab();return;}
+  if(!habitTabInited){HABIT_STATE.load();habitTabInited=true;}
+  renderHabitTab();
+}
+
+function renderHabitTab(){
+  const list=document.getElementById('habit-list');
+  const bar=document.getElementById('habit-life-bar');
+  const ring=document.getElementById('habit-score-ring');
+  if(!list)return;
+  if(!AUTH.user){list.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px 0;font:14px sans-serif">ログインして習慣を始めよう<br><br><button onclick="sw(\'l\')" style="background:var(--acc);color:#fff;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font:14px sans-serif">ログイン</button></div>';return;}
+  const habits=HABIT_STATE.habits;
+  const score=HABIT_STATE.getScore();
+  const ef=HABIT_STATE.getTodayEffect();
+  // Score ring (SVG)
+  const r=22,c=28,circ=2*Math.PI*r;
+  const dash=circ*score;
+  if(ring)ring.innerHTML=`<svg width="56" height="56"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--bdr)" stroke-width="4"/><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--acc)" stroke-width="4" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-dashoffset="${(circ/4).toFixed(1)}" stroke-linecap="round"/><text x="${c}" y="${c+5}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fg)">${Math.round(score*100)}%</text></svg>`;
+  // Life effect bar
+  const efKeys={W:'W↑',heatLevel:'熱↑',quality:'質↑',cogLoad:'集中',hostility:'敵意',socialDensity:'社会'};
+  const efBadges=Object.entries(ef).filter(([k,v])=>Math.abs(v)>.01).map(([k,v])=>`<span style="background:var(--srf);border:1px solid var(--bdr);border-radius:6px;padding:3px 8px;white-space:nowrap">${efKeys[k]||k} <b style="color:${v>0?'#4af':'#f88'}">${v>0?'+':''}${v.toFixed(2)}</b></span>`).join('');
+  if(bar)bar.innerHTML=efBadges?`<span style="color:var(--muted)">今日の生命効果</span>${efBadges}`:'<span style="color:var(--muted)">習慣を完了すると生命体に影響します</span>';
+  // Habit list
+  list.innerHTML=habits.map(h=>{
+    const streak=h.streak||0;
+    const streakColor=streak>=7?'#f0a':streak>=3?'#fa0':streak>=1?'#4af':'var(--muted)';
+    return`<div style="background:var(--srf);border:1px solid ${h.doneToday?'var(--acc)':'var(--bdr)'};border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:.2s;cursor:pointer" onclick="HABIT_STATE.toggle('${h.id}')">
+      <div style="font:26px sans-serif;flex-shrink:0">${h.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font:600 14px 'Noto Sans JP',sans-serif;color:var(--fg);display:flex;align-items:center;gap:8px">
+          ${h.name}
+          <span style="font:11px sans-serif;color:var(--muted);font-weight:400">${h.cat}</span>
+        </div>
+        <div style="font:11px sans-serif;color:${streakColor};margin-top:2px">${streak>0?'🔥 '+streak+'日連続':'まだ始まっていない'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+        ${h.doneToday?`<div style="width:28px;height:28px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font:14px sans-serif;color:#fff">✓</div>`:`<div style="width:28px;height:28px;border-radius:50%;border:2px solid var(--bdr)"></div>`}
+        <div onclick="event.stopPropagation();HABIT_STATE.remove('${h.id}');renderHabitTab()" style="color:var(--muted);font:16px sans-serif;cursor:pointer;opacity:.4" title="削除">×</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showHabitPicker(){
+  const p=document.getElementById('habit-picker');
+  const g=document.getElementById('habit-preset-grid');
+  if(!p||!g)return;
+  p.style.display=p.style.display==='none'?'block':'none';
+  const existing=new Set(HABIT_STATE.habits.map(h=>h.id));
+  g.innerHTML=HABIT_STATE.PRESETS.filter(p=>!existing.has(p.id)).map(pr=>`<div onclick="HABIT_STATE.add(${JSON.stringify(pr)});renderHabitTab();document.getElementById('habit-picker').style.display='none'" style="background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font:13px sans-serif;color:var(--fg);transition:.15s" onmouseover="this.style.background='var(--srf)'" onmouseout="this.style.background='var(--bg)'"><span style="font:22px sans-serif">${pr.icon}</span><span>${pr.name}</span><span style="font:10px sans-serif;color:var(--muted)">${pr.cat}</span></div>`).join('');
+}
+
+function addCustomHabit(){
+  const inp=document.getElementById('habit-custom-name');
+  const n=inp?.value?.trim();
+  if(!n)return;
+  HABIT_STATE.addCustom(n);inp.value='';
+  document.getElementById('habit-picker').style.display='none';
+  renderHabitTab();
+}
+
 function initLifeTab(){
   if(lifeTabInited)return; lifeTabInited=true;
   AUTH.init(); LIFE_CFG.load();
