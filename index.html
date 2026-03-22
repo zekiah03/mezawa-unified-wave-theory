@@ -2951,7 +2951,7 @@ const LIFE=(function(){
       if(lf.cMax===undefined||cells<=lf.cMax)s+=10;
       if(lf.hoMin!==undefined&&ev.hostility>=lf.hoMin)s+=8;
       return{lf,s};
-    }).filter(x=>x.s>=40).sort((a,b)=>b.s-a.s).slice(0,3);
+    }).filter(x=>x.s>=40).sort((a,b)=>b.s-a.s).slice(0,1);
   }
   // ── Environment simulation (auto-vary when idle) ──
   function simEnv(dt){
@@ -3250,13 +3250,17 @@ const LIFE=(function(){
       const matches=matchLifeForm(currentPhase,LIFE_STATE.coords[1],pts.length,ev);
       if(lifeFormDiv&&matches.length>0){
         const top=matches[0].lf;
-        const sub=matches.slice(1).map(x=>x.lf.ja).join(' · ');
         const phN=PHASE_LABEL[currentPhase]||currentPhase;
-        lifeFormDiv.innerHTML=`<div style="font:600 10px 'Noto Sans JP',sans-serif;color:#88c8e8;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">類似生命体</div>`+
-          `<div style="font:bold 15px 'Noto Sans JP',sans-serif;color:#e8f4ff;line-height:1.1">${top.ja}</div>`+
-          `<div style="font:12px sans-serif;color:#6699bb;margin-bottom:3px">${top.en} &nbsp;·&nbsp; ${phN}相</div>`+
-          `<div style="font:11px 'Noto Sans JP',sans-serif;color:#7799aa;line-height:1.5;max-width:190px">${top.desc}</div>`+
-          (sub?`<div style="font:10px sans-serif;color:#445566;margin-top:5px;border-top:1px solid #1a2a3a;padding-top:4px">近似: ${sub}</div>`:'');
+        lifeFormDiv.innerHTML=
+          `<div style="font:600 10px 'Noto Sans JP',sans-serif;color:#88c8e8;letter-spacing:.12em;margin-bottom:5px">生命体タイプ</div>`+
+          `<div style="font:bold 16px 'Noto Sans JP',sans-serif;color:#e8f4ff;line-height:1.2;margin-bottom:2px">${top.ja}</div>`+
+          `<div style="font:11px sans-serif;color:#6699bb;margin-bottom:6px">${top.en} &nbsp;·&nbsp; ${phN}相</div>`+
+          `<div style="font:11px 'Noto Sans JP',sans-serif;color:#8aaabb;line-height:1.6;max-width:190px">${top.desc}</div>`;
+        // Save life form type to user profile
+        if(AUTH.user&&AUTH.user.lifeFormType!==top.en){
+          AUTH.save('lifeFormType',top.en);
+          AUTH.save('lifeFormJa',top.ja);
+        }
       }
     }
     // CSS overlays
