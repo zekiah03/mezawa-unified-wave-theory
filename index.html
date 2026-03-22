@@ -1264,15 +1264,15 @@ body.lang-gr { font-family:var(--font-gr); }
 
         <!-- 設定 -->
         <div id="sp-l1" class="sub-pane ldp">
-          <div class="panel-title">API ＆ ナレッジベース設定</div>
-          <div class="panel-sub">接続先とデータ保存先を選択してください</div>
+          <div id="lf-settings-title" class="panel-title">API ＆ ナレッジベース設定</div>
+          <div id="lf-settings-sub" class="panel-sub">接続先とデータ保存先を選択してください</div>
           <div id="lf-settings-form"></div>
         </div>
 
         <!-- プラン -->
         <div id="sp-l2" class="sub-pane ldp">
-          <div class="panel-title">ご利用プラン</div>
-          <div class="panel-sub">Ψ-生命体への完全アクセス</div>
+          <div id="lf-plan-title" class="panel-title">ご利用プラン</div>
+          <div id="lf-plan-sub" class="panel-sub">Ψ-生命体への完全アクセス</div>
           <div id="lf-plan-content"></div>
         </div>
 
@@ -1288,7 +1288,7 @@ body.lang-gr { font-family:var(--font-gr); }
 
         <!-- チャット (desktop right panel) -->
         <div id="sp-l5" class="sub-pane ldp ldp-chat ldp-on">
-          <div class="life-chat-header">Ψ-生命体との対話</div>
+          <div id="life-chat-header" class="life-chat-header">Ψ-生命体との対話</div>
           <div id="life-chat-log" class="life-chat-log">
             <div class="life-msg life-msg-ai">やあ。最近、なんかいいことあった？</div>
           </div>
@@ -2044,6 +2044,15 @@ function setLang(lang) {
     _setText('gs-main-sub', d.goal.sub);
     _setPlaceholder('gs-goal-input', d.goal.placeholder);
     _setText('gs-add-btn', d.goal.addBtn);
+  }
+  // Life panel static titles
+  {
+    const isEn2=lang==='en', isGr2=lang==='gr';
+    _setText('lf-settings-title', isEn2?'API & Knowledge Base Settings':isGr2?'API & Βάση Γνώσης':'API ＆ ナレッジベース設定');
+    _setText('lf-settings-sub', isEn2?'Choose connection and data storage options':isGr2?'Επιλέξτε σύνδεση καὶ ἀποθήκευση':'接続先とデータ保存先を選択してください');
+    _setText('lf-plan-title', isEn2?'Your Plan':isGr2?'Τὸ Πλάνο σας':'ご利用プラン');
+    _setText('lf-plan-sub', isEn2?'Full access to Ψ-Life Form':isGr2?'Πλήρης πρόσβαση στὸ Ψ-ζωντ. ὄν':'Ψ-生命体への完全アクセス');
+    _setText('life-chat-header', isEn2?'Dialogue with Ψ-Life Form':isGr2?'Διάλογος μὲ Ψ-ζωντ. ὄν':'Ψ-生命体との対話');
   }
   // Life gate (login/signup form)
   {
@@ -4096,7 +4105,12 @@ function promptLifeName(){
 
 async function sendLifeMessage(){
   if(!AUTH.user){swSub('l','l2');return;}
-  if(!AUTH.canChatToday()){appendLifeMsg('本日の無料利用回数(5回)に達しました。プレミアムプランで無制限にご利用いただけます。','ai');swSub('l','l2');return;}
+  if(!AUTH.canChatToday()){
+    const limitMsg=currentLang==='en'?'You\'ve reached today\'s free limit (5 messages). Upgrade to Premium for unlimited access.':
+      currentLang==='gr'?'Φτάσατε τὸ ὅριο (5 μηνύματα). Αναβαθμίστε σε Premium.':
+      '本日の無料利用回数(5回)に達しました。プレミアムプランで無制限にご利用いただけます。';
+    appendLifeMsg(limitMsg,'ai');swSub('l','l2');return;
+  }
   const inp=document.getElementById('life-input');
   const text=inp.value.trim(); if(!text)return; inp.value='';
   appendLifeMsg(text,'user');
@@ -5052,7 +5066,7 @@ function saveLifeSettings(){
     userKbEndpoint:document.getElementById('lf-kb-ep')?.value||'',
     userKbKey:document.getElementById('lf-kb-key')?.value||'',
   });
-  notify('設定を保存しました');
+  notify(currentLang==='en'?'Settings saved':currentLang==='gr'?'Ρυθμίσεις αποθηκεύτηκαν':'設定を保存しました');
 }
 
 // ── PLAN UI ──
