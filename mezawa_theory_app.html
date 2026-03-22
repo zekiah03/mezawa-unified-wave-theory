@@ -3363,7 +3363,7 @@ function matchHumanType(scale){
 
 // ── 11-DIMENSIONAL LIFE STATE ──
 const LIFE_STATE=(function(){
-  const FIXED_CELLS=9; // 細胞数固定 — 幹部の数を表す
+  const FIXED_CELLS=36; // 細胞数固定 — 生命体の形を保てる最大値（36×35/2=630≤MAX_CONN）
   const STAGE=[
     {n:1,label:'新人',    W:0,  cells:FIXED_CELLS, desc:'波動の芽吹き'},
     {n:2,label:'中堅',    W:8,  cells:FIXED_CELLS, desc:'経験が積み重なる'},
@@ -3460,7 +3460,7 @@ const LIFE=(function(){
   let envSimT=0;
   // Life form comparison
   let lifeFormTimer=0;
-  const MAX_CONN=650;
+  const MAX_CONN=650; // 36cells → 36×35/2=630 接続、バッファ十分
   let connGeo=null,connMat=null,connLine=null,connPos=null,connCol=null;
 
   // ── Phase system ──
@@ -3888,13 +3888,14 @@ const LIFE=(function(){
     start(){if(!raf&&renderer)raf=requestAnimationFrame(loop);},
     stop(){raf=-1;},
     divide,
-    shrink(){if(pts.length>8)pts.splice(Math.floor(Math.random()*pts.length),1);},
+    shrink(){/* 細胞数固定のため縮小しない — サイズ変化で表現 */},
     applyResponse(text,sent){
       LIFE_STATE.applyChat(sent);
-      if(sent.score>=2){divide();divide();divide();energy=Math.min(1.8,energy+.3);}
-      else if(sent.score===1){divide();divide();energy=Math.min(1.5,energy+.18);}
-      else if(sent.score<=-2){this.shrink();energy=Math.max(.4,energy-.2);}
-      else{divide();energy=Math.min(1.3,energy+.08);}
+      // 細胞数は固定(36)。エネルギーのみ変化させ、サイズはgetPV()のhScaleが担う
+      if(sent.score>=2){energy=Math.min(1.8,energy+.3);}
+      else if(sent.score===1){energy=Math.min(1.5,energy+.18);}
+      else if(sent.score<=-2){energy=Math.max(.4,energy-.2);}
+      else{energy=Math.min(1.3,energy+.08);}
       analyzeLifeText(text);analyzeEnvironment(text);
       const evo=LIFE_STATE.checkEvolution();
       if(evo.evolved){
