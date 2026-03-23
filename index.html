@@ -4638,10 +4638,16 @@ function showLifeGate(mode='login'){
 function showLifeMain(){
   document.getElementById('life-gate').style.display='none';
   document.getElementById('life-main').style.display='flex';
+  // ログイン直後: 最新のユーザーデータを全モジュールにロード
+  LIFE_STATE.load(); ENV_STATE.load();
+  if(AUTH.user){ HABIT_STATE.load(); CALENDAR_STATE.load(); }
   updateLifeStatus(); loadLifeKB();
   const log=document.getElementById('life-chat-log');
   if(lifeChatHistory.length>1){log.innerHTML=''; lifeChatHistory.forEach(m=>appendLifeMsg(m.content,m.role==='user'?'user':'ai'));}
   renderLifeSettings(); renderLifePlan(); renderLifeGuide();
+  // 習慣・カレンダータブが既に開かれていた場合も再描画
+  if(typeof calInited!=='undefined'&&calInited) renderCalendar();
+  if(typeof goalTabInited!=='undefined'&&goalTabInited) renderGoalTab();
   setTimeout(()=>{const c=document.getElementById('life-canvas');if(c){LIFE.init(c);LIFE.start();syncTheoryToLife();}},120);
 }
 function doLogin(){
@@ -4649,6 +4655,8 @@ function doLogin(){
   const pw=document.getElementById('lf-pw').value;
   const r=AUTH.login(email,pw);
   if(r.err){document.getElementById('lf-auth-err').textContent=r.err;return;}
+  // フラグリセット: 次回タブ訪問時に最新データで再初期化
+  calInited=false; goalTabInited=false;
   showLifeMain();
 }
 function doSignup(){
@@ -4661,9 +4669,15 @@ function doSignup(){
   if(pw.length<6){if(errEl)errEl.textContent=currentLang==='en'?'Password must be 6+ characters':currentLang==='gr'?'Κωδικός 6+ χαρ.':'パスワードは6文字以上';return;}
   const r=AUTH.signup(email,pw,name,age);
   if(r.err){document.getElementById('lf-auth-err').textContent=r.err;return;}
+  calInited=false; goalTabInited=false;
   showLifeMain();
 }
-function doLogout(){LIFE.stop();AUTH.logout();}
+function doLogout(){
+  LIFE.stop();
+  // フラグリセット: 次のユーザーのデータで再初期化されるよう
+  calInited=false; goalTabInited=false;
+  AUTH.logout();
+}
 
 // ════════════════════════════════════
 // HABIT STATE & TAB
