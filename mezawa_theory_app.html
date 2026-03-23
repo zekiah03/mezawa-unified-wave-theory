@@ -381,6 +381,20 @@ body.lang-gr { font-family:var(--font-gr); }
 .lf-switch a { color:var(--T); cursor:pointer; text-decoration:underline; }
 .lf-trial-note { font-size:11px; color:var(--G); text-align:center; padding:8px 12px; margin:6px 0; background:rgba(34,136,68,.06); border-radius:5px; border:1px solid rgba(34,136,68,.15); }
 .lf-error { color:var(--R); font-size:12px; text-align:center; margin-top:8px; min-height:18px; }
+/* ── 決済 / アップグレードモーダル ── */
+#upgrade-overlay { position:fixed; inset:0; background:rgba(0,0,0,.72); display:flex; align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(8px); }
+#upgrade-overlay.hidden { display:none; }
+.upgrade-card { background:var(--bg2); border:1px solid var(--bdr); border-radius:18px; padding:36px 32px 28px; max-width:380px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+.upgrade-card h2 { font:700 20px var(--font-ja); color:var(--head); margin:0 0 8px; }
+.upgrade-card .upg-sub { font:13px var(--font-ja); color:var(--dim); margin-bottom:22px; line-height:1.7; }
+.upgrade-card .upg-price { font:700 32px sans-serif; color:var(--T); margin-bottom:4px; }
+.upgrade-card .upg-price span { font:13px var(--font-ja); color:var(--dim); }
+.upgrade-card .upg-features { text-align:left; margin:16px 0 22px; padding:14px 16px; background:var(--bg); border-radius:10px; font:12px var(--font-ja); color:var(--text); line-height:2; }
+.upg-btn { width:100%; padding:14px; background:var(--T); color:#fff; border:none; border-radius:10px; font:700 15px var(--font-ja); cursor:pointer; transition:.2s; margin-bottom:10px; }
+.upg-btn:hover { opacity:.88; transform:translateY(-1px); }
+.upg-btn-cancel { background:none; border:none; color:var(--dim); font:12px var(--font-ja); cursor:pointer; padding:6px; }
+.upg-btn-cancel:hover { color:var(--text); }
+.upg-success { background:rgba(34,136,68,.08); border:1px solid rgba(34,136,68,.25); border-radius:10px; padding:16px; margin-bottom:16px; font:13px var(--font-ja); color:var(--G); }
 .life-main { position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden; }
 .life-status-bar { padding:5px 16px; font-size:11px; color:var(--dim); background:var(--bg2); border-bottom:1px solid var(--bdr); flex-shrink:0; font-family:var(--font-code); display:flex; align-items:center; gap:8px; }
 .life-observe { display:flex !important; flex-direction:row; overflow:hidden; padding:0 !important; gap:0; }
@@ -4354,7 +4368,11 @@ function updateLifeStatus(){
   const cellsLbl=isEn?'Cells':isGr?'Κύτταρα':'細胞';
   const todayLbl=isEn?'Today':isGr?'Σήμερα':'今日';
   const c=LIFE_STATE.coords;
-  const envS=ENV_STATE.summary();bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; ${cellsLbl} <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · ${todayLbl} ${remain}`:''}  &nbsp;<span style="color:var(--dim);font-size:10px"> · ${envS}</span>`;
+  const envS=ENV_STATE.summary();
+  // トライアル終了 or 未払い → アップグレードボタン
+  const showUpgBtn=u&&!isPrem&&u.plan!=='premium';
+  const upgBtn=showUpgBtn?` <button onclick="showUpgradeModal('expired')" style="margin-left:6px;padding:2px 10px;font:600 10px var(--font-ja);background:var(--T);color:#fff;border:none;border-radius:5px;cursor:pointer;letter-spacing:.05em">${isEn?'Upgrade':isGr?'Αναβάθμιση':'アップグレード'}</button>`:'';
+  bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; ${cellsLbl} <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · ${todayLbl} ${remain}`:''}  &nbsp;<span style="color:var(--dim);font-size:10px"> · ${envS}</span>${upgBtn}`;
   // Update name txt
   const ntxt=document.getElementById('life-name-txt');
   const namePrompt=isEn?'✏ Give a name':isGr?'✏ Δῶστε ὄνομα':'✏ 名前をつける';
@@ -4649,6 +4667,8 @@ function showLifeMain(){
   if(typeof calInited!=='undefined'&&calInited) renderCalendar();
   if(typeof goalTabInited!=='undefined'&&goalTabInited) renderGoalTab();
   setTimeout(()=>{const c=document.getElementById('life-canvas');if(c){LIFE.init(c);LIFE.start();syncTheoryToLife();}},120);
+  // トライアル終了チェック
+  setTimeout(()=>checkUpgradeStatus(),400);
 }
 function doLogin(){
   const email=document.getElementById('lf-email').value.trim();
@@ -5350,6 +5370,114 @@ function renderLifePlan(){
 </div>`;
 }
 
+
+// ════════════════════════════════════
+// 決済 / Stripe 連携
+// ════════════════════════════════════
+
+// トライアル終了モーダルを表示
+function showUpgradeModal(mode){
+  // mode: 'expired' | 'success' | 'cancel'
+  const ov=document.getElementById('upgrade-overlay');
+  if(!ov)return;
+  const isEn=currentLang==='en', isGr=currentLang==='gr';
+  const email=AUTH.user?.email||'';
+
+  if(mode==='success'){
+    ov.innerHTML=`<div class="upgrade-card">
+      <div class="upg-success">✦ ${isEn?'Payment complete! Premium features are now active.':isGr?'Πληρωμή ολοκληρώθηκε! Το Premium είναι ενεργό.':'お支払い完了！プレミアム機能が有効になりました。'}</div>
+      <button class="upg-btn" onclick="closeUpgradeModal()">${isEn?'Continue':isGr?'Συνέχεια':'続ける'}</button>
+    </div>`;
+  } else if(mode==='cancel'){
+    ov.innerHTML=`<div class="upgrade-card">
+      <h2>${isEn?'Payment cancelled':isGr?'Ακύρωση':'お支払いをキャンセルしました'}</h2>
+      <p class="upg-sub">${isEn?'No charge was made. You can subscribe anytime.':isGr?'Δεν χρεώθηκε τίποτα.':'請求は発生していません。いつでも登録できます。'}</p>
+      <button class="upg-btn" onclick="doUpgrade()">${isEn?'Try Again':isGr?'Ξανά':'もう一度試す'}</button>
+      <button class="upg-btn-cancel" onclick="closeUpgradeModal()">${isEn?'Close':isGr?'Κλείσιμο':'閉じる'}</button>
+    </div>`;
+  } else {
+    // expired / upgrade prompt
+    const days=AUTH.trialDaysLeft();
+    const expiredMsg=days>0
+      ? (isEn?`Trial ends in ${days} day${days===1?'':'s'}`:isGr?`Λήγει σε ${days} ημ.`:`トライアル残り${days}日`)
+      : (isEn?'Your trial has ended':isGr?'Η δοκιμή έληξε':'トライアル期間が終了しました');
+    ov.innerHTML=`<div class="upgrade-card">
+      <h2>${isEn?'Upgrade to Premium':isGr?'Αναβάθμιση σε Premium':'プレミアムへアップグレード'}</h2>
+      <p class="upg-sub">${expiredMsg}<br>${isEn?'Continue growing your Ψ-Life Form.':isGr?'Συνεχίστε να αναπτύσσετε το Ψ-ζωντανό ὄν σας.':'Ψ-生命体を育て続けましょう。'}</p>
+      <div class="upg-price">¥980 <span>/ ${isEn?'month':isGr?'μήνα':'月'}</span></div>
+      <div class="upg-features">
+        ✦ ${isEn?'Unlimited AI conversations':'無制限のAI対話'}<br>
+        ✦ ${isEn?'Full life simulation':'フル生命体シミュレーション'}<br>
+        ✦ ${isEn?'Habit tracking & calendar':'習慣トラッキング・カレンダー'}<br>
+        ✦ ${isEn?'Theory growth & all tabs':'理論成長・全タブアクセス'}
+      </div>
+      <button class="upg-btn" onclick="doUpgrade()">${isEn?'Subscribe — ¥980/month':isGr?'Εγγραφή — ¥980/μήνα':'登録する — ¥980/月'}</button>
+      ${days>0?`<button class="upg-btn-cancel" onclick="closeUpgradeModal()">${isEn?'Maybe later':isGr?'Αργότερα':'後で'}</button>`:''}
+    </div>`;
+  }
+  ov.classList.remove('hidden');
+}
+
+function closeUpgradeModal(){
+  document.getElementById('upgrade-overlay')?.classList.add('hidden');
+}
+
+// Stripeの決済ページへリダイレクト
+function doUpgrade(){
+  const email=AUTH.user?.email||'';
+  window.location.href='/api/checkout?email='+encodeURIComponent(email);
+}
+
+// Stripe決済完了後のリターン処理
+async function handlePaymentReturn(){
+  const params=new URLSearchParams(location.search);
+  const status=params.get('payment');
+  if(!status)return;
+  // URLパラメータをクリア
+  history.replaceState(null,'',location.pathname);
+  if(status==='cancel'){
+    showUpgradeModal('cancel');
+    return;
+  }
+  if(status==='success'){
+    const sessionId=params.get('session_id')||'';
+    if(sessionId&&AUTH.user){
+      try{
+        const r=await fetch('/api/verify?session_id='+encodeURIComponent(sessionId));
+        const data=await r.json();
+        if(data.ok){
+          AUTH.save('plan','premium');
+          if(data.customerId) AUTH.save('stripeCustomerId',data.customerId);
+          if(data.subscriptionId) AUTH.save('stripeSubscriptionId',data.subscriptionId);
+          if(data.email&&AUTH.user.email!==data.email){
+            // メールアドレスが違う場合はスキップ
+            console.warn('Email mismatch on payment verify');
+          }
+        }
+      }catch(e){console.error('Payment verify error:',e);}
+    }
+    showUpgradeModal('success');
+  }
+}
+
+// ページ読み込み時 & ログイン時に呼び出す
+function checkUpgradeStatus(){
+  if(!AUTH.user)return;
+  // トライアル残日数が0以下かつ未払い → モーダル表示
+  if(!AUTH.isPremium()&&AUTH.user.plan!=='premium'){
+    showUpgradeModal('expired');
+  }
+}
+</script>
+
+<!-- アップグレード / 決済モーダル (常にDOM上に存在) -->
+<div id="upgrade-overlay" class="hidden"></div>
+
+<script>
+// ページ読み込み直後: Stripe リターン処理
+document.addEventListener('DOMContentLoaded', function(){
+  handlePaymentReturn();
+});
 </script>
 </body>
 </html>
