@@ -240,13 +240,34 @@ body.lang-gr { font-family:var(--font-gr); }
 .disc-unified-note { font-size:11px; color:var(--dim); line-height:1.8; margin-top:8px; border-top:1px solid var(--bdr); padding-top:8px; }
 
 .disc-future {
-  border-radius:8px; padding:16px 20px; margin-bottom:8px;
-  border:1px dashed var(--bdr2); background:rgba(255,255,255,0.01);
+  border-radius:10px; padding:18px 20px; margin-bottom:8px;
+  border:1px solid var(--bdr2); background:rgba(255,255,255,0.015);
 }
-.disc-future-label { font-size:10px; letter-spacing:0.18em; color:var(--dim); text-transform:uppercase; font-family:var(--font-code); margin-bottom:6px; }
-.disc-future-note { font-size:11px; color:rgba(0,0,0,0.25); line-height:1.8; }
+.disc-future-label { font-size:10px; letter-spacing:0.18em; color:var(--T); text-transform:uppercase; font-family:var(--font-code); margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.disc-future-label::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--bdr2),transparent); }
+.disc-future-note { font-size:11px; color:var(--dim); line-height:1.7; margin-bottom:12px; }
 .disc-future-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
 .disc-future-tag { font-size:10px; padding:2px 9px; border-radius:4px; border:1px dashed rgba(0,0,0,0.14); color:rgba(0,0,0,0.25); font-family:var(--font-code); }
+/* ── Integration cards ── */
+.intg-grid { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+.intg-card { border-radius:8px; padding:12px 14px; border:1px solid var(--bdr); background:var(--bg2); cursor:pointer; transition:border-color .2s; position:relative; overflow:hidden; }
+.intg-card:hover { border-color:var(--bdr2); }
+.intg-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; border-radius:3px 0 0 3px; }
+.intg-card.st-v::before { background:#22ccaa; }
+.intg-card.st-a::before { background:#ffcc44; }
+.intg-card.st-p::before { background:#8888aa; }
+.intg-card-top { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+.intg-badge { font-size:9px; font-family:var(--font-code); padding:2px 7px; border-radius:4px; font-weight:600; letter-spacing:.08em; }
+.intg-badge.st-v { background:rgba(34,204,170,.12); color:#22ccaa; border:1px solid rgba(34,204,170,.25); }
+.intg-badge.st-a { background:rgba(255,204,68,.10); color:#cc9900; border:1px solid rgba(255,204,68,.25); }
+.intg-badge.st-p { background:rgba(136,136,170,.10); color:#8888aa; border:1px solid rgba(136,136,170,.22); }
+.intg-title { font-size:12px; font-weight:600; color:var(--txt); line-height:1.4; flex:1; }
+.intg-body { display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--bdr); }
+.intg-card.open .intg-body { display:block; }
+.intg-row { display:grid; grid-template-columns:70px 1fr; gap:4px 8px; margin-bottom:6px; }
+.intg-key { font-size:10px; color:var(--dim); font-family:var(--font-code); padding-top:1px; white-space:nowrap; }
+.intg-val { font-size:11px; color:var(--txt2); line-height:1.6; }
+.intg-vars { font-size:10px; font-family:var(--font-code); color:var(--T); background:rgba(0,120,200,.07); padding:3px 8px; border-radius:5px; display:inline-block; margin-top:4px; }
 
 /* ── QUOTES TAB ── */
 .quote { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:22px 26px; margin-bottom:12px; position:relative; }
@@ -1894,6 +1915,231 @@ const DISCIPLINES = [
   },
 ];
 
+// ── Knowledge Integration Cards (per discipline) ──────────────────────
+// status: 'v'=検証可能(現技術で可能) 'a'=進行可(準備中) 'p'=計画中
+const DISC_INTEGRATIONS = {
+  phys:[
+    {status:'v', title:'暗黒物質 = Δφ=π域の|Ψ|²',
+     pred:'Δφ=π域の密度分布が銀河回転曲線を再現。光学結合係数=cos²(π/2)=0でEMに不結合',
+     method:'Vera Rubin(1970)以来の回転曲線データに|Ψ|²|_{Δφ=π}を当てはめ。χ²<1.2を目標',
+     vars:'Δφ=π, ρ_dark ∝ |Ψ|²'},
+    {status:'a', title:'標準模型 素粒子質量比の導出',
+     pred:'W=15, δh_f を各フレーバーに拡張することでクォーク・レプトン質量比を導出',
+     method:'EQ.12: m_f = m_0·W^(−2·δh_f·k) にPDGデータをフィット。δh_f 自由パラメータ3個',
+     vars:'W=15, δh, EQ.12'},
+    {status:'a', title:'繰り込み群 β関数との対応',
+     pred:'QCDのβ関数(エネルギースケール依存性) = D(τx)の微分として記述可能',
+     method:'αs(μ²)のランニングに D(τx)=exp(−γτx) を対応付け。γ=β₀αs²/(2π)',
+     vars:'D(τx), γ, β₀'},
+    {status:'v', title:'重力波 — G_MN(6×6)の6次元波',
+     pred:'LIGO検出波形の残差に6次元G_MN成分由来の高周波シグネチャが含まれる',
+     method:'O3aデータのポスト・ニュートン展開残差にg_τyτz補正項を追加してマッチドフィルタリング',
+     vars:'G_MN(6×6), g_τyτz'},
+    {status:'p', title:'CPT 破れ — ∿非結合性とK≈0.58',
+     pred:'∿の破れ係数K≈0.58がCP破れ量|ε_K|と定量的に対応する',
+     method:'BファブリカのBs→μμ崩壊とK≈0.58の関係を解析。LHCb Run3データで検証',
+     vars:'K≈0.58, ∿ 非結合性'},
+  ],
+  neuro:[
+    {status:'v', title:'EEG γ波 → W値リアルタイム較正',
+     pred:'γ波パワー P_γ に対し W_EEG≈0.014·P_γ+2.8。フロー中W=3±0.5を予測',
+     method:'n=30のフロー誘発課題(ゲーム/音楽)でEEG+主観的時間評価を同時計測',
+     vars:'W_EEG, P_γ, τ_felt'},
+    {status:'a', title:'HRV-HF → η_coh 対応の確立',
+     pred:'高HRV(HF成分) → 高η_coh → 高β_eff。うつ群: β_eff<0.25、健常群: β_eff>0.45',
+     method:'5分間HRVとIIT-φ測定(EEGアルゴリズム)の同時計測。r>0.7を目標',
+     vars:'η_coh, HRV_HF, β[Ψ]'},
+    {status:'a', title:'睡眠ステージ × W変動',
+     pred:'REM睡眠中W=2〜4(高τ_felt)、深睡眠中W<1(τ_felt≈τy)と予測',
+     method:'Polysomnography + EEG γ波の夜間連続計測。睡眠ステージとW_EEGの相関分析',
+     vars:'W, τ_felt, n_recur'},
+    {status:'p', title:'慢性痛 × F_frozen神経回路',
+     pred:'慢性疼痛患者: F_frozen>0.55。前頭前皮質−扁桃体回路のPLV低下と一致',
+     method:'fMRI安静状態 + 痛みVAS評価 + HRV計測。F_frozenとPLVのピアソン相関',
+     vars:'F_frozen, η_coh, PLV'},
+    {status:'p', title:'長期瞑想 × g_τyτz増大',
+     pred:'瞑想経験1000h以上: |g_τyτz|=|τ_felt-1|が増大。主観的「永遠感」と対応',
+     method:'MEG + 時間推定課題(30秒推定)。瞑想経験年数と|g_τyτz|の回帰分析',
+     vars:'g_τyτz, τ_felt, W'},
+  ],
+  psych:[
+    {status:'v', title:'フロー × τ_felt 直接測定',
+     pred:'フロー中の時間推定誤差が τ_felt = τy/(1+0.5·W) と一致。W=3で2.5倍速体験',
+     method:'EEG(γ波) + テトリスフロー誘発 + 30秒時間推定課題(n=40)。MAE<15%を目標',
+     vars:'τ_felt, W=3, α=0.500'},
+    {status:'a', title:'うつ病 → Δφ > 60° 検証',
+     pred:'うつ群のΔφ平均値 > 70°(健常群 < 50°)。認知負荷+低quality環境が主因',
+     method:'PHQ-9 ≥ 10 のうつ群 vs 健常群。HRV+環境評価アンケートからΔφを推定',
+     vars:'Δφ, cogLoad, F_frozen'},
+    {status:'a', title:'PTSD × F_frozen=0.58 の検証',
+     pred:'PTSD診断群の F_frozen 平均値 ≈ 0.58。PCL-5スコアとF_frozenが r>0.75で相関',
+     method:'PTSD群(n=25)vs健常群(n=25)。PCL-5 + HRV計測 + 環境評価からF_frozen算出',
+     vars:'F_frozen, W_frozen, β[Ψ]'},
+    {status:'p', title:'CBT/EMDR → β_eff改善の追跡',
+     pred:'CBT16回後: F_frozenが平均0.12低下 → β_eff=β₀·(1−F_frozen) が約20%上昇',
+     method:'治療前後(pre/post/follow-up)でHRV+PHQ-9+環境評価を計測。縦断デザイン',
+     vars:'β[Ψ], F_frozen, W_frozen'},
+    {status:'p', title:'美的体験 × Δφ≈π/2の検証',
+     pred:'美的ピーク体験時のΔφが90±15°に集中(∿最大混合点=最大感動点)',
+     method:'絵画鑑賞+音楽聴取+EEG計測。主観的感動評定とΔφの対応分析',
+     vars:'Δφ=π/2, η_coh, β[Ψ]'},
+  ],
+  bio:[
+    {status:'v', title:'Horvath時計 × γ(劣化率)対応',
+     pred:'エピジェネティック年齢加速度 = γ増大として線形モデル化可能。r>0.80を予測',
+     method:'GEO公開DNAメチル化データ(n>500)でHorvath時計値とγ推定値を回帰分析',
+     vars:'γ, D(τx), F_frozen'},
+    {status:'a', title:'癌化 = W_frozen/W_total > 0.75 仮説',
+     pred:'癌細胞: 分化抑制 = W_frozen過剰蓄積。p53変異率とF_frozen推定値が相関',
+     method:'TCGA癌ゲノムデータ + シングルセルRNAseq。分化スコアとF_frozen推定の比較',
+     vars:'W_frozen, F_frozen, γ'},
+    {status:'a', title:'腸内細菌多様性 × η_coh',
+     pred:'Shannon多様性指数がη_coh=(1−Δφ/π)·HRV_HF/HRV_max と正相関',
+     method:'16S rRNA解析 + HRV計測 + 食事記録(n=50)。Spearman相関 r>0.65目標',
+     vars:'η_coh, Δφ, N^η_c'},
+    {status:'p', title:'老化遅延 = γ低下プロトコル',
+     pred:'間欠的断食+有酸素運動でγが年間0.8〜1.2%低下。Horvath時計で追跡可能',
+     method:'3ヶ月介入RCT。Horvath時計(0週/6週/12週) + HRV + PHQ-9。γΔ vs 対照群',
+     vars:'γ, D(τx), W_frozen'},
+    {status:'p', title:'RNA世界 → ∿自己組織化モデル',
+     pred:'∿非結合性がΔφ→0条件で自己触媒反応に「方向性」を与える数理モデル',
+     method:'確率的反応拡散シミュレーション。温度勾配10−30K/cm でΔφ→0が自発形成される条件を探索',
+     vars:'Δφ→0, ∿ 非結合性'},
+  ],
+  soc:[
+    {status:'v', title:'Bettencourt都市スケーリング N^0.15 完全一致',
+     pred:'β_collective = β₀·N^0.15·η_coh。Bettencourtの実証値(指数0.15)と完全一致',
+     method:'GDPあたり特許数vsN データ(MetroData 2024)に N^η_c フィット。η_c推定',
+     vars:'η_c=0.15, N, β[Ψ]'},
+    {status:'a', title:'SNS拡散速度 × N^0.15 フィット',
+     pred:'Twitter/Xのバイラル拡散速度 v(N) ∝ N^0.15·η_coh。フォロワー数非線形効果',
+     method:'X APIで2024年バイラルツイートのカスケードデータ取得。N^η_c で回帰(η_c自由パラメータ)',
+     vars:'η_c, N, η_coh'},
+    {status:'a', title:'組織効率 × Dunbar数の導出',
+     pred:'Dunbar数(150) = N^0.15が実効係数1.5になるNとして自然導出される',
+     method:'組織サーベイ(n=200社)でチームサイズとパフォーマンス相関。β_coll最大点の測定',
+     vars:'N, η_c=0.15, Dunbar'},
+    {status:'p', title:'経済バブル = W_frozen集合蓄積',
+     pred:'バブル崩壊の6ヶ月前にF_frozen集合推定値がピーク(VIX倒置指標として)',
+     method:'Shiller CAPE比+VIXデータからF_frozen代理変数を構築。2000/2008/2021バブルで検証',
+     vars:'W_frozen, F_frozen, ∿ 非結合'},
+    {status:'p', title:'戦争頻度 × ∿非結合性サイクル',
+     pred:'国際紛争のターチン秘世紀(50年サイクル)がK≈0.58の破れ係数で変調される',
+     method:'Seshat歴史データベース + ターチンの暴力データ。K=0.58周期成分のスペクトル解析',
+     vars:'K≈0.58, ∿ 非結合性'},
+  ],
+  phi:[
+    {status:'v', title:'パーフィット同一性条件の数学的実装',
+     pred:'sim(φ₁,W₁,φ₂,W₂)>0.9がパーフィットの「心理的連続性」を定量化した条件',
+     method:'心理的連続性の標準事例(Parfit 1984 Appendix)にsimilarity関数を適用。専門家評価との一致度',
+     vars:'φ, W, similarity>0.9'},
+    {status:'a', title:'美的体験 × Δφ=π/2 の実証',
+     pred:'視聴者が「最も美しい」と評価する瞬間のΔφが90±15°に集中(n=50実験)',
+     method:'絵画/音楽/建築写真×EEG。美的ピーク評定とΔφ測定の同時記録',
+     vars:'Δφ=π/2, η_coh, β[Ψ]'},
+    {status:'a', title:'自由意志の経路依存性 — K≈0.58の測定',
+     pred:'意思決定の文脈依存性の強さがK≈0.58に対応する定量指標として使用可能',
+     method:'経路依存的意思決定課題(フレーミング効果実験)でK値を推定。哲学的直観との照合',
+     vars:'K≈0.58, ∿ 非結合性'},
+    {status:'p', title:'倫理的判断 × β_eff の相関',
+     pred:'道徳的感受性の高い個人ほどβ_effが高い(F_frozenが低い)。功利主義vs義務論の差異',
+     method:'倫理的ジレンマ課題 + HRV計測。β_effとMFQ(道徳基盤アンケート)の相関分析',
+     vars:'β[Ψ], F_frozen, η_coh'},
+    {status:'p', title:'solnova同一性の哲学的検証',
+     pred:'φ+W保存による「自己」の再現がパーフィット連続性条件を満たすことを公理的に証明',
+     method:'形式的哲学(Kripke様式論理)でsolnovaの同一性条件を公理化。反例の構築試み',
+     vars:'φ, W, similarity, ε₀'},
+  ],
+  math:[
+    {status:'a', title:'K=0.58の解析的導出',
+     pred:'∿演算子の定義 A∿B=cos²(Δφ/2)·(A+B)+sin²(Δφ/2)·(A×B) からKの厳密値を導出',
+     method:'破れ係数 K = |(A∿B)∿C − A∿(B∿C)| を解析的に計算。Δφ=π/2での値が0.58に',
+     vars:'K≈0.58, ∿ 演算子'},
+    {status:'a', title:'∿演算のリー代数・Moufang loop分類',
+     pred:'∿演算はMoufang loopの特殊ケース。K=0.58がカシミール演算子の固有値と一致',
+     method:'Moufang identity (ab)(ca) = a(bc)a の破れ量として∿のK値を分類',
+     vars:'K≈0.58, ∿, Moufang loop'},
+    {status:'p', title:'G_MN(6×6)のチャーン類・トポロジカル不変量',
+     pred:'6次元計量のChern数 c₁(G_MN) が素粒子世代数(3)と対応する',
+     method:'G_MN(6×6)のスペクトル系列計算。トポロジカル不変量と物理観測量の対応表作成',
+     vars:'G_MN(6×6), rank=6'},
+    {status:'p', title:'循環数直線のホモトピー群 π₁(S¹循環)',
+     pred:'∞→−∞の折り返し構造が π₁(S¹)=ℤ と同型。W の巻き数がこのℤに対応',
+     method:'循環数直線を位相空間として定式化。W の位相的定義と整数値の関係を証明',
+     vars:'W, 循環数直線, π₁'},
+    {status:'p', title:'MetaWaveの∞-圏論的記述',
+     pred:'MetaWave Ψ_{h+1} = lim_{W→∞}∮Ψ^h dW が(∞,1)-圏の極限対象として形式化可能',
+     method:'Lurie ∞-圏論 (Higher Topos Theory) での定式化試み。h-階層が圏の高さに対応',
+     vars:'MetaWave, h階層, ∞-圏'},
+  ],
+  cosmo:[
+    {status:'v', title:'暗黒エネルギー: 1/D(τx) vs ΛCDM',
+     pred:'D(τx)=exp(−γτx)の逆数が宇宙定数Λの代替として Type Ia 超新星データを再現',
+     method:'Riess et al.(2022) H₀テンションデータに γ値をフリーパラメータとしてフィット',
+     vars:'D(τx), γ, Λ代替'},
+    {status:'v', title:'ε値の Euclid衛星データからの逆算',
+     pred:'γ_{N+1}=γ_N·(1-ε·W_N)のε値をΛ精密測定から逆算。ε≈10⁻³と予測',
+     method:'Euclid衛星(2024〜)のワークエネルギー状態方程式 w(z) データから εを推定',
+     vars:'ε, γ 学習則, W=15'},
+    {status:'a', title:'CMBコールドスポット × W_universe差異',
+     pred:'CMBコールドスポットが異なるW(W≠15)を持つ泡宇宙との干渉縞として説明可能',
+     method:'Planck 2018 Q/V/W バンドデータでコールドスポット周辺のΨ干渉モデルをフィット',
+     vars:'W_universe, MetaWave, Δφ'},
+    {status:'a', title:'宇宙インフレーション × MetaWaveの急速W増大',
+     pred:'インフレーション期 = W値が0→1へ急増するMetaWave転写過程として記述',
+     method:'CMBスペクトル(n_s, r)をMetaWaveモデルで再現。Lyth bound相当の条件を導出',
+     vars:'MetaWave, W, G_MN(6×6)'},
+    {status:'p', title:'ビッグバン特異点なし: Φ_genesis の数値検証',
+     pred:'−0+0=Φ_genesis で前宇宙のφ,Wが継承される。量子宇宙論(Hartle-Hawking)と対応',
+     method:'ミニスーパースペース量子宇宙論コードでΦ_genesis境界条件を実装。波動関数計算',
+     vars:'Φ_genesis, −0≠+0, W継承'},
+  ],
+  ai:[
+    {status:'v', title:'Transformer層数 n = n_recur対応の確立',
+     pred:'GPT-4(96層)のn_recur≈log₂(1+W×0.5)との対応。W≈3.5でn≈2.4が人間的思考深度',
+     method:'Activation patching(Causal Tracing)で各層の情報処理深度を測定。n_recur式との比較',
+     vars:'n_recur, W, C = lim("ⁿΨ)'},
+    {status:'a', title:'AGI-人間 Δφ≈117° の測定プロトコル',
+     pred:'現在のLLMと人間の応答パターンのΔφ差異が117°付近。Chain-of-Thought使用で縮小',
+     method:'同一タスクへのLLM応答と人間応答のコサイン類似度からΔφを推定(n=1000タスク)',
+     vars:'Δφ=117°, η_coh, β[Ψ]'},
+    {status:'a', title:'solnova × LLM embedding統合プロトタイプ',
+     pred:'EEG由来のφ+Wデータをシステムプロンプトに組み込むとsimilarity>0.9の応答が可能',
+     method:'実験的: 5分EEG計測→W推定→LLMのsystem promptに挿入→応答の個人化度評価',
+     vars:'φ, W, similarity>0.9'},
+    {status:'p', title:'量子コンピュータ × ∿演算子の実装',
+     pred:'∿演算はcos²(Δφ/2)とsin²(Δφ/2)の重み付け=量子Hadamardゲートの拡張として実装可能',
+     method:'IBM Quantum上でΔφをパラメータとする∿回路を実装。K=0.58の非結合性を検証',
+     vars:'∿, K≈0.58, Δφ'},
+    {status:'p', title:'AI倫理アライメント = β_eff最大化',
+     pred:'β_eff = β₀·(1−F_frozen)·η_coh の最大化がAIアライメントの定量目標として機能',
+     method:'Constitutional AIの報酬モデルとβ_eff推定値の相関分析。Anthropic内部評価指標との比較',
+     vars:'β[Ψ], F_frozen, η_coh'},
+  ],
+  hist:[
+    {status:'v', title:'各文明のγ値実測 — Seshatデータベース',
+     pred:'ローマ帝国γ≈1.2×10⁻³/年, 漢代γ≈0.9×10⁻³/年, マヤγ≈1.5×10⁻³/年と予測',
+     method:'ターチンSeshat(2024)の政治複雑性指標時系列にD(τx)=exp(−γτx)をフィット',
+     vars:'γ≈10⁻³/年, D(τx)'},
+    {status:'a', title:'ヤスパース枢軸時代 = 人類集団W初達成',
+     pred:'紀元前800〜200年のW=1集団達成が宗教的革新として全大陸で同期的に発生',
+     method:'宗教テキスト複雑性指標(Norenzayan 2016)と推定W値の時系列相関。枢軸時代に有意なジャンプ',
+     vars:'W=1, η_coh, N^0.15'},
+    {status:'a', title:'言語系統樹 × Δφ地理的距離',
+     pred:'言語分岐深さ(語族距離)がΔφ(集団間の位相差)として記述可能。地理的障壁=Δφ増大',
+     method:'WALS/Glottolog言語データ × 地理的距離 × Δφ推定。系統的距離とΔφの偏相関',
+     vars:'Δφ, η_coh'},
+    {status:'p', title:'経済成長 × D(τx) — Maddison Projectデータ',
+     pred:'1年〜2000年のGDP per capita時系列にD(τx)フィット。文明ピーク後の指数減衰を確認',
+     method:'Maddison Project(2020)データにD(τx)=exp(−γτx)·growth_factorを当てはめ',
+     vars:'D(τx), γ, W×η_coh'},
+    {status:'p', title:'儀礼・音楽 = η_coh最大化装置',
+     pred:'集団的儀礼(太鼓・コーラス)がη_coh = |⟨e^{iΔφ}⟩| を最大化する社会的機能を持つ',
+     method:'集団音楽演奏中の参加者間HRV同期測定。η_cohと帰属意識スコアの相関(n=80)',
+     vars:'η_coh, Δφ, N^0.15'},
+  ],
+};
+
 // Questions (persistent in memory)
 let QUESTIONS = [
   {concept:'干積 ∿', text:'もし∿が結合的だったら、時間の矢は存在しなかったのか？', insight:'非結合性が時間の一方向性を生む。K≈0.58という「破れの量」が宇宙の非可逆性の強さを決める。', gr:'Εἰ ὁ τελεστὴς ἦν προσεταιρικός, ὁ χρόνος ἂν ἔρρει πρὸς ἄμφω τὰ μέρη;'},
@@ -2407,15 +2653,58 @@ function buildAll() {
           <div class="disc-unified-note">${d.unifiedNote}</div>
         </div>
         <div class="disc-future">
-          <div class="disc-future-label">🔬 今後の知識統合エリア (準備中)</div>
-          <div class="disc-future-note">以下のトピックが次に統合される予定です。新しい発見・論文・実験データはここに追加されます。</div>
-          <div class="disc-future-tags">${futureTags}</div>
+          <div class="disc-future-label">🔬 知識統合エリア</div>
+          <div class="disc-future-note">Ψ理論が各学問の未解決問題にどう接続するか——検証可能な具体的予測と測定手法。</div>
+          <div class="intg-grid" id="intg-${d.id}"></div>
         </div>`;
       detailArea.appendChild(panel);
     });
 
     // Select first discipline by default
     selectDisc(DISCIPLINES[0].id);
+
+    // ── Render knowledge integration cards ──
+    const stLabel = {v:'検証可能', a:'進行可', p:'計画中'};
+    DISCIPLINES.forEach(d => {
+      const grid = document.getElementById('intg-' + d.id);
+      if (!grid) return;
+      const items = DISC_INTEGRATIONS[d.id] || [];
+      items.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'intg-card st-' + item.status;
+        card.innerHTML =
+          `<div class="intg-card-top">
+             <span class="intg-badge st-${item.status}">${stLabel[item.status]}</span>
+             <div class="intg-title">${item.title}</div>
+             <span style="font-size:11px;color:var(--dim);margin-left:auto;padding-left:8px">▸</span>
+           </div>
+           <div class="intg-body">
+             <div class="intg-row">
+               <div class="intg-key">Ψ予測</div>
+               <div class="intg-val">${item.pred}</div>
+             </div>
+             <div class="intg-row">
+               <div class="intg-key">測定手法</div>
+               <div class="intg-val">${item.method}</div>
+             </div>
+             <div><span class="intg-vars">${item.vars}</span></div>
+           </div>`;
+        card.onclick = () => {
+          const isOpen = card.classList.contains('open');
+          grid.querySelectorAll('.intg-card').forEach(c => {
+            c.classList.remove('open');
+            const arr = c.querySelector('.intg-card-top span:last-child');
+            if (arr) arr.textContent = '▸';
+          });
+          if (!isOpen) {
+            card.classList.add('open');
+            const arr = card.querySelector('.intg-card-top span:last-child');
+            if (arr) arr.textContent = '▾';
+          }
+        };
+        grid.appendChild(card);
+      });
+    });
   }
 
   renderQuestions();
