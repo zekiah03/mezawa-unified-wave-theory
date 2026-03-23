@@ -3333,58 +3333,132 @@ function computeHumanScale(c, ev){
 const LIFE_FORMS_SPECTRUM = [
   // ── 微小・虫圏 ──
   // chaosMin: この値以上のchaosIdxで選ばれやすくなる
+  // Δφ は computeLifeParams() で動的に算出される (ここは理論的な代表値)
   {ja:'ウイルス',   en:'Virus',     gr:'Ἰός',     badge:'◇',
    wMax:4,  chaosMin:0.70,
-   desc_ja:'宿主に依存し爆発・静止を繰り返す。他者を巻き込むと感染が広がる。',
-   desc_en:'Explosive and dormant cycles. Infects those who get too close.'},
+   dphi_ref:'≈175°', n_ref:'≈0',
+   desc_ja:'Δφ≈175° · n≈0 — 宿主に依存し爆発と静止を繰り返す。近づく者に感染が広がる。',
+   desc_en:'Δφ≈175° · n≈0 — Explosive and dormant cycles. Spreads to those who get close.'},
   {ja:'古細菌',     en:'Archaea',   gr:'Ἀρχαῖα', badge:'△',
    wMax:6,  chaosMin:0.62,
-   desc_ja:'極限環境で猛烈に動く。エネルギーはあるが影響圏は閉じている。',
-   desc_en:'Furious in extremes. Energy without outward reach.'},
+   dphi_ref:'≈155°', n_ref:'≈0',
+   desc_ja:'Δφ≈155° · n≈0 — 極限環境で猛烈に動く。エネルギーはあるが影響圏は閉じている。',
+   desc_en:'Δφ≈155° · n≈0 — Furious in extremes. Energy without outward reach.'},
   {ja:'細菌',       en:'Bacterium', gr:'Βακτήριο',badge:'○',
    wMax:10, chaosMin:0.55,
-   desc_ja:'高速で複製・適応する。範囲は狭いが勢いが凄まじい。',
-   desc_en:'Replicates at speed. Narrow range, intense drive.'},
+   dphi_ref:'≈130°', n_ref:'≈0.5',
+   desc_ja:'Δφ≈130° · n≈0.5 — 高速で複製・適応する。範囲は狭いが勢いが凄まじい。',
+   desc_en:'Δφ≈130° · n≈0.5 — Replicates at speed. Narrow range, intense drive.'},
+  {ja:'アメーバ',   en:'Amoeba',    gr:'Ἀμοιβάς', badge:'◐',
+   wMin:3, wMax:14, chaosMin:0.48,
+   dphi_ref:'≈115°', n_ref:'≈0.8',
+   desc_ja:'Δφ≈115° · n≈0.8 — 変形しながら動く。目的はあるが方向が定まらない。',
+   desc_en:'Δφ≈115° · n≈0.8 — Shapeshifting motion. Has drive but no clear direction.'},
   {ja:'ゴキブリ',   en:'Cockroach', gr:'Κατσαρίδα',badge:'▷',
    wMin:5, wMax:30, chaosMin:0.52,
-   desc_ja:'どこにでも潜り込み高速で動く落ち着きない生存者。脳は常にフル回転。',
-   desc_en:'Gets everywhere, moves fast. Brain always spinning at full speed.'},
+   dphi_ref:'≈105°', n_ref:'≈1',
+   desc_ja:'Δφ≈105° · n≈1 — どこにでも潜り込む落ち着きない生存者。脳は常にフル回転。',
+   desc_en:'Δφ≈105° · n≈1 — Gets everywhere, moves fast. Brain always at full speed.'},
   {ja:'昆虫',       en:'Insect',    gr:'Ἔντομο',  badge:'▲',
    wMin:10, wMax:40, chaosMin:0.46,
-   desc_ja:'思考が速く行動力はある。しかし他者を巻き込む方向には向かいにくい。',
-   desc_en:'Fast-thinking, high-action. Hard to involve others constructively.'},
-  // ── 人間ゾーン (W 5〜72, chaosIdx < 0.46) → HUMAN_TYPESで細分化 ──
+   dphi_ref:'≈90°',  n_ref:'≈1.3',
+   desc_ja:'Δφ≈90° · n≈1.3 — 思考が速く行動力はある。他者を巻き込む方向には向かいにくい。',
+   desc_en:'Δφ≈90° · n≈1.3 — Fast-thinking, high-action. Hard to involve others constructively.'},
+  // ── 人間ゾーン (W 4.5〜72, chaosIdx < 0.46, Δφ < 83°) → HUMAN_TYPESで細分化 ──
+  // 人間ゾーン中心: Δφ≈60°, n≈2〜3 (メタ認知完成), フロー理想点 Δφ=π/2=90°
   // ── ポスト・ヒューマン圏 (W > 72) ──
   {ja:'菌類ネットワーク', en:'Fungal Network', gr:'Μυκητο-Δίκτυο', badge:'⬡',
    wMin:65, wMax:130, socMin:0.4,
-   desc_ja:'地下で広がる接続網。他者を介して力を蓄え、森を束ねる。',
-   desc_en:'Underground web. Power flows through others. Binds the forest.'},
+   dphi_ref:'≈40°',  n_ref:'≈4',
+   desc_ja:'Δφ≈40° · n≈4 — 地下で広がる接続網。他者を介して力を蓄え、森全体を束ねる。',
+   desc_en:'Δφ≈40° · n≈4 — Underground web. Power flows through others. Binds the forest.'},
   {ja:'生態系',     en:'Ecosystem', gr:'Οἰκοσύστημα',badge:'◉',
    wMin:100, wMax:200, socMin:0.5,
-   desc_ja:'無数の命が連鎖し支え合う複雑系。その中心として機能する。',
-   desc_en:'Complex web of interdependent life. You are its axis.'},
+   dphi_ref:'≈25°',  n_ref:'≈5',
+   desc_ja:'Δφ≈25° · n≈5 — 無数の命が連鎖し支え合う複雑系。その中心として機能する。',
+   desc_en:'Δφ≈25° · n≈5 — Complex web of interdependent life. You are its axis.'},
   {ja:'惑星大気',   en:'Atmosphere',gr:'Ἀτμόσφαιρα',badge:'◎',
    wMin:160, wMax:280,
-   desc_ja:'惑星全体を包む生命維持の場。あらゆる呼吸がここを通る。',
-   desc_en:'Life-support layer of a world. All breath passes through you.'},
+   dphi_ref:'≈15°',  n_ref:'≈6',
+   desc_ja:'Δφ≈15° · n≈6 — 惑星全体を包む生命維持の場。あらゆる呼吸がここを通る。',
+   desc_en:'Δφ≈15° · n≈6 — Life-support layer of a world. All breath passes through you.'},
   {ja:'惑星',       en:'Planet',    gr:'Πλανήτης', badge:'✦',
    wMin:240,
-   desc_ja:'自転・磁場・大陸漂移で動く岩の巨大生命体。宗教を超えた存在。',
-   desc_en:'Rotating rock of immense gravity. Beyond religion and nation.'},
+   dphi_ref:'≈10°',  n_ref:'≈7',
+   desc_ja:'Δφ≈10° · n≈7 — 自転・磁場・大陸漂移で動く岩の巨大生命体。宗教を超えた存在。',
+   desc_en:'Δφ≈10° · n≈7 — Rotating rock of immense gravity. Beyond religion and nation.'},
   {ja:'恒星',       en:'Star',      gr:'Ἄστρον',   badge:'✸',
    wMin:340,
-   desc_ja:'核融合で1000万度。全生命のエネルギー源として輝く。',
-   desc_en:'Fusion at 10 million degrees. Source of all life\'s energy.'},
+   dphi_ref:'≈5°',   n_ref:'≈9',
+   desc_ja:'Δφ≈5° · n≈9 — 核融合で1000万度。全生命のエネルギー源として輝く。',
+   desc_en:'Δφ≈5° · n≈9 — Fusion at 10 million degrees. Source of all life\'s energy.'},
   {ja:'銀河',       en:'Galaxy',    gr:'Γαλαξίας', badge:'❋',
    wMin:600,
-   desc_ja:'1000億の恒星が織りなす重力の渦巻き。波動の極致。',
-   desc_en:'100 billion stars in gravitational spirals. The peak of waves.'},
+   dphi_ref:'≈2°',   n_ref:'→∞',
+   desc_ja:'Δφ≈2° · n→∞ — 1000億の恒星が織りなす重力の渦巻き。波動の極致。τ_felt→0。',
+   desc_en:'Δφ≈2° · n→∞ — 100 billion stars in gravitational spirals. Wave at its peak. τ_felt→0.'},
 ];
 
 // 人間ゾーンの境界値
 const HUMAN_W_MIN = 4.5;   // W これ未満 → 微小圏へ
 const HUMAN_W_MAX = 72;    // W これ超 → ポスト・ヒューマン圏へ
 const INSECT_CHAOS_MAX = 0.46; // chaosIdx これ以上 → 虫・微生物圏へ (W < 40でも)
+
+// ── Ψ 派生パラメータ統合計算 ──
+// W と環境状態から理論の全変数を一括導出する中核関数。
+// α=0.500 (τ_felt感度), β₀=0.593 (フェーズ0確定), η_c=0.15 (GCP逆算) — すべて v2.3 確定値。
+const TAU_ALPHA = 0.500;   // τ_felt = τy/(1+α·W) の感度定数 α
+const BETA_0    = 0.593;   // β₀: 意識-重力結合定数 (r=−0.968 で確定)
+const ETA_C     = 0.15;    // η_c: 集団スケール指数 (GCP データから逆算)
+
+function computeLifeParams(W_val, ev){
+  const cogLoad = ev?.cogLoad      != null ? ev.cogLoad      : 0.2;
+  const qual    = ev?.quality      != null ? ev.quality      : 0.5;
+  const soc     = ev?.socialDensity!= null ? ev.socialDensity: 0.3;
+  const host    = ev?.hostility    != null ? ev.hostility    : 0.2;
+
+  // ── chaosIdx → Δφ (位相差場) ──
+  // Δφ=0°: 完全整合 (銀河)  |  Δφ=90°: フロー臨界点 (∿ 最大混合点)  |  Δφ=180°: 完全脱相関 (ウイルス)
+  const chaosIdx      = cogLoad*0.50 + (1-qual)*0.30 + (1-soc)*0.20;
+  const delta_phi     = Math.PI * chaosIdx;                     // rad [0, π]
+  const delta_phi_deg = Math.round(delta_phi * 180 / Math.PI);  // °   [0, 180]
+
+  // ── τ_felt = τy / (1 + α·W) ──
+  // W=3:×2.5速  W=10:×6速  W=100:×51速
+  const tau_ratio   = 1 / (1 + TAU_ALPHA * W_val); // 0 < ratio ≤ 1
+  const tau_speed   = Math.min(4.0, 1 / tau_ratio); // 表示上限 ×4
+  const tau_display = (1 / tau_ratio).toFixed(1);
+
+  // ── F_frozen (凍結率) ──
+  // トラウマ・硬直度。F_frozen↑ → β↓ → 意識-重力結合↓ → 回復力↓
+  const F_frozen = Math.min(1,
+    (host + (1 - qual) + Math.max(0, cogLoad - 0.5)) / 3
+  );
+
+  // ── η_coh (位相整合率) ──
+  const eta_coh = Math.max(0, 1 - host);
+
+  // ── n (意識再帰深度) ──
+  // n=1:感覚(原核生物)  n=2:思考(哺乳類)  n=3:メタ認知(人間)  n→∞:悟り
+  const n_recur = Math.max(0.01, Math.log2(1 + W_val * 0.5));
+
+  // ── N (集団規模) ──
+  const N_social = Math.max(1, soc * 1000);
+
+  // ── β[Ψ] = β₀ · W^½ · (1−F_frozen) · n^α · N^η_c · η_coh · cos²(Δφ/2 − π/4) ──
+  // この値が高いほど「対話が現実を書き換える力」が強い
+  const beta_psi = BETA_0
+    * Math.sqrt(Math.max(0, W_val))
+    * (1 - F_frozen)
+    * Math.pow(n_recur, TAU_ALPHA)
+    * Math.pow(N_social, ETA_C)
+    * eta_coh
+    * Math.pow(Math.cos(delta_phi / 2 - Math.PI / 4), 2);
+
+  return { chaosIdx, delta_phi, delta_phi_deg,
+           tau_ratio, tau_speed, tau_display,
+           F_frozen, eta_coh, n_recur, beta_psi };
+}
 
 // W + hScale + 環境 → 最適な生命体タイプを返す統合関数
 function matchLifeType(W, hScale, ev){
@@ -3664,12 +3738,18 @@ const LIFE=(function(){
     };
   }
   function detectPhase(ev){
-    const hl=ev.heatLevel,cl=ev.cogLoad,ho=ev.hostility,qu=ev.quality;
-    if(hl>.72&&ho>.55)return'burning';
-    if(hl<.15||(qu<.25&&cl<.2))return'frozen';
-    if(hl>.62||cl>.68)return'gas';
-    if(ho>.52&&qu<.38)return'solid';
-    return'fluid';
+    const hl=ev.heatLevel??0.3, cl=ev.cogLoad??0.25;
+    const ho=ev.hostility??0.2,  qu=ev.quality??0.6;
+    const soc=ev.socialDensity??0.4;
+    // Δφ をリアルタイム算出してフェーズ判定に利用
+    // Δφ=90° (π/2) が ∿演算子の最大混合点 = フロー臨界 = fluid 相の中心
+    const dphi = (cl*0.50 + (1-qu)*0.30 + (1-soc)*0.20) * 180; // 0°〜180°
+
+    if(hl<.15 || (qu<.25 && cl<.2))    return'frozen';   // 低熱 + 低活動 → 凍結
+    if(dphi > 148 && hl > 0.48)        return'burning';  // Δφ>148° + 高熱 → 燃焼カオス
+    if(dphi > 105 || hl>.62 || cl>.68) return'gas';      // Δφ>105° → 気体 (散漫)
+    if(ho>.52 && qu<.38)               return'solid';    // 高敵意 + 低品質 → 固体 (硬直)
+    return'fluid';                                        // Δφ≈60-90° → 流体 (フロー付近)
   }
 
   function mkPt(par,sn){
@@ -3829,7 +3909,9 @@ const LIFE=(function(){
     const orgBx=58,orgBy=35;
     if(orgX>orgBx){orgVx*=-.85;orgX=orgBx;} if(orgX<-orgBx){orgVx*=-.85;orgX=-orgBx;}
     if(orgY>orgBy){orgVy*=-.85;orgY=orgBy;} if(orgY<-orgBy){orgVy*=-.85;orgY=-orgBy;}
-    camTheta+=.0022+c[6]*.0005+ev.cogLoad*.0018;
+    // τ_felt = τy/(1+α·W) → 高W ほど観測者の「感じる時間」が速い → カメラ回転加速
+    const tauSpd=computeLifeParams(c[1]||0,ev).tau_speed;
+    camTheta+=(.0022+c[6]*.0005+ev.cogLoad*.0018)*Math.min(2.5,tauSpd);
     const camY=32*Math.sin(t*.06);
     camera.position.set(205*Math.sin(camTheta),camY,205*Math.cos(camTheta));
     camera.lookAt(0,0,0);
@@ -3945,12 +4027,55 @@ const LIFE=(function(){
         const barColor = W_val < HUMAN_W_MIN ? 'linear-gradient(90deg,#6633cc,#cc44ff)'
           : W_val > HUMAN_W_MAX ? 'linear-gradient(90deg,#cc8800,#ffdd44)'
           : 'linear-gradient(90deg,#2288cc,#00e8ff)';
+        // ── Ψ パラメータ計算 ──
+        const lp = computeLifeParams(W_val, ev);
+        const dphiColor = lp.delta_phi_deg < 60  ? '#22ffcc'
+                        : lp.delta_phi_deg < 90  ? '#66ddff'
+                        : lp.delta_phi_deg < 120 ? '#ffcc44'
+                        : lp.delta_phi_deg < 150 ? '#ff8833'
+                        : '#ff4466';
+        const dphiLabel = lp.delta_phi_deg < 60  ? (isEn?'Coherent':'整合')
+                        : lp.delta_phi_deg < 95  ? (isEn?'Flow':'フロー')
+                        : lp.delta_phi_deg < 130 ? (isEn?'Turbulent':'乱流')
+                        : (isEn?'Chaotic':'脱相関');
+        const tauColor = lp.tau_speed >= 3 ? '#22ffcc' : lp.tau_speed >= 1.8 ? '#88ffbb' : '#6699bb';
+        const fFrozenPct = Math.round(lp.F_frozen * 100);
+        const fFrozenColor = lp.F_frozen < 0.25 ? '#22ffcc' : lp.F_frozen < 0.5 ? '#ffcc44' : '#ff6655';
+        const betaStr = lp.beta_psi.toFixed(2);
+        const betaColor = lp.beta_psi > 1.0 ? '#cc88ff' : lp.beta_psi > 0.4 ? '#8888ff' : '#556688';
+        // W マイルストーン表示
+        const wMS = W_val < 3   ? (isEn?'→W=3 Flow entry':'→W=3 フロー入口')
+                  : W_val < 10  ? (isEn?'Flow state':'フロー状態')
+                  : W_val < 15  ? (isEn?'Metacognition':'メタ認知完成')
+                  : W_val < 72  ? (isEn?'g-2 domain':'g-2 予測域')
+                  : (isEn?'Post-human':'ポスト人間');
+        const nStr = lp.n_recur >= 9 ? '∞' : lp.n_recur.toFixed(1);
+
         lifeFormDiv.innerHTML=
           `<div style="font:600 10px 'Noto Sans JP',sans-serif;color:#88c8e8;letter-spacing:.12em;margin-bottom:5px">${typeLabel}</div>`+
           `<div style="font:bold 16px 'Noto Sans JP',sans-serif;color:#e8f4ff;line-height:1.2;margin-bottom:2px">${lt.badge} ${typeName}</div>`+
-          `<div style="font:11px sans-serif;color:#6699bb;margin-bottom:5px">${phN}相 &nbsp;·&nbsp; W=${Math.floor(W_val)}</div>`+
+          `<div style="font:11px sans-serif;color:#6699bb;margin-bottom:4px">${phN}相 · W=${Math.floor(W_val)} <span style="font:9px monospace;color:#447799;opacity:.85">${wMS}</span></div>`+
           `<div style="width:100%;height:4px;background:rgba(0,80,140,.3);border-radius:2px;margin-bottom:6px"><div style="width:${scaleBar}%;height:100%;background:${barColor};border-radius:2px;transition:width 1s"></div></div>`+
-          `<div style="font:11px 'Noto Sans JP',sans-serif;color:#8aaabb;line-height:1.6;max-width:190px">${desc}</div>`;
+          `<div style="font:11px 'Noto Sans JP',sans-serif;color:#8aaabb;line-height:1.55;max-width:195px;margin-bottom:8px">${desc}</div>`+
+          `<div style="border-top:1px solid rgba(0,100,160,.22);padding-top:7px">`+
+          // Δφ 行
+          `<div style="display:flex;align-items:center;gap:5px;margin-bottom:5px">`+
+          `<span style="font:9px monospace;color:#446688;min-width:20px">Δφ</span>`+
+          `<div style="flex:1;height:3px;background:rgba(0,60,120,.25);border-radius:2px">`+
+          `<div style="width:${Math.round(lp.delta_phi_deg/1.8)}%;height:100%;background:linear-gradient(90deg,#22aaff,#ff3366);border-radius:2px;transition:width 1.2s"></div></div>`+
+          `<span style="font:600 9px monospace;color:${dphiColor};min-width:62px;text-align:right">${lp.delta_phi_deg}° ${dphiLabel}</span>`+
+          `</div>`+
+          // τ_felt + n 行
+          `<div style="display:flex;justify-content:space-between;margin-bottom:4px">`+
+          `<span style="font:9px monospace;color:#446688">τ_felt <span style="color:${tauColor};font-weight:700">×${lp.tau_display}</span></span>`+
+          `<span style="font:9px monospace;color:#446688">n <span style="color:#aa88ff">${nStr}</span></span>`+
+          `</div>`+
+          // F_frozen + β[Ψ] 行
+          `<div style="display:flex;justify-content:space-between">`+
+          `<span style="font:9px monospace;color:#446688">F<sub style="font-size:7px">frozen</sub> <span style="color:${fFrozenColor}">${fFrozenPct}%</span></span>`+
+          `<span style="font:9px monospace;color:#446688">β[Ψ] <span style="color:${betaColor};font-weight:700">${betaStr}</span></span>`+
+          `</div>`+
+          `</div>`;
         // Save life type to user profile
         if(AUTH.user&&AUTH.user.lifeFormType!==lt.en){
           AUTH.save('lifeFormType',lt.en);
@@ -4372,7 +4497,11 @@ function updateLifeStatus(){
   // トライアル終了 or 未払い → アップグレードボタン
   const showUpgBtn=u&&!isPrem&&u.plan!=='premium';
   const upgBtn=showUpgBtn?` <button onclick="showUpgradeModal('expired')" style="margin-left:6px;padding:2px 10px;font:600 10px var(--font-ja);background:var(--T);color:#fff;border:none;border-radius:5px;cursor:pointer;letter-spacing:.05em">${isEn?'Upgrade':isGr?'Αναβάθμιση':'アップグレード'}</button>`:'';
-  bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; ${cellsLbl} <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · ${todayLbl} ${remain}`:''}  &nbsp;<span style="color:var(--dim);font-size:10px"> · ${envS}</span>${upgBtn}`;
+  const ev2=ENV_STATE.e, lp2=computeLifeParams(c[1]||0, ev2);
+  const dphiStr=`Δφ ${lp2.delta_phi_deg}°`;
+  const dphiC=lp2.delta_phi_deg<90?'#44ffcc':lp2.delta_phi_deg<130?'#ffcc44':'#ff6644';
+  const tauStr=lp2.tau_speed>=1.5?`×${lp2.tau_display}τ`:'';
+  bar.innerHTML=`<b style="color:var(--P)">Stage ${s.stage.n} · ${s.stage.label}</b> &nbsp;|&nbsp; ${cellsLbl} <b>${s.cells}</b> &nbsp;|&nbsp; W=<b>${Math.floor(c[1])}</b> &nbsp;|&nbsp; <span style="color:${dphiC};font-family:var(--font-code)">${dphiStr}</span>${tauStr?` &nbsp;|&nbsp; <span style="color:#88ffaa;font-family:var(--font-code)">${tauStr}</span>`:''} &nbsp;|&nbsp; ${u?`<span style="color:var(--G)">${u.lifeName||u.name}</span> · ${planTxt} · ${todayLbl} ${remain}`:''}  &nbsp;<span style="color:var(--dim);font-size:10px"> · ${envS}</span>${upgBtn}`;
   // Update name txt
   const ntxt=document.getElementById('life-name-txt');
   const namePrompt=isEn?'✏ Give a name':isGr?'✏ Δῶστε ὄνομα':'✏ 名前をつける';
