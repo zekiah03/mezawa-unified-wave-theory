@@ -398,7 +398,7 @@ body.lang-gr { font-family:var(--font-gr); }
 .life-main { position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden; }
 .life-status-bar { padding:5px 16px; font-size:11px; color:var(--dim); background:var(--bg2); border-bottom:1px solid var(--bdr); flex-shrink:0; font-family:var(--font-code); display:flex; align-items:center; gap:8px; }
 .life-observe { display:flex !important; flex-direction:row; overflow:hidden; padding:0 !important; gap:0; }
-.life-canvas-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; background:#f0f4ff; min-height:200px; position:relative; }
+.life-canvas-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; background:#000000; min-height:200px; position:relative; }
 #life-canvas { flex:1; min-height:0; display:block; }
 .life-canvas-badge { position:absolute; bottom:12px; left:14px; font-size:10px; color:rgba(0,0,0,.3); font-family:var(--font-code); pointer-events:none; letter-spacing:.06em; }
 .life-chat-panel { width:300px; flex-shrink:0; border-left:1px solid var(--bdr); display:flex; flex-direction:column; background:var(--bg); }
@@ -3655,7 +3655,7 @@ const LIFE=(function(){
   let evoFlash=0,evoMsg='',autoGrow=0;
   let renderer=null,scene=null,camera=null;
   let cellGroup=null,blobMesh=null,blobInner=null,haloMesh=null;
-  let ringGroup=null,rippleGroup=null,starField=null,gridMesh=null;
+  let ringGroup=null,rippleGroup=null,starField=null,gridMesh=null,psSphere=null,psBasePos=null;
   let camTheta=0;
   let evoDiv=null,nameDiv3d=null,phaseDiv=null,lifeFormDiv=null;
   // Organism locomotion (center-of-mass drifts around canvas)
@@ -3778,12 +3778,12 @@ const LIFE=(function(){
     const sPos=new Float32Array(1400*3);
     for(let i=0;i<1400;i++){const r=340+Math.random()*900,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);}
     const sGeo=new THREE.BufferGeometry(); sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
-    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x220033,size:0.9,transparent:true,opacity:.22,blending:THREE.AdditiveBlending,depthWrite:false}));
+    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x112244,size:0.7,transparent:true,opacity:.12,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(starField);
 
     // Hologram background grid (icosahedron wireframe)
     gridMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(175,2),
-      new THREE.MeshBasicMaterial({color:0x220044,wireframe:true,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false}));
+      new THREE.MeshBasicMaterial({color:0x112255,wireframe:true,transparent:true,opacity:.04,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(gridMesh);
 
     // Organism blob — additive blending for glow
@@ -3797,15 +3797,40 @@ const LIFE=(function(){
       new THREE.MeshPhongMaterial({color:0x2255ff,transparent:true,opacity:.03,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));
     haloMesh.visible=false; scene.add(haloMesh);
 
-    // Cell group
-    cellGroup=new THREE.Group(); scene.add(cellGroup);
+    // Cell group (physics only — not rendered as individual meshes)
+    cellGroup=new THREE.Group();
 
-    // Connection lines (pre-allocated, additive)
+    // ── Particle Sphere (Fibonacci surface + interior volume) ──────────
+    const PS_N=2400, GOLDEN_ANG=Math.PI*(3-Math.sqrt(5));
+    psBasePos=new Float32Array(PS_N*3);
+    const psColInit=new Float32Array(PS_N*3);
+    // Surface: 2000 Fibonacci sphere points (gives natural polar rings)
+    for(let i=0;i<2000;i++){
+      const yi=1-(i/1999)*2; const ri=Math.sqrt(Math.max(0,1-yi*yi));
+      const ti=GOLDEN_ANG*i;
+      psBasePos[i*3]=Math.cos(ti)*ri; psBasePos[i*3+1]=yi; psBasePos[i*3+2]=Math.sin(ti)*ri;
+      const pp=yi*yi; // pole proximity
+      psColInit[i*3]=0.04+pp*0.06; psColInit[i*3+1]=0.18+pp*0.12; psColInit[i*3+2]=0.7+pp*0.3;
+    }
+    // Interior: 400 random volume points for depth
+    for(let i=2000;i<PS_N;i++){
+      const u=Math.random(),v=Math.random(),w=Math.random();
+      const th=2*Math.PI*u, ph=Math.acos(2*v-1), rv=Math.cbrt(w)*0.72;
+      psBasePos[i*3]=rv*Math.sin(ph)*Math.cos(th); psBasePos[i*3+1]=rv*Math.cos(ph); psBasePos[i*3+2]=rv*Math.sin(ph)*Math.sin(th);
+      psColInit[i*3]=0.02; psColInit[i*3+1]=0.08; psColInit[i*3+2]=0.38;
+    }
+    const psGeo=new THREE.BufferGeometry();
+    psGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(PS_N*3),3));
+    psGeo.setAttribute('color',new THREE.BufferAttribute(psColInit,3));
+    psSphere=new THREE.Points(psGeo,new THREE.PointsMaterial({size:2.0,vertexColors:true,transparent:true,opacity:0.92,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true}));
+    scene.add(psSphere);
+
+    // Connection lines (subtle neural links between physics nodes)
     connPos=new Float32Array(MAX_CONN*2*3); connCol=new Float32Array(MAX_CONN*2*3);
     connGeo=new THREE.BufferGeometry();
     connGeo.setAttribute('position',new THREE.BufferAttribute(connPos,3));
     connGeo.setAttribute('color',new THREE.BufferAttribute(connCol,3));
-    connMat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.38,blending:THREE.AdditiveBlending,depthWrite:false});
+    connMat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.14,blending:THREE.AdditiveBlending,depthWrite:false});
     connLine=new THREE.LineSegments(connGeo,connMat); connLine.frustumCulled=false; scene.add(connLine);
 
     // Rings (Stage 4+, additive)
@@ -3825,44 +3850,45 @@ const LIFE=(function(){
   }
 
   function syncCells(sn,pv){
+    // ── Particle Sphere renderer (replaces individual cell meshes) ──
+    if(!psSphere||!psBasePos)return;
     const ev=ENV_STATE.e;
-    // Add new cell meshes (standardized r=5, use scale for size)
-    while(cellGroup.children.length<pts.length){
-      cellGroup.add(new THREE.Mesh(new THREE.SphereGeometry(5,12,12),
-        new THREE.MeshPhongMaterial({transparent:true,opacity:.5,shininess:140,blending:THREE.AdditiveBlending,depthWrite:false})));
+    const W_val=LIFE_STATE.coords[1]||0;
+    const lp=computeLifeParams(W_val,ev);
+    const spread=pts.reduce((mx,p)=>Math.max(mx,Math.hypot(p.px,p.py,p.pz)),0)||40;
+    const baseRadius=Math.max(54,spread*1.22+18);
+    const geo=psSphere.geometry;
+    const posAttr=geo.getAttribute('position');
+    const colAttr=geo.getAttribute('color');
+    const N=psBasePos.length/3;
+    // ── Phase color palette (additive, black bg) ──
+    let r0,g0,b0;
+    if(currentPhase==='burning'){r0=1.0; g0=0.28;b0=0.06;}
+    else if(currentPhase==='frozen'){r0=0.32;g0=0.72;b0=1.0;}
+    else if(currentPhase==='gas'){  r0=0.90;g0=0.50;b0=0.08;}
+    else if(currentPhase==='solid'){r0=0.20;g0=0.40;b0=0.95;}
+    else{r0=0.05;g0=0.25;b0=1.0;} // fluid = deep blue (image 2 style)
+    // Δφ warms the hue
+    const dp=lp.delta_phi/Math.PI; // 0→1
+    r0=Math.min(1.0,r0+dp*0.28); b0=Math.max(0.02,b0-dp*0.42);
+    // τ_felt sets breathe speed
+    const bFreq=0.85+lp.tau_speed*0.38;
+    const breathe=1+0.055*Math.sin(t*bFreq);
+    for(let i=0;i<N;i++){
+      const bx=psBasePos[i*3],by=psBasePos[i*3+1],bz=psBasePos[i*3+2];
+      const isSurf=(i<2000);
+      const radR=baseRadius*(isSurf?1.0:0.52+by*by*0.16)*breathe;
+      posAttr.setXYZ(i,bx*radR+orgX*0.3,by*radR+orgY*0.3,bz*radR);
+      // Polar ring effect: Fibonacci naturally concentrates at poles → bright rings
+      const pp=by*by; // 1=pole, 0=equator
+      const shimmer=0.42+pp*0.52+0.06*Math.sin(t*3.6+i*0.011);
+      const fade=isSurf?1.0:0.28;
+      colAttr.setXYZ(i,r0*shimmer*fade,g0*shimmer*fade,b0*shimmer*fade);
     }
-    while(cellGroup.children.length>pts.length){
-      const m=cellGroup.children[cellGroup.children.length-1];
-      m.geometry.dispose();m.material.dispose();cellGroup.remove(m);
-    }
-    const hologram=0.92+0.08*Math.sin(t*7.7)*Math.sin(t*13.1);
-    const cv=LIFE_STATE.coords;
-    const phiShift=(cv[0]*(180/Math.PI)*0.12)%360;
-    const wSat=Math.min(0.12,cv[1]/700);
-    // Surface detection: rank cells by distance, show only outermost shell
-    const dists=pts.map((q,i)=>({i,d:Math.hypot(q.px,q.py,q.pz)})).sort((a,b)=>b.d-a.d);
-    const maxD=dists[0]?.d||1;
-    const surfIdxMap=new Map(dists.map((x,rank)=>[x.i,rank/dists.length])); // 0=outermost
-    pts.forEach((p,i)=>{
-      const m=cellGroup.children[i]; if(!m)return;
-      m.position.set(p.px+orgX, p.py+orgY, p.pz);
-      const targetSz=pv.szLo+p.depth*(pv.szHi-pv.szLo);
-      const pulse=1+0.12*Math.sin(t*p.fr+p.ph);
-      m.scale.setScalar(targetSz/5*pulse);
-      // 分析座標ベースのノード色: フェーズhue + φシフト + depth変化
-      const nodeHue=(pv.hue+phiShift+i*1.5+720)%360;
-      const nodeSat=Math.min(0.98,pv.sat+wSat);
-      const nodeLit=0.68+p.depth*0.22;
-      const col=new THREE.Color().setHSL(nodeHue/360,nodeSat,nodeLit);
-      m.material.color.copy(col);
-      m.material.emissive.copy(col).multiplyScalar(pv.emMul);
-      const rawOp=p.born?Math.min(pv.opHi,p.age*4.0):(pv.opLo+p.depth*(pv.opHi-pv.opLo));
-      // Surface factor: outermost 45% fully visible, 45-65% fade, inner hidden
-      const rank=surfIdxMap.get(i)||1;
-      const surfFactor=rank<.45?1.0:rank<.68?Math.max(0,(1-(rank-.45)/.23)*.25):0;
-      m.material.opacity=rawOp*hologram*surfFactor;
-      m.material.shininess=180;
-    });
+    posAttr.needsUpdate=true; colAttr.needsUpdate=true;
+    // Sphere self-rotation (independent of camera orbit)
+    psSphere.rotation.y=t*0.068;
+    psSphere.rotation.x=0.18+Math.sin(t*0.092)*0.20;
   }
 
   function syncConnections(sn,pv){
