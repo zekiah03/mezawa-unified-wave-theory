@@ -4688,28 +4688,48 @@ const HABIT_STATE=(function(){
     habits=JSON.parse(JSON.stringify(u?.habits||[]));
     if(habits.length===0){
       const defs=['meditation','reading','exercise'];
-      defs.forEach(id=>{const p=PRESETS.find(x=>x.id===id);if(p)habits.push({...p,streak:0,doneToday:false,lastDone:''});});
+      defs.forEach(id=>{const p=PRESETS.find(x=>x.id===id);if(p)habits.push({...p,streak:0,doneDates:[],doneToday:false,lastDone:''});});
     }
+    // 旧データ移行: doneToday フラグ → doneDates 配列
+    habits.forEach(h=>{
+      if(!Array.isArray(h.doneDates)){
+        h.doneDates=(h.lastDone&&h.doneToday)?[h.lastDone]:[];
+      }
+    });
     checkNewDay();
   }
   function checkNewDay(){
     const t=today(),y=new Date(Date.now()-86400000).toISOString().slice(0,10);
     habits.forEach(h=>{
-      if(h.lastDone&&h.lastDone!==t){
-        h.doneToday=false;
-        if(h.lastDone!==y)h.streak=0;
-      }
+      if(!Array.isArray(h.doneDates))h.doneDates=[];
+      // doneToday は今日の doneDates から算出（後方互換）
+      h.doneToday=h.doneDates.includes(t);
+      if(h.lastDone&&h.lastDone!==t&&h.lastDone!==y)h.streak=0;
     });
   }
   function save(){AUTH.save('habits',JSON.parse(JSON.stringify(habits)));}
-  function toggle(id){
+  // dateStr を受け取り、その日のみトグル
+  function toggle(id, dateStr){
+    const d=dateStr||today();
     const h=habits.find(x=>x.id===id);if(!h)return;
-    h.doneToday=!h.doneToday;
-    if(h.doneToday){h.lastDone=today();h.streak=(h.streak||0)+1;}
-    else{h.streak=Math.max(0,(h.streak||0)-1);}
+    if(!Array.isArray(h.doneDates))h.doneDates=[];
+    const idx=h.doneDates.indexOf(d);
+    if(idx>=0){
+      h.doneDates.splice(idx,1);
+      if(d===today())h.streak=Math.max(0,(h.streak||0)-1);
+    }else{
+      h.doneDates.push(d);
+      if(d===today()){h.lastDone=d;h.streak=(h.streak||0)+1;}
+    }
+    h.doneToday=h.doneDates.includes(today());
     save();
-    applyToLife(h,h.doneToday);
+    applyToLife(h,idx<0); // idx<0 なら今チェックした(done=true)
     renderHabitTab();
+  }
+  function isDoneOn(id, dateStr){
+    const h=habits.find(x=>x.id===id);if(!h)return false;
+    if(!Array.isArray(h.doneDates))return(dateStr===h.lastDone&&h.doneToday);
+    return h.doneDates.includes(dateStr);
   }
   function applyToLife(habit,done){
     const e=ENV_STATE.e,s=done?1:-1,ef=habit.ef||{};
@@ -4729,11 +4749,11 @@ const HABIT_STATE=(function(){
     return r;
   }
   return{
-    load,save,toggle,getScore,getTodayEffect,
+    load,save,toggle,isDoneOn,getScore,getTodayEffect,
     get habits(){return habits;},
     get PRESETS(){return PRESETS;},
-    add(preset){if(!habits.find(h=>h.id===preset.id)){habits.push({...preset,streak:0,doneToday:false,lastDone:''});save();}},
-    addCustom(name){const id='c_'+Date.now();habits.push({id,name,icon:'⭐',cat:'カスタム',ef:{W:.15,quality:.05},streak:0,doneToday:false,lastDone:''});save();},
+    add(preset){if(!habits.find(h=>h.id===preset.id)){habits.push({...preset,streak:0,doneDates:[],doneToday:false,lastDone:''});save();}},
+    addCustom(name){const id='c_'+Date.now();habits.push({id,name,icon:'⭐',cat:'カスタム',ef:{W:.15,quality:.05},streak:0,doneDates:[],doneToday:false,lastDone:''});save();},
     remove(id){habits=habits.filter(h=>h.id!==id);save();}
   };
 })();
@@ -4840,7 +4860,7 @@ function renderCalendar(){
     const tasks=CALENDAR_STATE.getForDate(dateStr);
 
     const habitChips=habits.map(h=>`
-      <div class="cal-habit-chip${h.doneToday?' is-done':''}" onclick="calToggleHabit('${h.id}')" title="${h.name}">
+      <div class="cal-habit-chip${HABIT_STATE.isDoneOn(h.id,dateStr)?' is-done':''}" onclick="calToggleHabit('${h.id}','${dateStr}')" title="${h.name}">
         <span class="cal-hc-icon">${h.icon}</span>
         <span class="cal-hc-name">${h.name}</span>
       </div>`).join('');
@@ -4875,8 +4895,8 @@ function calPrevWeek(){CALENDAR_STATE.weekOff--;renderCalendar();}
 function calNextWeek(){CALENDAR_STATE.weekOff++;renderCalendar();}
 function calToday(){CALENDAR_STATE.weekOff=0;renderCalendar();}
 
-function calToggleHabit(id){
-  HABIT_STATE.toggle(id);
+function calToggleHabit(id, dateStr){
+  HABIT_STATE.toggle(id, dateStr);
   renderCalendar();
 }
 function calToggleTask(id){
