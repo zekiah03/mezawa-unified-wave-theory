@@ -3740,6 +3740,28 @@ const LANG_DATA = {
         {claim:'自己境界が弱まる状態では、身体所有感課題の成績に系統的変化が出る', method:'ラバーハンド錯覚 + 離人感尺度 + 自己言語化負荷', falsify:'自己境界変動と身体所有感が独立なら、統合モデルは再検討が必要'},
         {claim:'ゾーン報告が高い状態で自己言語化負荷を増やすとパフォーマンスが低下する', method:'二重課題パラダイム + フロー尺度 + 反応時間', falsify:'言語化負荷がフロー/パフォーマンスに影響しないなら、自己モデル仮説は不十分'},
       ],
+      falsCheck: {
+        title: '反証可能性チェック',
+        sub: '「間違っている」と証明できない理論は科学ではない',
+        items: [
+          {q:'この理論が「間違い」だと証明するには、どんな実験結果が必要か？', a:'物理セクター: β=0.593 が重力波・回転曲線データと矛盾すれば棄却。主観セクター: ゾーン時にEEG γ同期が上昇しない、時間再生誤差と注意指標が無相関なら、中核仮説が崩れる。具体的には Phase A（EEG実験）と Phase D（時間知覚実験）で判定可能。', status:'yes', statusLabel:'判定可能'},
+          {q:'どんなデータを見ても正しいと言えてしまう構造か？', a:'物理セクター: No — β の値は測定で決まり、予測③の r=-0.968 は特定値を主張している。主観セクター: 危険あり — 「同期が高い＝良い状態」は事後的に何でも説明できる恐れ。対策: 同期の方向性（増加/減少）と具体的な閾値を事前に固定する必要がある。', status:'partial', statusLabel:'要改善'},
+          {q:'どの条件で理論は破綻するか？', a:'① β₀ の直接測定値が 0.593±0.135 の範囲外 ② 高W観測者の Bell 違反率が低W観測者と同等 ③ ゾーン状態で γ波同期が逆に低下 ④ T_sub が注意密度・変化量と全く無関係 ⑤ 自己言語化負荷がフロー状態に影響しない — いずれか1つでも確認されれば、対応する仮説は棄却。', status:'yes', statusLabel:'明確'},
+          {q:'既存データでこの理論と矛盾するものはあるか？', a:'β₀ の理論予測値 0.2 に対し、メタ解析データから算出した値は 0.593（約3倍の乖離）。これは矛盾ではなく修正で対処したが、「予測が外れた」事実は記録済み。主観セクターは未検証のため矛盾データは未発見だが、検証前に「矛盾なし」と主張するのは科学的に不誠実。', status:'partial', statusLabel:'一部乖離あり'},
+          {q:'「外れる予測」を1つでも出せているか？', a:'Yes — 予測③: F_frozen と β_eff の相関が r < -0.3 を主張し、実測 r = -0.968 で支持された。予測⑦: 高W観測者の Bell 違反率が2.2倍を主張（未検証）。予測⑧: γ減少と宇宙膨張加速の対応（未検証）。外れうる具体的数値を出している点は科学的に健全。', status:'yes', statusLabel:'あり'},
+        ],
+      },
+      predGen: {
+        title: '予測生成',
+        sub: '理論が正しいなら世界はこう見えるはず — 検証可能な具体的予測',
+        items: [
+          {q:'この理論が正しいなら、現実世界で何が起きるはずか？', a:'① 高集中（高W）状態の人は主観時間が遅くなる ② 瞑想熟練者はEEG γ-θ結合が強く、時間知覚が系統的に歪む ③ 身体運動中のHRV-EEG同期度が高い人はゾーン入りやすい ④ 密度依存位相勾配βにより、高密度天体近傍で標準GRからの微小偏差が観測される'},
+          {q:'今まで説明されていない現象を予測できるか？', a:'① 「フロー状態での時間伸縮量」が注意密度の関数として定量化できる（既存理論では定性的記述のみ） ② 自己境界の動的変化がラバーハンド錯覚の応答時間に反映される ③ β₀ が非ゼロなら、ボソン星の質量-半径関係に標準モデルからの系統的偏差が出る'},
+          {q:'数値で予測できるものはあるか？', a:'① β₀ = 0.593 ± 0.135（密度依存パラメータ） ② 高W/低W の Bell 違反率比 ≈ 2.2倍 ③ T_sub/T_clock 比がW=3フロー時に約0.4（体感2.5倍速） ④ g-2 = 1 − W^(−2·δh·k) でδh=4.10×10⁻⁶, W=15 時に QED値と一致（誤差<10⁻⁹）'},
+          {q:'A条件とB条件で結果はどう変わると予測するか？', a:'A=通常注意 vs B=深いフロー → T_sub が B で 30-60% 短縮。A=自己言語化あり vs B=なし → B でフロー維持率が有意に上昇。A=身体静止 vs B=リズム運動 → B で EEG-HRV 同期度が上昇し主観的没入感が増加。A=β=0（標準理論） vs B=β=0.593 → B で高密度ボソン星の最大質量が変化。'},
+          {q:'この理論だけが予測できる現象は何か？', a:'① 「注意密度×身体同期×自己モデル安定性」の3変数が同時に主観時間を決定するという構造 — 既存理論は個別にしか扱わない ② β₀ による密度依存位相勾配効果（物理セクター固有） ③ W パラメータが意識と重力を橋渡しする可能性 — ただし③は現時点では投機的'},
+        ],
+      },
       limTitle: '現在の限界',
       limSub: '理論の誠実さは限界を認めることにある',
       lims: [
@@ -3880,6 +3902,28 @@ const LANG_DATA = {
         {claim:'When self-boundaries weaken, body ownership task performance shows systematic changes', method:'Rubber hand illusion + depersonalization scale + self-verbalization load', falsify:'If self-boundary variation and body ownership are independent, the integrated model needs revision'},
         {claim:'Increasing self-verbalization load during high-flow states reduces performance', method:'Dual-task paradigm + flow scale + reaction time', falsify:'If verbalization load does not affect flow/performance, the self-model hypothesis is insufficient'},
       ],
+      falsCheck: {
+        title: 'Falsifiability Check',
+        sub: 'A theory that cannot be proven wrong is not science',
+        items: [
+          {q:'What experimental results would prove this theory wrong?', a:'Physics sector: if β=0.593 contradicts gravitational wave/rotation curve data, reject. Subjective sector: if EEG γ-sync doesn\'t increase during flow, or time reproduction error is uncorrelated with attention metrics, core hypotheses collapse. Testable in Phase A (EEG) and Phase D (time perception).', status:'yes', statusLabel:'Testable'},
+          {q:'Is it structured to appear correct regardless of data?', a:'Physics sector: No — β has a specific measured value, prediction③ claims r=-0.968. Subjective sector: Risk exists — "high sync = good state" could explain anything post-hoc. Countermeasure: pre-register sync direction (increase/decrease) and specific thresholds.', status:'partial', statusLabel:'Needs work'},
+          {q:'Under what conditions does the theory break?', a:'① β₀ measured outside 0.593±0.135 ② High-W observers show same Bell violation rate as low-W ③ γ-sync decreases during flow ④ T_sub is unrelated to attention/change density ⑤ Self-verbalization load doesn\'t affect flow — any one confirmed rejects the corresponding hypothesis.', status:'yes', statusLabel:'Clear'},
+          {q:'Does existing data contradict this theory?', a:'β₀ theoretical prediction was 0.2; meta-analysis yielded 0.593 (~3x discrepancy). Addressed by correction, but "prediction missed" is recorded. Subjective sector is untested — claiming "no contradictions" before testing would be scientifically dishonest.', status:'partial', statusLabel:'Some deviation'},
+          {q:'Has it produced at least one prediction that could fail?', a:'Yes — Prediction③: F_frozen vs β_eff correlation claimed r<-0.3, measured r=-0.968 (supported). Prediction⑦: 2.2x Bell violation ratio for high-W observers (untested). Prediction⑧: γ-decay ↔ cosmic acceleration (untested). Specific falsifiable numbers have been stated.', status:'yes', statusLabel:'Yes'},
+        ],
+      },
+      predGen: {
+        title: 'Prediction Generation',
+        sub: 'If the theory is correct, the world should look like this — testable predictions',
+        items: [
+          {q:'If correct, what should happen in the real world?', a:'① High-focus (high-W) individuals experience slower subjective time ② Experienced meditators show stronger EEG γ-θ coupling with systematic time perception distortion ③ People with higher HRV-EEG sync during exercise enter flow more easily ④ Density-dependent phase gradient β causes micro-deviations from standard GR near high-density objects'},
+          {q:'Can it predict previously unexplained phenomena?', a:'① Flow state time distortion quantifiable as a function of attention density (existing theories only describe qualitatively) ② Dynamic self-boundary changes reflected in rubber hand illusion response times ③ If β₀≠0, boson star mass-radius relations show systematic deviation from standard model'},
+          {q:'Can anything be predicted numerically?', a:'① β₀ = 0.593 ± 0.135 ② High-W/low-W Bell violation ratio ≈ 2.2x ③ T_sub/T_clock ≈ 0.4 at W=3 flow (subjective 2.5x speed) ④ g-2 = 1−W^(−2·δh·k), δh=4.10×10⁻⁶, W=15 matches QED value (error<10⁻⁹)'},
+          {q:'How do predictions change between condition A and B?', a:'A=normal attention vs B=deep flow → T_sub 30-60% shorter in B. A=self-verbalization vs B=none → B maintains flow significantly better. A=static body vs B=rhythmic movement → B shows higher EEG-HRV sync and subjective immersion. A=β=0 (standard) vs B=β=0.593 → B changes max boson star mass.'},
+          {q:'What can ONLY this theory predict?', a:'① "Attention density × bodily sync × self-model stability" jointly determine subjective time — existing theories handle these separately ② β₀ density-dependent phase gradient effect (physics sector unique) ③ W parameter bridging consciousness and gravity — though ③ is currently speculative'},
+        ],
+      },
       limTitle: 'Current Limitations',
       limSub: 'A theory\'s integrity lies in acknowledging its limits',
       lims: [
@@ -4020,6 +4064,28 @@ const LANG_DATA = {
         {claim:'Ὅταν τὰ ὅρια ἑαυτοῦ ἀσθενοῦν, τὰ ἔργα σωματικῆς ἰδιοκτησίας μεταβάλλονται', method:'Ψευδαίσθησις + κλίμακα ἀποπροσωποπ. + φόρτος λόγου', falsify:'Ἐὰν εἶναι ἀνεξάρτητα, τὸ μοντέλο χρήζει ἀναθεωρήσεως'},
         {claim:'Αὔξησις φόρτου αὐτολογοποιήσεως μειώνει τὴν ἐπίδοσιν εἰς ῥοήν', method:'Διπλοῦν ἔργον + κλίμακα ῥοῆς + χρόνος ἀντιδράσεως', falsify:'Ἐὰν ὁ φόρτος δὲν ἐπηρεάζῃ, ἡ ὑπόθεσις αὐτοπροτύπου εἶναι ἀνεπαρκής'},
       ],
+      falsCheck: {
+        title: 'Ἔλεγχος Διαψευσιμότητος',
+        sub: 'Θεωρία ποὺ δὲν δύναται νὰ ἀποδειχθῇ ἐσφαλμένη δὲν εἶναι ἐπιστήμη',
+        items: [
+          {q:'Ποῖα πειραματικὰ ἀποτελέσματα θὰ ἀπέδειξαν τὴν θεωρίαν ἐσφαλμένην;', a:'Φυσικός: ἐὰν β=0.593 ἀντιφάσκῃ μὲ δεδομένα. Ὑποκειμενικός: ἐὰν ἡ γ-συγχρονία δὲν αὐξάνεται εἰς ῥοήν.', status:'yes', statusLabel:'Ἐλέγξιμον'},
+          {q:'Φαίνεται ὀρθὴ ἀνεξαρτήτως δεδομένων;', a:'Φυσικός: Ὄχι — τὸ β ἔχει συγκεκριμένην τιμήν. Ὑποκειμενικός: Κίνδυνος ὑπάρχει — ἀπαιτεῖται προεγγραφὴ κατευθύνσεων.', status:'partial', statusLabel:'Χρήζει βελτ.'},
+          {q:'Ὑπὸ ποίας συνθήκας καταρρέει;', a:'① β₀ ἐκτὸς 0.593±0.135 ② Ἴση παραβίασις Bell ③ Μείωσις γ-συγχρονίας εἰς ῥοήν ④ T_sub ἀσυσχέτιστον ⑤ Φόρτος λόγου ἄνευ ἐπιδράσεως.', status:'yes', statusLabel:'Σαφές'},
+          {q:'Ἀντιφάσκουν ὑπάρχοντα δεδομένα;', a:'β₀ θεωρητ. 0.2, μετα-ανάλ. 0.593 (3× ἀπόκλισις). Διορθώθη ἀλλὰ ἡ ἀποτυχία καταγράφηκε.', status:'partial', statusLabel:'Μερικὴ ἀπόκλ.'},
+          {q:'Ὑπάρχει πρόβλεψις ποὺ δύναται νὰ ἀποτύχῃ;', a:'Ναί — πρόβλ.③: r<-0.3 (μετρ. r=-0.968). Πρόβλ.⑦: 2.2× λόγος Bell (ἀνέλεγκτον). Συγκεκριμένοι ἀριθμοὶ ἔχουν δοθεῖ.', status:'yes', statusLabel:'Ναί'},
+        ],
+      },
+      predGen: {
+        title: 'Παραγωγὴ Προβλέψεων',
+        sub: 'Ἐὰν ἡ θεωρία εἶναι ὀρθή, ὁ κόσμος πρέπει νὰ φαίνεται οὕτω',
+        items: [
+          {q:'Ἐὰν ὀρθή, τί πρέπει νὰ συμβαίνῃ;', a:'① Ὑψηλὴ συγκέντρωσις → βραδύτερος ὑποκ. χρόνος ② Ἔμπειροι εἰς διαλογισμὸν → ἰσχυρὰ γ-θ σύζευξις ③ Ὑψηλὴ HRV-EEG συγχρονία → εὐκολωτέρα ῥοή ④ β → μικρο-ἀποκλίσεις ἀπὸ GR'},
+          {q:'Προβλέπει ἀνεξήγητα φαινόμενα;', a:'① Ποσοτικοποίησις χρονικῆς παραμορφώσεως ῥοῆς ② Δυναμικαὶ μεταβολαὶ ὁρίων ἑαυτοῦ εἰς ψευδαισθήσεις ③ Ἀπόκλισις μάζης-ἀκτίνος βοσονικῶν ἀστέρων'},
+          {q:'Ὑπάρχουν ἀριθμητικαὶ προβλέψεις;', a:'① β₀=0.593±0.135 ② Λόγος Bell 2.2× ③ T_sub/T_clock≈0.4 εἰς W=3 ④ g-2 ἀκρίβεια <10⁻⁹'},
+          {q:'Πῶς μεταβάλλονται αἱ προβλέψεις μεταξὺ Α καὶ Β;', a:'Κανονικὴ vs βαθεῖα ῥοή → T_sub 30-60% βραχύτερον. Αὐτολογοποίησις vs χωρίς → καλυτέρα διατήρησις ῥοῆς. Στάσις vs ρυθμική κίνησις → ὑψηλοτέρα EEG-HRV συγχρονία.'},
+          {q:'Τί προβλέπει μόνον αὐτὴ ἡ θεωρία;', a:'① Τρεῖς μεταβληταὶ (προσοχή×σῶμα×ἑαυτός) καθορίζουν ἀπὸ κοινοῦ τὸν ὑποκ. χρόνον ② β₀ φαινόμενον (μοναδικὸν φυσικοῦ τομέως) ③ W γέφυρα συνειδήσεως-βαρύτητος (ἐπὶ τοῦ παρόντος θεωρητικόν)'},
+        ],
+      },
       limTitle: 'Ὅρια τῆς Θεωρίας',
       limSub: 'Ἡ ἀκεραιότης θεωρίας ἔγκειται εἰς τὴν ἀναγνώρισιν τῶν ὁρίων',
       lims: [
@@ -5463,6 +5529,25 @@ function renderAcademicPositioning() {
       </div>
     </div>`).join('');
 
+  const falsCheckHTML = a.falsCheck ? a.falsCheck.items.map((item, i) => {
+    const statusColor = item.status === 'yes' ? 'var(--G)' : item.status === 'partial' ? 'var(--Y)' : 'var(--R)';
+    const statusBg = item.status === 'yes' ? 'rgba(92,200,122,0.12)' : item.status === 'partial' ? 'rgba(245,158,11,0.12)' : 'rgba(224,96,128,0.12)';
+    return `
+    <div class="card" style="margin-bottom:10px;border-left:3px solid ${statusColor}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:12px;color:var(--text);line-height:1.6">Q${i+1}. ${item.q}</div>
+        <span style="flex-shrink:0;font-size:10px;padding:2px 8px;border-radius:3px;background:${statusBg};color:${statusColor};font-weight:600;white-space:nowrap">${item.statusLabel}</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8;padding:8px 10px;background:var(--bg2);border-radius:4px">${item.a}</div>
+    </div>`;
+  }).join('') : '';
+
+  const predGenHTML = a.predGen ? a.predGen.items.map((item, i) => `
+    <div class="card" style="margin-bottom:10px;border-left:3px solid var(--P)">
+      <div style="font-weight:700;font-size:12px;color:var(--P);margin-bottom:8px">Q${i+1}. ${item.q}</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8;padding:8px 10px;background:var(--bg2);border-radius:4px">${item.a}</div>
+    </div>`).join('') : '';
+
   const limsHTML = a.lims.map(l => `
     <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--bdr)">
       <span style="color:var(--Y);font-size:13px;flex-shrink:0">${l.icon}</span>
@@ -5499,6 +5584,18 @@ function renderAcademicPositioning() {
       <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.predTitle}</div>
       <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.predSub}</div>
       <div style="margin-bottom:24px">${predsHTML}</div>
+
+      ${a.falsCheck ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.falsCheck.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.falsCheck.sub}</div>
+      <div style="margin-bottom:24px">${falsCheckHTML}</div>
+      ` : ''}
+
+      ${a.predGen ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.predGen.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.predGen.sub}</div>
+      <div style="margin-bottom:24px">${predGenHTML}</div>
+      ` : ''}
 
       <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.limTitle}</div>
       <div style="font-size:12px;color:var(--dim);margin-bottom:10px">${a.limSub}</div>
