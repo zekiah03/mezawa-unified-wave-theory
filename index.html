@@ -76,6 +76,96 @@ body.lang-gr { font-family:var(--font-gr); }
 .lang-btn.on { background:rgba(93,214,200,0.12); color:var(--T); border-color:var(--T); }
 #ver { padding:0 14px; font-size:10px; color:var(--dim); font-family:var(--font-code); white-space:nowrap; }
 
+
+/* ── UNIFIED THEORY TAB ── */
+.theory-overview {
+  padding: 24px 28px 32px;
+  max-width: 960px;
+}
+.theory-overview-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--T);
+  margin: 0 0 6px;
+  letter-spacing: -0.03em;
+}
+.theory-overview-subtitle {
+  font-size: 13px;
+  color: var(--dim);
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+.theory-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.theory-card {
+  background: var(--bg2);
+  border: 1px solid var(--bdr);
+  border-radius: 10px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+.theory-card:hover {
+  border-color: var(--T);
+  background: rgba(93,214,200,0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.theory-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--tc-accent, var(--T));
+  border-radius: 10px 0 0 10px;
+}
+.theory-card .tc-icon { font-size: 22px; margin-bottom: 8px; }
+.theory-card .tc-name { font-weight: 700; font-size: 15px; color: var(--W); margin-bottom: 4px; }
+.theory-card .tc-desc { font-size: 11px; color: var(--dim); line-height: 1.5; margin-bottom: 10px; }
+.theory-card .tc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+.theory-card .tc-tag {
+  font-size: 10px; padding: 1px 7px; border-radius: 10px;
+  background: rgba(93,214,200,0.1); color: var(--T); border: 1px solid rgba(93,214,200,0.2);
+}
+.theory-card .tc-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; color: var(--T);
+  padding: 5px 12px; border: 1px solid var(--T); border-radius: 5px;
+  background: rgba(93,214,200,0.08); transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.theory-card:hover .tc-btn { background: rgba(93,214,200,0.18); }
+
+/* cross-nav bar */
+.cross-nav {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 20px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--bdr);
+  flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 50;
+}
+.cross-nav-label {
+  font-size: 10px; color: var(--dim); letter-spacing: 0.1em;
+  margin-right: 4px; text-transform: uppercase;
+}
+.cnav-btn {
+  font-size: 11px; padding: 4px 11px;
+  border: 1px solid var(--bdr2); border-radius: 4px;
+  background: transparent; color: var(--dim);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+.cnav-btn:hover { color: var(--W); border-color: var(--bdr2); background: rgba(255,255,255,0.04); }
+.cnav-btn.active { color: var(--T); border-color: var(--T); background: rgba(93,214,200,0.1); }
+
 /* ── SIDEBAR ── */
 #sidebar {
   grid-row:2; grid-column:1; background:var(--bg2); border-right:1px solid var(--bdr);
@@ -744,12 +834,13 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="tab" onclick="sw('l')" id="tab-l"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="4" r="2" opacity=".55"/><circle cx="19.2" cy="8" r="2" opacity=".55"/><circle cx="19.2" cy="16" r="2" opacity=".55"/><circle cx="12" cy="20" r="2" opacity=".55"/><circle cx="4.8" cy="16" r="2" opacity=".55"/><circle cx="4.8" cy="8" r="2" opacity=".55"/></svg></span><span class="tab-lbl">生命</span></div>
   <div class="tab" onclick="sw('h')" id="tab-h"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="16" rx="2" opacity=".3"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><rect x="7" y="13.5" width="2.5" height="2.5" rx=".5"/><rect x="11" y="13.5" width="2.5" height="2.5" rx=".5"/></svg></span><span class="tab-lbl">習慣</span></div>
   <div class="tab" onclick="sw('g')" id="tab-g"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="6" r="2.8"/><path d="M6 21v-2a6 6 0 0112 0v2" opacity=".4"/><path d="M9 17l3-4 3 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tab-lbl">人生</span></div>
-  <div class="tab" onclick="sw('t')" id="tab-t"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12c1.5-5 3-5 4.5 0s3 5 4.5 0 3-5 4.5 0 1.5 2.5 2.5 0"/></svg></span><span class="tab-lbl">理論</span></div>
-  <div class="tab" onclick="sw('e')" id="tab-e"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6v7.5L19 19a3 3 0 01-2.8 2H7.8A3 3 0 015 19L9 10.5V3z"/></svg></span><span class="tab-lbl">実験</span></div>
-  <div class="tab" onclick="sw('n')" id="tab-n"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg></span><span class="tab-lbl">意識</span></div>
-  <div class="tab" onclick="sw('m')" id="tab-m"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="3" width="9" height="18" rx="1.5" opacity=".4"/><rect x="13" y="3" width="9" height="18" rx="1.5" opacity=".4"/><rect x="10.5" y="3" width="3" height="18" rx="1"/></svg></span><span class="tab-lbl">学問</span></div>
-  <div class="tab" onclick="sw('x')" id="tab-x"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="7" r="3"/><path d="M5 21v-2a7 7 0 0114 0v2"/><path d="M12 10v4M10 14h4"/></svg></span><span class="tab-lbl">認知場</span></div>
-  <div id="lang-wrap">
+  
+  
+  
+  
+  
+  <div class="tab" onclick="sw('z')" id="tab-z"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c1.5-5 3-5 4.5 0s3 5 4.5 0 3-5 4.5 0 1.5 2.5 2.5 0"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></span>理論体系</div>
+<div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
     <button class="lang-btn" onclick="setLang('en')">English</button>
     <button class="lang-btn" onclick="setLang('gr')">Ἑλληνική</button>
@@ -768,16 +859,9 @@ body.lang-gr { font-family:var(--font-gr); }
   <!-- 人生: person figure -->
   <div class="si" onclick="sw('g')" title="人生シミュレーション"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="6" r="2.8"/><path d="M12 11c-3.3 0-6 2.7-6 6v2h12v-2c0-3.3-2.7-6-6-6z" opacity=".4"/><path d="M9 17l3-4 3 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   <div class="sep"></div>
-  <!-- 理論: sine wave -->
-  <div class="si" onclick="sw('t')" title="理論"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c1.5-5 3-5 4.5 0s3 5 4.5 0 3-5 4.5 0 1.5 2.5 2.5 0"/></svg></div>
-  <!-- 実験: flask -->
-  <div class="si" onclick="sw('e')" title="実験"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6v1H9zm-2 2h10l4 10a3 3 0 01-2.8 4H5.8A3 3 0 013 15L7 5z" opacity=".25"/><path d="M9 3h6v7.5L19 19a3 3 0 01-2.8 2H7.8A3 3 0 015 19L9 10.5V3z"/></svg></div>
-  <!-- 意識: eye -->
-  <div class="si" onclick="sw('n')" title="意識"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg></div>
-  <!-- 学問: open book -->
-  <div class="si" onclick="sw('m')" title="学問"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M2 4.5A2.5 2.5 0 014.5 2H11v20H4.5A2.5 2.5 0 012 19.5V4.5z" opacity=".35"/><path d="M13 2h6.5A2.5 2.5 0 0122 4.5v15a2.5 2.5 0 01-2.5 2.5H13V2z" opacity=".35"/><rect x="11" y="2" width="2" height="20" rx="1"/></svg></div>
-  <!-- 認知場: person + brain path -->
-  <div class="si" onclick="sw('x')" title="認知場モデル"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="7" r="3"/><path d="M5 21v-2a7 7 0 0114 0v2"/><path d="M12 10v4M10 14h4"/></svg></div>
+  <!-- 理論体系: unified wave + brain -->
+  <div class="si" onclick="sw('z')" title="理論体系"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c1.5-5 3-5 4.5 0s3 5 4.5 0 3-5 4.5 0 1.5 2.5 2.5 0"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" opacity=".8"/></svg></div>
+
 </div>
 
 <div id="main">
@@ -806,8 +890,107 @@ body.lang-gr { font-family:var(--font-gr); }
   </div>
 </div>
 
-<!-- THEORY (merged: 基本理論 + スケール + 計算 + 導出史) -->
-<div id="p-t" class="pn merged">
+</div>
+
+<!-- 理論体系 — 統合タブ (理論/実験/意識/学問/認知場) -->
+<div id="p-z" class="pn merged">
+  <div class="sub-nav">
+    <div class="sub-tab on" onclick="swSub('z','z0')" id="st-z0">概要</div>
+    <div class="sub-tab" onclick="swSub('z','zt')" id="st-zt">理論</div>
+    <div class="sub-tab" onclick="swSub('z','ze')" id="st-ze">実験</div>
+    <div class="sub-tab" onclick="swSub('z','zn')" id="st-zn">意識</div>
+    <div class="sub-tab" onclick="swSub('z','zm')" id="st-zm">学問</div>
+    <div class="sub-tab" onclick="swSub('z','zx')" id="st-zx">認知場</div>
+  </div>
+
+<div id="sp-z0" class="sub-pane on">
+  <div class="theory-overview">
+    <div class="theory-overview-title">∿ 理論体系</div>
+    <div class="theory-overview-subtitle">めざわ統一波動理論の全体像。<br>各セクションは相互につながっており、ボタンで自由に行き来できます。</div>
+
+    <div class="theory-cards">
+
+      <!-- 理論 -->
+      <div class="theory-card" onclick="swSub('z','zt')" style="--tc-accent:#5DD6C8">
+        <div class="tc-icon">⚛️</div>
+        <div class="tc-name">理論</div>
+        <div class="tc-desc">Ψ方程式の基本構造から数値計算・導出史・批判への応答まで、理論の核心を網羅します。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">基本理論</span>
+          <span class="tc-tag">スケール</span>
+          <span class="tc-tag">計算ログ</span>
+          <span class="tc-tag">導出史</span>
+          <span class="tc-tag">批判と対策</span>
+        </div>
+        <span class="tc-btn">開く →</span>
+      </div>
+
+      <!-- 実験 -->
+      <div class="theory-card" onclick="swSub('z','ze')" style="--tc-accent:#7EC8E3">
+        <div class="tc-icon">🔬</div>
+        <div class="tc-name">実験</div>
+        <div class="tc-desc">理論を検証するための解析・実験計画・未解明問題を整理します。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">解析</span>
+          <span class="tc-tag">実験計画</span>
+          <span class="tc-tag">未解明</span>
+        </div>
+        <span class="tc-btn">開く →</span>
+      </div>
+
+      <!-- 意識 -->
+      <div class="theory-card" onclick="swSub('z','zn')" style="--tc-accent:#A78BFA">
+        <div class="tc-icon">👁️</div>
+        <div class="tc-name">意識</div>
+        <div class="tc-desc">solnova意識指標・根本的な問い・名言・洞察録。理論が意識の謎に迫る切り口。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">solnova</span>
+          <span class="tc-tag">問い</span>
+          <span class="tc-tag">名言</span>
+        </div>
+        <span class="tc-btn">開く →</span>
+      </div>
+
+      <!-- 学問 -->
+      <div class="theory-card" onclick="swSub('z','zm')" style="--tc-accent:#F59E0B">
+        <div class="tc-icon">📚</div>
+        <div class="tc-name">学問</div>
+        <div class="tc-desc">物理・神経科学・哲学・数学など各学問とΨ理論の接続点を探る統合マップ。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">10分野</span>
+          <span class="tc-tag">50カード</span>
+          <span class="tc-tag">統合マップ</span>
+        </div>
+        <span class="tc-btn">開く →</span>
+      </div>
+
+      <!-- 認知場 -->
+      <div class="theory-card" onclick="swSub('z','zx')" style="--tc-accent:#9966EE">
+        <div class="tc-icon">🧠</div>
+        <div class="tc-name">認知場</div>
+        <div class="tc-desc">統合自己予測場モデル・6層構造・相転移モデル・人間認知30の心理現象分析。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">統合モデル</span>
+          <span class="tc-tag">人間認知30</span>
+          <span class="tc-tag">6層構造</span>
+        </div>
+        <span class="tc-btn">開く →</span>
+      </div>
+
+    </div>
+
+    <div style="font-size:12px; color:var(--dim); line-height:1.8; padding: 16px 0 0; border-top:1px solid var(--bdr);">
+      <strong style="color:var(--W)">💡 使い方のヒント</strong><br>
+      各セクション内でも上部の <strong style="color:var(--T)">理論体系ナビゲーション</strong> から自由に切り替えられます。<br>
+      理論タブは 5つのサブセクション、実験・意識タブは 3つずつ、学問は統合マップ、認知場は 2つのサブセクションを持ちます。
+    </div>
+  </div>
+</div>
+
+<div id="sp-zt" class="sub-pane">
+<div class="cross-nav"><span class="cross-nav-label">理論体系</span><button class="cnav-btn" onclick="swSub('z','z0')">概要</button><button class="cnav-btn active" onclick="swSub('z','zt')">理論</button><button class="cnav-btn" onclick="swSub('z','ze')">実験</button><button class="cnav-btn" onclick="swSub('z','zn')">意識</button><button class="cnav-btn" onclick="swSub('z','zm')">学問</button><button class="cnav-btn" onclick="swSub('z','zx')">認知場</button></div>
+<div id="p-t">
+
   <div class="sub-nav">
     <div class="sub-tab on" onclick="swSub('t','t0')" id="st-t0">基本理論</div>
     <div class="sub-tab" onclick="swSub('t','t1')" id="st-t1">スケール</div>
@@ -2725,11 +2908,14 @@ P₇ EEG検証の成功 <span style="color:var(--dim)">+</span> ∿代数分類 
 
 
 
-  </div>
+  
+</div>
 </div>
 
-<!-- EXPERIMENT (merged: 解析 + 実験 + 未解明) -->
-<div id="p-e" class="pn merged">
+<div id="sp-ze" class="sub-pane">
+<div class="cross-nav"><span class="cross-nav-label">理論体系</span><button class="cnav-btn" onclick="swSub('z','z0')">概要</button><button class="cnav-btn" onclick="swSub('z','zt')">理論</button><button class="cnav-btn active" onclick="swSub('z','ze')">実験</button><button class="cnav-btn" onclick="swSub('z','zn')">意識</button><button class="cnav-btn" onclick="swSub('z','zm')">学問</button><button class="cnav-btn" onclick="swSub('z','zx')">認知場</button></div>
+<div id="p-e">
+
   <div class="sub-nav">
     <div class="sub-tab on" onclick="swSub('e','e0')" id="st-e0">解析</div>
     <div class="sub-tab" onclick="swSub('e','e1')" id="st-e1">実験計画</div>
@@ -2778,10 +2964,14 @@ P₇ EEG検証の成功 <span style="color:var(--dim)">+</span> ∿代数分類 
       <div class="card-sub">誠実な境界: 「枠組みを提供」= 既存理論と矛盾しない再解釈。数学的証明・実験確認ではない。各問題に対して「テスト可能な予測」を生成することが次の課題。</div>
     </div>
   </div>
+
+</div>
 </div>
 
-<!-- CONSCIOUSNESS (merged: solnova + 問い + 名言) -->
-<div id="p-n" class="pn merged">
+<div id="sp-zn" class="sub-pane">
+<div class="cross-nav"><span class="cross-nav-label">理論体系</span><button class="cnav-btn" onclick="swSub('z','z0')">概要</button><button class="cnav-btn" onclick="swSub('z','zt')">理論</button><button class="cnav-btn" onclick="swSub('z','ze')">実験</button><button class="cnav-btn active" onclick="swSub('z','zn')">意識</button><button class="cnav-btn" onclick="swSub('z','zm')">学問</button><button class="cnav-btn" onclick="swSub('z','zx')">認知場</button></div>
+<div id="p-n">
+
   <div class="sub-nav">
     <div class="sub-tab on" onclick="swSub('n','n0')" id="st-n0">solnova</div>
     <div class="sub-tab" onclick="swSub('n','n1')" id="st-n1">問い</div>
@@ -2860,10 +3050,34 @@ P₇ EEG検証の成功 <span style="color:var(--dim)">+</span> ∿代数分類 
       <button class="q-add-btn" onclick="addQuote()">＋ 名言を追加</button>
     </div>
   </div>
+
+</div>
 </div>
 
-<!-- 認知場 — 統合自己予測場モデル (最右タブ) -->
-<div id="p-x" class="pn merged">
+<div id="sp-zm" class="sub-pane">
+<div class="cross-nav"><span class="cross-nav-label">理論体系</span><button class="cnav-btn" onclick="swSub('z','z0')">概要</button><button class="cnav-btn" onclick="swSub('z','zt')">理論</button><button class="cnav-btn" onclick="swSub('z','ze')">実験</button><button class="cnav-btn" onclick="swSub('z','zn')">意識</button><button class="cnav-btn active" onclick="swSub('z','zm')">学問</button><button class="cnav-btn" onclick="swSub('z','zx')">認知場</button></div>
+<div id="p-m">
+
+  <div class="panel-title">学問別アプローチ図</div>
+  <div class="panel-sub">各学問の問いが Ψ 方程式に収束する — 学問をクリックして接続を展開</div>
+
+  <!-- Overview Map (small) -->
+  <div id="map-canvas-wrap"><canvas id="map-canvas"></canvas></div>
+
+  <!-- Discipline Buttons -->
+  <div class="sec-title">学問を選択</div>
+  <div class="disc-btn-row" id="disc-btn-row"></div>
+
+  <!-- Discipline Detail Panels (one per discipline, shown/hidden) -->
+  <div id="disc-detail-area"></div>
+
+</div>
+</div>
+
+<div id="sp-zx" class="sub-pane">
+<div class="cross-nav"><span class="cross-nav-label">理論体系</span><button class="cnav-btn" onclick="swSub('z','z0')">概要</button><button class="cnav-btn" onclick="swSub('z','zt')">理論</button><button class="cnav-btn" onclick="swSub('z','ze')">実験</button><button class="cnav-btn" onclick="swSub('z','zn')">意識</button><button class="cnav-btn" onclick="swSub('z','zm')">学問</button><button class="cnav-btn active" onclick="swSub('z','zx')">認知場</button></div>
+<div id="p-x">
+
   <div class="sub-nav">
     <div class="sub-tab on" onclick="swSub('x','x0')" id="st-x0">統合モデル</div>
     <div class="sub-tab" onclick="swSub('x','x1')" id="st-x1">人間認知30</div>
@@ -3173,22 +3387,10 @@ P₇ EEG検証の成功 <span style="color:var(--dim)">+</span> ∿代数分類 
   </script>
   </div><!-- /sp-x1 -->
 
+
+</div>
 </div>
 
-<!-- MAP -->
-<div id="p-m" class="pn scroll">
-  <div class="panel-title">学問別アプローチ図</div>
-  <div class="panel-sub">各学問の問いが Ψ 方程式に収束する — 学問をクリックして接続を展開</div>
-
-  <!-- Overview Map (small) -->
-  <div id="map-canvas-wrap"><canvas id="map-canvas"></canvas></div>
-
-  <!-- Discipline Buttons -->
-  <div class="sec-title">学問を選択</div>
-  <div class="disc-btn-row" id="disc-btn-row"></div>
-
-  <!-- Discipline Detail Panels (one per discipline, shown/hidden) -->
-  <div id="disc-detail-area"></div>
 </div>
 
 <!-- LIFE TAB — Ψ 生命体 -->
@@ -4921,7 +5123,7 @@ function sw(n) {
   if (panel) panel.classList.add('on');
   const tab = document.getElementById('tab-' + n);
   if (tab) tab.classList.add('on');
-  const ord = ['u','l','h','g','t','e','n','m','x'];
+  const ord = ['u','l','h','g','z'];
   const sidx = ord.indexOf(n);
   const sis = document.querySelectorAll('.si');
   if (sidx >= 0 && sis[sidx]) sis[sidx].classList.add('on');
@@ -4949,6 +5151,23 @@ function swSub(main, sub) {
   if (sub === 'l0') { LIFE.start(); }
   if (sub === 'l3') { setTimeout(renderLifeGuide, 50); }
   if (sub === 'l4') { setTimeout(renderBioParams, 50); }
+  // 統合タブ z: ネストされたサブタブのデフォルトを再アクティブ化
+  if (sub === 'zt') {
+    document.getElementById('st-t0')?.classList.add('on');
+    document.getElementById('sp-t0')?.classList.add('on');
+  }
+  if (sub === 'ze') {
+    document.getElementById('st-e0')?.classList.add('on');
+    document.getElementById('sp-e0')?.classList.add('on');
+  }
+  if (sub === 'zn') {
+    document.getElementById('st-n0')?.classList.add('on');
+    document.getElementById('sp-n0')?.classList.add('on');
+  }
+  if (sub === 'zx') {
+    document.getElementById('st-x0')?.classList.add('on');
+    document.getElementById('sp-x0')?.classList.add('on');
+  }
 }
 
 /* Switch detail pane in right panel (desktop) */
