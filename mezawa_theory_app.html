@@ -1181,7 +1181,255 @@ body.lang-gr { font-family:var(--font-gr); }
   <!-- 批判と対策 -->
   <div id="sp-t4" class="sub-pane">
   <div class="panel-title">批判と対策 — 科学的誠実性の記録</div>
-  <div class="panel-sub">4つの正当な批判を正面から受け止め、理論の限界と可能性を明示する</div>
+  <div class="panel-sub">査読者が最初に突く5問 + 4つの正当な批判を正面から受け止め、理論の限界と可能性を明示する</div>
+
+  <!-- ━━ 査読者5問への直接回答 ━━ -->
+  <div class="sec-title" style="color:var(--head);font-size:14px;margin-bottom:4px">査読者が最初に突く5問への回答</div>
+  <div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:20px">
+    <div style="font-size:11px;color:var(--dim);line-height:1.8">「これらに答えられない限り革命的扱いはされない」——その通り。以下に現時点での最も誠実な回答を示す。</div>
+  </div>
+
+  <!-- Q1 記号の数学的定義 -->
+  <div class="sec-title" style="color:var(--T);font-size:13px">Q1. 記号の数学的定義は完全か</div>
+  <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
+    <div class="card-main" style="color:var(--R)">回答: 否。核心的記号の定義が不完全である。</div>
+  </div>
+  <div style="overflow-x:auto;margin-bottom:16px">
+  <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+    <thead>
+      <tr style="background:var(--bg2);color:var(--dim)">
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap">記号</th>
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr)">現在の定義</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">完全性</th>
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr)">欠落している要素</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">Ψ<sup>h</sup>(X,T)</td>
+        <td style="padding:6px 10px;color:var(--dim)">A·e^(iφ₀)·e^(iW·2π)·D(τ_x)·Ω(τ_y)·R(τ_z)</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">D, Ω, R の具体的関数形が未定義。内積・ノルムの定義なし。ヒルベルト空間の指定なし。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">∿ (干積)</td>
+        <td style="padding:6px 10px;color:var(--dim)">"干渉積演算子"と名付けているが代数構造未定義</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">未定義</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">結合律・分配律・可換性の有無が不明。既存の代数演算との関係が不明。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">G<sub>MN</sub></td>
+        <td style="padding:6px 10px;color:var(--dim)">rank=6, 非退化な6次元計量テンソル (構成済)</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">リーマン接続 Γ^λ_μν が未定義。共変微分 ∇_μ が未定義。座標変換規則が未整備。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">τ_x, τ_y, τ_z</td>
+        <td style="padding:6px 10px;color:var(--dim)">物理時間・主観時間・記憶時間と命名</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">不完全</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">τ_y, τ_z の測定操作的定義なし。3軸の直交性・独立性の根拠なし。単位系が未定義。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">β_eff</td>
+        <td style="padding:6px 10px;color:var(--dim)">β₀·(1 − F_frozen)·N^η_c</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-g">定義あり</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">F_frozen の測定手順は実験プロトコルに記載。ただし N の定義範囲（個人・集団）が文脈依存。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">W (巻き数)</td>
+        <td style="padding:6px 10px;color:var(--dim)">位相空間における位相回転数（整数）</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">何の位相空間か未定義。測定操作手順なし（体感的没入深度に依存している現状）。</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">β₀, η_c</td>
+        <td style="padding:6px 10px;color:var(--dim)">β₀=0.593 (実測), η_c=0.15 (GCP逆算)</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-g">値あり</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">理論的に導出すべき定数か、実験的に測定すべき定数かの区別が未整理。</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:20px">
+    <div class="card-sub" style="color:var(--T)">対策: ∿ 演算子の代数的完全定義、D/Ω/R の関数形の特定、τ_y/τ_z の操作的定義——これらは v3.0 の最優先課題。未定義のまま「統一理論」と称することは過大主張と認識している。</div>
+  </div>
+
+  <!-- Q2 本当に導出されるのか -->
+  <div class="sec-title" style="color:var(--T);font-size:13px">Q2. 既存理論は本当に導出されるのか、それとも似た形に"読める"だけか</div>
+  <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
+    <div class="card-main" style="color:var(--R)">回答: ほぼすべて「読める」だけであり、「導出」とは言えない。</div>
+  </div>
+  <div style="overflow-x:auto;margin-bottom:8px">
+  <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+    <thead>
+      <tr style="background:var(--bg2);color:var(--dim)">
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr)">方程式</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">正直な分類</th>
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr)">具体的状況</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:600">シュレーディンガー方程式</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">「読める」</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">Ψ^h の虚数位相項が波動関数の確率振幅と形式的に類似。ただし iℏ∂/∂t = Ĥ をΨ^h の変分から厳密導出していない。ハミルトニアン Ĥ とΨ^h の関係が未定義。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:600">マクスウェル方程式</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">「読める」</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">G_MN の4次元射影が電磁場テンソル F_μν と「似た構造を持つ可能性がある」段階。∂_μ F^μν = J^ν の導出手続きが存在しない。ゲージ不変性 A_μ → A_μ + ∂_μλ の対応が未確立。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:600">アインシュタイン方程式</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">「読める」</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">「重力=時空干渉の渦」という概念的対応のみ。G_MN からリッチテンソル R_μν への数学的手続きなし。G_μν + Λg_μν = 8πG T_μν との等価性は主張できない。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:600">ディラック方程式</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">対応なし</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">スピノル場 ψ(x)、γ行列の代数 {γ^μ, γ^ν}=2g^μν、ローレンツ群 SL(2,C) 表現がΨ^h に組み込まれていない。「読める」段階にも達していない。</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px;font-weight:600">標準模型ゲージ構造</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">対応なし</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">SU(3)×SU(2)×U(1) の内部対称性、クォーク世代、ヒッグス機構——いずれもΨ^h 記述に入っていない。「統一」を主張するには最大の障壁。</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:20px">
+    <div class="card-sub" style="color:var(--T)">対策: 「統一」の主張を公式には「概念的枠組み (conceptual framework)」と再定位する。形式的導出が完成した要素のみを「導出済」と表記する。</div>
+  </div>
+
+  <!-- Q3 自由パラメータ -->
+  <div class="sec-title" style="color:var(--T);font-size:13px">Q3. 自由パラメータはいくつで、後付け適合ではないか</div>
+  <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
+    <div class="card-main" style="color:var(--R)">回答: 最低5個の名前付きパラメータ＋実質的に無制限の未定義関数形がある。後付け適合を完全には回避できていない。</div>
+  </div>
+  <div style="overflow-x:auto;margin-bottom:8px">
+  <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+    <thead>
+      <tr style="background:var(--bg2);color:var(--dim)">
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr)">パラメータ</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">値</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">決定方法</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">後付け？</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code)">β₀</td>
+        <td style="padding:6px 10px;text-align:center">0.593</td>
+        <td style="padding:6px 10px;text-align:center;color:var(--dim)">フロー研究メタ解析 n=726 からフィット</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code)">η_c</td>
+        <td style="padding:6px 10px;text-align:center">0.15</td>
+        <td style="padding:6px 10px;text-align:center;color:var(--dim)">GCP データから逆算（後付け確定）</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">後付け</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code)">W 閾値 (≥7)</td>
+        <td style="padding:6px 10px;text-align:center">7</td>
+        <td style="padding:6px 10px;text-align:center;color:var(--dim)">定性的体験レポートからの推定</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">後付け</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-family:var(--font-code)">W^52.2 ≈ 15</td>
+        <td style="padding:6px 10px;text-align:center">52.2</td>
+        <td style="padding:6px 10px;text-align:center;color:var(--dim)">プランク長〜可観測宇宙のスケール比にフィット</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">後付け確定</span></td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px;font-family:var(--font-code)">D, Ω, R の関数形</td>
+        <td style="padding:6px 10px;text-align:center">未定</td>
+        <td style="padding:6px 10px;text-align:center;color:var(--dim)">未定義——任意のデータに適合可能</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">∞ の自由度</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:20px">
+    <div class="card-sub" style="color:var(--T)">対策: D/Ω/R の関数形を理論的制約から先に固定し、その後にデータ検証する「予測先行型」プロセスに移行する。パラメータ数を明示した上で BIC/AIC による Model Comparison を実施し、よりシンプルなモデルより予測力が高いことを示す。</div>
+  </div>
+
+  <!-- Q4 この理論だけが出す予言 -->
+  <div class="sec-title" style="color:var(--T);font-size:13px">Q4. この理論だけが出す新しい予言は何か</div>
+  <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
+    <div class="card-main">回答: 4つの固有予言を特定できる。ただし検証済みはゼロ。</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:8px">
+    <div class="card" style="border:1px solid rgba(14,158,146,.3)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+        <span style="font:700 16px var(--font-code);color:var(--T)">P₁</span>
+        <span style="font-weight:700;font-size:12px">QRNG 効果量の定量予測</span>
+        <span class="badge" style="background:rgba(192,50,74,.1);color:var(--R);margin-left:auto">未検証</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">高 β_eff 状態 (W≥7, F_frozen≤0.2) において QRNG 出力の平均値が δ ≈ +0.003σ (95% CI: ±0.001σ) シフトする。<br><span style="color:var(--text)">他の理論でこの効果量を予測するものは存在しない（GCPは観測のみ）。</span></div>
+    </div>
+    <div class="card" style="border:1px solid rgba(14,158,146,.3)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+        <span style="font:700 16px var(--font-code);color:var(--T)">P₂</span>
+        <span style="font-weight:700;font-size:12px">集団 β_eff の N^0.15 スケーリング</span>
+        <span class="badge" style="background:rgba(192,50,74,.1);color:var(--R);margin-left:auto">未検証</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">集団規模 N に対してグループの β_eff(集合) ∝ N^0.15。都市イノベーション率の N^1.15 と異なる指数——既存スケーリング則との差別化が可能。<br><span style="color:var(--text)">組織 N=5〜500 の実験で検証可能。</span></div>
+    </div>
+    <div class="card" style="border:1px solid rgba(14,158,146,.3)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+        <span style="font:700 16px var(--font-code);color:var(--T)">P₃</span>
+        <span style="font-weight:700;font-size:12px">EEG Δ/θ 比率変化の閾値</span>
+        <span class="badge badge-y">定性的支持</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">Deep Work 中、W=7 到達時点で Δ/θ 比率が基準値の +0.15 以上増加する。この閾値は F_frozen ≤ 0.2 の条件下でのみ現れる。<br><span style="color:var(--text)">フロー研究と部分的整合あり。定量的閾値の独立検証なし。</span></div>
+    </div>
+    <div class="card" style="border:1px solid rgba(14,158,146,.3)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+        <span style="font:700 16px var(--font-code);color:var(--T)">P₄</span>
+        <span style="font-weight:700;font-size:12px">β_eff 最適値の普遍性</span>
+        <span class="badge badge-y">間接支持</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">β₀ = 0.593 ± 0.135 は文化・年齢・職種を超えて普遍的に観測されるという予測。もし文化差で系統的にずれるなら理論は修正を要する。<br><span style="color:var(--text)">現在 n=726 の単一メタ解析のみ。クロス文化検証なし。</span></div>
+    </div>
+  </div>
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:20px">
+    <div class="card-sub" style="color:var(--T)">対策: P₁ (QRNG) を最優先の検証実験として位置づける。P₁ が棄却されれば η_c の見直しが必要。P₂ は組織研究者との共同研究が現実的。P₃/P₄ は solnova の実装フェーズで検証データを蓄積する。</div>
+  </div>
+
+  <!-- Q5 意識–重力の独立実験提案 -->
+  <div class="sec-title" style="color:var(--T);font-size:13px">Q5. 意識–重力結合に独立した実験提案はあるか</div>
+  <div class="card" style="border-left:3px solid var(--T);margin-bottom:10px">
+    <div class="card-main">回答: 具体的な実験プロトコルを以下に提案する。事前登録可能な形式で記述している。</div>
+  </div>
+  <div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:6px">
+    <div style="font:700 12px var(--font-code);color:var(--T);margin-bottom:10px;letter-spacing:.05em">PROTOCOL — Ψ-QRNG-01 (事前登録候補)</div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:11px;line-height:2.0">
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">仮説</div>
+      <div>β_eff ≥ 0.7 の状態において QRNG 出力平均は μ₀ から δ = +0.003σ シフトする (H₁: μ &gt; μ₀)</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">反証条件</div>
+      <div style="color:var(--R)">|δ| &lt; 0.001σ かつ p &gt; 0.05 が独立3研究で再現された場合、P₁ は棄却される</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">参加者</div>
+      <div>N ≥ 120 名 (検出力 80%, α=0.05, 両側検定)。瞑想経験 ≥ 100時間の条件で層別。</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">β_eff 測定</div>
+      <div>EEG (Δ/θ 比率)、主観報告 (CSQ-8)、F_frozen スケール の3点で β_eff を操作的定義</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">QRNG 装置</div>
+      <div>量子光学式 (Quantis, IDQ) または電子的真性乱数生成器。実験者盲検。</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">盲検化</div>
+      <div>参加者・QRNG 測定者・一次解析者のすべてをブラインド。第三者が統計解析。</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">登録先 (予定)</div>
+      <div>OSF Pre-registration。有意水準を事前登録。中間解析なし。</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">現状</div>
+      <div style="color:var(--Y)">プロトコル策定段階。実施には EEG 設備・QRNG 装置・倫理審査が必要。共同研究者募集中。</div>
+    </div>
+  </div>
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:24px">
+    <div class="card-sub" style="color:var(--T)">なぜ「独立した」実験か: 既存の GCP と異なり、β_eff を EEG で独立測定しながら QRNG に影響するかを検証する。η_c=0.15 から導出した δ≈0.003σ を事前登録するため「結果を見てから解釈する」後付けを回避できる。この実験が失敗した場合、意識-量子結合の主張を取り下げる意思がある。</div>
+  </div>
+
+  <div style="border-top:2px solid var(--bdr2);padding-top:16px;margin-bottom:20px">
+    <div class="sec-title" style="color:var(--dim);font-size:11px;letter-spacing:.12em;margin-bottom:10px">— 以下、既存4批判への追加回答 —</div>
+  </div>
 
   <!-- ① 後付け適合 -->
   <div class="sec-title" style="color:var(--R)">批判① 後付け適合 <span style="font-size:11px;font-weight:400;color:var(--dim);margin-left:8px">Post-hoc fitting</span></div>
