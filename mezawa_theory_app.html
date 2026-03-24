@@ -1081,6 +1081,35 @@ body.lang-gr { font-family:var(--font-gr); }
         </div>
       </div>
     </div>
+
+    <div style="margin-top:24px;border-top:1px solid var(--bdr);padding-top:20px">
+      <div class="sec-title">意識指標 Q^h(t) のスケール展開</div>
+      <div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:12px">
+        <div style="font-size:11px;color:var(--dim);line-height:1.8">Ψ^h と同様に、意識指標 Q(t) も階層 h ごとに定義できる。低階層では素粒子・原子の「状態保持」、高階層では個人・集団・文明の「自己参照」を測る。</div>
+      </div>
+      <div style="overflow-x:auto;margin-bottom:8px">
+      <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+        <thead>
+          <tr style="background:var(--bg2);color:var(--dim)">
+            <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--bdr)">階層 h</th>
+            <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--bdr)">実体</th>
+            <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--bdr)">Q^h(t) の物理的意味</th>
+            <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--bdr)">測定方法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:6px 12px;font-family:var(--font-code);color:var(--dim)">h≈−1</td><td style="padding:6px 12px">素粒子・原子</td><td style="padding:6px 12px;color:var(--dim)">量子コヒーレンス時間（状態保持）。Q^h ≈ T₂ 緩和時間。</td><td style="padding:6px 12px;color:var(--dim)">スピンエコー測定</td></tr>
+          <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:6px 12px;font-family:var(--font-code);color:var(--Y)">h≈0</td><td style="padding:6px 12px">神経細胞・回路</td><td style="padding:6px 12px;color:var(--dim)">ニューロンの発火パターンの時間的保持。EEGのΔ/θ/γ帯域に反映。</td><td style="padding:6px 12px;color:var(--dim)">EEG多チャンネルからQ[t]を計算</td></tr>
+          <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:6px 12px;font-family:var(--font-code);color:var(--T)">h≈0.5</td><td style="padding:6px 12px">個人の意識</td><td style="padding:6px 12px;color:var(--dim)">Q^h = I(t)·max(Φcorr,0)。覚醒では高く、睡眠・麻酔では低い。</td><td style="padding:6px 12px;color:var(--dim)">EEG → Q(t)（P₇の検証対象）</td></tr>
+          <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:6px 12px;font-family:var(--font-code);color:var(--P)">h≈1</td><td style="padding:6px 12px">集団・組織</td><td style="padding:6px 12px;color:var(--dim)">集団の「共有された時間統合」。Φcorr_group = I_group − Σ I_individual。</td><td style="padding:6px 12px;color:var(--dim)">組織の意思決定一貫性から推定（P₂の拡張）</td></tr>
+          <tr><td style="padding:6px 12px;font-family:var(--font-code);color:var(--R)">h≈2</td><td style="padding:6px 12px">文明・宇宙</td><td style="padding:6px 12px;color:var(--dim)">仮説的。文明の「記憶保持力」Q^h がβ₀=0.593 のスケール不変性を持つか。</td><td style="padding:6px 12px;color:var(--dim)">現状では検証不可。理論的提案。</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2)">
+        <div class="card-sub" style="color:var(--T)">β₀=0.593 の普遍性仮説（P₄）は「Q^h の最適値がスケール h によらず 0.593 付近に収束する」という形で再定式化できる。これは EEG（h≈0.5）と組織データ（h≈1）の両方で検証可能。</div>
+      </div>
+    </div>
   </div>
 
   <!-- 計算ログ (旧 p-c) -->
@@ -1422,7 +1451,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <!-- Q1 記号の数学的定義 -->
   <div class="sec-title" style="color:var(--T);font-size:13px">Q1. 記号の数学的定義は完全か</div>
   <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
-    <div class="card-main" style="color:var(--Y)">回答: スカラー場セクターは完全に定義済。Ψ^h 拡張部分（D, Ω, R 関数形・∿ 演算子）は依然として未完全。</div>
+    <div class="card-main" style="color:var(--G)">回答: スカラー場セクターは定義済。意識指標モデルとの接続により τ_y/τ_z に操作的定義、D/Ω/R に候補形、∿ に暫定代数的定義を付与。残課題は直交性証明と D/Ω/R 候補の実験的検証。</div>
   </div>
   <div style="overflow-x:auto;margin-bottom:16px">
   <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
@@ -1455,9 +1484,9 @@ body.lang-gr { font-family:var(--font-gr); }
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">τ_x, τ_y, τ_z</td>
-        <td style="padding:6px 10px;color:var(--dim)">物理時間・主観時間・記憶時間と命名</td>
-        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">不完全</span></td>
-        <td style="padding:6px 10px;color:var(--dim)">τ_y, τ_z の測定操作的定義なし。3軸の直交性・独立性の根拠なし。単位系が未定義。</td>
+        <td style="padding:6px 10px;color:var(--dim)">τ_x: 物理時間 / τ_y = T·Ω = T·[I(t)/I_max] / τ_z* = argmax_τ Ć(t,τ)</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">操作的定義あり</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">τ_y (主観時間): EEGから I(t) を計算し T で規格化。τ_z* (記憶時間): Ć(t,τ) が最大になる遅れ τ を求める。直交性の証明は未完。</td>
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">β_eff</td>
@@ -1652,8 +1681,82 @@ body.lang-gr { font-family:var(--font-gr); }
       <div style="font-size:11px;color:var(--dim);line-height:1.8">β₀ = 0.593 ± 0.135 は文化・年齢・職種を超えて普遍的に観測されるという予測。もし文化差で系統的にずれるなら理論は修正を要する。<br><span style="color:var(--text)">現在 n=726 の単一メタ解析のみ。クロス文化検証なし。</span></div>
     </div>
   </div>
-  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:20px">
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:16px">
     <div class="card-sub" style="color:var(--T)">P₅・P₆ は物理的・天文学的検証が可能な予言であり、意識の問題を持ち込まない点で査読耐性が高い。P₁ (QRNG) は意識側の最優先実験。P₅/P₆ の検証はコンパクト天体の質量-半径観測データ (NICER 等) との比較で可能。</div>
+  </div>
+
+  <div class="sec-title" style="font-size:12px;color:var(--head)">検証優先度マトリックス — 今すぐ動ける順</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+    <thead>
+      <tr style="background:var(--bg2);color:var(--dim)">
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr)">予測</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">意識の関与</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">コスト</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">実現可能期間</th>
+        <th style="padding:7px 10px;text-align:center;border-bottom:1px solid var(--bdr)">現状</th>
+        <th style="padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr)">次のアクション</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--bdr);background:rgba(34,136,68,.04)">
+        <td style="padding:6px 10px;font-weight:700;color:var(--G)">P₇</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(34,136,68,.1);color:var(--G)">不要</span></td>
+        <td style="padding:6px 10px;text-align:center"><span style="color:var(--G);font-weight:700">ゼロ</span></td>
+        <td style="padding:6px 10px;text-align:center">今すぐ</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">未検証</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">PhysioNet の公開EEGデータに離散実装式を適用</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr);background:rgba(34,136,68,.03)">
+        <td style="padding:6px 10px;font-weight:700;color:var(--G)">P₅/P₆</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(34,136,68,.1);color:var(--G)">不要</span></td>
+        <td style="padding:6px 10px;text-align:center;color:var(--Y)">低</td>
+        <td style="padding:6px 10px;text-align:center">1〜3ヶ月</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">予備的支持</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">分枝追跡・安定性解析の完了 → Ψ-GRAV-01 提出</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:700;color:var(--T)">P₃</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
+        <td style="padding:6px 10px;text-align:center;color:var(--Y)">中</td>
+        <td style="padding:6px 10px;text-align:center">3〜6ヶ月</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">実装式あり</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">EEG実験 + I[t]計算 → Δ/θ閾値を検証</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:700;color:var(--T)">P₄</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
+        <td style="padding:6px 10px;text-align:center;color:var(--Y)">中</td>
+        <td style="padding:6px 10px;text-align:center">6ヶ月〜</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">間接支持</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">クロス文化 EEG データセットで β₀ の普遍性検証</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:700;color:var(--T)">P₂</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
+        <td style="padding:6px 10px;text-align:center;color:var(--Y)">中</td>
+        <td style="padding:6px 10px;text-align:center">6ヶ月〜</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">未検証</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">組織研究者との共同研究 (N=5〜500) で β_eff^{集合} ∝ N^0.15 を検証</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:6px 10px;font-weight:700;color:var(--T)">P₁</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">中心</span></td>
+        <td style="padding:6px 10px;text-align:center;color:var(--R)">高</td>
+        <td style="padding:6px 10px;text-align:center">1年〜</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">未検証</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">EEG設備+QRNG装置+倫理審査 → OSF事前登録 → Ψ-QRNG-01実施</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px;font-weight:700;color:var(--G)">P₅/P₆<br><span style="font-size:9px;font-weight:400">(観測)</span></td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(34,136,68,.1);color:var(--G)">不要</span></td>
+        <td style="padding:6px 10px;text-align:center;color:var(--R)">高</td>
+        <td style="padding:6px 10px;text-align:center">数年〜</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">未検証</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">NICER/XMM-Newton の中性子星 M–R データとモデル比較</td>
+      </tr>
+    </tbody>
+  </table>
   </div>
 
   <!-- Q5 意識–重力の独立実験提案 -->
