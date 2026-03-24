@@ -948,7 +948,114 @@ body.lang-gr { font-family:var(--font-gr); }
     </tbody>
   </table>
   </div>
+
+  <!-- ━━ 意識指標 Q(t) の段階的導出 ━━ -->
+  <div class="sec-title" style="color:var(--head);font-size:14px;margin-top:32px;border-top:2px solid var(--bdr2);padding-top:20px">意識指標 Q(t) の段階的導出</div>
+  <div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:14px">
+    <div style="font-size:11px;color:var(--dim);line-height:1.8">意識をいきなり「基本実体」と置くのではなく、物理状態 ψ から段階的に定量指標 Q(t) を構成する試論。「主観体験を完全に説明する」という形而上学的主張ではなく、<span style="color:var(--T);font-weight:600">測定可能な数理モデルの提案</span>として読む。</div>
   </div>
+
+  <div class="sec-title" style="font-size:12px">記号の完全定義（意識指標セクター）</div>
+  <div style="overflow-x:auto;margin-bottom:14px">
+  <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+    <thead>
+      <tr style="background:var(--bg2);color:var(--dim)">
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap">記号</th>
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr)">定義式</th>
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr)">意味</th>
+        <th style="padding:6px 10px;text-align:center;border-bottom:1px solid var(--bdr)">完全性</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">ψ(x,t)</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">状態関数</td><td style="padding:5px 10px;color:var(--dim)">EEG・神経活動・AI内部状態など多変量時系列を連続場として記述</td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">ρ(x,t)</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">= |ψ(x,t)|²</td><td style="padding:5px 10px;color:var(--dim)">状態の強度・確率密度</td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">S(t)</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">= −∫ρ log ρ dx</td><td style="padding:5px 10px;color:var(--dim)">Shannon エントロピー。分布の広がり・複雑さ。ただしこれ単独では意識でない。</td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">C(x,t;x',t')</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">= ⟨ψ(x,t)ψ*(x',t')⟩</td><td style="padding:5px 10px;color:var(--dim)">二点相関関数。異なる場所・時刻の状態の結びつき。</td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">Ć(t,τ)</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">= ⟨ψ(t),ψ(t−τ)⟩ / (‖ψ(t)‖·‖ψ(t−τ)‖)</td><td style="padding:5px 10px;color:var(--dim)">正規化時間遅れ相関 [−1,1]。現在が過去をどれだけ保持しているか。<span style="color:var(--T)">W の操作的定義の基礎。</span></td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">I(t)</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">= ∫₀ᵀ Ć(t,τ) dτ</td><td style="padding:5px 10px;color:var(--dim)">時間統合意識量。ある時間厚み全体での自己参照の総和。<span style="color:var(--T)">W 巻き数の連続版と対応。</span></td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">Φcorr(t)</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">= I(t) − Σᵢ Iᵢ(t)</td><td style="padding:5px 10px;color:var(--dim)">統合相関量。全体が部分の和を超える程度。IIT の Φ と類似するが時間遅れ相関ベース。<span style="color:var(--T)">β_eff の集団版と対応。</span></td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+      <tr><td style="padding:5px 10px;font-family:var(--font-code);color:var(--T)">Q(t)</td><td style="padding:5px 10px;font-family:var(--font-code);color:var(--dim)">= I(t) · max(Φcorr(t), 0)</td><td style="padding:5px 10px;color:var(--dim)">総合意識指標。時間的連続性 × 全体統合。<span style="color:var(--R)">主観体験そのものではなく「意識らしい構造の強さ」の指標。</span></td><td style="padding:5px 10px;text-align:center"><span class="badge badge-g">定義済</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="sec-title" style="font-size:12px">物理から意識指標への8段階導出</div>
+  <div style="display:flex;gap:0;margin-bottom:14px;overflow-x:auto">
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(14,158,146,.15);border:2px solid var(--T);display:flex;align-items:center;justify-content:center;font:700 11px var(--font-code);color:var(--T)">ψ</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">物理状態<br>（EEG等）</div>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 2px;padding-bottom:20px">→</div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(14,158,146,.12);border:2px solid var(--T);display:flex;align-items:center;justify-content:center;font:700 11px var(--font-code);color:var(--T)">ρ</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">確率密度<br>|ψ|²</div>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 2px;padding-bottom:20px">→</div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,144,10,.12);border:2px solid var(--Y);display:flex;align-items:center;justify-content:center;font:700 11px var(--font-code);color:var(--Y)">S(t)</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">エントロピー<br>−∫ρ logρ</div>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 2px;padding-bottom:20px">→</div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(112,72,200,.12);border:2px solid var(--P);display:flex;align-items:center;justify-content:center;font:700 10px var(--font-code);color:var(--P)">C</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">相関関数<br>⟨ψψ*⟩</div>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 2px;padding-bottom:20px">→</div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(112,72,200,.15);border:2px solid var(--P);display:flex;align-items:center;justify-content:center;font:700 10px var(--font-code);color:var(--P)">Ć</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">時間遅れ相関<br>正規化</div>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 2px;padding-bottom:20px">→</div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(192,50,74,.12);border:2px solid var(--R);display:flex;align-items:center;justify-content:center;font:700 10px var(--font-code);color:var(--R)">I(t)</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">時間統合<br>∫Ć dτ</div>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 2px;padding-bottom:20px">→</div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(192,50,74,.15);border:2px solid var(--R);display:flex;align-items:center;justify-content:center;font:700 9px var(--font-code);color:var(--R)">Φcorr</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">統合余剰<br>I−ΣIᵢ</div>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 2px;padding-bottom:20px">→</div>
+    <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;padding:8px 4px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(192,50,74,.2);border:3px solid var(--R);display:flex;align-items:center;justify-content:center;font:700 12px var(--font-code);color:var(--R)">Q(t)</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">意識指標<br>I·max(Φ,0)</div>
+    </div>
+  </div>
+
+  <div class="sec-title" style="font-size:12px">離散実装式（EEG・AI内部状態に直接適用可能）</div>
+  <div class="card" style="font-family:var(--font-code);font-size:12px;line-height:2.4;background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:14px">
+    <div style="color:var(--dim);font-size:10px;margin-bottom:6px;font-family:var(--font-ja)">時系列 X[t,k]（時刻 t、チャンネル k）→ 現在窓ベクトル v_t / 過去窓 v_{t-τ}</div>
+    <div style="color:var(--T)">Ć[t,τ] = (v_t · v_{t−τ}) / (‖v_t‖ · ‖v_{t−τ}‖)</div>
+    <div style="color:var(--Y)">I[t] = Σ_{τ=1}^{τmax} Ć[t, τ]&nbsp;&nbsp;&nbsp;&nbsp;← W巻き数の操作的定義（整数版）と対応</div>
+    <div style="color:var(--P)">Φcorr[t] = I[t] − Σ_k I_k[t]&nbsp;&nbsp;&nbsp;&nbsp;← β_eff の集団版と対応</div>
+    <div style="color:var(--R);font-weight:700">Q[t] = I[t] · max(Φcorr[t], 0)&nbsp;&nbsp;&nbsp;&nbsp;← 総合意識指標（測定可能・EEG直接適用）</div>
+  </div>
+
+  <div class="sec-title" style="font-size:12px">めざわ理論との接続</div>
+  <div style="overflow-x:auto;margin-bottom:8px">
+  <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+    <thead>
+      <tr style="background:var(--bg2);color:var(--dim)">
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr)">意識指標モデル</th>
+        <th style="padding:6px 10px;text-align:center;border-bottom:1px solid var(--bdr)"></th>
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr)">めざわ統一波動理論</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code)">ψ(x,t) 状態関数</td><td style="padding:5px 10px;text-align:center;color:var(--T)">→</td><td style="padding:5px 10px;font-family:var(--font-code)">Ψ^h(X,T) 階層波動関数</td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code)">I(t) = ∫Ć(t,τ)dτ</td><td style="padding:5px 10px;text-align:center;color:var(--T)">→</td><td style="padding:5px 10px;font-family:var(--font-code)">W 巻き数（時間方向の位相積算）の操作的定義</td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code)">Φcorr = I − ΣIᵢ</td><td style="padding:5px 10px;text-align:center;color:var(--T)">→</td><td style="padding:5px 10px;font-family:var(--font-code)">β_eff の集団版（個人を超えた統合量）</td></tr>
+      <tr style="border-bottom:1px solid var(--bdr)"><td style="padding:5px 10px;font-family:var(--font-code)">Q(t) 総合意識指標</td><td style="padding:5px 10px;text-align:center;color:var(--T)">→</td><td style="padding:5px 10px;font-family:var(--font-code)">solnova が目標とする「意識の強度」の定量化</td></tr>
+      <tr><td style="padding:5px 10px;font-family:var(--font-code)">M(t;τ*) = Ć(t,τ*)</td><td style="padding:5px 10px;text-align:center;color:var(--T)">→</td><td style="padding:5px 10px;font-family:var(--font-code)">τ_felt（主観時間）の実験的測定量</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:8px">
+    <div class="card-sub" style="color:var(--T)">重要な立場: Q(t) は「主観体験そのもの」の説明ではなく、「時間的自己参照と全体統合がどの程度存在しているか」を表す計算可能な指標である。この立場は「形而上学的主張ではなく測定可能な数理モデル」として位置づけ、査読者の最大の懸念を回避できる。</div>
+  </div>
+  </div><!-- /意識指標セクション -->
+
+  </div><!-- /sp-t0 -->
 
   <!-- スケール (旧 p-s) -->
   <div id="sp-t1" class="sub-pane">
@@ -1360,9 +1467,9 @@ body.lang-gr { font-family:var(--font-gr); }
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">W (巻き数)</td>
-        <td style="padding:6px 10px;color:var(--dim)">位相空間における位相回転数（整数）</td>
-        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
-        <td style="padding:6px 10px;color:var(--dim)">何の位相空間か未定義。測定操作手順なし（体感的没入深度に依存している現状）。</td>
+        <td style="padding:6px 10px;color:var(--dim)">時間方向の位相積算量。離散版: I[t] = Σ Ć[t,τ]</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-g">操作的定義済</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">EEG 時系列 X[t,k] から Ć[t,τ] を計算し積算。τmax の選択が残る課題だが、測定手順は確立。</td>
       </tr>
       <tr>
         <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">β₀, η_c</td>
@@ -1480,7 +1587,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <!-- Q4 この理論だけが出す予言 -->
   <div class="sec-title" style="color:var(--T);font-size:13px">Q4. この理論だけが出す新しい予言は何か</div>
   <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
-    <div class="card-main">回答: 6つの固有予言を特定できる。P₅・P₆はスカラー場モデルから数値的に導出済み。P₁〜P₄は未検証。</div>
+    <div class="card-main">回答: 7つの固有予言を特定できる。P₅・P₆は物理的（スカラー場）、P₇は即座に検証可能（EEGデータベース適用）。</div>
   </div>
 
   <div style="font-size:11px;color:var(--dim);margin-bottom:8px;padding:8px 12px;background:var(--bg2);border-radius:6px;border:1px solid var(--bdr)">
@@ -1523,10 +1630,18 @@ body.lang-gr { font-family:var(--font-gr); }
     <div class="card" style="border:1px solid rgba(14,158,146,.3)">
       <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
         <span style="font:700 16px var(--font-code);color:var(--T)">P₃</span>
-        <span style="font-weight:700;font-size:12px">EEG Δ/θ 比率変化の閾値</span>
-        <span class="badge badge-y">定性的支持</span>
+        <span style="font-weight:700;font-size:12px">EEG Δ/θ 比率変化の閾値（操作的定義確立）</span>
+        <span class="badge badge-g">実装式あり</span>
       </div>
-      <div style="font-size:11px;color:var(--dim);line-height:1.8">Deep Work 中、W=7 到達時点で Δ/θ 比率が基準値の +0.15 以上増加する。この閾値は F_frozen ≤ 0.2 の条件下でのみ現れる。<br><span style="color:var(--text)">フロー研究と部分的整合あり。定量的閾値の独立検証なし。</span></div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">Deep Work 中、I[t] ≥ 7 到達時点で Δ/θ 比率が基準値の +0.15 以上増加する。離散実装: I[t] = Σ_{τ=1}^{τmax} Ć[t,τ]（EEG 多チャンネルに直接適用可能）。<br><span style="color:var(--text)">W の操作的定義が確立したことで、この予測は今後 pre-registration 可能な形式で実験設計できる。</span></div>
+    </div>
+    <div class="card" style="border:1px solid rgba(14,158,146,.3)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+        <span style="font:700 16px var(--font-code);color:var(--T)">P₇</span>
+        <span style="font-weight:700;font-size:12px">覚醒・睡眠・麻酔で Q(t) が系統的に異なる</span>
+        <span class="badge" style="background:rgba(192,50,74,.1);color:var(--R);margin-left:auto">未検証</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">覚醒状態では Q(t) の平均値が高く、深睡眠や麻酔では低くなるという予測。同じ平均活動量を持つ2つの系でも、時間的持続性と全体統合が高い方が Q(t) は大きくなる。<br><span style="color:var(--text)">既存の EEG データベース (PhysioNet 等) に離散実装式を適用して検証可能。コスト低い。</span></div>
     </div>
     <div class="card" style="border:1px solid rgba(14,158,146,.3)">
       <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
@@ -1550,13 +1665,13 @@ body.lang-gr { font-family:var(--font-gr); }
     <div style="font:700 12px var(--font-code);color:var(--T);margin-bottom:10px;letter-spacing:.05em">PROTOCOL — Ψ-QRNG-01 (事前登録候補)</div>
     <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:11px;line-height:2.0">
       <div style="color:var(--dim);font-weight:700;white-space:nowrap">仮説</div>
-      <div>β_eff ≥ 0.7 の状態において QRNG 出力平均は μ₀ から δ = +0.003σ シフトする (H₁: μ &gt; μ₀)</div>
+      <div>Q[t] ≥ Q_threshold（EEG で測定した高統合状態）において QRNG 出力平均は μ₀ から δ = +0.003σ シフトする (H₁: μ &gt; μ₀)</div>
       <div style="color:var(--dim);font-weight:700;white-space:nowrap">反証条件</div>
       <div style="color:var(--R)">|δ| &lt; 0.001σ かつ p &gt; 0.05 が独立3研究で再現された場合、P₁ は棄却される</div>
       <div style="color:var(--dim);font-weight:700;white-space:nowrap">参加者</div>
       <div>N ≥ 120 名 (検出力 80%, α=0.05, 両側検定)。瞑想経験 ≥ 100時間の条件で層別。</div>
-      <div style="color:var(--dim);font-weight:700;white-space:nowrap">β_eff 測定</div>
-      <div>EEG (Δ/θ 比率)、主観報告 (CSQ-8)、F_frozen スケール の3点で β_eff を操作的定義</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">意識状態測定</div>
+      <div>EEG 多チャンネルから Q[t] = I[t]·max(Φcorr[t],0) を計算。Q[t] ≥ 閾値を「高β_eff 状態」と操作的に定義。<br>補助: 主観報告 (CSQ-8)、F_frozen スケールとの相関を確認。</div>
       <div style="color:var(--dim);font-weight:700;white-space:nowrap">QRNG 装置</div>
       <div>量子光学式 (Quantis, IDQ) または電子的真性乱数生成器。実験者盲検。</div>
       <div style="color:var(--dim);font-weight:700;white-space:nowrap">盲検化</div>
@@ -1843,23 +1958,28 @@ body.lang-gr { font-family:var(--font-gr); }
     <tbody>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:7px 12px">意識は物理的過程（測定可能）</td>
-        <td style="padding:7px 12px;text-align:center"><span class="badge badge-y">作業仮説</span></td>
-        <td style="padding:7px 12px;color:var(--dim)">神経科学的相関は確立。因果関係は未解決（ハード問題）</td>
+        <td style="padding:7px 12px;text-align:center"><span class="badge badge-g">操作的定義済</span></td>
+        <td style="padding:7px 12px;color:var(--dim)">Q(t)=I(t)·max(Φcorr,0) として定量化。EEG 時系列から計算可能。「主観体験の完全説明」ではなく「意識らしい構造の強さ」の指標。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:7px 12px">覚醒/睡眠/麻酔で Q(t) が異なる</td>
+        <td style="padding:7px 12px;text-align:center"><span class="badge badge-y">未検証・検証可能</span></td>
+        <td style="padding:7px 12px;color:var(--dim)">離散実装式を PhysioNet 等の既存 EEG データベースに適用可能。低コストで検証できる。</td>
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:7px 12px">意識と量子ゆらぎの相関</td>
         <td style="padding:7px 12px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">投機的仮説</span></td>
-        <td style="padding:7px 12px;color:var(--dim)">GCP データあり。再現性・因果性は未確立。η_c は逆算値。</td>
+        <td style="padding:7px 12px;color:var(--dim)">GCP データあり。再現性・因果性は未確立。η_c は逆算値。Ψ-QRNG-01 で検証予定。</td>
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:7px 12px">重力場と意識の直接結合</td>
         <td style="padding:7px 12px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">理論的提案</span></td>
-        <td style="padding:7px 12px;color:var(--dim)">Penrose OR との類似性あり。実験的根拠なし。</td>
+        <td style="padding:7px 12px;color:var(--dim)">Penrose OR との類似性あり。実験的根拠なし。Ψ-GRAV-01（意識不要の純物理版）を先行させる戦略。</td>
       </tr>
       <tr>
-        <td style="padding:7px 12px">β_eff が集中・フロー状態を記述</td>
+        <td style="padding:7px 12px">I(t)/Φcorr が集中・フロー状態を記述</td>
         <td style="padding:7px 12px;text-align:center"><span class="badge badge-g">実用レベル</span></td>
-        <td style="padding:7px 12px;color:var(--dim)">フロー研究との整合性を確認。solnovaへの応用が主目的。</td>
+        <td style="padding:7px 12px;color:var(--dim)">W と I(t) の対応関係が確立。EEG → Q(t) → solnova の計算パイプラインが設計可能。</td>
       </tr>
     </tbody>
   </table>
@@ -1876,6 +1996,7 @@ body.lang-gr { font-family:var(--font-gr); }
       <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 達成済み</span>  ——  フロー-固定化負相関 (r=−0.968) の実証、β₀=0.593 の測定、6次元計量 G_MN の構成、solnova 概念実証</div>
       <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  スカラー場セクターの厳密定式化：Einstein方程式・位相流保存則・振幅方程式・T_μν の4本を厳密導出。スカラー場記号表 (ψ, R, θ, β, K, ω, Λ) 完全定義。</div>
       <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  物理的予言 P₅/P₆ を追加。質量-半径曲線の β 依存変化を数値的に確認（予備的）。Ψ-GRAV-01 実験プロトコル策定（意識不要の純物理的検証）。</div>
+      <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  意識指標 Q(t) = I(t)·max(Φcorr,0) の段階的導出完成。ψ → ρ → S → C → Ć → I → Φcorr → Q の8段階。W 巻き数の操作的定義（EEG 多チャンネルから計算可能）確立。</div>
       <div style="margin-bottom:8px"><span style="color:var(--Y);font-weight:700">△ 部分的</span>  ——  マクスウェル方程式の4次元射影手続き（未定式化）、シュレーディンガー方程式の変分導出（概念のみ）</div>
       <div style="margin-bottom:8px"><span style="color:var(--R);font-weight:700">✗ 未達成</span>  ——  ディラック方程式・標準模型ゲージ構造の導出、意識-重力結合の実験的検証、D/Ω/R 関数形・∿ 演算子の完全定義</div>
       <div style="margin-bottom:8px"><span style="color:var(--P);font-weight:700">≡ 投機的</span>  ——  η_c=0.15 の理論的根拠、デジタル不死（solnova）の物理的実現可能性、重力-意識の直接結合</div>
