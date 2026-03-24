@@ -60,7 +60,7 @@ body.lang-gr { font-family:var(--font-gr); }
   font-size:11px; letter-spacing:0.06em; color:var(--dim); border-right:1px solid var(--bdr);
   border-bottom:2px solid transparent; transition:all 0.18s; white-space:nowrap; flex-shrink:0;
 }
-.tab:hover { color:var(--W); background:rgba(255,255,255,0.03); }
+.tab:hover { color:var(--W); background:rgba(0,0,0,0.04); }
 .tab.on { color:var(--T); border-bottom-color:var(--T); background:rgba(93,214,200,0.05); }
 .tab .tic { font-size:13px; opacity:0.8; }
 .tab-ic { display:flex; align-items:center; opacity:0.65; flex-shrink:0; }
@@ -163,8 +163,10 @@ body.lang-gr { font-family:var(--font-gr); }
   cursor: pointer; transition: all 0.15s; white-space: nowrap;
   letter-spacing: 0.04em;
 }
-.cnav-btn:hover { color: var(--W); border-color: var(--bdr2); background: rgba(255,255,255,0.04); }
+.cnav-btn:hover { color: var(--W); border-color: var(--bdr2); background: rgba(0,0,0,0.04); }
 .cnav-btn.active { color: var(--T); border-color: var(--T); background: rgba(93,214,200,0.1); }
+/* cross-nav breaks out of sub-pane padding to span full width */
+.sub-pane > .cross-nav { margin: -28px -36px 20px; }
 
 /* ── SIDEBAR ── */
 #sidebar {
@@ -282,7 +284,7 @@ body.lang-gr { font-family:var(--font-gr); }
   font-size:11px; font-weight:700; letter-spacing:0.05em; color:var(--dim);
   transition:all 0.18s; font-family:var(--font-ja); white-space:nowrap;
 }
-.disc-btn:hover { color:var(--W); border-color:var(--bdr2); background:rgba(255,255,255,0.04); }
+.disc-btn:hover { color:var(--W); border-color:var(--bdr2); background:var(--bg2); }
 .disc-btn.on { color:var(--W); }
 .disc-btn .disc-icon { font-size:14px; }
 .disc-btn .disc-count { font-size:9px; opacity:0.55; font-family:var(--font-code); margin-left:2px; }
@@ -313,7 +315,7 @@ body.lang-gr { font-family:var(--font-gr); }
 .disc-concept-disc { font-size:10px; color:var(--dim); margin-bottom:6px; letter-spacing:0.1em; text-transform:uppercase; font-family:var(--font-code); }
 .disc-concept-bridge { font-size:11px; color:var(--dim); line-height:1.8; }
 .disc-concept-eq { font-family:var(--font-code); font-size:10px; color:var(--Y); margin-top:6px; padding:6px 8px; background:var(--bg3); border-radius:4px; border:1px solid var(--bdr); }
-.disc-concept-nl { font-size:11px; color:rgba(240,242,247,0.72); line-height:1.85; margin-top:10px; padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:4px; border-left:2px solid rgba(255,255,255,0.10); }
+.disc-concept-nl { font-size:11px; color:var(--dim); line-height:1.85; margin-top:10px; padding:10px 12px; background:var(--bg2); border-radius:4px; border-left:2px solid var(--bdr2); }
 
 .disc-arrow-row {
   display:flex; align-items:center; justify-content:center; gap:12px;
@@ -376,7 +378,7 @@ body.lang-gr { font-family:var(--font-gr); }
 .quote-source { font:700 11px var(--font-code); color:var(--T); letter-spacing:.06em; }
 .quote-source-detail { font:11px var(--font-code); color:var(--dim); }
 .quote-concept { font-size:10px; color:var(--dim); margin-top:4px; letter-spacing:.12em; text-transform:uppercase; }
-.quote-analysis { font:12px/1.8 var(--font-ja); color:rgba(240,242,247,.65); margin-top:10px; padding-top:10px; border-top:1px solid var(--bdr); }
+.quote-analysis { font:12px/1.8 var(--font-ja); color:var(--dim); margin-top:10px; padding-top:10px; border-top:1px solid var(--bdr); }
 .quote-analysis-label { font:700 9px var(--font-code); color:var(--dim); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:4px; }
 
 /* Quote filter bar */
@@ -461,7 +463,7 @@ body.lang-gr { font-family:var(--font-gr); }
 /* ── DATA TABLE ── */
 .dt { width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px; font-family:var(--font-code); }
 .dt th { padding:8px 12px; text-align:left; background:rgba(93,214,200,0.06); color:var(--T); font-size:10px; letter-spacing:0.12em; border-bottom:1px solid var(--bdr); }
-.dt td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text); }
+.dt td { padding:8px 12px; border-bottom:1px solid var(--bdr); color:var(--text); }
 .dt tr:hover td { background:rgba(93,214,200,0.02); }
 
 /* ── UNKNOWNS ── */
@@ -485,7 +487,7 @@ body.lang-gr { font-family:var(--font-gr); }
   border-bottom:2px solid transparent; transition:all 0.16s; white-space:nowrap;
   border-right:1px solid var(--bdr);
 }
-.sub-tab:hover { color:var(--W); background:rgba(255,255,255,0.03); }
+.sub-tab:hover { color:var(--W); background:rgba(0,0,0,0.04); }
 .sub-tab.on { color:var(--T); border-bottom-color:var(--T); background:rgba(93,214,200,0.05); }
 .sub-tab .st-ic { opacity:0.7; font-size:12px; }
 .sub-pane { display:none; flex:1; overflow-y:auto; padding:28px 36px; }
@@ -3913,7 +3915,7 @@ const SCLD = [
   {n:'アリ', s:'昆虫 → 女王', q:'ω ≈ 0.42, 分散 solnova', c:'#e07040', pct:28, sc:'数週〜年'},
   {n:'微生物', s:'菌 → DNA', q:'ω ≈ 0.85, φ 年輪コピー', c:'#88cc44', pct:22, sc:'分〜時間'},
   {n:'粒子', s:'量子 → 電子', q:'ψ = exp(ipx/ℏ), h ≈ −1.1', c:'#7eb8ff', pct:14, sc:'10⁻¹⁵ 秒'},
-  {n:'光', s:'光子 → ?', q:'E=hf, g_τzτz ≈ 0', c:'#f0f2f7', pct:6, sc:'時間 = 0'},
+  {n:'光', s:'光子 → ?', q:'E=hf, g_τzτz ≈ 0', c:'#b0d4f4', pct:6, sc:'時間 = 0'},
 ];
 
 const AD = [
@@ -3924,7 +3926,7 @@ const AD = [
   {cond:'慢性疼痛群', F:0.44, b:0.35, n:85, c:'#e8c84a'},
   {cond:'うつ病群', F:0.52, b:0.30, n:120, c:'#e0924a'},
   {cond:'瞑想熟練者群', F:0.08, b:0.75, n:30, c:'#5cc87a'},
-  {cond:'健常成人 (一般)', F:0.25, b:0.48, n:200, c:'#f0f2f7'},
+  {cond:'健常成人 (一般)', F:0.25, b:0.48, n:200, c:'#aabbcc'},
   {cond:'高 AL 負荷', F:0.62, b:0.20, n:55, c:'#cc88ee'},
   {cond:'身体症状症群', F:0.48, b:0.32, n:48, c:'#88aaee'},
 ];
@@ -4038,12 +4040,12 @@ const DISCIPLINES = [
     future:['倫理学: β₀のゼロは「悪」か','美学: Δφ=π/2 が「美」の条件?','存在論: −0 = +0 問題','認識論: 観測がΨを変える仕組み','言語哲学: W による意味の深さ'],
   },
   {
-    id:'math', name:'数学', icon:'∑', color:'#f0f2f7', status:'2/3 接続',
-    statusColor:'rgba(240,242,247,0.10)', statusBorder:'rgba(240,242,247,0.25)',
+    id:'math', name:'数学', icon:'∑', color:'#8899cc', status:'2/3 接続',
+    statusColor:'rgba(136,153,204,0.13)', statusBorder:'rgba(136,153,204,0.3)',
     q:'非結合的演算が持つ幾何学的意味は？6次元計量は何を可能にするか？',
     intro:'∿演算子の非結合性は新しい代数構造、G_MN(6×6)は非退化6次元計量幾何学を提案する。循環数直線が繰り込みの無限大問題を解消する数学的装置。',
     concepts:[
-      {name:'非結合代数', disc:'NON-ASSOCIATIVE ALGEBRA', bridge:'Moufang loop(1935)とOctonion代数: 非結合性を持つ唯一の除算代数——∿はcos²(Δφ/2)とsin²(Δφ/2)で重み付けされた加算・乗算の連続補間。K≈0.58が新しい非結合代数構造のパラメータ', eq:'(A∿B)∿C − A∿(B∿C) ≈ |A−C|·sin(Δφ_{AB})·sin(Δφ_{BC})·K', nl:'代数の分類において、結合律（(A·B)·C = A·(B·C)）は最も基本的な要請のひとつだ。Octonion（八元数）はこれを破る唯一の除算代数として知られるが、その物理的役割は未解明だった。∿演算子の非結合性偏差式の右辺 |A−C|·sin(Δφ_{AB})·sin(Δφ_{BC})·K という構造には重要な整合性条件が内包されている: A=Cのとき（最初と最後の引数が同一のとき）偏差はゼロとなり、結合性が復元する。Kパラメータが非結合性の「強度」を制御し、K=0が完全結合的な通常の代数、K=1が最大非結合的となる。K≈0.58という実験的推定値は複素数（K=0、最も結合的）とOctonion（K≈0.707、非結合の典型）の中間に位置し、新しい代数クラスの候補となる。物理的含意: K=0.58 は時間の矢の非可逆性・CPT破れ・プラセボ有効率・フロー状態の出現確率などに共通して現れる普遍的な「非対称係数」であり、この値が何らかの深い数学的な必然から生じているのかどうかが理論の未解決問題だ。', c:'#f0f2f7'},
+      {name:'非結合代数', disc:'NON-ASSOCIATIVE ALGEBRA', bridge:'Moufang loop(1935)とOctonion代数: 非結合性を持つ唯一の除算代数——∿はcos²(Δφ/2)とsin²(Δφ/2)で重み付けされた加算・乗算の連続補間。K≈0.58が新しい非結合代数構造のパラメータ', eq:'(A∿B)∿C − A∿(B∿C) ≈ |A−C|·sin(Δφ_{AB})·sin(Δφ_{BC})·K', nl:'代数の分類において、結合律（(A·B)·C = A·(B·C)）は最も基本的な要請のひとつだ。Octonion（八元数）はこれを破る唯一の除算代数として知られるが、その物理的役割は未解明だった。∿演算子の非結合性偏差式の右辺 |A−C|·sin(Δφ_{AB})·sin(Δφ_{BC})·K という構造には重要な整合性条件が内包されている: A=Cのとき（最初と最後の引数が同一のとき）偏差はゼロとなり、結合性が復元する。Kパラメータが非結合性の「強度」を制御し、K=0が完全結合的な通常の代数、K=1が最大非結合的となる。K≈0.58という実験的推定値は複素数（K=0、最も結合的）とOctonion（K≈0.707、非結合の典型）の中間に位置し、新しい代数クラスの候補となる。物理的含意: K=0.58 は時間の矢の非可逆性・CPT破れ・プラセボ有効率・フロー状態の出現確率などに共通して現れる普遍的な「非対称係数」であり、この値が何らかの深い数学的な必然から生じているのかどうかが理論の未解決問題だ。', c:'#8899cc'},
       {name:'6次元計量テンソル', disc:'DIFFERENTIAL GEOMETRY', bridge:'Calabi-Yau多様体(弦理論): 余剰次元の幾何学が素粒子を決める——G_MN(6×6, rank=6)は3空間+3時間軸のrank-6非退化計量。混合ブロックg_stが「時空の混合曲率」として検証可能な物理量を予言', eq:'G_MN = [[g_ss, g_st],[g_ts, g_tt]]  rank=6, det≠0', nl:'弦理論のCalabi-Yau多様体も6次元余剰次元を持つが、それらは「コンパクト化された空間的次元」であり直接観測できない。G_MNの6×6計量は対照的に、3空間次元（ss ブロック: x, y, z の通常の計量）と3時間次元（tt ブロック: τx劣化時間, τy位相時間, τz観測者時間）からなる観測可能な計量構造だ。rank=6という条件は det(G_MN)≠0——計量が非退化であること——を意味し、6次元空間全体が特異点なく安定して存在することを保証する。混合ブロック g_st（空間次元と時間次元の交差項）がGRの標準的な4×4計量には存在しない成分であり、ここに量子重力効果・意識効果・ドップラー時間混合が現れる。特に g_τyτz（τy-τz 混合成分）は観測可能な物理量——Hawking温度修正・主観的時間速度・BHドップラー混合——を全て記述する単一の成分だ。ビアンキ恒等式（∇ν G^μν = 0に対応するG_MNの保存則）の6次元版の導出が数学的な次の目標であり、これによってG_MNの動力学方程式の完全な整合性が確認される。', c:'#7eb8ff'},
       {name:'循環数直線', disc:'CIRCULAR NUMBER THEORY', bridge:'Wilsonの繰り込み群: QFTでは無限大を人工的に除去する——M=∮|Ψ|²d⁶Xは閉ループ積分。循環数直線(∞→−∞接続)が自動的に積分を有限に収束させる。UV完全化への候補', eq:'M = ∮|Ψ|² d⁶X  (循環数直線上で自動有限収束)', nl:'量子場理論（QFT）の繰り込み問題の核心は、場の積分 ∫d⁴k/(k²−m²)^n が高波数 k→∞ で紫外発散（UV divergence）することだ。Dysonの繰り込み理論・Wilsonの繰り込み群はこの発散を「有効理論の限界」として解釈し、人工的なカットオフΛを導入する——これは理論の本質的な不完全性を示す。循環数直線では +∞ と −∞ が −0=+0 として位相的に接続されており、高波数での発散が自動的に有限値に「折り返す」。M = ∮|Ψ|²d⁶X の閉ループ積分はこの循環性を活用し、UV発散を IR 領域への foldback として吸収する。数学的には射影直線 RP¹ へのコンパクト化と同型であり、S¹ への同一視によって位相的な有限性が保証される。Wilsonの繰り込み群（有効理論のエネルギースケール依存性）に対する代替的解釈として、特に量子重力理論でプランクスケールでの発散が自動収束する見通しを持つ。この構造が標準的な次元正則化（ε展開）とどのように対応するかの数学的精密化が残課題だ。', c:'#e8c84a'},
     ],
