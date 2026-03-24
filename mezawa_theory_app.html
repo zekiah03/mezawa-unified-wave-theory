@@ -1480,9 +1480,30 @@ body.lang-gr { font-family:var(--font-gr); }
   <!-- Q4 この理論だけが出す予言 -->
   <div class="sec-title" style="color:var(--T);font-size:13px">Q4. この理論だけが出す新しい予言は何か</div>
   <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
-    <div class="card-main">回答: 4つの固有予言を特定できる。ただし検証済みはゼロ。</div>
+    <div class="card-main">回答: 6つの固有予言を特定できる。P₅・P₆はスカラー場モデルから数値的に導出済み。P₁〜P₄は未検証。</div>
+  </div>
+
+  <div style="font-size:11px;color:var(--dim);margin-bottom:8px;padding:8px 12px;background:var(--bg2);border-radius:6px;border:1px solid var(--bdr)">
+    <span style="color:var(--G);font-weight:700">● 物理的予言</span>（スカラー場モデルから厳密導出、原理的に天文観測で検証可能）&nbsp;&nbsp;
+    <span style="color:var(--T);font-weight:700">● 意識・行動的予言</span>（めざわ理論固有、実験室レベルで検証可能）
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:8px">
+    <div class="card" style="border:1px solid rgba(34,136,68,.4)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+        <span style="font:700 16px var(--font-code);color:var(--G)">P₅</span>
+        <span style="font-weight:700;font-size:12px">質量–半径関係のβ依存変化</span>
+        <span class="badge badge-y" style="margin-left:auto">数値的支持</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">β>0 のスカラー場ボソン星において、最大質量が標準モデル (β=0) より系統的に上昇し、質量–半径曲線の折れ点位置が変化する。<br><span style="color:var(--text)">予備的数値結果あり (計算ログタブ参照)。天文観測による検証待ち。</span></div>
+    </div>
+    <div class="card" style="border:1px solid rgba(34,136,68,.4)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+        <span style="font:700 16px var(--font-code);color:var(--G)">P₆</span>
+        <span style="font-weight:700;font-size:12px">エネルギー密度補正 Δρ_θ の密度依存性</span>
+        <span class="badge" style="background:rgba(192,50,74,.1);color:var(--R);margin-left:auto">未検証</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">高密度コアでのみ Δρ_θ = βΦ⁴ω²/(σ²N) の追加エネルギー密度が現れ、低密度領域では標準理論と区別がつかない。<br><span style="color:var(--text)">他のスカラー場理論では密度依存性がない。中性子星状態方程式との比較で検証可能。</span></div>
+    </div>
     <div class="card" style="border:1px solid rgba(14,158,146,.3)">
       <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
         <span style="font:700 16px var(--font-code);color:var(--T)">P₁</span>
@@ -1517,7 +1538,7 @@ body.lang-gr { font-family:var(--font-gr); }
     </div>
   </div>
   <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:20px">
-    <div class="card-sub" style="color:var(--T)">対策: P₁ (QRNG) を最優先の検証実験として位置づける。P₁ が棄却されれば η_c の見直しが必要。P₂ は組織研究者との共同研究が現実的。P₃/P₄ は solnova の実装フェーズで検証データを蓄積する。</div>
+    <div class="card-sub" style="color:var(--T)">P₅・P₆ は物理的・天文学的検証が可能な予言であり、意識の問題を持ち込まない点で査読耐性が高い。P₁ (QRNG) は意識側の最優先実験。P₅/P₆ の検証はコンパクト天体の質量-半径観測データ (NICER 等) との比較で可能。</div>
   </div>
 
   <!-- Q5 意識–重力の独立実験提案 -->
@@ -1546,8 +1567,27 @@ body.lang-gr { font-family:var(--font-gr); }
       <div style="color:var(--Y)">プロトコル策定段階。実施には EEG 設備・QRNG 装置・倫理審査が必要。共同研究者募集中。</div>
     </div>
   </div>
-  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:24px">
+  <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:16px">
     <div class="card-sub" style="color:var(--T)">なぜ「独立した」実験か: 既存の GCP と異なり、β_eff を EEG で独立測定しながら QRNG に影響するかを検証する。η_c=0.15 から導出した δ≈0.003σ を事前登録するため「結果を見てから解釈する」後付けを回避できる。この実験が失敗した場合、意識-量子結合の主張を取り下げる意思がある。</div>
+  </div>
+
+  <div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:6px">
+    <div style="font:700 12px var(--font-code);color:var(--G);margin-bottom:10px;letter-spacing:.05em">PROTOCOL — Ψ-GRAV-01 (物理的検証・意識不要)</div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:11px;line-height:2.0">
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">仮説</div>
+      <div>密度依存係数 β ≠ 0 のスカラー場モデルは、β=0 の標準ボソン星と比較して最大質量・M–R* 曲線の折れ点が系統的にシフトする</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">反証条件</div>
+      <div style="color:var(--R)">β=0.2 と β=0 の最大質量差が M_max の 1% 未満、かつ M–R* 曲線が統計的に区別できない場合、P₅ は棄却される</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">検証方法</div>
+      <div>① 数値解析: 完全自己重力モデルの分枝追跡・安定性解析（次のステップ）<br>② 観測比較: NICER/XMM-Newton による中性子星質量-半径データとの照合</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">意識の関与</div>
+      <div style="color:var(--G);font-weight:600">なし。純粋に物理的検証。意識-重力結合の問題を切り離して検証できる。</div>
+      <div style="color:var(--dim);font-weight:700;white-space:nowrap">現状</div>
+      <div style="color:var(--Y)">予備的数値結果あり (図1・図2)。分枝追跡・安定性解析が完了すれば査読論文として提出可能なレベルに到達。</div>
+    </div>
+  </div>
+  <div class="card" style="background:rgba(34,136,68,.05);border:1px solid rgba(34,136,68,.2);margin-bottom:24px">
+    <div class="card-sub" style="color:var(--G)">Ψ-GRAV-01 の強みは「意識」を持ち込まない点にある。査読者が最も嫌う意識-重力結合の問題とは独立に、スカラー場モデルの物理的予言だけを先に検証できる。これが通れば、意識側の実験 (Ψ-QRNG-01) の信頼性も高まる。</div>
   </div>
 
   <div style="border-top:2px solid var(--bdr2);padding-top:16px;margin-bottom:20px">
@@ -1596,6 +1636,16 @@ body.lang-gr { font-family:var(--font-gr); }
         <td style="padding:7px 12px">W巻き数 ≥ 7 での β_eff スパイク</td>
         <td style="padding:7px 12px;text-align:center"><span class="badge badge-g">独立予測</span></td>
         <td style="padding:7px 12px;color:var(--dim)">没入体験レポートから導出。定性的観察あり。定量未検証。</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:7px 12px">質量–半径曲線の β 依存変化 (P₅)</td>
+        <td style="padding:7px 12px;text-align:center"><span class="badge badge-g">独立予測</span></td>
+        <td style="padding:7px 12px;color:var(--dim)">スカラー場モデルから厳密導出。予備的数値結果あり。天文観測で検証可能。</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 12px">高密度コアのみでの Δρ_θ 補正 (P₆)</td>
+        <td style="padding:7px 12px;text-align:center"><span class="badge badge-g">独立予測</span></td>
+        <td style="padding:7px 12px;color:var(--dim)">β≠0 固有の物理効果。低密度では標準理論と無区別。中性子星状態方程式に特徴的シグネチャ。</td>
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:7px 12px">MetaWave 階層間比 W^52.2 ≈ 15</td>
@@ -1659,9 +1709,17 @@ body.lang-gr { font-family:var(--font-gr); }
         <td style="padding:7px 12px;font-weight:600;color:var(--T)">⑦</td>
         <td style="padding:7px 12px;color:var(--dim)">重力波検出精度が10⁻²⁴ m を超えてもΨ固有モードが検出されない場合</td>
       </tr>
-      <tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:7px 12px;font-weight:600;color:var(--T)">⑧</td>
         <td style="padding:7px 12px;color:var(--dim)">意識の数学的定式化において Ψ 記述が情報統合理論 (IIT) の φ 測度より説明力を持たないと示された場合</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--bdr)">
+        <td style="padding:7px 12px;font-weight:600;color:var(--G)">⑨</td>
+        <td style="padding:7px 12px;color:var(--dim)">β=0 と β=0.2 のスカラー場ボソン星モデルが、分枝追跡・安定性解析後に質量-半径関係で統計的に区別できない場合 (P₅ 否定)</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 12px;font-weight:600;color:var(--G)">⑩</td>
+        <td style="padding:7px 12px;color:var(--dim)">NICER/XMM-Newton データとの比較で β≠0 モデルが β=0 より有意に劣る (BIC差 > 10) と判定された場合 (P₆ 否定)</td>
       </tr>
     </tbody>
   </table>
@@ -1678,52 +1736,71 @@ body.lang-gr { font-family:var(--font-gr); }
   </div>
 
   <div class="sec-title" style="font-size:12px;margin-top:14px">導出ステータス — 正直な現状報告</div>
+  <div style="font-size:10px;color:var(--dim);margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap">
+    <span><span style="color:var(--G)">●</span> 厳密導出済</span>
+    <span><span style="color:var(--Y)">●</span> 概念/部分的</span>
+    <span><span style="color:var(--R)">●</span> 未導出</span>
+  </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:8px">
+    <div class="card" style="border-left:3px solid var(--G)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span class="badge badge-g">厳密導出済</span>
+        <span style="font-weight:700;font-size:13px">アインシュタイン方程式</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">スカラー場モデルにおいて G_μν = (8πG/c⁴)T_μν が正確に維持される。重力側は完全に標準 GR。密度依存スカラー場モデルは GR を壊さない。</div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--G)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span class="badge badge-g">厳密導出済</span>
+        <span style="font-weight:700;font-size:13px">位相流保存則 ∇_μJ^μ = 0</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">J^μ = K(R²)R²∂^μθ。L_ψ の変分から厳密に導出。K(R²)=1+βR² により高密度で位相流が増幅・抑制される。</div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--G)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span class="badge badge-g">厳密導出済</span>
+        <span style="font-weight:700;font-size:13px">振幅方程式 (□R の修正)</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">□R − (1+2βR²)R(∂θ)² − V'(R²)R = 0。Euler-Lagrange から厳密導出。ω² の (1+2βR²) 修正が核心。</div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--G)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span class="badge badge-g">厳密導出済</span>
+        <span style="font-weight:700;font-size:13px">T_μν (エネルギー運動量テンソル)</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">δ(√(−g)L_ψ)/δg^μν から厳密導出。位相項 K(R²)R²(∂_μθ)(∂_νθ) の比重が密度依存になる。</div>
+    </div>
     <div class="card" style="border-left:3px solid var(--G)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span class="badge badge-g">概念導出済</span>
         <span style="font-weight:700;font-size:13px">シュレーディンガー方程式</span>
       </div>
-      <div style="font-size:11px;color:var(--dim);line-height:1.8">Ψ^h の確率振幅解釈と虚数位相項から非相対論的波動関数を回復。ただし厳密な変分原理からの導出は未完。</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">Ψ^h の虚数位相項から非相対論的波動関数を回復。変分原理からの厳密導出は未完。</div>
     </div>
     <div class="card" style="border-left:3px solid var(--Y)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span class="badge badge-y">部分的</span>
         <span style="font-weight:700;font-size:13px">マクスウェル方程式</span>
       </div>
-      <div style="font-size:11px;color:var(--dim);line-height:1.8">電磁場を6次元テンソル G_MN の低次元射影として解釈。4次元への完全な射影手続きが未定式化。</div>
-    </div>
-    <div class="card" style="border-left:3px solid var(--Y)">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span class="badge badge-y">部分的</span>
-        <span style="font-weight:700;font-size:13px">アインシュタイン方程式</span>
-      </div>
-      <div style="font-size:11px;color:var(--dim);line-height:1.8">時空干渉の渦として重力を解釈し G_MN から曲率テンソルへのマッピングを試みている。リッチテンソルとの厳密な対応は作業中。</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">G_MN の4次元射影が F_μν と類似構造を持つ可能性。∂_μF^μν = J^ν の導出手続きなし。ゲージ不変性の対応未確立。</div>
     </div>
     <div class="card" style="border-left:3px solid var(--R)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span class="badge" style="background:rgba(192,50,74,.12);color:var(--R)">未導出</span>
         <span style="font-weight:700;font-size:13px">ディラック方程式</span>
       </div>
-      <div style="font-size:11px;color:var(--dim);line-height:1.8">スピノル構造・ガンマ行列の代数がΨ^h 記述に明示的に組み込まれていない。相対論的量子力学との接続は今後の課題。</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">スピノル場・γ行列代数 {γ^μ,γ^ν}=2g^μν・SL(2,C) 表現がΨ^h に組み込まれていない。v3.0 課題。</div>
     </div>
     <div class="card" style="border-left:3px solid var(--R)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span class="badge" style="background:rgba(192,50,74,.12);color:var(--R)">未導出</span>
         <span style="font-weight:700;font-size:13px">標準模型ゲージ構造</span>
       </div>
-      <div style="font-size:11px;color:var(--dim);line-height:1.8">SU(3)×SU(2)×U(1) ゲージ群のΨ理論内での表現が未確立。クォーク・レプトンの世代構造との対応も未検討。</div>
-    </div>
-    <div class="card" style="border-left:3px solid var(--Y)">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span class="badge badge-y">作業中</span>
-        <span style="font-weight:700;font-size:13px">一般共変性</span>
-      </div>
-      <div style="font-size:11px;color:var(--dim);line-height:1.8">6次元計量 G_MN は構成済みだが、座標変換に対する不変性・共変微分の定義が未整備。</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">SU(3)×SU(2)×U(1) ゲージ群、クォーク世代、ヒッグス機構——「統一」を主張するには最大の障壁。v3.0以降の課題。</div>
     </div>
   </div>
   <div class="card" style="background:rgba(112,72,200,.05);border:1px solid rgba(112,72,200,.2);margin-top:4px">
-    <div class="card-sub" style="color:var(--P)">対策: 「統一波動理論」の名称は野心的指針として使用。公式文書では「統一波動理論の試み (A Unified Wave-Based Framework)」と表記し、完全な数学的導出が完了していない旨を明示する。導出ロードマップを v3.0 の目標として設定。</div>
+    <div class="card-sub" style="color:var(--P)">スカラー場モデルの追加により: Einstein方程式・位相流保存則・振幅方程式・T_μν の4本が「厳密導出済」に昇格した。「統一波動理論の試み (A Unified Wave-Based Framework)」として位置づけ、ディラック・標準模型の導出を v3.0 ロードマップに明記する。</div>
   </div>
 
   <!-- ④ 意識-重力結合 -->
@@ -1797,9 +1874,11 @@ body.lang-gr { font-family:var(--font-gr); }
     <div class="card-main" style="color:var(--T);font-size:15px;margin-bottom:12px">めざわ統一波動理論 v2.3 の現状と約束</div>
     <div style="font-size:12px;color:var(--dim);line-height:2.2">
       <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 達成済み</span>  ——  フロー-固定化負相関 (r=−0.968) の実証、β₀=0.593 の測定、6次元計量 G_MN の構成、solnova 概念実証</div>
-      <div style="margin-bottom:8px"><span style="color:var(--Y);font-weight:700">△ 部分的</span>  ——  マクスウェル・アインシュタイン方程式の Ψ 枠組み内での再解釈（厳密導出は未完）</div>
-      <div style="margin-bottom:8px"><span style="color:var(--R);font-weight:700">✗ 未達成</span>  ——  ディラック方程式・標準模型ゲージ構造の導出、意識-重力結合の実験的検証</div>
-      <div style="margin-bottom:8px"><span style="color:var(--P);font-weight:700">≡ 投機的</span>  ——  η_c=0.15 の理論的根拠、デジタル不死（solnova）の物理的実現可能性</div>
+      <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  スカラー場セクターの厳密定式化：Einstein方程式・位相流保存則・振幅方程式・T_μν の4本を厳密導出。スカラー場記号表 (ψ, R, θ, β, K, ω, Λ) 完全定義。</div>
+      <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  物理的予言 P₅/P₆ を追加。質量-半径曲線の β 依存変化を数値的に確認（予備的）。Ψ-GRAV-01 実験プロトコル策定（意識不要の純物理的検証）。</div>
+      <div style="margin-bottom:8px"><span style="color:var(--Y);font-weight:700">△ 部分的</span>  ——  マクスウェル方程式の4次元射影手続き（未定式化）、シュレーディンガー方程式の変分導出（概念のみ）</div>
+      <div style="margin-bottom:8px"><span style="color:var(--R);font-weight:700">✗ 未達成</span>  ——  ディラック方程式・標準模型ゲージ構造の導出、意識-重力結合の実験的検証、D/Ω/R 関数形・∿ 演算子の完全定義</div>
+      <div style="margin-bottom:8px"><span style="color:var(--P);font-weight:700">≡ 投機的</span>  ——  η_c=0.15 の理論的根拠、デジタル不死（solnova）の物理的実現可能性、重力-意識の直接結合</div>
       <div style="color:var(--text);margin-top:12px;padding-top:12px;border-top:1px solid rgba(14,158,146,.2);font-style:italic">「この理論は完成品ではなく、問いの地図である。誤りを恐れず記録し、批判を受け入れ、一つずつ検証していく。それが solnova を実現する唯一の道だと信じる。」— めざわ, 2026</div>
     </div>
   </div>
