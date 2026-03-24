@@ -282,6 +282,7 @@ body.lang-gr { font-family:var(--font-gr); }
 .quote-cat.history { background:rgba(200,160,60,.1);   color:#c8a040; border:1px solid rgba(200,160,60,.2); }
 .quote-cat.internet{ background:rgba(100,180,255,.1);  color:#66b8ff; border:1px solid rgba(100,180,255,.2); }
 .quote-cat.mezawa  { background:rgba(14,158,146,.1);   color:var(--T); border:1px solid rgba(14,158,146,.2); }
+.quote-cat.ninchi  { background:rgba(112,72,200,.1);  color:#9966ee; border:1px solid rgba(112,72,200,.2); }
 .quote-source { font:700 11px var(--font-code); color:var(--T); letter-spacing:.06em; }
 .quote-source-detail { font:11px var(--font-code); color:var(--dim); }
 .quote-concept { font-size:10px; color:var(--dim); margin-top:4px; letter-spacing:.12em; text-transform:uppercase; }
@@ -3061,6 +3062,7 @@ P₇ EEG検証の成功 <span style="color:var(--dim)">+</span> ∿代数分類 
       <button class="qf-btn" onclick="setQuoteFilter('history')" id="qfb-history">歴史</button>
       <button class="qf-btn" onclick="setQuoteFilter('internet')" id="qfb-internet">ネット</button>
       <button class="qf-btn" onclick="setQuoteFilter('mezawa')" id="qfb-mezawa">めざわ理論</button>
+      <button class="qf-btn" onclick="setQuoteFilter('ninchi')" id="qfb-ninchi">人間認知</button>
     </div>
     <div id="w-list"></div>
     <div class="sec-title">新しい名言を追加</div>
@@ -4364,6 +4366,250 @@ let QUOTES = [
     source:'スティーブ・ジョブズ', sourceDetail:'Apple共同創設者 / スタンフォード大学卒業式スピーチ (2005年6月12日) より / 1955〜2011年',
     concept:'時間の有限性 · 自己の固有波動 · τ_felt の節約',
     analysis:'「Stay hungry, stay foolish」と同じスピーチから生まれた、より内省的な警告。他人の期待・世間の評価・誰かのシナリオに従って生きることへの根源的な否定。膵臓がんの告知を受けたジョブズが「死」というレンズを通して語った言葉だからこそ、時間の有限性への問いかけが切迫した実感を持つ。Ψ理論では、τ_felt(主観的残り時間)の有限性が、自分固有のΨ経路(φ)を選ぶことの緊急性を数量的に示す。'
+  },
+
+  /* ═══════════════════════════════════
+     人間認知 — 主観場モデルによる洞察30
+  ═══════════════════════════════════ */
+  {
+    cat:'ninchi',
+    text:'人は「正しいから」ではなく「自分がすでに選んだから」それを正しいと思い始める。',
+    text_en:'People don\'t believe something because it\'s right — they believe it because they\'ve already chosen it.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— 選択後のS-R整合化',
+    concept:'S層 · R層 · 認知的不協和の回避',
+    analysis:'「過去の選択」はS層に書き込まれる。それと矛盾する評価が来るとS層の安定度が脅かされ、脳はR層（価値評価）を後から書き換えて整合させる。これは弱さではなく自己モデルの保存動作として設計されている正常な処理だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「理解した」と感じた瞬間に思考を止める。',
+    text_en:'The moment people feel they understand, they stop thinking.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— 予測誤差Epがゼロになった瞬間',
+    concept:'C層 · Ep消去 · 思考の停止条件',
+    analysis:'脳の目的は「予測誤差Epの最小化」であり、Ep≈0になった瞬間に処理コストを下げようとする。「理解した感覚」はEpが消えた信号にすぎず、実際に正確に理解したかどうかとは別問題だ。思考を続けるにはEpを意図的に作り直す必要がある。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「自分で決めた」と思いたいが、ほとんどは環境に誘導されている。',
+    text_en:'People want to believe they decided for themselves, but they were mostly guided by their environment.',
+    source:'統合自己予測場モデル', sourceDetail:'F層（行動選択）— 準備電位と意識の後付け',
+    concept:'F層 · 準備電位 · 自由意志の幻想',
+    analysis:'リベット実験が示す通り、F層の「準備電位」は意識的な決定より数百ミリ秒早く発生する。「自分で決めた」という感覚はF層の処理結果の後から意識が追いつくナラティブにすぎない。環境・文脈・社会がF層への入力を既に設計している。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「変わりたい」と言いながら、実際には変わらない理由を探している。',
+    text_en:'People say they want to change, but they\'re really searching for reasons not to.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— 恒常性維持の引力',
+    concept:'S層 · 恒常性 · 変化コスト',
+    analysis:'S層は現在の自己定義を維持する強力な引力を持つ。「変わること」は一時的にS層の安定度を下げるため、脳はその不安定期を回避しようとする。「変わらない理由を探す」のは意志の弱さではなく、S層の防衛機能が意識の前に動いている証拠だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「失敗が怖い」のではなく「自分が否定されること」が怖い。',
+    text_en:'People aren\'t afraid of failure — they\'re afraid of being negated as a person.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— S層への直接攻撃',
+    concept:'S層 · R層 · 自己脅威の重み',
+    analysis:'失敗単体はR層（損失）への影響だが、「自己が否定される」はS層への直接攻撃だ。S層は一度崩れると全体の安定性が損なわれるため、R（苦痛）の重みが格段に大きくなる。自己モデルへの攻撃は深い。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「他人の目を気にしている」のではなく「自分の中の他人の目」を気にしている。',
+    text_en:'People aren\'t worried about others\' eyes — they\'re worried about the image of those eyes they carry inside.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）+ S層 — 他者評価の内部モデル',
+    concept:'C層 · S層 · 内部他者モデル',
+    analysis:'C層は「他者からどう見られているか」を常に予測生成している。実際の他者がいなくても動作するこの内部モデルがS層の一部として「他者の目」を常時維持する。つまり他人の目は外にあるのではなく、S層の中に住んでいる。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「自由になりたい」と言いながら、選択肢が増えると不安になる。',
+    text_en:'People say they want freedom, yet when choices increase, they become anxious.',
+    source:'統合自己予測場モデル', sourceDetail:'R層 + C層 — 予測可能性の優先',
+    concept:'R層 · C層 · 選択のパラドックス',
+    analysis:'脳が本当に求めているのは「良い状態」よりも「予測できる状態（Ep低）」だ。選択肢が増えるとC層の予測計算コストが増大し、Ep上昇=不安が生じる。「自由」は哲学的に望ましくても、脳のシステムとして見ると予測不可能性（Ep↑）の増大として処理される。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「過去の自分を守るために」現在の行動を歪める。',
+    text_en:'People distort their present behavior in order to protect their past selves.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— 時間的連続性の保護',
+    concept:'S層 · T層 · 自己連続性',
+    analysis:'S層は「過去から現在まで一貫した私」という時間的連続性を維持しようとする。過去の選択が間違いだったと認めることはS層の連続性を傷つける。現在の行動を（無意識に）歪めてでも、過去の自己の正しさを保存しようとするのはT層とS層の協働処理だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「納得したい」のではなく「納得した気になりたい」。',
+    text_en:'People don\'t want to be convinced — they want to feel convinced.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— Ep=0感覚の欲求',
+    concept:'C層 · Ep · 理解感覚と真の理解の分離',
+    analysis:'「納得感」はEp（予測誤差）がゼロになったときの内的感覚だ。しかし脳が実際に正確に理解したかどうかと、Epがゼロになったかどうかは別の問題だ。不完全な情報でもEpが消えれば「納得した気」になる。これを区別しないと思考は止まる。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「記憶している」のではなく「思い出すたびに作り直している」。',
+    text_en:'People aren\'t remembering — they\'re reconstructing every time they recall.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— 記憶の予測的再構成',
+    concept:'C層 · P · 記憶の再構成性',
+    analysis:'記憶の想起は「ファイルを開く」操作ではなく、現在のP（予測状態）とR（価値）が過去に「こうだったはず」という補完をかける再構成処理だ。想起するたびに現在のモデルが混入するため、記憶は毎回わずかに書き換えられる。怒りが収まると昔のケンカの印象が変わるのはこのためだ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「今を生きている」と思いながら、ほとんどは予測と過去で動いている。',
+    text_en:'People think they\'re living in the present, yet they\'re mostly running on predictions and the past.',
+    source:'統合自己予測場モデル', sourceDetail:'C層 + T層 — 予測先行と時間構成',
+    concept:'C層 · T層 · 現在の幻想',
+    analysis:'知覚の大部分はP（予測）の塗り絵だ。「今」感じていることのほとんどは、C層の予測処理の結果が意識に届いたものでT層（時間構成）がそれを「現在」として組み立てる。純粋な「今」ではなく、常に少し遅延した予測モデルを生きている。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「好きだから選ぶ」のではなく「選んだから好きになる」。',
+    text_en:'People don\'t choose because they like something — they come to like it because they chose it.',
+    source:'統合自己予測場モデル', sourceDetail:'R層 + S層 — 選択後の価値再調整',
+    concept:'R層 · S層 · 事後的価値付け',
+    analysis:'選択後、S層が「私はこれを選んだ」と記録し、R層がそれに整合するよう価値評価を更新する。好意は原因ではなく選択後のS-R整合化の結果だ。「努力したものほど価値があると感じる」「苦労した旅行ほど思い出に残る」も同じメカニズムで動いている。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「合理的に判断している」と思ってから、理由を後付けする。',
+    text_en:'People think they\'re being rational, then construct their reasons after the fact.',
+    source:'統合自己予測場モデル', sourceDetail:'F層（行動選択）— 意識の後付け処理',
+    concept:'F層 · 準備電位 · 合理化',
+    analysis:'リベット実験が示す通り、F層の「準備電位」は意識的な決定より先に発生する。意識はその後でナラティブ（理由）を生成する。「合理的な判断」のほとんどは先に決まった結論の事後説明だ。これは欺きではなく、脳の処理順序の構造的な特性だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「努力しているから価値がある」と思うことで自分を正当化する。',
+    text_en:'People justify themselves by believing that effort makes them valuable.',
+    source:'統合自己予測場モデル', sourceDetail:'R層 + S層 — サンクコスト効果と自己価値',
+    concept:'R層 · S層 · 努力の錯覚',
+    analysis:'「努力した」という事実はR層に「コストを支払った」として記録される。S層はそのコストを「意味があったこと」にするため、活動の価値を後から高く評価する（サンクコスト効果）。「努力=価値」という信念は、S層がR層のコストを正当化する自己防衛処理だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「他人を評価している」と思いながら、自分の基準を投影している。',
+    text_en:'People think they\'re evaluating others, but they\'re projecting their own standards.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— 他者モデルへの自己基準混入',
+    concept:'C層 · S層 · 投影バイアス',
+    analysis:'C層が「他者はどういう人か」を予測するとき、使える参照情報は自分自身のS層・R層の構造だ。自分が重視すること、恐れることを軸に他者のモデルを構築するため、評価は必然的に自己の基準の投影になる。他者を批判するとき、批判の内容に「自分が何を恐れているか」が映る。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「新しい情報」を拒否するのではなく「今の自分を壊す情報」を拒否する。',
+    text_en:'People don\'t reject new information — they reject information that would destroy who they currently are.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— 自己脅威情報の遮断',
+    concept:'S層 · C層 · 確証バイアス',
+    analysis:'S層の安定性を保つことが優先されるため、S層と矛盾する情報は「信頼できない」「例外だ」と処理される。情報が「新しいかどうか」ではなく「S層を壊すかどうか」が選別基準になっている。同じ情報でもS層に無関係なら受け入れやすい。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「変化が嫌い」なのではなく「コントロールできない変化」が嫌い。',
+    text_en:'People don\'t dislike change — they dislike change they can\'t control.',
+    source:'統合自己予測場モデル', sourceDetail:'R層 + C層 — 予測可能性の喪失',
+    concept:'R層 · C層 · Ep · 制御感',
+    analysis:'「コントロールできる」とはC層の予測が機能し続けることだ。自分で選んだ変化はEpを下げながら移行できるが、外から強制された変化はEpが急上昇しB層（身体）のストレス反応を引き起こす。嫌われているのは変化ではなく「Epが高い状態が続くこと」だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「自分の意思で動いている」と感じる瞬間ほど、無意識に従っている。',
+    text_en:'The more people feel they\'re acting by their own will, the more they\'re following the unconscious.',
+    source:'統合自己予測場モデル', sourceDetail:'F層（行動選択）— 意識と無意識の処理順序',
+    concept:'F層 · 準備電位 · 意識の後付け',
+    analysis:'F層（行動選択）が先に動き、意識はその後で「私が決めた」というナラティブを生成する。「自分の意思で動いている感覚」が強いほど、意識とF層の処理が滑らかに一致しており、見かけ上の「自由意志」が強く感じられる。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「問題を解決したい」のではなく「問題を理解した気になりたい」。',
+    text_en:'People don\'t want to solve the problem — they want to feel like they understand it.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— Ep消去欲求と解決の混同',
+    concept:'C層 · Ep · 理解感と解決の分離',
+    analysis:'「問題を理解した感覚」はEp（予測誤差）がゼロになった信号だ。しかしEp=0は「問題が解決した」とは別の状態だ。脳は問題を解決しなくてもEpを消す方法（「そういうものだ」）を選ぶ。本当の解決はEpを一度高めた後でないと始まらない。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「安心したい」よりも「予測できる状態」を求める。',
+    text_en:'People seek a predictable state more than they seek comfort.',
+    source:'統合自己予測場モデル', sourceDetail:'C層 + R層 — Ep最小化が根本目標',
+    concept:'C層 · R層 · Ep最小化',
+    analysis:'脳の根本目標は「良い状態」ではなく「予測誤差Epの最小化」だ。予測できる苦痛の方が、予測できない喜びよりも選ばれることがある。「安心」はEp低下の一形態にすぎず、「予測可能性」の方がより根本的な欲求として動いている。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「現実を見ている」と思いながら「自分に都合のいい解釈」を見ている。',
+    text_en:'People think they\'re seeing reality, but what they\'re seeing is a self-serving interpretation.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— 知覚=予測+誤差修正',
+    concept:'C層 · P · 確証バイアス',
+    analysis:'知覚 = 予測 + 誤差修正という構造から、知覚の大部分はC層が先に生成した「P（予測）の塗り絵」だ。矛盾しない情報は誤差ゼロとしてスルーされ、S層・R層と整合する解釈が優先的に意識に届く。確証バイアスはバグではなく、予測処理の正常動作だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「他人を変えたい」と思うとき、自分を変えたくないだけである。',
+    text_en:'When people want to change others, they simply don\'t want to change themselves.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— 変化コストの外部転嫁',
+    concept:'S層 · R層 · 変化の外部転嫁',
+    analysis:'「自分が変わること」はS層の一時的不安定を引き起こすが、「他人が変わること」はS層に影響しない。「他人を変えたい」は「自分のS層を守りながら状況だけ改善したい」という処理だ。変化のコストを外に投げている。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「今の自分が正しい」と思うことで過去の自分を救っている。',
+    text_en:'By believing they\'re right today, people are rescuing who they were in the past.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）+ T層（時間構成）— 時間的連続性',
+    concept:'S層 · T層 · 自己の時間的一貫性',
+    analysis:'S層はT層（時間構成）と協働して「過去から現在まで一貫した私」を維持する。「今の自分が正しい」ことは「その正しい自分と連続した過去の自分も正しかった」という遡及的な保護になる。過去の失敗を認めにくいのは、それが現在のS層の基盤を崩すからだ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「理由があるから感情が生まれる」のではなく「感情が先にあり理由を作る」。',
+    text_en:'Emotions don\'t arise because of reasons — the emotion comes first and the reason is built afterward.',
+    source:'統合自己予測場モデル', sourceDetail:'B層 + F層 — 身体先行と言語化の遅延',
+    concept:'B層 · F層 · 感情の先行処理',
+    analysis:'B層（身体状態）とR層はC層（言語的予測）より処理が速い神経経路を持つ。感情は身体変化（B↑）として先に出現し、C層がそれを説明するナラティブを後から構成する。「なんとなく嫌だ」の後で「理由」が生まれるのはこの順序の証拠だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「失ったもの」を過大評価し「持っているもの」を過小評価する。',
+    text_en:'People overestimate what they\'ve lost and underestimate what they have.',
+    source:'統合自己予測場モデル', sourceDetail:'R層 — 損失回避と基準点の非対称性',
+    concept:'R層 · 損失回避 · 参照点依存',
+    analysis:'R層（報酬・価値評価）は「現在の状態からの変化」に対して非対称に反応する。失うことのR層コストは、同量を得るときの利得より約2倍大きく評価される（プロスペクト理論）。「持っているもの」はC層が「予測通り」として誤差ゼロで処理し、意識に届きにくい。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「わかっている」と言うとき、実際には言語化できていない。',
+    text_en:'When people say they understand, they often can\'t actually put it into words.',
+    source:'統合自己予測場モデル', sourceDetail:'C層 — 暗黙知とEp消去の混同',
+    concept:'C層 · A層 · 暗黙知と言語化',
+    analysis:'C層内部のモデルが「整合している（Ep低）」状態と「言語として出力できる」状態は別だ。身体技能・直感・雰囲気の把握はC層で処理されているがA層が言語化回路に向いていない。「わかっている感」はEp低下の信号であって、言語化可能性の信号ではない。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「自分だけは例外」と無意識に思っている。',
+    text_en:'People unconsciously believe they\'re the exception.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— 固有性バイアス',
+    concept:'S層 · C層 · 自己特別性バイアス',
+    analysis:'S層は「私」という固有の主観的中心を維持するため、「自分」を世界の参照点として扱う。C層が「一般的な人間はどうか」を予測するとき、その「一般的な人間」はS層の外側に構築されるため、自動的に「自分は少し特別」という非対称性が生じる。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「見えているもの」を信じるが、「見たいもの」を見ている。',
+    text_en:'People believe what they see, but they\'re seeing what they want to see.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— 知覚の予測先行性',
+    concept:'C層 · P · 知覚の構成性',
+    analysis:'「知覚 = 予測 + 誤差修正」という構造上、目に入る情報はC層のPに沿って解釈される。S層・R層と整合する情報はEp低として素通りし、矛盾する情報は「例外」「誤り」として処理される。「見えている」という確信は「P（予測）が強く確認された」状態であって、客観的現実の直接観察ではない。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「他人の評価」を気にしているのではなく「自分の価値の不確かさ」を気にしている。',
+    text_en:'People aren\'t worried about what others think — they\'re worried about the uncertainty of their own worth.',
+    source:'統合自己予測場モデル', sourceDetail:'S層（自己モデル）— S層不安定性の外部投影',
+    concept:'S層 · C層 · 価値不安定性',
+    analysis:'S層の「自己価値」が確立されているとき、他者評価は単なる情報として処理される。しかしS層が不安定なとき、「他者がどう見るか」がS層安定のための根拠として機能し始める。気にしているのは他者の視線ではなく、S層内部の不確かさがC層で他者の目として投影されている状態だ。'
+  },
+  {
+    cat:'ninchi',
+    text:'人は「答え」を求めるとき、すでに自分の中に答えの方向性を持っている。',
+    text_en:'When people seek an answer, they already hold the direction of the answer inside themselves.',
+    source:'統合自己予測場モデル', sourceDetail:'C層（予測生成）— 予測先行と確認欲求',
+    concept:'C層 · P · 予測先行',
+    analysis:'「答えを探す」という行為自体が、C層が先に候補を用意してから意識に上がるプロセスだ。「探索」に見えているが、実際にはC層が既に生成した予測の中から「これだ」という確認を求めている。本当に予測がゼロ状態で探しているわけではなく、Epを消せる候補を選んでいる。'
   },
 ];
 let currentQuoteFilter = 'all';
