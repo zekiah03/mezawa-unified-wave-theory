@@ -3762,6 +3762,94 @@ const LANG_DATA = {
           {q:'この理論だけが予測できる現象は何か？', a:'① 「注意密度×身体同期×自己モデル安定性」の3変数が同時に主観時間を決定するという構造 — 既存理論は個別にしか扱わない ② β₀ による密度依存位相勾配効果（物理セクター固有） ③ W パラメータが意識と重力を橋渡しする可能性 — ただし③は現時点では投機的'},
         ],
       },
+      formulaCheck: {
+        title: '数式強化チェック',
+        sub: '数式は理論の骨格 — 定義・単位・代入可能性を検証する',
+        items: [
+          {q:'変数はすべて定義されているか？', a:'物理セクター: Yes — ψ, R, θ, β, K, ω, Λ, G_μν, T_μν すべて定義済み・測定法付き。主観セクター: 部分的 — E(t), N(t), B(t), A(t) は概念的に定義済みだが、操作的定量化がEEG・HRV・瞳孔径等の代理指標に依存。'},
+          {q:'単位は何か？', a:'物理: β は無次元、ω は Hz (s⁻¹)、K は無次元、T_μν は J/m³。主観: T_sub は秒（時間再生課題）、A は任意単位（EEG γパワー）、W は無次元指標。単位系の統一が主観-物理間で未完成。'},
+          {q:'式は代入して結果が出るか？', a:'物理: Yes — β₀=0.593, Λ, μ² を代入して質量-半径関係・回転曲線を計算可能（Phase B で数値実行済み）。主観: 部分的 — T_sub ∝ αA + βΔN... は方向性を示すが、α,β,γ の具体値は未決定。実験データで較正が必要。'},
+          {q:'既存のどの数式と似ているか？', a:'物理: Klein-Gordon 方程式の非線形拡張（密度依存項追加）。主観: 予測処理のフリーエネルギー最小化 F = E_q[log q - log p] と構造的に類似。時間モデルは Zakay の注意ゲートモデルの多変数拡張。'},
+          {q:'シミュレーションできるか？', a:'物理: Yes — 球対称定常解の常微分方程式系を数値積分可能（実行済み）。主観: 条件付き — パラメータ較正後にエージェントベースモデルで時間知覚・フロー遷移をシミュレーション可能。現段階では概念モデル。'},
+        ],
+      },
+      consistency: {
+        title: '一貫性チェック',
+        sub: '理論内部に矛盾がないか — 同じルールが全体を貫いているか',
+        items: [
+          {q:'理論内で矛盾している部分はないか？', a:'物理-主観間の接続が最大の緊張点。物理セクターの β₀ は測定可能な定数だが、主観セクターの W は「意識の覚醒度」として β₀ と対応づけようとしている。この対応の正当性は未証明。矛盾というより「未接続」が正確。'},
+          {q:'別の現象を説明するとき同じルールを使っているか？', a:'Yes — 「多スケール同期」原理は一貫。ゾーン→注意-身体-自己の同期、時間伸縮→変化密度と注意密度の関数、重力→密度依存位相勾配。すべて「変動パターンの整合性」で記述。ただし、同じ原理の「適用方法」がセクターで異なる。'},
+          {q:'説明のレベルが混ざっていないか？', a:'混ざっている — これは自覚済みの問題。物理（場の方程式）・神経科学（EEG・HRV）・現象学（主観報告）・哲学（意識の本質）が同一フレーム内にある。論文化の際は3層分離が必須: ①哲学的コア ②科学的仮説 ③実験主張。'},
+          {q:'定義が途中で変わっていないか？', a:'「波」の意味が文脈で変動する問題あり。公理系では「複素スカラー場の固有モード」、主観セクターでは「神経活動の準周期変動」、概要では「すべてを貫く原理」。定義ストレステストで自覚済み、セクター別定義の固定が急務。'},
+          {q:'前半と後半で言っていることが一致しているか？', a:'基本的に一致。公理系→方程式→予測→検証の流れは論理的。ただし「宇宙を統一する」という大目標と「主観時間を予測する」という局所目標のスケールギャップが大きく、両者を同列に語ると一貫性が薄く見える。'},
+        ],
+      },
+      boundary: {
+        title: '境界条件',
+        sub: 'この理論はどこまで適用できて、どこから先は適用できないか',
+        items: [
+          {q:'どこまで適用できるか？', a:'物理: 複素スカラー場が存在するスケール（ボソン星・暗黒物質ハロー・宇宙論的構造）。主観: 自己報告が可能な意識を持つ系（覚醒状態のヒト成人が中心）。'},
+          {q:'人間以外に適用できるか？', a:'物理セクター: 適用可能（人間に依存しない）。主観セクター: 限定的 — 動物は自己報告不可のため代理指標のみ（行動指標・神経活動）。AI は「同期」「注意」の操作的定義が異なるため、直接適用は不適切。類似の情報処理構造があれば拡張の可能性。'},
+          {q:'極端な条件ではどうなるか？', a:'無重力: 物理セクターは適用可能（β₀ は重力場に依存しない場のパラメータ）。極限ストレス: 主観セクターの予測 — 同期崩壊→時間知覚の歪曲増大・自己境界の不安定化（解離症状と対応）。睡眠・麻酔: W→0 で主観時間消失、モデルの境界条件。'},
+          {q:'時間スケールが変わったらどうなるか？', a:'ミリ秒（神経振動）: EEG γ帯同期として直接適用。秒〜分（行動・体験）: 主観時間モデルの主要スケール。年〜一生: 習慣形成・人生フェーズモデルとして拡張済み（アプリの習慣・人生タブ）。宇宙論的: 物理セクターで適用（宇宙継承モデル）。'},
+          {q:'適用できない領域はどこか？', a:'① 意識を持たない無機物の「体験」 ② 社会制度・経済システムのマクロ動態（比喩的には使えるが科学的予測力なし） ③ 量子重力の統一（本理論は半古典的枠組み） ④ 「なぜ意識が存在するか」というハードプロブレム（記述はできるが説明にはならない）。'},
+        ],
+      },
+      concrete: {
+        title: '抽象→具体変換',
+        sub: '理論を現実に落とす — ケーススタディと日常例',
+        items: [
+          {q:'具体的な現象で説明すると？', a:'例: マラソンランナーの「ゾーン」。走行中にリズミカルな呼吸（B(t)周期化）+ 注意が走りに集中（A(t)上昇）+ 自己意識が薄れる（S(t)安定化）→ 3変数が同期 → 主観時間が短縮（「気づいたらゴール」）→ T_sub < T_clock。'},
+          {q:'ケーススタディを作れるか？', a:'Case: 歯科治療中の痛み知覚制御。振動デバイス（特定周波数）で末梢神経を刺激 → 注意ゲートが振動に同期 → 痛み信号の処理優先度が低下 → 主観的痛みが減少。めざわの歯科背景と直結。測定: VAS痛みスケール + 心拍変動 + 治療時間見積もり誤差。'},
+          {q:'日常の例で説明すると？', a:'① 好きなゲームで3時間が30分に感じる = A↑, S安定, T_sub短縮 ② 退屈な会議で10分が1時間に感じる = A↓, 変化密度↓, T_sub伸長 ③ 事故の瞬間がスローモーションに見える = 危機的A急上昇, ΔN急増, T_sub極端に伸長'},
+          {q:'具体例から抽象化すると何が残るか？', a:'「主観体験の質と時間構造は、系の内部変動パターンの整合度の関数である」— これが最小限の抽象。変動→注意・身体・自己に分解、整合度→同期の位相結合で定量化、関数→T_sub, E(t) の数式で形式化。'},
+          {q:'実際のデータに当てはめたらどうなるか？', a:'Phase 0 で実行済み: メタ解析データ(n=726) に対し F_frozen vs β_eff の回帰 → r=-0.968, R²=0.937。理論予測 r<-0.3 を大幅に上回る結果。次は Phase A（EEG直接計測）で主観変数の較正を予定。'},
+        ],
+      },
+      application: {
+        title: '応用価値チェック',
+        sub: '理論は現実世界でどう使えるか — 誰が恩恵を受けるか',
+        items: [
+          {q:'どの分野で使えるか？', a:'① 医療（痛み制御・リハビリ・精神疾患の客観指標化） ② 教育（集中状態の最適化・学習効率向上） ③ スポーツ（ゾーン誘導・パフォーマンス最適化） ④ UX設計（時間感覚操作・没入体験設計） ⑤ 歯科（振動による痛み制御デバイス）'},
+          {q:'何を改善できるか？', a:'① 「集中できない」を定量化し、同期度に基づく介入を設計可能 ② 痛み管理を薬物以外の振動制御で補助 ③ 時間知覚の操作で待ち時間ストレスを軽減 ④ フロー状態の条件を特定し再現可能に'},
+          {q:'何が「速く・安く・正確に」なるか？', a:'① フロー状態の診断: 主観報告→EEG+HRV同期度で客観・リアルタイム化 ② 痛み評価: 自己報告のみ→振動応答+心拍変動で客観化 ③ 集中力トレーニング: 試行錯誤→同期度フィードバックで効率化'},
+          {q:'プロダクトは作れるか？', a:'① ウェアラブル同期度モニター（EEG+HRV+加速度計→リアルタイムW推定） ② 歯科用振動ペインコントローラー ③ 集中支援アプリ（このアプリの習慣タブを発展） ④ VR没入度最適化エンジン'},
+          {q:'誰がお金を払うか？', a:'① 歯科医院（痛み制御デバイス） ② 企業の人材開発部門（集中力最適化プログラム） ③ スポーツチーム（パフォーマンスコーチング） ④ VR/ゲーム開発企業（没入設計ツール） ⑤ 研究機関（意識研究の統合フレームワーク）'},
+        ],
+      },
+      simplification: {
+        title: 'シンプル化 vs 拡張',
+        sub: '理論の最小核と最大射程 — どこまで絞り、どこまで広げられるか',
+        items: [
+          {q:'極限までシンプルにすると何が残るか？', a:'「主観体験は多スケールの状態変動の同期度の関数である」— この1文が最小核。数式では E(t) = f[sync(N, B, A, S)]。物理セクターは K(R²)=1+βR² の1項追加のみ。'},
+          {q:'拡張すると何を統一できるか？', a:'現在: 意識・時間知覚・身体感覚・重力場。拡張可能: 社会的同期（集団フロー）、進化的適応（種レベルの振動パターン）、人工知能の「注意」メカニズム。ただし拡張するほど反証可能性が低下するリスク。'},
+          {q:'どこまで広げると破綻するか？', a:'「すべては波である」まで広げると破綻 — 何でも説明できる=何も予測できない。社会制度、経済変動、歴史の流れに適用すると比喩にしかならない。物理-主観の接続（W↔β₀）も現時点では投機的。'},
+          {q:'どこまで狭めると強くなるか？', a:'最強は「ヒト成人の主観時間伸縮の3変数モデル」に絞ること。T_sub = f(A, ΔN, ΔB) で、注意密度・神経変化量・身体変化量の3つだけで時間知覚を予測。これならPhase A/D で直接検証可能。'},
+          {q:'「最強の最小モデル」は何か？', a:'T_sub(t) = α·A(t) + β·ΔN(t) + γ·ΔB(t) + δ·M(t) − ε·H(t)。5変数の線形モデル。A=注意密度(EEGγ), ΔN=神経変化量, ΔB=身体変化量(HRV), M=記憶刻印密度, H=自動化度。パラメータ5つを実験で較正すれば、他の理論にない統合予測が可能。'},
+        ],
+      },
+      reversal: {
+        title: '視点反転',
+        sub: '批判者の目で理論を見る — 最も痛い指摘は何か',
+        items: [
+          {q:'完全に間違っているとしたら、どこが原因か？', a:'最大のリスク: 「同期」が因果ではなく相関にすぎない可能性。ゾーン時に同期が上がるのは「結果」であって「原因」ではないかもしれない。もしそうなら、同期を操作してもゾーンは誘導できず、モデルの応用価値が崩れる。'},
+          {q:'否定する立場から論破すると？', a:'「この理論は"同期"を万能接着剤にしているだけだ。注意が上がれば同期も上がるのは当然で、独立した説明力がない。物理セクターのβは面白いが、主観セクターとの接続はポエムだ。結局、別々の理論を"波"というラベルで貼り合わせただけ」— これが最も痛い批判。'},
+          {q:'別分野の研究者はどう批判するか？', a:'物理学者: 「β₀の理論的導出がない。フィッティングパラメータでは予測力は限定的」。神経科学者: 「EEGγ同期とフローの相関は既知。新規性はどこか」。哲学者: 「意識のハードプロブレムを回避している」。心理学者: 「時間知覚モデルは Zakay を複雑にしただけでは」。'},
+          {q:'素人はどこで疑問を持つか？', a:'「全部が波って、結局なんでもありでは？」「意識と重力が同じ式で書けるって本当？」「予測がまだ検証されてないのに理論と呼べるの？」— いずれも正当な疑問であり、回答は: 物理と主観は別の式で書いている/検証はPhase A以降/理論ではなく仮説段階。'},
+          {q:'査読者はどこを落としにくるか？', a:'① 新規性の不足（予測処理+脳振動研究の焼き直しでは？） ② 物理-主観の接続の正当性 ③ パラメータが多すぎてオーバーフィッティング ④ 実験データの欠如 ⑤ 「統一」の定義が曖昧 — 対策: ①は差分を明確に、②は投機的と認める、③は最小モデルを提示、④はPhase計画を示す、⑤はスコープを絞る。'},
+        ],
+      },
+      essence: {
+        title: '本質抽出',
+        sub: 'この理論の核心を最も凝縮した形で',
+        items: [
+          {q:'核心は1文で言うと？', a:'「主観体験は、神経・身体・注意・自己モデルの多スケール同期状態として記述でき、その同期度が時間知覚・意識の質・行動パフォーマンスを決定する」'},
+          {q:'何を一番新しくしたのか？', a:'「バラバラに研究されてきた主観現象（フロー、時間伸縮、離人感、痛み知覚）を、同期度という単一の変数軸で統合的に記述できる枠組みを提案した」こと。個々の現象の説明ではなく、現象間の「接続」が新規性。'},
+          {q:'何を削って、何を残したのか？', a:'削ったもの: ①宇宙全体の統一主張（物理は独立セクターに） ②意識のハードプロブレム（回避を明示） ③宗教・スピリチュアルとの接続。残したもの: ①多スケール同期原理 ②T_subの多変数モデル ③β₀による場の理論拡張 ④反証可能な実験計画。'},
+          {q:'この理論がなかったら何が説明できなかったか？', a:'既存理論でも個別には説明可能。ただし「フロー時に時間が縮む」「痛みが注意で変わる」「離人感で自己境界が揺らぐ」を1つのフレームで語る枠組みがなかった。本理論の価値は「新しい現象の発見」ではなく「既知現象の統合的記述」にある。'},
+          {q:'「一番強い1点」は何か？', a:'T_sub = f(A, ΔN, ΔB, M, H) — 主観時間の多変数予測モデル。これが実験で検証されれば、時間知覚研究に新しい定量ツールを提供できる。物理セクターのβ₀も強いが、主観時間モデルの方が応用範囲が広く、検証も容易で、既存理論との差分が明確。'},
+        ],
+      },
       limTitle: '現在の限界',
       limSub: '理論の誠実さは限界を認めることにある',
       lims: [
@@ -3924,6 +4012,94 @@ const LANG_DATA = {
           {q:'What can ONLY this theory predict?', a:'① "Attention density × bodily sync × self-model stability" jointly determine subjective time — existing theories handle these separately ② β₀ density-dependent phase gradient effect (physics sector unique) ③ W parameter bridging consciousness and gravity — though ③ is currently speculative'},
         ],
       },
+      formulaCheck: {
+        title: 'Formula Rigor Check',
+        sub: 'Formulas are the skeleton — verifying definitions, units, and computability',
+        items: [
+          {q:'Are all variables defined?', a:'Physics: Yes — ψ, R, θ, β, K, ω, Λ, G_μν, T_μν all defined with measurement methods. Subjective: Partial — E(t), N(t), B(t), A(t) conceptually defined but operationally rely on proxy metrics (EEG, HRV, pupil diameter).'},
+          {q:'What are the units?', a:'Physics: β dimensionless, ω in Hz, K dimensionless, T_μν in J/m³. Subjective: T_sub in seconds (time reproduction), A in arbitrary units (EEG γ-power), W dimensionless. Unit unification between subjective-physics sectors incomplete.'},
+          {q:'Can the formulas be evaluated by substitution?', a:'Physics: Yes — substituting β₀=0.593, Λ, μ² yields mass-radius relations and rotation curves (computed in Phase B). Subjective: Partial — T_sub ∝ αA + βΔN... indicates direction but α,β,γ values undetermined. Calibration with experimental data needed.'},
+          {q:'Which existing equations are similar?', a:'Physics: Nonlinear extension of Klein-Gordon (density-dependent term). Subjective: Structurally similar to predictive processing free energy F=E_q[log q-log p]. Time model is multi-variable extension of Zakay\'s attentional gate model.'},
+          {q:'Can it be simulated?', a:'Physics: Yes — ODE system for spherically symmetric steady states is numerically integrable (done). Subjective: Conditional — after parameter calibration, agent-based models can simulate time perception and flow transitions. Currently a conceptual model.'},
+        ],
+      },
+      consistency: {
+        title: 'Consistency Check',
+        sub: 'Are there internal contradictions? Do the same rules apply throughout?',
+        items: [
+          {q:'Are there internal contradictions?', a:'The physics-subjective connection is the greatest tension point. β₀ is a measurable constant, while W is "consciousness wakefulness" mapped to β₀. This mapping\'s validity is unproven. More accurately "unconnected" than "contradictory."'},
+          {q:'Do different explanations use the same rules?', a:'Yes — "multi-scale synchronization" principle is consistent. Flow→attention-body-self sync, time distortion→function of change density and attention, gravity→density-dependent phase gradient. All described via "variation pattern coherence." Application methods differ per sector.'},
+          {q:'Are explanation levels mixed?', a:'Yes — acknowledged problem. Physics (field equations), neuroscience (EEG/HRV), phenomenology (subjective reports), philosophy (nature of consciousness) coexist. Paper requires 3-layer separation: ①philosophical core ②scientific hypothesis ③experimental claims.'},
+          {q:'Do definitions shift midway?', a:'"Wave" meaning varies by context. In axioms: "eigenmodes of complex scalar field." Subjective sector: "quasi-periodic neural fluctuations." Overview: "universal principle." Acknowledged in stress test; per-sector definition fixation is urgent.'},
+          {q:'Do beginning and end say the same thing?', a:'Fundamentally consistent. Axioms→equations→predictions→verification flow is logical. However, "unify the universe" and "predict subjective time" have a large scale gap — discussing both equally makes consistency appear thin.'},
+        ],
+      },
+      boundary: {
+        title: 'Boundary Conditions',
+        sub: 'Where does this theory apply, and where does it stop?',
+        items: [
+          {q:'How far does it apply?', a:'Physics: scales where complex scalar fields exist (boson stars, dark matter halos, cosmological structures). Subjective: systems with self-reportable consciousness (primarily awake human adults).'},
+          {q:'Does it apply beyond humans?', a:'Physics: yes (human-independent). Subjective: limited — animals can\'t self-report (proxy metrics only). AI: "sync" and "attention" have different operational definitions, direct application inappropriate. Extension possible if similar information processing structures exist.'},
+          {q:'What about extreme conditions?', a:'Zero gravity: physics sector applies (β₀ is a field parameter independent of gravitational field). Extreme stress: subjective sector predicts sync collapse→increased time distortion, self-boundary instability (corresponds to dissociative symptoms). Sleep/anesthesia: W→0, subjective time vanishes.'},
+          {q:'What if time scales change?', a:'Milliseconds (neural oscillation): directly applicable as EEG γ-band sync. Seconds-minutes (behavior/experience): primary scale for subjective time model. Years-lifetime: extended as habit formation/life phase model (app\'s Habits/Life tabs). Cosmological: physics sector applies (universe succession model).'},
+          {q:'Where can\'t it apply?', a:'① "Experience" of non-conscious inorganic matter ② Macro-dynamics of social/economic systems (metaphorical only) ③ Quantum gravity unification (this theory is semi-classical) ④ The hard problem of consciousness (can describe but not explain why consciousness exists).'},
+        ],
+      },
+      concrete: {
+        title: 'Abstract → Concrete',
+        sub: 'Grounding theory in reality — case studies and everyday examples',
+        items: [
+          {q:'What concrete phenomenon does it describe?', a:'Example: Marathon runner\'s "zone." Rhythmic breathing (B(t) periodization) + attention focused on running (A(t) rise) + self-awareness fades (S(t) stabilization) → 3 variables synchronize → subjective time shortens ("suddenly at the finish line") → T_sub < T_clock.'},
+          {q:'Can a case study be created?', a:'Case: Pain perception control during dental treatment. Vibration device (specific frequency) stimulates peripheral nerves → attention gate synchronizes with vibration → pain signal processing priority decreases → subjective pain reduces. Directly connected to Mezawa\'s dental background. Measure: VAS pain scale + HRV + treatment time estimation error.'},
+          {q:'Everyday examples?', a:'① 3 hours of gaming feels like 30 min = A↑, S stable, T_sub shortened ② 10 min of boring meeting feels like 1 hour = A↓, change density↓, T_sub lengthened ③ Car accident moment in slow motion = crisis A surge, ΔN spike, T_sub extremely lengthened'},
+          {q:'What remains after abstracting from examples?', a:'"The quality and temporal structure of subjective experience is a function of internal variation pattern coherence." Variation→decomposed into attention, body, self. Coherence→quantified via phase-locking. Function→formalized as T_sub, E(t).'},
+          {q:'What happens with real data?', a:'Phase 0 executed: Meta-analysis data (n=726) for F_frozen vs β_eff regression → r=-0.968, R²=0.937. Theory predicted r<-0.3, far exceeded. Next: Phase A (direct EEG measurement) for subjective variable calibration.'},
+        ],
+      },
+      application: {
+        title: 'Application Value',
+        sub: 'How can this theory be used in the real world?',
+        items: [
+          {q:'Which fields can use it?', a:'① Medicine (pain control, rehabilitation, objective mental health metrics) ② Education (focus optimization, learning efficiency) ③ Sports (flow induction, performance optimization) ④ UX design (time perception manipulation, immersion design) ⑤ Dentistry (vibration-based pain control devices)'},
+          {q:'What can it improve?', a:'① Quantify "inability to focus" and design sync-based interventions ② Assist pain management with vibration control beyond drugs ③ Reduce wait-time stress via time perception manipulation ④ Identify and reproduce flow state conditions'},
+          {q:'What becomes faster, cheaper, or more accurate?', a:'① Flow diagnosis: subjective reports → EEG+HRV sync for objective real-time measurement ② Pain assessment: self-report only → vibration response+HRV for objectification ③ Focus training: trial-and-error → sync feedback for efficiency'},
+          {q:'Can products be built?', a:'① Wearable sync monitor (EEG+HRV+accelerometer→real-time W estimation) ② Dental vibration pain controller ③ Focus support app (extending this app\'s habits tab) ④ VR immersion optimization engine'},
+          {q:'Who would pay?', a:'① Dental clinics (pain control device) ② Corporate HR departments (focus optimization programs) ③ Sports teams (performance coaching) ④ VR/game developers (immersion design tools) ⑤ Research institutions (consciousness research framework)'},
+        ],
+      },
+      simplification: {
+        title: 'Simplification vs Extension',
+        sub: 'The minimal core and maximum reach — how far to narrow, how far to expand',
+        items: [
+          {q:'What remains when maximally simplified?', a:'"Subjective experience is a function of multi-scale state variation synchronization." In equations: E(t)=f[sync(N,B,A,S)]. Physics sector adds only K(R²)=1+βR².'},
+          {q:'What can expansion unify?', a:'Current: consciousness, time perception, bodily sensation, gravitational fields. Expandable: social synchronization (collective flow), evolutionary adaptation (species-level oscillation patterns), AI "attention" mechanisms. Risk: falsifiability decreases with expansion.'},
+          {q:'Where does expansion break?', a:'"Everything is a wave" breaks it — explains everything = predicts nothing. Social institutions, economic fluctuations, historical trends become mere metaphor. Physics-subjective connection (W↔β₀) is also speculative currently.'},
+          {q:'Where does narrowing strengthen?', a:'Strongest as "3-variable model of human adult subjective time distortion." T_sub=f(A,ΔN,ΔB) with only attention density, neural change, and bodily change predicting time perception. Directly testable in Phase A/D.'},
+          {q:'What is the "strongest minimal model"?', a:'T_sub(t)=α·A(t)+β·ΔN(t)+γ·ΔB(t)+δ·M(t)−ε·H(t). 5-variable linear model. A=attention(EEGγ), ΔN=neural change, ΔB=bodily change(HRV), M=memory imprint density, H=automatization degree. Calibrate 5 parameters experimentally for unique integrative predictions.'},
+        ],
+      },
+      reversal: {
+        title: 'Perspective Reversal',
+        sub: 'Seeing the theory through critics\' eyes — what hurts most?',
+        items: [
+          {q:'If completely wrong, where\'s the cause?', a:'Biggest risk: "synchronization" may be correlation, not causation. Sync rising during flow might be a result, not a cause. If so, manipulating sync won\'t induce flow, and the model\'s application value collapses.'},
+          {q:'How would opponents refute it?', a:'"This theory uses \'sync\' as universal glue. Attention rising means sync rises — that\'s trivial, not explanatory power. The physics β is interesting but the subjective connection is poetry. You\'ve just relabeled separate theories with \'wave\'" — this is the most painful critique.'},
+          {q:'How would other fields criticize?', a:'Physicists: "No theoretical derivation of β₀. Fitting parameters limit predictive power." Neuroscientists: "EEG γ-sync and flow correlation is known. Where\'s the novelty?" Philosophers: "Avoids the hard problem." Psychologists: "Just a complicated Zakay model?"'},
+          {q:'Where would a layperson question it?', a:'"Everything is waves — isn\'t that just anything goes?" "Consciousness and gravity in the same equation, really?" "Can you call it a theory if predictions aren\'t verified?" — All valid. Answers: physics and subjective use separate equations / verification planned / hypothesis stage, not theory.'},
+          {q:'Where would reviewers reject it?', a:'① Insufficient novelty (rehash of predictive processing + brain oscillation?) ② Physics-subjective connection legitimacy ③ Too many parameters (overfitting) ④ No experimental data ⑤ "Unification" is vaguely defined — Countermeasures: ① clarify differences, ② acknowledge speculation, ③ present minimal model, ④ show Phase plans, ⑤ narrow scope.'},
+        ],
+      },
+      essence: {
+        title: 'Essence Extraction',
+        sub: 'The theory\'s core in its most condensed form',
+        items: [
+          {q:'Core in one sentence?', a:'"Subjective experience can be described as a multi-scale synchronization state of neural, bodily, attentional, and self-model processes, where synchronization degree determines time perception, consciousness quality, and behavioral performance."'},
+          {q:'What is most novel?', a:'"Proposing a framework where disparate subjective phenomena (flow, time distortion, depersonalization, pain perception) are unified under a single variable axis of synchronization degree." Not explanation of individual phenomena, but the connections between them.'},
+          {q:'What was cut, what was kept?', a:'Cut: ①universal unification claims (physics as independent sector) ②hard problem of consciousness (avoidance stated explicitly) ③religious/spiritual connections. Kept: ①multi-scale sync principle ②T_sub multi-variable model ③β₀ field theory extension ④falsifiable experimental plans.'},
+          {q:'What couldn\'t be explained without it?', a:'Existing theories explain phenomena individually. But no single framework for "time compresses in flow" + "pain changes with attention" + "self-boundaries fluctuate in depersonalization." This theory\'s value is "integrative description of known phenomena," not "discovery of new ones."'},
+          {q:'The single strongest point?', a:'T_sub=f(A,ΔN,ΔB,M,H) — multi-variable predictive model of subjective time. If experimentally verified, provides a new quantitative tool for time perception research. Physics β₀ is strong too, but subjective time model has wider application, easier verification, and clearer differentiation from existing theories.'},
+        ],
+      },
       limTitle: 'Current Limitations',
       limSub: 'A theory\'s integrity lies in acknowledging its limits',
       lims: [
@@ -4084,6 +4260,94 @@ const LANG_DATA = {
           {q:'Ὑπάρχουν ἀριθμητικαὶ προβλέψεις;', a:'① β₀=0.593±0.135 ② Λόγος Bell 2.2× ③ T_sub/T_clock≈0.4 εἰς W=3 ④ g-2 ἀκρίβεια <10⁻⁹'},
           {q:'Πῶς μεταβάλλονται αἱ προβλέψεις μεταξὺ Α καὶ Β;', a:'Κανονικὴ vs βαθεῖα ῥοή → T_sub 30-60% βραχύτερον. Αὐτολογοποίησις vs χωρίς → καλυτέρα διατήρησις ῥοῆς. Στάσις vs ρυθμική κίνησις → ὑψηλοτέρα EEG-HRV συγχρονία.'},
           {q:'Τί προβλέπει μόνον αὐτὴ ἡ θεωρία;', a:'① Τρεῖς μεταβληταὶ (προσοχή×σῶμα×ἑαυτός) καθορίζουν ἀπὸ κοινοῦ τὸν ὑποκ. χρόνον ② β₀ φαινόμενον (μοναδικὸν φυσικοῦ τομέως) ③ W γέφυρα συνειδήσεως-βαρύτητος (ἐπὶ τοῦ παρόντος θεωρητικόν)'},
+        ],
+      },
+      formulaCheck: {
+        title: 'Ἔλεγχος Τύπων',
+        sub: 'Τύποι ὡς σκελετός — ὁρισμοί, μονάδες, ὑπολογισιμότης',
+        items: [
+          {q:'Ὁρίζονται ὅλαι αἱ μεταβληταί;', a:'Φυσικός: Ναί — ψ, R, θ, β, K πλήρως ὁρισμέναι. Ὑποκειμενικός: Μερικῶς — ἐξαρτῶνται ἀπὸ δεῖκτας (EEG, HRV).'},
+          {q:'Ποῖαι αἱ μονάδες;', a:'β ἀδιάστατον, ω εἰς Hz, T_sub εἰς δευτερόλεπτα, W ἀδιάστατον. Ἑνοποίησις μεταξὺ τομέων ἀτελής.'},
+          {q:'Δύνανται νὰ ὑπολογισθοῦν;', a:'Φυσικός: Ναί (Phase B). Ὑποκειμενικός: Μερικῶς — παράμετροι πρὸς βαθμονόμησιν.'},
+          {q:'Ποῖοι τύποι εἶναι ὅμοιοι;', a:'Klein-Gordon μὲ μὴ γραμμικὴν ἐπέκτασιν. Ὑποκ.: ἐλεύθερον ἐνέργεια πρόβλεψης + Zakay.'},
+          {q:'Δύναται προσομοίωσις;', a:'Φυσικός: Ναί. Ὑποκειμενικός: Μετὰ βαθμονόμησιν παραμέτρων.'},
+        ],
+      },
+      consistency: {
+        title: 'Ἔλεγχος Συνέπειας',
+        sub: 'Ὑπάρχουν ἐσωτερικαὶ ἀντιφάσεις;',
+        items: [
+          {q:'Ἀντιφάσεις;', a:'Ἡ σύνδεσις φυσικοῦ-ὑποκειμενικοῦ εἶναι τὸ μέγιστον σημεῖον τάσεως. Ἀκριβέστερον «ἀσύνδετον» παρὰ «ἀντιφατικόν».'},
+          {q:'Ἴδιοι κανόνες παντοῦ;', a:'Ναί — «πολυκλιμακωτὸς συγχρονισμός» ὡς ἀρχή. Ἐφαρμογαὶ διαφέρουν κατὰ τομέα.'},
+          {q:'Ἐπίπεδα ἐξηγήσεως ἀναμεμειγμένα;', a:'Ναί — φυσική, νευροεπιστήμη, φαινομενολογία, φιλοσοφία. Ἀπαιτεῖται τριπλοῦν διαχωρισμός.'},
+          {q:'Ὁρισμοὶ μεταβάλλονται;', a:'«Κῦμα» ἀλλάζει σημασίαν κατὰ πλαίσιον. Ἐπισημάνθη εἰς δοκιμασίαν ὁρισμῶν.'},
+          {q:'Ἀρχὴ καὶ τέλος συμφωνοῦν;', a:'Βασικῶς ναί. Τὸ χάσμα κλίμακος μεταξὺ «κοσμικῆς ἑνοποιήσεως» καὶ «προβλέψεως χρόνου» εἶναι μεγάλον.'},
+        ],
+      },
+      boundary: {
+        title: 'Ὅρια Ἐφαρμογῆς',
+        sub: 'Ποῦ ἐφαρμόζεται καὶ ποῦ σταματᾷ;',
+        items: [
+          {q:'Πόσον μακρὰν ἐφαρμόζεται;', a:'Φυσικός: κλίμακες σύνθετου πεδίου. Ὑποκειμενικός: ἔγρηγοροι ἐνήλικες.'},
+          {q:'Πέραν ἀνθρώπων;', a:'Φυσικός: ναί. Ὑποκ.: περιορισμένως — ζῷα μόνον μὲ δεῖκτας, ΤΝ ἀκατάλληλον.'},
+          {q:'Ἀκραῖαι συνθῆκαι;', a:'Μηδενικὴ βαρύτης: ἐφαρμόζεται. Ἀκραῖον ἄγχος: κατάρρευσις συγχρονισμοῦ. Ὕπνος: W→0.'},
+          {q:'Χρονικαὶ κλίμακες;', a:'ms(νευρωνικαί), s-min(συμπεριφορά), ἔτη(συνήθειαι), κοσμολογικαί(φυσικός τομεύς).'},
+          {q:'Ποῦ ΔΕΝ ἐφαρμόζεται;', a:'Ἀνόργανα, κοινωνικὰ συστήματα, κβαντικὴ βαρύτης, σκληρὸν πρόβλημα συνειδήσεως.'},
+        ],
+      },
+      concrete: {
+        title: 'Ἀφηρημένον → Συγκεκριμένον',
+        sub: 'Θεωρία εἰς πρᾶξιν — παραδείγματα καὶ μελέται',
+        items: [
+          {q:'Συγκεκριμένον φαινόμενον;', a:'Μαραθωνοδρόμος: ρυθμικὴ ἀναπνοή + συγκεντρωμένη προσοχή + ἐξασθένησις αὐτοσυνειδήσεως → συγχρονισμός → T_sub < T_clock.'},
+          {q:'Μελέτη περιπτώσεως;', a:'Ὀδοντιατρική: συσκευὴ δονήσεως → συγχρονισμὸς πύλης προσοχῆς → μείωσις πόνου. Μέτρησις: VAS + HRV.'},
+          {q:'Καθημερινὰ παραδείγματα;', a:'Παιχνίδι 3ωρ.=30λεπτά, βαρετὴ σύσκεψις 10λεπτ.=1ωρ., ἀτύχημα εἰς slow-motion.'},
+          {q:'Τί μένει μετ᾽ ἀφαίρεσιν;', a:'«Ἡ ποιότης ἐμπειρίας εἶναι συνάρτησις τῆς συνοχῆς ἐσωτερικῶν μεταβολῶν».'},
+          {q:'Πραγματικὰ δεδομένα;', a:'Phase 0: r=-0.968, R²=0.937 (n=726). Πρόβλεψις r<-0.3 ἐπιβεβαιώθη.'},
+        ],
+      },
+      application: {
+        title: 'Ἀξία Ἐφαρμογῆς',
+        sub: 'Πῶς χρησιμοποιεῖται εἰς τὸν κόσμον;',
+        items: [
+          {q:'Ποῖοι τομεῖς;', a:'Ἰατρική, ἐκπαίδευσις, ἀθλητισμός, σχεδιασμὸς UX, ὀδοντιατρική.'},
+          {q:'Τί βελτιώνει;', a:'Ποσοτικοποίησις συγκεντρώσεως, διαχείρισις πόνου, μείωσις ἄγχους ἀναμονῆς.'},
+          {q:'Τί γίνεται ταχύτερον/ἀκριβέστερον;', a:'Διάγνωσις ῥοῆς: EEG+HRV ἀντὶ αὐτοαναφορᾶς. Ἀξιολόγησις πόνου: ἀντικειμενικοποίησις.'},
+          {q:'Προϊόντα;', a:'Φορετὸς μόνιτορ, ὀδοντιατρικὸν ἐλεγκτήριον πόνου, ἐφαρμογὴ συγκεντρώσεως, VR μηχανή.'},
+          {q:'Τίς πληρώνει;', a:'Ὀδοντιατρεῖα, ἐπιχειρήσεις HR, ἀθλητικαὶ ὁμάδες, VR/gaming ἐπιχ., ἐρευνητικὰ ἱδρύματα.'},
+        ],
+      },
+      simplification: {
+        title: 'Ἁπλοποίησις vs Ἐπέκτασις',
+        sub: 'Ἐλάχιστος πυρήν καὶ μέγιστον εὖρος',
+        items: [
+          {q:'Τί μένει ἐὰν ἁπλοποιηθῇ;', a:'«Ἡ ὑποκειμ. ἐμπειρία εἶναι συνάρτησις πολυκλιμακωτοῦ συγχρονισμοῦ». E(t)=f[sync(N,B,A,S)].'},
+          {q:'Τί ἑνοποιεῖ ἡ ἐπέκτασις;', a:'Κοινωνικὸν sync, ἐξελικτικὴ προσαρμογή, ΤΝ «προσοχή». Κίνδυνος: μείωσις διαψευσιμότητος.'},
+          {q:'Ποῦ θραύεται ἡ ἐπέκτασις;', a:'«Τὰ πάντα κῦμα» = ἐξηγεῖ τὰ πάντα = προβλέπει τίποτε.'},
+          {q:'Ποῦ ἐνισχύεται ἡ στένωσις;', a:'T_sub=f(A,ΔN,ΔB) — μόνον 3 μεταβληταί. Ἄμεσα ἐλέγξιμον.'},
+          {q:'Ἰσχυρότατον ἐλάχιστον μοντέλο;', a:'T_sub(t)=α·A+β·ΔN+γ·ΔB+δ·M−ε·H. 5 παράμετροι πρὸς βαθμονόμησιν.'},
+        ],
+      },
+      reversal: {
+        title: 'Ἀντιστροφὴ Ὁπτικῆς',
+        sub: 'Ἡ θεωρία διὰ τῶν ὀμμάτων τῶν κριτικῶν',
+        items: [
+          {q:'Ἐὰν ἐντελῶς ἐσφαλμένη;', a:'Μέγιστος κίνδυνος: «συγχρονισμός» ὡς συσχέτισις, ὄχι αἰτία.'},
+          {q:'Πῶς θὰ τὴν ἀνατρέψουν;', a:'«Χρησιμοποιεῖ τὸν sync ὡς καθολικὴν κόλλαν — τετριμμένον, ὄχι ἐξηγηματικόν. Ποίημα, ὄχι ἐπιστήμη.»'},
+          {q:'Κριτικὴ ἄλλων τομέων;', a:'Φυσικοί: β₀ χωρὶς θεωρητικὴν ἀγωγήν. Νευροεπιστ.: γ-sync γνωστόν. Φιλόσοφοι: ἀποφεύγει τὸ σκληρὸν πρόβλημα.'},
+          {q:'Ἐρωτήσεις ἀρχαρίου;', a:'«Ὅλα κύματα = ὁτιδήποτε;» «Συνείδησις+βαρύτης ἀληθῶς;» «Θεωρία χωρὶς ἔλεγχον;»'},
+          {q:'Κριταὶ ἐπιθεωρήσεως;', a:'① Νεωτερικότης ② Σύνδεσις φυσ.-ὑποκ. ③ Ὑπερπαραμετροποίησις ④ Ἔλλειψις δεδομένων ⑤ Ἀσαφὴς «ἑνοποίησις».'},
+        ],
+      },
+      essence: {
+        title: 'Ἐξαγωγὴ Οὐσίας',
+        sub: 'Ὁ πυρὴν τῆς θεωρίας εἰς τὴν πλέον συμπυκνωμένην μορφήν',
+        items: [
+          {q:'Πυρὴν εἰς μίαν πρότασιν;', a:'«Ἡ ὑποκειμενικὴ ἐμπειρία δύναται νὰ περιγραφῇ ὡς πολυκλιμακωτὴ συγχρονιστικὴ κατάστασις νευρωνικῶν, σωματικῶν καὶ προσοχικῶν διεργασιῶν.»'},
+          {q:'Τί εἶναι πλέον νεωτερικόν;', a:'Ἡ σύνδεσις μεταξὺ φαινομένων (ῥοή, χρονικὴ παραμόρφωσις, ἀποπροσωποποίησις) ὑπὸ μίαν ἄξονα: βαθμὸν συγχρονισμοῦ.'},
+          {q:'Τί ἀφῃρέθη, τί ἔμεινε;', a:'Ἀφῃρέθη: κοσμικαὶ ἀξιώσεις, σκληρὸν πρόβλημα, πνευματικότης. Ἔμεινε: sync ἀρχή, T_sub μοντέλο, β₀, πειραματικὰ σχέδια.'},
+          {q:'Τί δὲν θὰ ἐξηγεῖτο ἄνευ αὐτῆς;', a:'Δὲν ὑπῆρχεν ἑνιαῖον πλαίσιον γιὰ ῥοήν + πόνον + ἀποπροσωπ. Ἡ ἀξία εἶναι ἑνοποιητικὴ περιγραφή, ὄχι νέα ἀνακάλυψις.'},
+          {q:'Ἰσχυρότατον σημεῖον;', a:'T_sub=f(A,ΔN,ΔB,M,H) — πολυμεταβλητὸν μοντέλο ὑποκ. χρόνου. Εὐρύτερον εὖρος, εὐκολωτέρα ἐπαλήθευσις, σαφεστέρα διαφορά.'},
         ],
       },
       limTitle: 'Ὅρια τῆς Θεωρίας',
@@ -5548,6 +5812,12 @@ function renderAcademicPositioning() {
       <div style="font-size:11px;color:var(--dim);line-height:1.8;padding:8px 10px;background:var(--bg2);border-radius:4px">${item.a}</div>
     </div>`).join('') : '';
 
+  const simpleSection = (items, color) => items ? items.map((item, i) => `
+    <div class="card" style="margin-bottom:10px;border-left:3px solid ${color}">
+      <div style="font-weight:700;font-size:12px;color:${color};margin-bottom:8px">Q${i+1}. ${item.q}</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8;padding:8px 10px;background:var(--bg2);border-radius:4px">${item.a}</div>
+    </div>`).join('') : '';
+
   const limsHTML = a.lims.map(l => `
     <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--bdr)">
       <span style="color:var(--Y);font-size:13px;flex-shrink:0">${l.icon}</span>
@@ -5595,6 +5865,54 @@ function renderAcademicPositioning() {
       <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.predGen.title}</div>
       <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.predGen.sub}</div>
       <div style="margin-bottom:24px">${predGenHTML}</div>
+      ` : ''}
+
+      ${a.formulaCheck ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.formulaCheck.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.formulaCheck.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.formulaCheck.items, 'var(--T)')}</div>
+      ` : ''}
+
+      ${a.consistency ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.consistency.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.consistency.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.consistency.items, 'var(--Y)')}</div>
+      ` : ''}
+
+      ${a.boundary ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.boundary.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.boundary.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.boundary.items, '#9966EE')}</div>
+      ` : ''}
+
+      ${a.concrete ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.concrete.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.concrete.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.concrete.items, 'var(--G)')}</div>
+      ` : ''}
+
+      ${a.application ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.application.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.application.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.application.items, 'var(--T)')}</div>
+      ` : ''}
+
+      ${a.simplification ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.simplification.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.simplification.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.simplification.items, 'var(--P)')}</div>
+      ` : ''}
+
+      ${a.reversal ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.reversal.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.reversal.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.reversal.items, 'var(--R)')}</div>
+      ` : ''}
+
+      ${a.essence ? `
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.essence.title}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.essence.sub}</div>
+      <div style="margin-bottom:24px">${simpleSection(a.essence.items, 'var(--W)')}</div>
       ` : ''}
 
       <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.limTitle}</div>
