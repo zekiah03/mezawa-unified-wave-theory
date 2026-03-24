@@ -989,6 +989,7 @@ body.lang-gr { font-family:var(--font-gr); }
       理論タブは 5つのサブセクション、実験・意識タブは 3つずつ、学問は統合マップ、認知場は 2つのサブセクションを持ちます。
     </div>
   </div>
+<div id="academic-positioning"></div>
 </div>
 
 <div id="sp-zt" class="sub-pane">
@@ -3702,6 +3703,45 @@ const LANG_DATA = {
         ],
       },
     },
+    academic: {
+      defTitle: '中核概念の定義',
+      defSub: '理論の基盤となる5つの用語を厳密に定義する',
+      defs: [
+        {title:'波 (Wave)', body:'時間・空間の中で変化し、振幅・周期・位相・周波数で記述できる状態変動。本理論では物理波に限定せず、神経活動や身体状態の周期的・準周期的変動も含む。', color:'var(--T)'},
+        {title:'同期 (Sync)', body:'複数の変動過程の位相関係または時間構造が、一定範囲内で秩序を持つこと。神経振動の位相結合から身体-脳間の時間的整合まで、スケール横断的に適用。', color:'var(--P)'},
+        {title:'自己 (Self)', body:'身体・記憶・行為主体感・視点の統合によって維持される動的モデル。固定実体ではなく、神経活動・身体状態・注意の同期状態として常に再構成される。', color:'var(--Y)'},
+        {title:'主観時間 (T_sub)', body:'外部時計ではなく、変化密度・注意密度・記憶刻印密度に依存する時間経験。T_sub ∝ αA + βΔN + γΔB + δM − εH で近似。', color:'var(--G)'},
+        {title:'観測 (Observation)', body:'系の状態が内部/外部の相互作用によって区別可能な形で表現・固定されること。量子測定に限定せず、神経系の状態遷移や意識的注意の選択も含む。', color:'#9966EE'},
+      ],
+      compTitle: '既存理論との位置づけ',
+      compSub: 'めざわ理論は既存理論を否定しない — 統合的な"翻訳レイヤー"として機能する',
+      comps: [
+        {name:'予測処理理論', shared:'脳は受動的ではなく予測的', diff:'予測だけでなく同期・時間密度・身体波動を統合軸に置く'},
+        {name:'グローバルワークスペース', shared:'意識は情報統合と関係', diff:'意識内容の時間構造と動的同期により強く注目'},
+        {name:'身体化認知', shared:'身体は認知に不可欠', diff:'身体状態を波動的制御変数として扱う'},
+        {name:'脳振動研究', shared:'神経活動に周波数帯がある', diff:'個別周波数帯ではなく、現象横断的な階層同期モデル'},
+        {name:'時間知覚理論', shared:'時間は主観的構成物', diff:'注意・変化・自己モデルの同期状態と統合'},
+      ],
+      predTitle: '反証可能な予測',
+      predSub: '理論が科学であるために — 否定される条件を自ら示す',
+      preds: [
+        {claim:'高集中状態（ゾーン）では、主観時間の伸縮と注意密度指標の間に有意な相関がある', method:'時間再生課題 + 心拍変動 + 主観フロー尺度', falsify:'主観時間の変化が注意・記憶・身体変数と無相関なら、本モデルの時間構成仮説は弱まる'},
+        {claim:'自己境界が弱まる状態では、身体所有感課題の成績に系統的変化が出る', method:'ラバーハンド錯覚 + 離人感尺度 + 自己言語化負荷', falsify:'自己境界変動と身体所有感が独立なら、統合モデルは再検討が必要'},
+        {claim:'ゾーン報告が高い状態で自己言語化負荷を増やすとパフォーマンスが低下する', method:'二重課題パラダイム + フロー尺度 + 反応時間', falsify:'言語化負荷がフロー/パフォーマンスに影響しないなら、自己モデル仮説は不十分'},
+      ],
+      limTitle: '現在の限界',
+      limSub: '理論の誠実さは限界を認めることにある',
+      lims: [
+        {icon:'⚠', text:'哲学的主張と実証可能な仮説が未分離の領域がある'},
+        {icon:'⚠', text:'「波」の定義が物理波から抽象変動まで広すぎる可能性'},
+        {icon:'⚠', text:'何でも説明できてしまう＝何も否定できない問題（過剰一般性）'},
+        {icon:'⚠', text:'数式が定義より先行し、変数の測定法が未確定な箇所あり'},
+        {icon:'⚠', text:'実験データによる直接検証はまだ行われていない（Phase 0 はメタ解析のみ）'},
+      ],
+      statusTitle: '理論の現在地',
+      statusText: 'アイデアレベル → 研究仮説への移行段階。方向性と直感は強いが、予測力・検証可能性の強化が課題。',
+      statusAdvice: '次のステップ：「ゾーン・主観時間・自己感」に絞った仮説論文の作成',
+    },
   },
   en: {
     tTitle: 'Mezawa Unified Wave Theory v2.3',
@@ -3792,6 +3832,45 @@ const LANG_DATA = {
         ],
       },
     },
+    academic: {
+      defTitle: 'Core Definitions',
+      defSub: 'Five key terms that form the foundation of this theory',
+      defs: [
+        {title:'Wave', body:'State variation describable by amplitude, period, phase, and frequency in time-space. Not limited to physical waves — includes periodic/quasi-periodic neural and bodily fluctuations.', color:'var(--T)'},
+        {title:'Synchronization', body:'When multiple oscillatory processes maintain phase relationships or temporal order within a defined range. Applied cross-scale from neural phase-coupling to body-brain alignment.', color:'var(--P)'},
+        {title:'Self', body:'A dynamic model maintained through integration of body, memory, sense of agency, and perspective. Not a fixed entity — continuously reconstructed through synchronization states.', color:'var(--Y)'},
+        {title:'Subjective Time (T_sub)', body:'Time experience dependent on change density, attention density, and memory imprint density. Approximated as T_sub ∝ αA + βΔN + γΔB + δM − εH.', color:'var(--G)'},
+        {title:'Observation', body:'When a system state becomes distinguishable through internal/external interaction. Not limited to quantum measurement — includes neural state transitions and conscious attention selection.', color:'#9966EE'},
+      ],
+      compTitle: 'Positioning Among Existing Theories',
+      compSub: 'Mezawa Theory does not negate existing theories — it functions as an integrative translation layer',
+      comps: [
+        {name:'Predictive Processing', shared:'Brain is predictive, not passive', diff:'Adds synchronization, time-density, and bodily wave dynamics as integration axes'},
+        {name:'Global Workspace', shared:'Consciousness relates to information integration', diff:'Focuses more on temporal structure and dynamic synchronization of conscious content'},
+        {name:'Embodied Cognition', shared:'Body is essential for cognition', diff:'Treats bodily states as wave-dynamic control variables'},
+        {name:'Brain Oscillation Research', shared:'Neural activity has frequency bands', diff:'Not individual bands but cross-phenomenal hierarchical synchronization model'},
+        {name:'Time Perception Theory', shared:'Time is a subjective construct', diff:'Integrates attention, change, and self-model synchronization states'},
+      ],
+      predTitle: 'Falsifiable Predictions',
+      predSub: 'For a theory to be scientific — it must state its own conditions for refutation',
+      preds: [
+        {claim:'In high-focus states (flow/zone), subjective time distortion correlates significantly with attention density metrics', method:'Time reproduction task + HRV + subjective flow scale', falsify:'If subjective time changes are uncorrelated with attention, memory, and bodily variables, the time-construction hypothesis weakens'},
+        {claim:'When self-boundaries weaken, body ownership task performance shows systematic changes', method:'Rubber hand illusion + depersonalization scale + self-verbalization load', falsify:'If self-boundary variation and body ownership are independent, the integrated model needs revision'},
+        {claim:'Increasing self-verbalization load during high-flow states reduces performance', method:'Dual-task paradigm + flow scale + reaction time', falsify:'If verbalization load does not affect flow/performance, the self-model hypothesis is insufficient'},
+      ],
+      limTitle: 'Current Limitations',
+      limSub: 'A theory\'s integrity lies in acknowledging its limits',
+      lims: [
+        {icon:'⚠', text:'Philosophical claims and empirically testable hypotheses remain unseparated in some areas'},
+        {icon:'⚠', text:'The definition of "wave" may be too broad (physical to abstract fluctuation)'},
+        {icon:'⚠', text:'Risk of over-generality: explaining everything = falsifying nothing'},
+        {icon:'⚠', text:'Some formulas precede definitions — measurement methods for variables are undetermined'},
+        {icon:'⚠', text:'No direct experimental verification yet (Phase 0 is meta-analysis only)'},
+      ],
+      statusTitle: 'Current Status',
+      statusText: 'Idea-level → Transitioning to research hypothesis. Direction and intuition are strong, but predictive power and testability need strengthening.',
+      statusAdvice: 'Next step: Draft a hypothesis paper focused on "flow, subjective time, and sense of self"',
+    },
   },
   gr: {
     tTitle: 'Θεωρία τοῦ Παγκοσμίου Κύματος (Mezawa) v2.3',
@@ -3881,6 +3960,45 @@ const LANG_DATA = {
           {name:'Γνωστ. Πεδίον', desc:'Ἑνιαῖο μοντέλο, 6-στρωματικὴ δομή, φάσεις μετάβασης, 30 γνωστικὰ φαινόμενα.', tags:['Ἑνιαῖο Μοντέλο','Νοῦς 30','6 Στρώματα'], btn:'Ἄνοιγμα →'},
         ],
       },
+    },
+    academic: {
+      defTitle: 'Ὁρισμοὶ Βασικῶν Ἐννοιῶν',
+      defSub: 'Πέντε κεντρικοὶ ὅροι ὡς θεμέλιον τῆς θεωρίας',
+      defs: [
+        {title:'Κῦμα (Wave)', body:'Μεταβολὴ καταστάσεως περιγραφομένη δι\' εὔρους, περιόδου, φάσεως καὶ συχνότητος. Δὲν περιορίζεται εἰς φυσικὰ κύματα.', color:'var(--T)'},
+        {title:'Συγχρονισμός', body:'Ὅταν πολλαπλαῖ ταλαντώσεις διατηροῦν σχέσεις φάσεως ἢ χρονικὴν τάξιν ἐντὸς ὁρίων.', color:'var(--P)'},
+        {title:'Ἑαυτός (Self)', body:'Δυναμικὸν πρότυπον τηρούμενον διὰ τῆς ἑνώσεως σώματος, μνήμης, δράσεως καὶ ὁράσεως.', color:'var(--Y)'},
+        {title:'Ὑποκ. Χρόνος (T_sub)', body:'Χρονικὴ ἐμπειρία ἐξαρτωμένη ἀπὸ πυκνότητα μεταβολῆς, προσοχῆς καὶ μνήμης.', color:'var(--G)'},
+        {title:'Παρατήρησις', body:'Ὅταν κατάστασις συστήματος γίνεται διακριτὴ δι\' ἐσωτερικῆς/ἐξωτερικῆς ἀλληλεπιδράσεως.', color:'#9966EE'},
+      ],
+      compTitle: 'Θέσις Μεταξὺ Θεωριῶν',
+      compSub: 'Ἡ θεωρία Mezawa δὲν ἀναιρεῖ — λειτουργεῖ ὡς μεταφραστικὸν στρῶμα',
+      comps: [
+        {name:'Προβλεπτικὴ Ἐπεξεργασία', shared:'Ὁ ἐγκέφαλος προβλέπει', diff:'Προσθέτει συγχρονισμόν, χρονικὴν πυκνότητα καὶ σωματικὴν δυναμικήν'},
+        {name:'Παγκόσμιος Χῶρος', shared:'Συνείδησις = ἐνοποίησις', diff:'Ἑστιάζει εἰς χρονικὴν δομὴν καὶ δυναμικὸν συγχρονισμόν'},
+        {name:'Ἐνσώματος Γνῶσις', shared:'Τὸ σῶμα εἶναι ἀπαραίτητον', diff:'Σωματικαὶ καταστάσεις ὡς κυματικαὶ μεταβληταί'},
+        {name:'Ἐγκεφαλικαὶ Ταλαντ.', shared:'Νευρωνικαὶ συχνότητες', diff:'Ὄχι μεμονωμέναι ζῶναι ἀλλὰ ἱεραρχικὸς συγχρονισμός'},
+        {name:'Χρονοαντίληψις', shared:'Ὁ χρόνος εἶναι ὑποκειμενικός', diff:'Ἑνοποιεῖ προσοχήν, μεταβολὴν καὶ αὐτοπρότυπον'},
+      ],
+      predTitle: 'Ἐλέγξιμοι Προβλέψεις',
+      predSub: 'Ἡ ἐπιστήμη ἀπαιτεῖ δυνατότητα ἀναιρέσεως',
+      preds: [
+        {claim:'Εἰς ὑψηλὴν συγκέντρωσιν, ἡ χρονικὴ παραμόρφωσις συσχετίζεται μὲ τὴν πυκνότητα προσοχῆς', method:'Χρονικὸν ἔργον + HRV + κλίμακα ῥοῆς', falsify:'Ἐὰν αἱ χρονικαὶ μεταβολαὶ εἶναι ἀσυσχέτιστοι, ἡ ὑπόθεσις ἀσθενεῖ'},
+        {claim:'Ὅταν τὰ ὅρια ἑαυτοῦ ἀσθενοῦν, τὰ ἔργα σωματικῆς ἰδιοκτησίας μεταβάλλονται', method:'Ψευδαίσθησις + κλίμακα ἀποπροσωποπ. + φόρτος λόγου', falsify:'Ἐὰν εἶναι ἀνεξάρτητα, τὸ μοντέλο χρήζει ἀναθεωρήσεως'},
+        {claim:'Αὔξησις φόρτου αὐτολογοποιήσεως μειώνει τὴν ἐπίδοσιν εἰς ῥοήν', method:'Διπλοῦν ἔργον + κλίμακα ῥοῆς + χρόνος ἀντιδράσεως', falsify:'Ἐὰν ὁ φόρτος δὲν ἐπηρεάζῃ, ἡ ὑπόθεσις αὐτοπροτύπου εἶναι ἀνεπαρκής'},
+      ],
+      limTitle: 'Ὅρια τῆς Θεωρίας',
+      limSub: 'Ἡ ἀκεραιότης θεωρίας ἔγκειται εἰς τὴν ἀναγνώρισιν τῶν ὁρίων',
+      lims: [
+        {icon:'⚠', text:'Φιλοσοφικαὶ θέσεις καὶ ἐμπειρικαὶ ὑποθέσεις ἀκόμη ἀνεξαίρετοι'},
+        {icon:'⚠', text:'Ὁ ὁρισμὸς τοῦ «κύματος» ἴσως εἶναι ὑπερβολικῶς εὐρύς'},
+        {icon:'⚠', text:'Κίνδυνος ὑπεργενικεύσεως: ἐξηγεῖ τὰ πάντα = δὲν διαψεύδει τίποτε'},
+        {icon:'⚠', text:'Τύποι προηγοῦνται ὁρισμῶν — μέθοδοι μετρήσεως ἀπροσδιόριστοι'},
+        {icon:'⚠', text:'Δὲν ὑπάρχει ἄμεσος πειραματικὸς ἔλεγχος (Phase 0 = μόνον μετα-ἀνάλυσις)'},
+      ],
+      statusTitle: 'Παροῦσα Κατάστασις',
+      statusText: 'Ἰδέα → Μετάβασις πρὸς ἐρευνητικὴν ὑπόθεσιν. Κατεύθυνσις ἰσχυρά, ἀλλὰ προβλεπτικὴ δύναμις χρήζει ἐνισχύσεως.',
+      statusAdvice: 'Ἑπόμενον βῆμα: Σύνταξις ὑποθέσεως ἑστιασμένης εἰς «ῥοήν, ὑποκ. χρόνον, αἴσθησιν ἑαυτοῦ»',
     },
   }
 };
@@ -5214,6 +5332,7 @@ function setLang(lang) {
     });
   }
   renderTheoryOverview();
+  renderAcademicPositioning();
 }
 
 /* ════════════════════════════════════
@@ -5264,6 +5383,80 @@ function renderTheoryOverview() {
     <div style="font-size:12px;color:var(--dim);line-height:1.8;padding:16px 0 0;border-top:1px solid var(--bdr)">
       <strong style="color:var(--W)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> ${hintTitle}</strong><br>
       ${hint}
+    </div>`;
+}
+
+function renderAcademicPositioning() {
+  const container = document.getElementById('academic-positioning');
+  if (!container) return;
+  const d = LANG_DATA[currentLang] || LANG_DATA.ja;
+  const a = d.academic;
+  if (!a) return;
+
+  const defsHTML = a.defs.map(d => `
+    <div class="card" style="border-left:3px solid ${d.color}">
+      <div style="font-weight:700;font-size:12px;color:${d.color};margin-bottom:4px">${d.title}</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">${d.body}</div>
+    </div>`).join('');
+
+  const compsHTML = a.comps.map(c => `
+    <tr style="border-bottom:1px solid var(--bdr)">
+      <td style="padding:6px 10px;font-weight:600;color:var(--T);white-space:nowrap;font-size:11px">${c.name}</td>
+      <td style="padding:6px 10px;font-size:11px;color:var(--dim)">${c.shared}</td>
+      <td style="padding:6px 10px;font-size:11px;color:var(--text)">${c.diff}</td>
+    </tr>`).join('');
+
+  const predsHTML = a.preds.map((p, i) => `
+    <div class="card" style="border-left:3px solid var(--T);margin-bottom:10px">
+      <div style="font-weight:700;font-size:12px;color:var(--T);margin-bottom:6px">P${i+1}: ${p.claim}</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.7;margin-bottom:6px">
+        <span style="color:var(--G);font-weight:600">測定:</span> ${p.method}
+      </div>
+      <div style="font-size:11px;color:var(--R);line-height:1.7;padding:6px 8px;background:rgba(224,96,128,0.08);border-radius:4px">
+        <span style="font-weight:600">反証条件:</span> ${p.falsify}
+      </div>
+    </div>`).join('');
+
+  const limsHTML = a.lims.map(l => `
+    <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--bdr)">
+      <span style="color:var(--Y);font-size:13px;flex-shrink:0">${l.icon}</span>
+      <span style="font-size:11px;color:var(--dim);line-height:1.7">${l.text}</span>
+    </div>`).join('');
+
+  container.innerHTML = `
+    <div style="margin-top:32px">
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.defTitle}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.defSub}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:24px">${defsHTML}</div>
+
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.compTitle}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.compSub}</div>
+      <div style="overflow-x:auto;margin-bottom:24px">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
+          <thead>
+            <tr style="background:var(--bg2);color:var(--dim)">
+              <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap">${currentLang==='en'?'Theory':currentLang==='gr'?'Θεωρία':'理論'}</th>
+              <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr)">${currentLang==='en'?'Shared':currentLang==='gr'?'Κοινόν':'共通点'}</th>
+              <th style="padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr)">${currentLang==='en'?'Mezawa\'s Difference':currentLang==='gr'?'Διαφορά Mezawa':'めざわの差分'}</th>
+            </tr>
+          </thead>
+          <tbody>${compsHTML}</tbody>
+        </table>
+      </div>
+
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.predTitle}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px">${a.predSub}</div>
+      <div style="margin-bottom:24px">${predsHTML}</div>
+
+      <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${a.limTitle}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:10px">${a.limSub}</div>
+      <div style="margin-bottom:16px">${limsHTML}</div>
+
+      <div class="card" style="background:linear-gradient(135deg,rgba(93,214,200,0.08),rgba(126,200,227,0.08));border:1px solid var(--bdr2);margin-top:16px">
+        <div style="font-weight:700;font-size:13px;color:var(--T);margin-bottom:6px">${a.statusTitle}</div>
+        <div style="font-size:12px;color:var(--dim);line-height:1.8;margin-bottom:8px">${a.statusText}</div>
+        <div style="font-size:11px;color:var(--G);font-weight:600">${a.statusAdvice}</div>
+      </div>
     </div>`;
 }
 
@@ -5640,6 +5833,7 @@ function buildAll() {
   renderQuestions();
   renderQuotes();
   renderTheoryOverview();
+  renderAcademicPositioning();
 }
 
 /* ════════════════════════════════════
