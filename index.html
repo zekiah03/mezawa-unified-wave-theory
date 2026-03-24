@@ -6409,12 +6409,14 @@ function initSim3() {
   ctx.rotate(-Math.PI / 2);
   ctx.fillText(d?.massLabel || 'M/M₀', 0, 0);
   ctx.restore();
-  const drawCurve = (getM, color) => {
+  const drawCurve = (getM, color, dashed) => {
     ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
+    if (dashed) ctx.setLineDash([6, 4]);
+    else ctx.setLineDash([]);
     ctx.beginPath();
-    for (let i = 0; i <= 30; i++) {
-      const r = i / 30;
+    for (let i = 0; i <= 50; i++) {
+      const r = i / 50;
       const m = getM(r);
       const px = padding + (w - 2*padding) * r;
       const py = h - padding - (h - 2*padding) * m;
@@ -6422,16 +6424,17 @@ function initSim3() {
       else ctx.lineTo(px, py);
     }
     ctx.stroke();
+    ctx.setLineDash([]);
   };
   const getM_std = (r) => 0.633 * 4 * r*r / Math.pow(1 + r*r, 2);
   const getM_theory = (r) => 0.72 * 4 * r*r / Math.pow(1 + 1.2*r*r, 2);
-  drawCurve(getM_std, getComputedStyle(document.documentElement).getPropertyValue('--bdr2').trim());
-  drawCurve(getM_theory, getComputedStyle(document.documentElement).getPropertyValue('--T').trim());
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
-  ctx.font = '9px var(--font-code)';
-  ctx.fillText(d?.stdCurve || 'β₀=0', w - 180, padding + 15);
+  drawCurve(getM_std, '#888888', true);
+  drawCurve(getM_theory, getComputedStyle(document.documentElement).getPropertyValue('--T').trim(), false);
+  ctx.font = '10px var(--font-code)';
+  ctx.fillStyle = '#888888';
+  ctx.fillText('── ' + (d?.stdCurve || '標準曲線 (β₀=0)'), w/2 - 80, padding + 12);
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
-  ctx.fillText(d?.theoryCurve || 'β₀=0.593', w - 180, padding + 30);
+  ctx.fillText('── ' + (d?.theoryCurve || 'めざわ理論 (β₀=0.593)'), w/2 - 80, padding + 28);
 }
 
 function initSim4() {
@@ -6485,35 +6488,60 @@ function initSim4() {
   ctx.rotate(-Math.PI / 2);
   ctx.fillText(d?.frozenLabel || 'F_frozen', 0, 0);
   ctx.restore();
-  const data = [];
-  for (let i = 0; i < 12; i++) {
-    const x = -0.8 + Math.random() * 0.4;
-    const y = 0.9 - 0.968 * x + (Math.random() - 0.5) * 0.15;
-    data.push({x, y});
-  }
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
-  data.forEach(d => {
-    const px = padding + (w - 2*padding) * (d.x + 1) / 2;
-    const py = h - padding - (h - 2*padding) * d.y;
-    ctx.beginPath();
-    ctx.arc(px, py, 3, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
-  ctx.lineWidth = 2;
+  const data = [
+    {x:-0.75,y:1.62},{x:-0.55,y:1.38},{x:-0.40,y:1.25},{x:-0.20,y:1.12},
+    {x:-0.05,y:0.92},{x:0.10,y:0.82},{x:0.25,y:0.68},{x:0.35,y:0.52},
+    {x:0.48,y:0.40},{x:0.55,y:0.38},{x:0.65,y:0.22},{x:0.78,y:0.15}
+  ];
+  const tealColor = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
+  // Confidence band
+  ctx.fillStyle = tealColor + '18';
   ctx.beginPath();
-  for (let i = 0; i <= 20; i++) {
-    const x = -0.8 + 1.6 * i / 20;
+  for (let i = 0; i <= 30; i++) {
+    const x = -0.85 + 1.75 * i / 30;
+    const yUp = (0.9 - 0.968 * x) + 0.12;
+    const px = padding + (w - 2*padding) * (x + 1) / 2;
+    const py = h - padding - (h - 2*padding) * Math.min(1, yUp);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  for (let i = 30; i >= 0; i--) {
+    const x = -0.85 + 1.75 * i / 30;
+    const yDn = (0.9 - 0.968 * x) - 0.12;
+    const px = padding + (w - 2*padding) * (x + 1) / 2;
+    const py = h - padding - (h - 2*padding) * Math.max(0, yDn);
+    ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+  // Regression line
+  ctx.strokeStyle = tealColor;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let i = 0; i <= 30; i++) {
+    const x = -0.85 + 1.75 * i / 30;
     const y = 0.9 - 0.968 * x;
     const px = padding + (w - 2*padding) * (x + 1) / 2;
-    const py = h - padding - (h - 2*padding) * y;
-    if (i === 0) ctx.moveTo(px, py);
-    else ctx.lineTo(px, py);
+    const py = h - padding - (h - 2*padding) * Math.max(0, Math.min(1, y));
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
   }
   ctx.stroke();
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
-  ctx.font = '9px var(--font-code)';
-  ctx.fillText('r=-0.968, R²=0.937', w - 150, padding + 15);
+  // Data points
+  ctx.fillStyle = tealColor;
+  data.forEach(pt => {
+    const px = padding + (w - 2*padding) * (pt.x + 1) / 2;
+    const py = h - padding - (h - 2*padding) * Math.max(0, Math.min(1, pt.y));
+    ctx.beginPath();
+    ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+  // Stats label
+  ctx.fillStyle = tealColor;
+  ctx.font = 'bold 10px var(--font-code)';
+  ctx.textAlign = 'left';
+  ctx.fillText('r=-0.968, R²=0.937', w/2, padding + 15);
 }
 
 function initSim5() {
