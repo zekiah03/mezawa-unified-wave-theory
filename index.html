@@ -826,6 +826,38 @@ body.lang-gr { font-family:var(--font-gr); }
 .nexus-eq-title { font-size:10px; letter-spacing:0.18em; color:var(--T); text-transform:uppercase; margin-bottom:10px; font-family:var(--font-code); }
 .nexus-eq-main { font-family:var(--font-code); font-size:12px; color:var(--Y); line-height:2.2; }
 .nexus-eq-sub { font-size:11px; color:var(--dim); line-height:1.9; margin-top:8px; }
+/* ── SIMULATION COMPONENTS ── */
+.sim-card { background:var(--bg2); border-radius:8px; padding:16px; margin-bottom:16px; border:1px solid var(--bdr); }
+.sim-title { font-weight:700; font-size:13px; margin-bottom:10px; color:var(--head); }
+.sim-slider-row { display:flex; align-items:center; gap:8px; margin:6px 0; font-size:11px; color:var(--dim); }
+.sim-slider-row input[type=range] { flex:1; accent-color:var(--T); cursor:pointer; }
+.sim-slider-row .sim-val { min-width:35px; text-align:right; color:var(--fg); font-weight:600; }
+.sim-meter { height:20px; border-radius:10px; background:var(--bg); overflow:hidden; margin:8px 0; border:1px solid var(--bdr); }
+.sim-meter-fill { height:100%; border-radius:10px; transition:width 0.3s ease; }
+.sim-badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:10px; font-weight:700; }
+.sim-formula { font-family:var(--font-code); font-size:10px; color:var(--T); background:var(--bg); padding:8px; border-radius:4px; margin:8px 0; border-left:2px solid var(--T); line-height:1.7; overflow-x:auto; }
+.sim-canvas { width:100%; max-width:600px; border:1px solid var(--bdr); border-radius:6px; background:var(--bg); }
+.sim-timeline { position:relative; padding-left:20px; margin:12px 0; }
+.sim-timeline-item { position:relative; padding:12px 0 12px 20px; border-left:2px solid var(--bdr); }
+.sim-timeline-item.phase-a { border-left-color:var(--T); }
+.sim-timeline-item.phase-b { border-left-color:var(--P); }
+.sim-timeline-item.phase-c { border-left-color:var(--Y); }
+.sim-timeline-item.phase-d { border-left-color:var(--G); }
+.sim-timeline-item::before { content:''; position:absolute; left:-6px; top:16px; width:10px; height:10px; border-radius:50%; }
+.sim-timeline-item.phase-a::before { background:var(--T); }
+.sim-timeline-item.phase-b::before { background:var(--P); }
+.sim-timeline-item.phase-c::before { background:var(--Y); }
+.sim-timeline-item.phase-d::before { background:var(--G); }
+.sim-timeline-label { font-weight:700; font-size:11px; color:var(--head); }
+.sim-timeline-desc { font-size:10px; color:var(--dim); margin-top:3px; }
+.sim-table { width:100%; border-collapse:collapse; font-size:11px; }
+.sim-table th { text-align:left; padding:8px; background:var(--bg); color:var(--head); border-bottom:2px solid var(--bdr); font-size:10px; text-transform:uppercase; font-weight:700; }
+.sim-table td { padding:8px; border-bottom:1px solid var(--bdr); }
+.sim-table tr:nth-child(even) td { background:var(--bg); }
+.sim-status { font-size:9px; font-weight:600; padding:2px 6px; border-radius:3px; text-transform:uppercase; }
+.sim-status.planned { background:rgba(160,125,232,0.2); color:var(--P); }
+.sim-status.in-progress { background:rgba(245,158,11,0.2); color:var(--Y); }
+.sim-status.completed { background:rgba(92,200,122,0.2); color:var(--G); }
 </style>
 </head>
 <body class="lang-ja">
@@ -990,6 +1022,7 @@ body.lang-gr { font-family:var(--font-gr); }
     </div>
   </div>
 <div id="academic-positioning"></div>
+<div id="theory-simulations"></div>
 </div>
 
 <div id="sp-zt" class="sub-pane">
@@ -3863,6 +3896,83 @@ const LANG_DATA = {
       statusText: 'アイデアレベル → 研究仮説への移行段階。方向性と直感は強いが、予測力・検証可能性の強化が課題。',
       statusAdvice: '次のステップ：「ゾーン・主観時間・自己感」に絞った仮説論文の作成',
     },
+    simulations: {
+      title: '理論シミュレーション・検証計画',
+      subtitle: '対話的シミュレーションで理論を体験し、実験計画を可視化する',
+      sim1Title: 'T_sub モデル対話シミュレーション',
+      sim1Sub: '注意密度・神経変化・身体変化スライダーで主観時間を予測',
+      attentionLabel: '注意密度 (A)',
+      neuralLabel: '神経変化量 (ΔN)',
+      bodyLabel: '身体変化量 (ΔB)',
+      predictLabel: '予測 T_sub / T_clock 比:',
+      formulaLabel: 'T_sub = 60 × (1 / (1 + α·A + β·ΔN + γ·ΔB))',
+      clockObj: '客観時間 (60分)',
+      clockSubj: '主観時間',
+      flowIndicator: 'フロー状態',
+      yellowZone: 'ニュートラル',
+      boredIndicator: '退屈',
+
+      sim2Title: 'PLV 同期ダイナミクス',
+      sim2Sub: '脳波3領域(A/N/B)の位相ロック値をリアルタイムアニメーション',
+      syncLabel: '同期度 (%)',
+      plvLabel: 'PLV メーター',
+      flowState: 'FLOW STATE',
+
+      sim3Title: 'ボソン星質量-半径曲線',
+      sim3Sub: 'β₀=0 (標準) vs β₀=0.593 (めざわ理論) の比較',
+      stdCurve: '標準曲線 (β₀=0)',
+      theoryCurve: 'めざわ理論 (β₀=0.593)',
+      radiusLabel: '半径 (R/R₀)',
+      massLabel: '質量 (M/M₀)',
+
+      sim4Title: 'Phase 0 回帰分析',
+      sim4Sub: 'メタ解析: F_frozen vs β_eff',
+      effectiveLabel: 'β_eff',
+      frozenLabel: 'F_frozen',
+      rValue: 'r = -0.968',
+      r2Value: 'R² = 0.937',
+      pValue: 'p < 0.001',
+
+      sim5Title: 'モデル比較チャート',
+      sim5Sub: 'Zakay単変数 vs めざわ統合モデル',
+      zakay: 'Zakay AGM',
+      predictProc: '予測処理',
+      embodied: '身体化認知',
+      mezawa3: 'めざわ 3変数',
+      mezawa5: 'めざわ 5変数',
+      r2: 'R²',
+      expected: '(期待値)',
+
+      sim6Title: 'Phase A-D 実験計画タイムライン',
+      sim6Sub: '4段階の実験と検証スケジュール',
+      phaseA: 'Phase A: EEG+HRV同期実験',
+      phaseADesc: 'n≥40 / 6ヶ月',
+      phaseB: 'Phase B: ボソン星数値計算',
+      phaseBDesc: '計算研究 / 3ヶ月',
+      phaseC: 'Phase C: W↔β₀接続検証',
+      phaseCDesc: 'n≥60 / 12ヶ月',
+      phaseD: 'Phase D: 時間知覚実験',
+      phaseDDesc: 'n≥40 / 6ヶ月',
+      dependent: '依存',
+      independent: '独立',
+
+      sim7Title: '統計検定力分析表',
+      sim7Sub: '各主要予測の効果量・必要サンプルサイズ',
+      prediction: '予測内容',
+      effectSize: '効果量',
+      requiredN: '必要 n (α=0.05, power=0.8)',
+      status: 'ステータス',
+      pred1: 'ゾーン時 PLV が非ゾーン時より有意に高い',
+      pred2: 'T_sub ≈ f(A,ΔN,ΔB) で R²>0.3',
+      pred3: 'Zakay単変数より3変数統合が AIC で優位',
+      pred4: 'Bell 違反率が高W群で2.2倍',
+      d08: 'd=0.8',
+      r04: 'r=0.4',
+      d07: 'd=0.7',
+      planned: '計画中',
+      inProgress: '進行中',
+      completed: '完了',
+    },
   },
   en: {
     tTitle: 'Mezawa Unified Wave Theory v2.3',
@@ -4112,6 +4222,83 @@ const LANG_DATA = {
       statusTitle: 'Current Status',
       statusText: 'Idea-level → Transitioning to research hypothesis. Direction and intuition are strong, but predictive power and testability need strengthening.',
       statusAdvice: 'Next step: Draft a hypothesis paper focused on "flow, subjective time, and sense of self"',
+    },
+    simulations: {
+      title: 'Theory Simulations & Verification Plan',
+      subtitle: 'Interactive simulations to explore the theory and visualize experimental design',
+      sim1Title: 'T_sub Model Interactive Simulation',
+      sim1Sub: 'Adjust attention, neural change, and body change to predict subjective time',
+      attentionLabel: 'Attention Density (A)',
+      neuralLabel: 'Neural Change (ΔN)',
+      bodyLabel: 'Body Change (ΔB)',
+      predictLabel: 'Predicted T_sub / T_clock ratio:',
+      formulaLabel: 'T_sub = 60 × (1 / (1 + α·A + β·ΔN + γ·ΔB))',
+      clockObj: 'Objective Time (60 min)',
+      clockSubj: 'Subjective Time',
+      flowIndicator: 'Flow State',
+      yellowZone: 'Neutral',
+      boredIndicator: 'Boredom',
+
+      sim2Title: 'PLV Synchronization Dynamics',
+      sim2Sub: 'Real-time phase-locking visualization of three brain regions (A/N/B)',
+      syncLabel: 'Sync Level (%)',
+      plvLabel: 'PLV Meter',
+      flowState: 'FLOW STATE',
+
+      sim3Title: 'Boson Star Mass-Radius Curve',
+      sim3Sub: 'Comparison: β₀=0 (standard) vs β₀=0.593 (Mezawa theory)',
+      stdCurve: 'Standard Curve (β₀=0)',
+      theoryCurve: 'Mezawa Theory (β₀=0.593)',
+      radiusLabel: 'Radius (R/R₀)',
+      massLabel: 'Mass (M/M₀)',
+
+      sim4Title: 'Phase 0 Regression Analysis',
+      sim4Sub: 'Meta-analysis: F_frozen vs β_eff',
+      effectiveLabel: 'β_eff',
+      frozenLabel: 'F_frozen',
+      rValue: 'r = -0.968',
+      r2Value: 'R² = 0.937',
+      pValue: 'p < 0.001',
+
+      sim5Title: 'Model Comparison Chart',
+      sim5Sub: 'Zakay univariate vs Mezawa integrated model',
+      zakay: 'Zakay AGM',
+      predictProc: 'Predictive Processing',
+      embodied: 'Embodied Cognition',
+      mezawa3: 'Mezawa 3-var',
+      mezawa5: 'Mezawa 5-var',
+      r2: 'R²',
+      expected: '(expected)',
+
+      sim6Title: 'Phase A-D Experimental Timeline',
+      sim6Sub: 'Four-phase experimental design and verification schedule',
+      phaseA: 'Phase A: EEG+HRV Sync',
+      phaseADesc: 'n≥40 / 6 months',
+      phaseB: 'Phase B: Boson Star Numerics',
+      phaseBDesc: 'Computational / 3 months',
+      phaseC: 'Phase C: W↔β₀ Connection',
+      phaseCDesc: 'n≥60 / 12 months',
+      phaseD: 'Phase D: Time Perception',
+      phaseDDesc: 'n≥40 / 6 months',
+      dependent: 'Depends on',
+      independent: 'Independent',
+
+      sim7Title: 'Statistical Power Analysis',
+      sim7Sub: 'Key predictions: effect sizes, required N, and status',
+      prediction: 'Prediction',
+      effectSize: 'Effect Size',
+      requiredN: 'Required n (α=0.05, power=0.8)',
+      status: 'Status',
+      pred1: 'PLV significantly higher in flow than non-flow',
+      pred2: 'T_sub ≈ f(A,ΔN,ΔB) achieves R²>0.3',
+      pred3: '3-var model outperforms Zakay by AIC',
+      pred4: 'Bell violation rate 2.2× higher in high-W group',
+      d08: 'd=0.8',
+      r04: 'r=0.4',
+      d07: 'd=0.7',
+      planned: 'Planned',
+      inProgress: 'In Progress',
+      completed: 'Completed',
     },
   },
   gr: {
@@ -5696,6 +5883,7 @@ function setLang(lang) {
   }
   renderTheoryOverview();
   renderAcademicPositioning();
+  renderSimulations();
 }
 
 /* ════════════════════════════════════
@@ -5925,6 +6113,448 @@ function renderAcademicPositioning() {
         <div style="font-size:11px;color:var(--G);font-weight:600">${a.statusAdvice}</div>
       </div>
     </div>`;
+}
+
+/* ════════════════════════════════════
+   SIMULATIONS RENDER
+════════════════════════════════════ */
+let plvAnimationId = null;
+function renderSimulations() {
+  const container = document.getElementById('theory-simulations');
+  if (!container) return;
+  const d = LANG_DATA[currentLang] || LANG_DATA.ja;
+  const s = d.simulations;
+  if (!s) return;
+
+  if (plvAnimationId) cancelAnimationFrame(plvAnimationId);
+
+  container.innerHTML = `<div style="margin-top:32px">
+    <div class="sec-title" style="color:var(--head);font-size:14px;border-top:2px solid var(--bdr2);padding-top:20px">${s.title}</div>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:20px">${s.subtitle}</div>
+
+    <!-- SIM 1: T_sub Interactive -->
+    <div class="sim-card">
+      <div class="sim-title">${s.sim1Title}</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:12px">${s.sim1Sub}</div>
+      <div class="sim-slider-row">
+        <label style="min-width:100px;font-size:11px;color:var(--dim)">${s.attentionLabel}</label>
+        <input type="range" id="sim1-a" min="0" max="10" value="3" step="0.1" style="flex:1">
+        <div class="sim-val" id="sim1-a-val">3.0</div>
+      </div>
+      <div class="sim-slider-row">
+        <label style="min-width:100px;font-size:11px;color:var(--dim)">${s.neuralLabel}</label>
+        <input type="range" id="sim1-n" min="0" max="10" value="2" step="0.1" style="flex:1">
+        <div class="sim-val" id="sim1-n-val">2.0</div>
+      </div>
+      <div class="sim-slider-row">
+        <label style="min-width:100px;font-size:11px;color:var(--dim)">${s.bodyLabel}</label>
+        <input type="range" id="sim1-b" min="0" max="10" value="2" step="0.1" style="flex:1">
+        <div class="sim-val" id="sim1-b-val">2.0</div>
+      </div>
+      <div style="margin-top:12px;padding:8px;background:var(--bg);border-radius:4px;border:1px solid var(--bdr)">
+        <div style="font-size:10px;color:var(--dim);margin-bottom:6px">${s.predictLabel}</div>
+        <div style="font-size:14px;font-weight:700;color:var(--T)" id="sim1-ratio">0.50</div>
+        <div style="font-size:9px;color:var(--dim);margin-top:4px" id="sim1-status"></div>
+      </div>
+      <div class="sim-formula">${s.formulaLabel}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div style="text-align:center;padding:10px;background:var(--bg);border-radius:4px">
+          <div style="font-size:10px;color:var(--dim);margin-bottom:4px">${s.clockObj}</div>
+          <div style="font-size:16px;font-weight:700;color:var(--dim)">60'</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:var(--bg);border-radius:4px">
+          <div style="font-size:10px;color:var(--dim);margin-bottom:4px">${s.clockSubj}</div>
+          <div style="font-size:16px;font-weight:700;color:var(--T)" id="sim1-subj">30'</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIM 2: PLV Synchronization -->
+    <div class="sim-card">
+      <div class="sim-title">${s.sim2Title}</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:12px">${s.sim2Sub}</div>
+      <div class="sim-slider-row">
+        <label style="min-width:100px;font-size:11px;color:var(--dim)">${s.syncLabel}</label>
+        <input type="range" id="sim2-sync" min="0" max="100" value="50" step="1" style="flex:1">
+        <div class="sim-val" id="sim2-sync-val">50%</div>
+      </div>
+      <canvas id="sim2-canvas" class="sim-canvas" width="600" height="250" style="margin:12px 0"></canvas>
+      <div class="sim-meter">
+        <div class="sim-meter-fill" id="sim2-meter" style="width:50%;background:var(--T)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <div style="font-size:10px;color:var(--dim)">${s.plvLabel}</div>
+        <div id="sim2-flow" style="font-size:10px;padding:2px 8px;border-radius:3px;background:transparent;color:var(--dim)"></div>
+      </div>
+    </div>
+
+    <!-- SIM 3: Boson Star Mass-Radius -->
+    <div class="sim-card">
+      <div class="sim-title">${s.sim3Title}</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:12px">${s.sim3Sub}</div>
+      <canvas id="sim3-canvas" class="sim-canvas" width="600" height="400" style="margin:12px 0"></canvas>
+    </div>
+
+    <!-- SIM 4: Phase 0 Regression -->
+    <div class="sim-card">
+      <div class="sim-title">${s.sim4Title}</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:12px">${s.sim4Sub}</div>
+      <canvas id="sim4-canvas" class="sim-canvas" width="600" height="400" style="margin:12px 0"></canvas>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;font-size:10px">
+        <div style="text-align:center;padding:6px;background:var(--bg);border-radius:3px"><div style="color:var(--dim);margin-bottom:2px">${s.rValue}</div><div style="color:var(--T);font-weight:700">-0.968</div></div>
+        <div style="text-align:center;padding:6px;background:var(--bg);border-radius:3px"><div style="color:var(--dim);margin-bottom:2px">${s.r2Value}</div><div style="color:var(--T);font-weight:700">0.937</div></div>
+        <div style="text-align:center;padding:6px;background:var(--bg);border-radius:3px"><div style="color:var(--dim);margin-bottom:2px">${s.pValue}</div><div style="color:var(--T);font-weight:700">&lt;0.001</div></div>
+      </div>
+    </div>
+
+    <!-- SIM 5: Model Comparison -->
+    <div class="sim-card">
+      <div class="sim-title">${s.sim5Title}</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:12px">${s.sim5Sub}</div>
+      <canvas id="sim5-canvas" class="sim-canvas" width="600" height="300" style="margin:12px 0"></canvas>
+    </div>
+
+    <!-- SIM 6: Timeline -->
+    <div class="sim-card">
+      <div class="sim-title">${s.sim6Title}</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:12px">${s.sim6Sub}</div>
+      <div class="sim-timeline">
+        <div class="sim-timeline-item phase-a">
+          <div class="sim-timeline-label">${s.phaseA}</div>
+          <div class="sim-timeline-desc">${s.phaseADesc}</div>
+        </div>
+        <div class="sim-timeline-item phase-b">
+          <div class="sim-timeline-label">${s.phaseB}</div>
+          <div class="sim-timeline-desc">${s.phaseBDesc}</div>
+        </div>
+        <div class="sim-timeline-item phase-c">
+          <div class="sim-timeline-label">${s.phaseC}</div>
+          <div class="sim-timeline-desc">${s.phaseCDesc}</div>
+        </div>
+        <div class="sim-timeline-item phase-d">
+          <div class="sim-timeline-label">${s.phaseD}</div>
+          <div class="sim-timeline-desc">${s.phaseDDesc}</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--dim);margin-top:12px;padding:8px;background:var(--bg);border-radius:4px">
+        <strong>${s.dependent}:</strong> Phase C depends on A&B completed | Phase D independent (parallel possible)
+      </div>
+    </div>
+
+    <!-- SIM 7: Power Analysis Table -->
+    <div class="sim-card">
+      <div class="sim-title">${s.sim7Title}</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:12px">${s.sim7Sub}</div>
+      <div style="overflow-x:auto">
+        <table class="sim-table">
+          <thead>
+            <tr>
+              <th>${s.prediction}</th>
+              <th>${s.effectSize}</th>
+              <th>${s.requiredN}</th>
+              <th>${s.status}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>${s.pred1}</td><td>${s.d08}</td><td>25</td><td><span class="sim-status planned">${s.planned}</span></td></tr>
+            <tr><td>${s.pred2}</td><td>${s.r04}</td><td>40</td><td><span class="sim-status planned">${s.planned}</span></td></tr>
+            <tr><td>${s.pred3}</td><td>${s.d07}</td><td>30</td><td><span class="sim-status planned">${s.planned}</span></td></tr>
+            <tr><td>${s.pred4}</td><td>ratio=2.2</td><td>60</td><td><span class="sim-status planned">${s.planned}</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>`;
+
+  setTimeout(() => {
+    initSim1();
+    initSim2();
+    initSim3();
+    initSim4();
+    initSim5();
+  }, 0);
+}
+
+function initSim1() {
+  const aEl = document.getElementById('sim1-a');
+  const nEl = document.getElementById('sim1-n');
+  const bEl = document.getElementById('sim1-b');
+  if (!aEl || !nEl || !bEl) return;
+  const update = () => {
+    const a = parseFloat(aEl.value);
+    const n = parseFloat(nEl.value);
+    const b = parseFloat(bEl.value);
+    document.getElementById('sim1-a-val').textContent = a.toFixed(1);
+    document.getElementById('sim1-n-val').textContent = n.toFixed(1);
+    document.getElementById('sim1-b-val').textContent = b.toFixed(1);
+    const α = 0.15, β = 0.12, γ = 0.08;
+    const ratio = 1 / (1 + α*a + β*n + γ*b);
+    const tSub = Math.round(60 * ratio);
+    document.getElementById('sim1-ratio').textContent = ratio.toFixed(2);
+    document.getElementById('sim1-subj').textContent = tSub + "'";
+    let status = '';
+    if (ratio < 0.5) status = '🟢 ' + (LANG_DATA[currentLang].simulations?.flowIndicator || 'Flow');
+    else if (ratio < 0.8) status = '🟡 ' + (LANG_DATA[currentLang].simulations?.yellowZone || 'Neutral');
+    else status = '🔴 ' + (LANG_DATA[currentLang].simulations?.boredIndicator || 'Bored');
+    document.getElementById('sim1-status').textContent = status;
+  };
+  aEl.addEventListener('input', update);
+  nEl.addEventListener('input', update);
+  bEl.addEventListener('input', update);
+  update();
+}
+
+function initSim2() {
+  const syncEl = document.getElementById('sim2-sync');
+  const canvas = document.getElementById('sim2-canvas');
+  if (!syncEl || !canvas) return;
+  const ctx = canvas.getContext('2d');
+  const animate = () => {
+    const sync = parseFloat(syncEl.value) / 100;
+    document.getElementById('sim2-sync-val').textContent = parseInt(sync*100) + '%';
+    document.getElementById('sim2-meter').style.width = (sync*100) + '%';
+    if (sync > 0.7) {
+      document.getElementById('sim2-flow').textContent = (LANG_DATA[currentLang].simulations?.flowState || 'FLOW STATE');
+      document.getElementById('sim2-flow').style.background = 'rgba(14,158,146,0.2)';
+      document.getElementById('sim2-flow').style.color = 'var(--T)';
+    } else {
+      document.getElementById('sim2-flow').textContent = '';
+      document.getElementById('sim2-flow').style.background = 'transparent';
+    }
+    drawWaves(ctx, canvas.width, canvas.height, sync);
+    plvAnimationId = requestAnimationFrame(animate);
+  };
+  syncEl.addEventListener('input', animate);
+  animate();
+}
+
+function drawWaves(ctx, w, h, sync) {
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  ctx.fillRect(0, 0, w, h);
+  const t = (Date.now() % 5000) / 5000 * Math.PI * 2;
+  const waves = [
+    {y: h/4, color: 'var(--T)', label: 'A'},
+    {y: h/2, color: 'var(--P)', label: 'N'},
+    {y: 3*h/4, color: 'var(--G)', label: 'B'}
+  ];
+  const colors = [getComputedStyle(document.documentElement).getPropertyValue('--T').trim(),
+                  getComputedStyle(document.documentElement).getPropertyValue('--P').trim(),
+                  getComputedStyle(document.documentElement).getPropertyValue('--G').trim()];
+  waves.forEach((w, i) => {
+    ctx.strokeStyle = colors[i];
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 0; x < 600; x++) {
+      const freq = 0.02;
+      const phase = t + i * Math.PI / 1.5 * (1 - sync * 0.7);
+      const y = w.y + 30 * Math.sin(freq * x + phase);
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  });
+}
+
+function initSim3() {
+  const canvas = document.getElementById('sim3-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const padding = 60;
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--bdr').trim();
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    const x = padding + (w - 2*padding) * i / 10;
+    const y = h - padding;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y + 5);
+    ctx.stroke();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+    ctx.font = '10px var(--font-code)';
+    ctx.textAlign = 'center';
+    ctx.fillText((i/10).toFixed(1), x, y + 18);
+  }
+  for (let i = 0; i <= 8; i++) {
+    const y = h - padding - (h - 2*padding) * i / 8;
+    const x = padding;
+    ctx.beginPath();
+    ctx.moveTo(x - 5, y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+    ctx.font = '10px var(--font-code)';
+    ctx.textAlign = 'right';
+    ctx.fillText((i/8).toFixed(2), x - 10, y + 3);
+  }
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--bdr2').trim();
+  ctx.beginPath();
+  ctx.moveTo(padding, h - padding);
+  ctx.lineTo(w - padding, h - padding);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(padding, padding);
+  ctx.lineTo(padding, h - padding);
+  ctx.stroke();
+  const d = LANG_DATA[currentLang].simulations;
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+  ctx.font = 'bold 11px var(--font-code)';
+  ctx.textAlign = 'center';
+  ctx.fillText(d?.radiusLabel || 'R/R₀', w / 2, h - 10);
+  ctx.save();
+  ctx.translate(15, h / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(d?.massLabel || 'M/M₀', 0, 0);
+  ctx.restore();
+  const drawCurve = (getM, color) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i <= 30; i++) {
+      const r = i / 30;
+      const m = getM(r);
+      const px = padding + (w - 2*padding) * r;
+      const py = h - padding - (h - 2*padding) * m;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  };
+  const getM_std = (r) => 0.633 * 4 * r*r / Math.pow(1 + r*r, 2);
+  const getM_theory = (r) => 0.72 * 4 * r*r / Math.pow(1 + 1.2*r*r, 2);
+  drawCurve(getM_std, getComputedStyle(document.documentElement).getPropertyValue('--bdr2').trim());
+  drawCurve(getM_theory, getComputedStyle(document.documentElement).getPropertyValue('--T').trim());
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+  ctx.font = '9px var(--font-code)';
+  ctx.fillText(d?.stdCurve || 'β₀=0', w - 180, padding + 15);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
+  ctx.fillText(d?.theoryCurve || 'β₀=0.593', w - 180, padding + 30);
+}
+
+function initSim4() {
+  const canvas = document.getElementById('sim4-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const padding = 60;
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--bdr').trim();
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    const x = padding + (w - 2*padding) * i / 10;
+    ctx.beginPath();
+    ctx.moveTo(x, h - padding);
+    ctx.lineTo(x, h - padding + 5);
+    ctx.stroke();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+    ctx.font = '10px var(--font-code)';
+    ctx.textAlign = 'center';
+    ctx.fillText((-1 + 2 * i / 10).toFixed(1), x, h - padding + 18);
+  }
+  for (let i = 0; i <= 10; i++) {
+    const y = h - padding - (h - 2*padding) * i / 10;
+    ctx.beginPath();
+    ctx.moveTo(padding - 5, y);
+    ctx.lineTo(padding, y);
+    ctx.stroke();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+    ctx.font = '10px var(--font-code)';
+    ctx.textAlign = 'right';
+    ctx.fillText((i/10).toFixed(1), padding - 10, y + 3);
+  }
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--bdr2').trim();
+  ctx.beginPath();
+  ctx.moveTo(padding, h - padding);
+  ctx.lineTo(w - padding, h - padding);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(padding, padding);
+  ctx.lineTo(padding, h - padding);
+  ctx.stroke();
+  const d = LANG_DATA[currentLang].simulations;
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+  ctx.font = 'bold 11px var(--font-code)';
+  ctx.textAlign = 'center';
+  ctx.fillText(d?.effectiveLabel || 'β_eff', w / 2, h - 10);
+  ctx.save();
+  ctx.translate(15, h / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(d?.frozenLabel || 'F_frozen', 0, 0);
+  ctx.restore();
+  const data = [];
+  for (let i = 0; i < 12; i++) {
+    const x = -0.8 + Math.random() * 0.4;
+    const y = 0.9 - 0.968 * x + (Math.random() - 0.5) * 0.15;
+    data.push({x, y});
+  }
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
+  data.forEach(d => {
+    const px = padding + (w - 2*padding) * (d.x + 1) / 2;
+    const py = h - padding - (h - 2*padding) * d.y;
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i <= 20; i++) {
+    const x = -0.8 + 1.6 * i / 20;
+    const y = 0.9 - 0.968 * x;
+    const px = padding + (w - 2*padding) * (x + 1) / 2;
+    const py = h - padding - (h - 2*padding) * y;
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--T').trim();
+  ctx.font = '9px var(--font-code)';
+  ctx.fillText('r=-0.968, R²=0.937', w - 150, padding + 15);
+}
+
+function initSim5() {
+  const canvas = document.getElementById('sim5-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const d = LANG_DATA[currentLang].simulations;
+  const models = [
+    {name: d?.zakay || 'Zakay', r2: 0.25, color: getComputedStyle(document.documentElement).getPropertyValue('--bdr2').trim(), expected: false},
+    {name: d?.predictProc || 'Pred.Proc.', r2: 0.20, color: getComputedStyle(document.documentElement).getPropertyValue('--bdr2').trim(), expected: false},
+    {name: d?.embodied || 'Embodied', r2: 0.18, color: getComputedStyle(document.documentElement).getPropertyValue('--bdr2').trim(), expected: false},
+    {name: d?.mezawa3 || 'Mezawa 3', r2: 0.55, color: getComputedStyle(document.documentElement).getPropertyValue('--T').trim(), expected: true},
+    {name: d?.mezawa5 || 'Mezawa 5', r2: 0.65, color: getComputedStyle(document.documentElement).getPropertyValue('--T').trim(), expected: true}
+  ];
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  ctx.fillRect(0, 0, w, h);
+  const barH = 30, gap = 10;
+  const maxR2 = 0.7;
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+  ctx.font = 'bold 10px var(--font-code)';
+  ctx.textAlign = 'right';
+  ctx.fillText(d?.r2 || 'R²', 40, 20);
+  models.forEach((m, i) => {
+    const y = 40 + i * (barH + gap);
+    ctx.fillStyle = m.color;
+    const bw = (w - 100) * m.r2 / maxR2;
+    if (m.expected) {
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = m.color;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(50, y, bw, barH);
+      ctx.setLineDash([]);
+    }
+    ctx.fillRect(50, y, bw, barH);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+    ctx.font = '11px var(--font-code)';
+    ctx.textAlign = 'left';
+    ctx.fillText(m.name + (m.expected ? ' ' + (d?.expected || '(expected)') : ''), 60, y + 20);
+    ctx.fillText(m.r2.toFixed(2), 50 + bw + 10, y + 20);
+  });
 }
 
 /* ════════════════════════════════════
@@ -6301,6 +6931,7 @@ function buildAll() {
   renderQuotes();
   renderTheoryOverview();
   renderAcademicPositioning();
+  renderSimulations();
 }
 
 /* ════════════════════════════════════
