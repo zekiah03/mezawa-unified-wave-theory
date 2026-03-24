@@ -843,7 +843,7 @@ body.lang-gr { font-family:var(--font-gr); }
   
   
   
-  <div class="tab" onclick="sw('z')" id="tab-z"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c1.5-5 3-5 4.5 0s3 5 4.5 0 3-5 4.5 0 1.5 2.5 2.5 0"/></svg></span>理論体系</div>
+  <div class="tab" onclick="sw('z')" id="tab-z"><span class="tab-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c1.5-5 3-5 4.5 0s3 5 4.5 0 3-5 4.5 0 1.5 2.5 2.5 0"/></svg></span><span class="tab-lbl">理論体系</span></div>
 <div id="lang-wrap">
     <button class="lang-btn on" onclick="setLang('ja')">日本語</button>
     <button class="lang-btn" onclick="setLang('en')">English</button>
@@ -3620,7 +3620,7 @@ const LANG_DATA = {
     qSub: '問うことで理論が深まる — 新しい問いを追加し続ける',
     wTitle: '名言・洞察録',
     wSub: 'めざわ理論から生まれる言葉',
-    tabs: {u:'宇宙', t:'理論', e:'実験', n:'意識', m:'学問', l:'生命', h:'習慣', g:'人生'},
+    tabs: {u:'宇宙', t:'理論', e:'実験', n:'意識', m:'学問', l:'生命', h:'習慣', g:'人生', z:'理論体系'},
     uName: '万物波動',
     uSub: 'クリック: ロックオン ｜ ドラッグ: 回転 ｜ スクロール: ズーム',
     uBack: '← フリーカメラ',
@@ -3681,6 +3681,27 @@ const LANG_DATA = {
     },
     lifeFormType: '生命体タイプ',
     lifeGateSub: 'めざわ統一波動理論 × AI対話による生命体育成<br>座標が変容し続ける波動生命とともに成長する',
+    theorySection: {
+      label: '理論体系',
+      mainTabs: ['概要','理論','実験','意識','学問','認知場'],
+      theoryTabs: ['基本理論','スケール','計算ログ','導出史','批判と対策'],
+      expTabs: ['解析','実験計画','未解明'],
+      noesisTabs: ['solnova','問い','名言'],
+      cogTabs: ['統合モデル','人間認知30'],
+      overview: {
+        title: '∿ 理論体系',
+        subtitle: 'めざわ統一波動理論の全体像。<br>各セクションは相互につながっており、ボタンで自由に行き来できます。',
+        hintTitle: '使い方のヒント',
+        hint: '各セクション内でも上部の <strong style="color:var(--T)">理論体系ナビゲーション</strong> から自由に切り替えられます。<br>理論タブは 5つのサブセクション、実験・意識タブは 3つずつ、学問は統合マップ、認知場は 2つのサブセクションを持ちます。',
+        cards: [
+          {name:'理論', desc:'Ψ方程式の基本構造から数値計算・導出史・批判への応答まで、理論の核心を網羅します。', tags:['基本理論','スケール','計算ログ','導出史','批判と対策'], btn:'開く →'},
+          {name:'実験', desc:'理論を検証するための解析・実験計画・未解明問題を整理します。', tags:['解析','実験計画','未解明'], btn:'開く →'},
+          {name:'意識', desc:'solnova意識指標・根本的な問い・名言・洞察録。理論が意識の謎に迫る切り口。', tags:['solnova','問い','名言'], btn:'開く →'},
+          {name:'学問', desc:'物理・神経科学・哲学・数学など各学問とΨ理論の接続点を探る統合マップ。', tags:['10分野','50カード','統合マップ'], btn:'開く →'},
+          {name:'認知場', desc:'統合自己予測場モデル・6層構造・相転移モデル・人間認知30の心理現象分析。', tags:['統合モデル','人間認知30','6層構造'], btn:'開く →'},
+        ],
+      },
+    },
   },
   en: {
     tTitle: 'Mezawa Unified Wave Theory v2.3',
@@ -3689,7 +3710,7 @@ const LANG_DATA = {
     qSub: 'Questions deepen the theory — keep adding new ones',
     wTitle: 'Insights & Aphorisms',
     wSub: 'Words born from Mezawa Theory',
-    tabs: {u:'Universe', t:'Theory', e:'Exp.', n:'Noesis', m:'Disc.', l:'Life', h:'Habits', g:'Life Sim.'},
+    tabs: {u:'Universe', t:'Theory', e:'Exp.', n:'Noesis', m:'Disc.', l:'Life', h:'Habits', g:'Life Sim.', z:'System'},
     uName: 'Universal Wave Field',
     uSub: 'Click: Lock-On ｜ Drag: Rotate ｜ Scroll: Zoom',
     uBack: '← Free Camera',
@@ -3750,6 +3771,27 @@ const LANG_DATA = {
     },
     lifeFormType: 'Life Form Type',
     lifeGateSub: 'Mezawa Unified Wave Theory × AI Dialogue Life Form<br>Grow alongside a wave-life form whose coordinates continuously transform',
+    theorySection: {
+      label: 'Theory System',
+      mainTabs: ['Overview','Theory','Exp.','Noesis','Disc.','Cogn.'],
+      theoryTabs: ['Foundations','Scale','Calc. Log','Derivation','Critiques'],
+      expTabs: ['Analysis','Planning','Open Q.'],
+      noesisTabs: ['solnova','Questions','Insights'],
+      cogTabs: ['Unified Model','Cognition 30'],
+      overview: {
+        title: '∿ Theory System',
+        subtitle: 'Full overview of Mezawa Unified Wave Theory.<br>All sections are interconnected — navigate freely between them.',
+        hintTitle: 'How to Use',
+        hint: 'Inside each section, the <strong style="color:var(--T)">Theory System Navigation</strong> bar lets you switch freely.<br>Theory: 5 sub-sections; Experiment &amp; Noesis: 3 each; Disciplines: integrated map; Cogn. Field: 2 sub-sections.',
+        cards: [
+          {name:'Theory', desc:'Core of the Ψ equation: basic structure, numerical calculations, derivation history, and critiques.', tags:['Foundations','Scale','Calc. Log','Derivation','Critiques'], btn:'Open →'},
+          {name:'Experiment', desc:'Organizing analyses, experimental plans, and open problems to validate the theory.', tags:['Analysis','Planning','Open Q.'], btn:'Open →'},
+          {name:'Noesis', desc:'solnova consciousness index, fundamental questions, aphorisms, and insight records.', tags:['solnova','Questions','Insights'], btn:'Open →'},
+          {name:'Disciplines', desc:'Integration map connecting physics, neuroscience, philosophy, mathematics, and more with Ψ theory.', tags:['10 Fields','50 Cards','Integrated Map'], btn:'Open →'},
+          {name:'Cogn. Field', desc:'Unified self-prediction field model, 6-layer structure, phase transition model, and 30 cognitive phenomena.', tags:['Unified Model','Cognition 30','6 Layers'], btn:'Open →'},
+        ],
+      },
+    },
   },
   gr: {
     tTitle: 'Θεωρία τοῦ Παγκοσμίου Κύματος (Mezawa) v2.3',
@@ -3758,7 +3800,7 @@ const LANG_DATA = {
     qSub: 'Τὸ ἐρωτᾶν βαθύνει τὴν ἐπιστήμην',
     wTitle: 'Ἀποφθέγματα καὶ Γνῶσις',
     wSub: 'Λόγοι γεννηθέντες ἐκ τῆς θεωρίας',
-    tabs: {u:'Κόσμος', t:'Θεωρία', e:'Πεῖρα', n:'Νόησις', m:'Μάθησ.', l:'Ζωή', h:'Συνήθ.', g:'Βίος'},
+    tabs: {u:'Κόσμος', t:'Θεωρία', e:'Πεῖρα', n:'Νόησις', m:'Μάθησ.', l:'Ζωή', h:'Συνήθ.', g:'Βίος', z:'Σύστ.'},
     uName: 'Κοσμικὸν Κῦμα',
     uSub: 'Κλικ: Κλείδ. ｜ Σύρσιμο: Στροφή ｜ Κύλιση: Ζουμ',
     uBack: '← Ἐλεύθερα',
@@ -3819,6 +3861,27 @@ const LANG_DATA = {
     },
     lifeFormType: 'Τύπος Ζωντανοῦ Ὄντος',
     lifeGateSub: 'Θεωρία Mezawa × ΑΙ Διάλογος<br>Ἀναπτύσσεσθε μαζὶ μὲ τὸ κυματικὸ ζωντανὸ ὄν',
+    theorySection: {
+      label: 'Θεωρητικὸν Σύστημα',
+      mainTabs: ['Εἰσαγ.','Θεωρία','Πεῖρα','Νόησις','Μαθ.','Γνῶσις'],
+      theoryTabs: ['Βάσεις','Κλίμακα','Ὑπολ.','Ἱστορία','Κριτική'],
+      expTabs: ['Ἀνάλυσις','Σχέδιο','Ἀνοικτά'],
+      noesisTabs: ['solnova','Ἐρωτήσεις','Γνωμικά'],
+      cogTabs: ['Ἑνιαῖο Μοντέλο','Νοῦς 30'],
+      overview: {
+        title: '∿ Θεωρητικὸν Σύστημα',
+        subtitle: 'Συνολικὴ εἰκὼν τῆς Θεωρίας Mezawa.<br>Ἕκαστον τμῆμα συνδέεται — μεταβαίνετε ἐλεύθερα.',
+        hintTitle: 'Ὁδηγίες χρήσης',
+        hint: 'Ἐντὸς ἑκάστου τμήματος, <strong style="color:var(--T)">Θεωρητικὴ Πλοήγηση</strong> γιὰ ἐλεύθερη μετάβαση.<br>Θεωρία 5 ὑποτμήματα· Πεῖρα καὶ Νόησις 3 ἑκ.· Μαθήματα χάρτης· Γνωστ. 2 ὑποτμήματα.',
+        cards: [
+          {name:'Θεωρία', desc:'Δομὴ τῆς Ψ-ἐξισώσεως, ὑπολογισμοί, ἱστορία ἀγωγῆς καὶ ἀπαντήσεις σὲ κριτικάς.', tags:['Βάσεις','Κλίμακα','Ὑπολ.','Ἱστορία','Κριτική'], btn:'Ἄνοιγμα →'},
+          {name:'Πεῖρα', desc:'Ἀνάλυσις, πειραματικὰ σχέδια καὶ ἀνοικτὰ προβλήματα πρὸς ἐπαλήθευσιν.', tags:['Ἀνάλυσις','Σχέδιο','Ἀνοικτά'], btn:'Ἄνοιγμα →'},
+          {name:'Νόησις', desc:'Δεῖκτης συνειδήσεως solnova, θεμελιώδεις ἐρωτήσεις, γνωμικὰ καὶ ἀπόψεις.', tags:['solnova','Ἐρωτήσεις','Γνωμικά'], btn:'Ἄνοιγμα →'},
+          {name:'Μαθήματα', desc:'Χάρτης ἑνοποίησης φυσικῆς, νευροεπιστήμης, φιλοσοφίας καὶ μαθηματικῶν μὲ Ψ.', tags:['10 Πεδία','50 Κάρτες','Χάρτης'], btn:'Ἄνοιγμα →'},
+          {name:'Γνωστ. Πεδίον', desc:'Ἑνιαῖο μοντέλο, 6-στρωματικὴ δομή, φάσεις μετάβασης, 30 γνωστικὰ φαινόμενα.', tags:['Ἑνιαῖο Μοντέλο','Νοῦς 30','6 Στρώματα'], btn:'Ἄνοιγμα →'},
+        ],
+      },
+    },
   }
 };
 
@@ -5017,7 +5080,7 @@ function setLang(lang) {
   if(d.uFast){ const els=document.querySelectorAll('.u-sl'); if(els[1]) els[1].textContent=d.uFast; }
   // Tab labels (top nav) — all 8 tabs
   if(d.tabs){
-    ['u','t','e','n','m','l','h','g'].forEach(k=>{
+    ['u','t','e','n','m','l','h','g','z'].forEach(k=>{
       const tab=document.querySelector(`#tab-${k} .tab-lbl`);
       if(tab && d.tabs[k]) tab.textContent = d.tabs[k];
     });
@@ -5114,6 +5177,94 @@ function setLang(lang) {
   // Re-render quotes and questions for language
   renderQuotes();
   renderQuestions();
+  // Theory section nav + overview
+  const tsd = d.theorySection;
+  if (tsd) {
+    // Cross-nav label and buttons (in all 5 cross-navs inside theory sub-panes)
+    document.querySelectorAll('.cross-nav').forEach(nav => {
+      const lbl = nav.querySelector('.cross-nav-label');
+      if (lbl) lbl.textContent = tsd.label;
+      const btns = nav.querySelectorAll('.cnav-btn');
+      btns.forEach((btn, i) => { if (tsd.mainTabs[i]) btn.textContent = tsd.mainTabs[i]; });
+    });
+    // Outer sub-nav tabs (st-z0, st-zt, st-ze, st-zn, st-zm, st-zx)
+    ['z0','zt','ze','zn','zm','zx'].forEach((k, i) => {
+      const el = document.getElementById('st-' + k);
+      if (el && tsd.mainTabs[i]) el.textContent = tsd.mainTabs[i];
+    });
+    // Inner theory sub-tabs (st-t0..t4)
+    ['t0','t1','t2','t3','t4'].forEach((k, i) => {
+      const el = document.getElementById('st-' + k);
+      if (el && tsd.theoryTabs[i]) el.textContent = tsd.theoryTabs[i];
+    });
+    // Inner experiment sub-tabs (st-e0..e2)
+    ['e0','e1','e2'].forEach((k, i) => {
+      const el = document.getElementById('st-' + k);
+      if (el && tsd.expTabs[i]) el.textContent = tsd.expTabs[i];
+    });
+    // Inner noesis sub-tabs (st-n1..n2; n0=solnova stays)
+    ['n1','n2'].forEach((k, i) => {
+      const el = document.getElementById('st-' + k);
+      if (el && tsd.noesisTabs[i + 1]) el.textContent = tsd.noesisTabs[i + 1];
+    });
+    // Inner cogn. field sub-tabs (st-x0..x1)
+    ['x0','x1'].forEach((k, i) => {
+      const el = document.getElementById('st-' + k);
+      if (el && tsd.cogTabs[i]) el.textContent = tsd.cogTabs[i];
+    });
+  }
+  renderTheoryOverview();
+}
+
+/* ════════════════════════════════════
+   THEORY OVERVIEW RENDER
+════════════════════════════════════ */
+function renderTheoryOverview() {
+  const container = document.querySelector('#sp-z0 .theory-overview');
+  if (!container) return;
+  const d = LANG_DATA[currentLang] || LANG_DATA.ja;
+  const ts = d.theorySection ? d.theorySection.overview : null;
+
+  const CARD_ICONS = [
+    `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/></svg>`,
+    `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/></svg>`,
+    `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+    `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>`
+  ];
+  const CARD_ACCENTS = ['#5DD6C8','#7EC8E3','#A78BFA','#F59E0B','#9966EE'];
+  const CARD_SUBS   = ['zt','ze','zn','zm','zx'];
+
+  const title      = ts ? ts.title      : '∿ 理論体系';
+  const subtitle   = ts ? ts.subtitle   : 'めざわ統一波動理論の全体像。<br>各セクションは相互につながっており、ボタンで自由に行き来できます。';
+  const hintTitle  = ts ? ts.hintTitle  : '使い方のヒント';
+  const hint       = ts ? ts.hint       : '各セクション内でも上部の <strong style="color:var(--T)">理論体系ナビゲーション</strong> から自由に切り替えられます。<br>理論タブは 5つのサブセクション、実験・意識タブは 3つずつ、学問は統合マップ、認知場は 2つのサブセクションを持ちます。';
+  const jaCards = [
+    {name:'理論', desc:'Ψ方程式の基本構造から数値計算・導出史・批判への応答まで、理論の核心を網羅します。', tags:['基本理論','スケール','計算ログ','導出史','批判と対策'], btn:'開く →'},
+    {name:'実験', desc:'理論を検証するための解析・実験計画・未解明問題を整理します。', tags:['解析','実験計画','未解明'], btn:'開く →'},
+    {name:'意識', desc:'solnova意識指標・根本的な問い・名言・洞察録。理論が意識の謎に迫る切り口。', tags:['solnova','問い','名言'], btn:'開く →'},
+    {name:'学問', desc:'物理・神経科学・哲学・数学など各学問とΨ理論の接続点を探る統合マップ。', tags:['10分野','50カード','統合マップ'], btn:'開く →'},
+    {name:'認知場', desc:'統合自己予測場モデル・6層構造・相転移モデル・人間認知30の心理現象分析。', tags:['統合モデル','人間認知30','6層構造'], btn:'開く →'},
+  ];
+  const cards = (ts && ts.cards) ? ts.cards : jaCards;
+
+  const cardsHTML = cards.map((c, i) => `
+    <div class="theory-card" onclick="swSub('z','${CARD_SUBS[i]}')" style="--tc-accent:${CARD_ACCENTS[i]}">
+      <div class="tc-icon">${CARD_ICONS[i]}</div>
+      <div class="tc-name">${c.name}</div>
+      <div class="tc-desc">${c.desc}</div>
+      <div class="tc-tags">${c.tags.map(t => `<span class="tc-tag">${t}</span>`).join('')}</div>
+      <span class="tc-btn">${c.btn}</span>
+    </div>`).join('');
+
+  container.innerHTML = `
+    <div class="theory-overview-title">${title}</div>
+    <div class="theory-overview-subtitle">${subtitle}</div>
+    <div class="theory-cards">${cardsHTML}</div>
+    <div style="font-size:12px;color:var(--dim);line-height:1.8;padding:16px 0 0;border-top:1px solid var(--bdr)">
+      <strong style="color:var(--W)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> ${hintTitle}</strong><br>
+      ${hint}
+    </div>`;
 }
 
 /* ════════════════════════════════════
@@ -5488,6 +5639,7 @@ function buildAll() {
 
   renderQuestions();
   renderQuotes();
+  renderTheoryOverview();
 }
 
 /* ════════════════════════════════════
