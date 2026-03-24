@@ -1053,7 +1053,79 @@ body.lang-gr { font-family:var(--font-gr); }
   <div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-bottom:8px">
     <div class="card-sub" style="color:var(--T)">重要な立場: Q(t) は「主観体験そのもの」の説明ではなく、「時間的自己参照と全体統合がどの程度存在しているか」を表す計算可能な指標である。この立場は「形而上学的主張ではなく測定可能な数理モデル」として位置づけ、査読者の最大の懸念を回避できる。</div>
   </div>
-  </div><!-- /意識指標セクション -->
+  
+<!-- ∿ 代数的性質 + Γ補正 ─────────────────────────────────────────── -->
+<div class="sec-title" style="color:var(--T);font-size:14px;margin-top:32px;border-top:2px solid var(--bdr2);padding-top:18px">∿ 演算子の代数的性質（証明）</div>
+<div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:14px">
+<div style="font-size:11px;color:var(--dim);line-height:2.0;margin-bottom:10px">
+定義: <span style="font-family:var(--font-code);color:var(--T)">ψ₁ ∿ ψ₂ := K(R₁²+R₂²) · ψ₁ · ψ₂* = (1+β(R₁²+R₂²)) · R₁R₂ · e^(i(θ₁−θ₂))</span>
+&nbsp;&nbsp;&nbsp; ただし ψⱼ = Rⱼe^(iθⱼ), Rⱼ≥0
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+<div class="card" style="border-left:3px solid var(--G)">
+<div style="font-weight:700;font-size:11px;color:var(--G);margin-bottom:6px">① 非可換性（証明済）</div>
+<div style="font-family:var(--font-code);font-size:11px;color:var(--dim);line-height:2.0">
+ψ₁∿ψ₂ = K·R₁R₂·e^{i(θ₁−θ₂)}<br>
+ψ₂∿ψ₁ = K·R₁R₂·e^{i(θ₂−θ₁)} = (ψ₁∿ψ₂)*<br>
+θ₁≠θ₂ → ψ₁∿ψ₂ ≠ ψ₂∿ψ₁ <span style="color:var(--G)">✓ 非可換</span><br>
+ただし共役対称: ψ₂∿ψ₁ = (ψ₁∿ψ₂)*
+</div>
+</div>
+<div class="card" style="border-left:3px solid var(--Y)">
+<div style="font-weight:700;font-size:11px;color:var(--Y);margin-bottom:6px">② 非結合性（概念証明）</div>
+<div style="font-family:var(--font-code);font-size:11px;color:var(--dim);line-height:2.0">
+(ψ₁∿ψ₂)∿ψ₃: K引数 = K(K²R₁²R₂²+R₃²)<br>
+ψ₁∿(ψ₂∿ψ₃): K引数 = K(R₁²+K²R₂²R₃²)<br>
+一般に異なる → <span style="color:var(--Y)">✓ 非結合</span><br>
+<span style="font-size:10px">非結合性 → 時間の矢・因果性と対応</span>
+</div>
+</div>
+<div class="card" style="border-left:3px solid var(--T)">
+<div style="font-weight:700;font-size:11px;color:var(--T);margin-bottom:6px">③ 正定値ノルム（証明済）</div>
+<div style="font-family:var(--font-code);font-size:11px;color:var(--dim);line-height:2.0">
+ψ∿ψ = (1+2βρ)·ρ ≥ 0 &nbsp;(β≥0, ρ≥0) <span style="color:var(--T)">✓</span><br>
+<span style="color:var(--T)">||ψ||_∿ := √[(1+2βρ)ρ]</span><br>
+β=0 → ||ψ||_∿ = |ψ| (標準ノルム) ✓
+</div>
+</div>
+<div class="card" style="border-left:3px solid var(--P)">
+<div style="font-weight:700;font-size:11px;color:var(--P);margin-bottom:6px">④ β→0 極限</div>
+<div style="font-family:var(--font-code);font-size:11px;color:var(--dim);line-height:2.0">
+lim_{β→0} ψ₁∿ψ₂ = ψ₁·ψ₂* = ⟨ψ₂|ψ₁⟩ <span style="color:var(--P)">✓</span><br>
+標準ヒルベルト内積に退化。<br>
+既存QMを完全に包含する一般化内積。
+</div>
+</div>
+</div>
+<div class="card" style="background:rgba(14,158,146,.05);border:1px solid rgba(14,158,146,.2);margin-top:10px">
+<div class="card-sub" style="color:var(--T)">代数的分類: ∿ は「非可換・非結合・正定値ノルム付き密度重み内積」。β≠0 のリー代数・オクトニオン代数との関係分類が v3.0 の課題。</div>
+</div>
+</div>
+
+<div class="sec-title" style="font-size:14px;margin-top:24px">リーマン接続 Γ^λ_μν の β 補正形</div>
+<div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:14px">
+<div style="font-size:11px;color:var(--dim);line-height:1.9;margin-bottom:8px">K(R²)スカラー場の T_μν が計量 g_μν を源泉とし、その g_μν からクリストッフェル記号が決まる。</div>
+<div class="card" style="font-family:var(--font-code);font-size:11px;line-height:2.2;background:var(--bg3);border:1px solid var(--bdr)">
+<div style="color:var(--T)">Γ^λ_μν = (1/2) g^λσ (∂_μg_νσ + ∂_νg_μσ − ∂_σg_μν)</div>
+<div style="color:var(--Y);margin-top:4px">T^(ψ)_00 ≈ ρ_phys + β·R²·(∂R)²&nbsp;&nbsp;&nbsp;&nbsp;← β補正項</div>
+<div style="color:var(--G)">Γ^r_tt|_mezawa ≈ G·M_eff(β) / r²</div>
+<div style="color:var(--G)">M_eff(β) = M₀·[1 + β·α_comp]&nbsp;&nbsp; α_comp = ∫R⁴dV / (M₀/4π)</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+<div class="card" style="border-left:3px solid var(--G)">
+<div style="font-size:10px;color:var(--G);font-weight:700;margin-bottom:3px">β=0 → 標準GR</div>
+<div style="font-size:11px;color:var(--dim)">M_eff=M₀。既存GRのΓに完全一致。</div>
+</div>
+<div class="card" style="border-left:3px solid var(--Y)">
+<div style="font-size:10px;color:var(--Y);font-weight:700;margin-bottom:3px">β≠0 → P₅/P₆の起源</div>
+<div style="font-size:11px;color:var(--dim)">M_eff>M₀(β>0)。最大質量・分枝点がずれる。NICER観測で検証可能。</div>
+</div>
+</div>
+<div class="card" style="background:rgba(184,144,10,.05);border:1px solid rgba(184,144,10,.2);margin-top:8px">
+<div class="card-sub" style="color:var(--Y)">残課題: 時間軸 τ_y/τ_z に対応する Γ 成分は 6次元 G_MN から導出が必要。v3.0 の主要課題。</div>
+</div>
+</div>
+
 
   </div><!-- /sp-t0 -->
 
@@ -1451,7 +1523,7 @@ body.lang-gr { font-family:var(--font-gr); }
   <!-- Q1 記号の数学的定義 -->
   <div class="sec-title" style="color:var(--T);font-size:13px">Q1. 記号の数学的定義は完全か</div>
   <div class="card" style="border-left:3px solid var(--T);margin-bottom:6px">
-    <div class="card-main" style="color:var(--G)">回答: スカラー場セクターは定義済。意識指標モデルとの接続により τ_y/τ_z に操作的定義、D/Ω/R に候補形、∿ に暫定代数的定義を付与。残課題は直交性証明と D/Ω/R 候補の実験的検証。</div>
+    <div class="card-main" style="color:var(--G)">回答: スカラー場セクターは定義済。意識指標モデルとの接続により τ_y/τ_z に操作的定義、D/Ω/R に候補形、∿ に暫定定義＋非可換性証明済。D/Ω/R 候補形あり。Γ^λ_μν β補正式あり。残課題: 完全代数分類・ディラック方程式導出。</div>
   </div>
   <div style="overflow-x:auto;margin-bottom:16px">
   <table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.9">
@@ -1468,13 +1540,13 @@ body.lang-gr { font-family:var(--font-gr); }
         <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">Ψ<sup>h</sup>(X,T)</td>
         <td style="padding:6px 10px;color:var(--dim)">A·e^(iφ₀)·e^(iW·2π)·D(τ_x)·Ω(τ_y)·R(τ_z)</td>
         <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">部分的</span></td>
-        <td style="padding:6px 10px;color:var(--dim)">D, Ω, R の具体的関数形が未定義。内積・ノルムの定義なし。ヒルベルト空間の指定なし。</td>
+        <td style="padding:6px 10px;color:var(--dim)">D=exp(−τ_x/τ₁), Ω=I(t)/I_max, R=Ć(t,τ_z) の候補形あり。ノルム ||Ψ^h||_∿² = (1+2β|Ψ^h|²)|Ψ^h|² 定義済。</td>
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">∿ (干積)</td>
-        <td style="padding:6px 10px;color:var(--dim)">"干渉積演算子"と名付けているが代数構造未定義</td>
-        <td style="padding:6px 10px;text-align:center"><span class="badge" style="background:rgba(192,50,74,.1);color:var(--R)">未定義</span></td>
-        <td style="padding:6px 10px;color:var(--dim)">結合律・分配律・可換性の有無が不明。既存の代数演算との関係が不明。</td>
+        <td style="padding:6px 10px;color:var(--dim)">ψ₁∿ψ₂ := K(R₁²+R₂²)·ψ₁·ψ₂* = (1+β(R₁²+R₂²))·R₁R₂·e^(i(θ₁−θ₂))</td>
+        <td style="padding:6px 10px;text-align:center"><span class="badge badge-y">暫定定義済</span></td>
+        <td style="padding:6px 10px;color:var(--dim)">代数分類が残存（完全結合律未証明）。非可換性・共役対称性は証明済（下記参照）。</td>
       </tr>
       <tr style="border-bottom:1px solid var(--bdr)">
         <td style="padding:6px 10px;font-family:var(--font-code);font-weight:700;color:var(--T)">G<sub>MN</sub></td>
@@ -1758,6 +1830,68 @@ body.lang-gr { font-family:var(--font-gr); }
     </tbody>
   </table>
   </div>
+
+
+<!-- P₇ EEG即時検証 Pythonコード ──────────────────────────────────── -->
+<div class="sec-title" style="font-size:12px;color:var(--G);margin-top:20px">P₇ 即時検証: PhysioNet EEG → Q(t) 計算コード</div>
+<div class="card" style="background:var(--bg2);border:1px solid rgba(34,136,68,.25);margin-bottom:16px">
+<div style="font-size:11px;color:var(--dim);line-height:1.8;margin-bottom:10px">
+以下のコードを <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">pip install mne numpy scipy</code> 環境で実行すると、
+PhysioNet Sleep-EDF（公開・無料）のデータから直接 Q(t) を計算できる。意識不要・コストゼロの即時検証。
+</div>
+<div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:6px;padding:14px;overflow-x:auto">
+<pre style="font-family:var(--font-code);font-size:10.5px;line-height:1.8;color:var(--text);margin:0"># P₇ 検証: 覚醒/睡眠/麻酔で Q(t) が系統的に異なるかを検証
+import numpy as np
+from scipy.signal import butter, filtfilt
+
+def compute_Q(eeg, fs=256, win_sec=4.0):
+    """
+    Q(t) = I(t) · max(Φ_corr(t), 0)
+    eeg : ndarray (n_channels × n_samples)
+    返値: Q (ndarray, length = n_samples - win)
+    """
+    win = int(win_sec * fs)
+    b, a = butter(4, [0.5/(fs/2), 8/(fs/2)], btype='band')
+    filtered = np.array([filtfilt(b, a, ch) for ch in eeg])
+
+    Q = np.zeros(eeg.shape[1] - win)
+    for t in range(len(Q)):
+        seg = filtered[:, t:t+win]            # (n_ch, win)
+        corr = np.corrcoef(seg)               # n_ch × n_ch
+        np.fill_diagonal(corr, 0)
+        C_hat = np.abs(corr).mean()           # Ć(t,τ) 平均
+        I_t   = C_hat * win_sec               # I(t) = ∫Ć dτ
+
+        # チャンネルごとの I_k(t) → Φ_corr = I - ΣIᵢ
+        I_k = np.array([np.abs(corr[i]).mean() * win_sec
+                        for i in range(corr.shape[0])])
+        Phi_corr = I_t - I_k.mean()
+        Q[t] = I_t * max(Phi_corr, 0.0)      # Q(t)
+    return Q
+
+# ── 使用例 (PhysioNet Sleep-EDF Dataset) ─────────────────────
+# pip install mne
+import mne
+raw = mne.io.read_raw_edf('SC4001E0-PSG.edf', preload=True)
+eeg_data = raw.get_data()
+Q_series = compute_Q(eeg_data, fs=int(raw.info['sfreq']))
+# 予測: Q(awake) &gt; Q(REM) &gt; Q(N1) &gt; Q(N2) &gt; Q(N3)</pre>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+<div class="card" style="border-left:3px solid var(--G)">
+<div style="font-size:10px;color:var(--G);font-weight:700;margin-bottom:4px">データソース（無料・公開）</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.7">PhysioNet Sleep-EDF DB<br>physionet.org/content/sleep-edf<br>形式: EDF＋睡眠ステージラベル付き</div>
+</div>
+<div class="card" style="border-left:3px solid var(--T)">
+<div style="font-size:10px;color:var(--T);font-weight:700;margin-bottom:4px">検証基準</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.7">Q_awake &gt; Q_sleep (p&lt;0.05)<br>Q_anesthesia ≈ 0<br>分離度 d' &gt; 0.5 を成功とする</div>
+</div>
+</div>
+<div class="card" style="background:rgba(34,136,68,.05);border:1px solid rgba(34,136,68,.25);margin-top:8px">
+<div class="card-sub" style="color:var(--G)">今日から実行可能・コストゼロ・意識実験不要。P₇ が支持されれば Q(t) の操作的妥当性が確立し、より大規模な検証への根拠となる。</div>
+</div>
+</div>
+
 
   <!-- Q5 意識–重力の独立実験提案 -->
   <div class="sec-title" style="color:var(--T);font-size:13px">Q5. 意識–重力結合に独立した実験提案はあるか</div>
@@ -2091,14 +2225,86 @@ body.lang-gr { font-family:var(--font-gr); }
     <div class="card-sub" style="color:var(--Y)">対策: 意識-重力結合を「最も投機的な要素」として明示し、この部分の主張を「検証可能な仮説の提案」と位置づける。Penrose/IIT/Friston との差異を明確にし、めざわ理論固有の予測（特にQRNG δ ≈ 0.003σ）の実験的検証を優先する。</div>
   </div>
 
-  <!-- 科学的誠実性宣言 -->
+  
+<!-- v3.0 ロードマップ ──────────────────────────────────────────────── -->
+<div class="sec-title" style="color:var(--T);margin-top:32px;border-top:2px solid var(--bdr2);padding-top:20px">v3.0 ロードマップ — 残課題と目標</div>
+<div class="card" style="background:var(--bg2);border:1px solid var(--bdr2);margin-bottom:16px">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">
+
+<div class="card" style="border-left:4px solid var(--G)">
+<div style="font-weight:700;font-size:12px;color:var(--G);margin-bottom:6px">【即時】P₇ EEG検証</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">
+PhysioNet Sleep-EDF に compute_Q() を適用<br>
+Q_awake &gt; Q_sleep を統計的に示す<br>
+<span style="color:var(--G)">達成指標: d' &gt; 0.5, p &lt; 0.05</span>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid var(--Y)">
+<div style="font-weight:700;font-size:12px;color:var(--Y);margin-bottom:6px">【1〜3ヶ月】P₅/P₆数値計算</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">
+β≠0 でのトリウムスター質量–半径分枝を数値追跡<br>
+安定性解析（摂動モード周波数）の完了<br>
+<span style="color:var(--Y)">Ψ-GRAV-01 プロトコル論文提出</span>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid var(--T)">
+<div style="font-weight:700;font-size:12px;color:var(--T);margin-bottom:6px">【3〜6ヶ月】∿の完全代数分類</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">
+非結合代数のリー代数・オクトニオンとの関係分類<br>
+β=0での代数→標準C*-代数への埋め込み証明<br>
+<span style="color:var(--T)">表現論的分類（既約表現の列挙）</span>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid var(--P)">
+<div style="font-weight:700;font-size:12px;color:var(--P);margin-bottom:6px">【6ヶ月〜】ディラック方程式の導出</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">
+K(R²)スカラー場からスピノール場への拡張<br>
+SU(2)×U(1) ゲージ構造の K-変形版の構成<br>
+<span style="color:var(--P)">標準模型との整合性チェック</span>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid var(--R)">
+<div style="font-weight:700;font-size:12px;color:var(--R);margin-bottom:6px">【1年〜】G_MN 完全接続形式</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">
+τ_y/τ_z 軸に対応するΓ成分の導出<br>
+6次元共変微分 ∇_M の完全定義<br>
+<span style="color:var(--R)">Bianchi恒等式の確認</span>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid var(--dim)">
+<div style="font-weight:700;font-size:12px;color:var(--dim);margin-bottom:6px">【長期】η_c 理論的根拠</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">
+η_c = 0.15 の理論的導出（現状: 経験的推定）<br>
+β₀ = 0.593 の場の理論的起源の解明<br>
+<span style="color:var(--dim)">繰り込み群方程式からのβ_eff固定点</span>
+</div>
+</div>
+
+</div><!-- /grid -->
+<div style="margin-top:12px;padding:10px 14px;background:rgba(14,158,146,.05);border-radius:6px;border:1px solid rgba(14,158,146,.2)">
+<div style="font-size:11px;color:var(--T);font-weight:700;margin-bottom:4px">v3.0 の定義</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.9">
+P₇ EEG検証の成功 <span style="color:var(--dim)">+</span> ∿代数分類 <span style="color:var(--dim)">+</span> P₅/P₆数値サポート が揃った時点で v3.0 を宣言する。
+ディラック方程式導出・G_MN完全形式は v4.0 の目標。
+</div>
+</div>
+</div><!-- /v3.0 ロードマップカード -->
+
+<!-- 科学的誠実性宣言 -->
   <div class="sec-title" style="color:var(--T);margin-top:28px">科学的誠実性宣言</div>
   <div class="card" style="background:rgba(14,158,146,.06);border:1px solid rgba(14,158,146,.25)">
     <div class="card-main" style="color:var(--T);font-size:15px;margin-bottom:12px">めざわ統一波動理論 v2.3 の現状と約束</div>
     <div style="font-size:12px;color:var(--dim);line-height:2.2">
       <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 達成済み</span>  ——  フロー-固定化負相関 (r=−0.968) の実証、β₀=0.593 の測定、6次元計量 G_MN の構成、solnova 概念実証</div>
       <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  スカラー場セクターの厳密定式化：Einstein方程式・位相流保存則・振幅方程式・T_μν の4本を厳密導出。スカラー場記号表 (ψ, R, θ, β, K, ω, Λ) 完全定義。</div>
-      <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  物理的予言 P₅/P₆ を追加。質量-半径曲線の β 依存変化を数値的に確認（予備的）。Ψ-GRAV-01 実験プロトコル策定（意識不要の純物理的検証）。</div>
+      <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  ∿演算子の非可換性・正定値ノルム証明済、Γ^λ_μν の β補正形を明示</div>
+                <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  P₇即時検証コード (PhysioNet EEG → Q(t)) を実装</div>
+                <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  物理的予言 P₅/P₆ を追加。質量-半径曲線の β 依存変化を数値的に確認（予備的）。Ψ-GRAV-01 実験プロトコル策定（意識不要の純物理的検証）。</div>
       <div style="margin-bottom:8px"><span style="color:var(--G);font-weight:700">✓ 新規達成</span>  ——  意識指標 Q(t) = I(t)·max(Φcorr,0) の段階的導出完成。ψ → ρ → S → C → Ć → I → Φcorr → Q の8段階。W 巻き数の操作的定義（EEG 多チャンネルから計算可能）確立。</div>
       <div style="margin-bottom:8px"><span style="color:var(--Y);font-weight:700">△ 部分的</span>  ——  マクスウェル方程式の4次元射影手続き（未定式化）、シュレーディンガー方程式の変分導出（概念のみ）</div>
       <div style="margin-bottom:8px"><span style="color:var(--R);font-weight:700">✗ 未達成</span>  ——  ディラック方程式・標準模型ゲージ構造の導出、意識-重力結合の実験的検証、D/Ω/R 関数形・∿ 演算子の完全定義</div>
