@@ -10963,7 +10963,12 @@ const LIFE=(function(){
       breathRate:.8+1.2*p.energy,
       pulseAmp:.02+.08*p.motivation+.05*p.stress,
       noiseAmp:.02+.12*p.stress+.06*(1-p.stability),
-      asymmetry:.05+.3*(1-p.stability)+.2*p.curiosity
+      asymmetry:.05+.3*(1-p.stability)+.2*p.curiosity,
+      // Moya (aura) parameters mapped to state
+      moyaHeat:p.energy,           // strength/brightness
+      moyaSpeed:p.motivation+p.energy*.5, // particle speed = length of trails
+      moyaStability:p.stability,   // inverse = shake amount
+      moyaRotation:p.curiosity+p.riskTolerance*.5 // vortex rotation
     };
   }
 
@@ -10976,65 +10981,58 @@ const LIFE=(function(){
   }
 
   // ═══════════════════════════════════════
-  //  CUSTOM GEOMETRY: Pointed Bone
+  //  CUSTOM GEOMETRY: Bone (round end → pointed end)
   // ═══════════════════════════════════════
-  // Creates a tapered shape: pointed tip → thick middle → pointed tip
-  // Like a real bone or a diamond/spindle shape
-  function createBoneGeometry(length, midRadius, tipFraction, radialSegs){
-    radialSegs = radialSegs || 5;
-    tipFraction = tipFraction || 0.18;
-    const tipLen = length * tipFraction;
-    const bodyLen = length - tipLen * 2;
-    const tipR = midRadius * 0.06; // nearly sharp tip
-    // Build via lathe-like approach: stack of rings
-    const segsY = 8;
-    const verts = [];
-    const indices = [];
-    const normals = [];
-    // Generate profile points: (y position, radius) pairs
+  // One end is rounded (bulb), the other tapers to a sharp point
+  function createBoneGeometry(length, midRadius, radialSegs){
+    radialSegs = radialSegs || 6;
+    const tipR = midRadius * 0.04; // very sharp point
+    // Profile: bottom = round bulb, top = sharp taper
+    // y goes from 0 (round end) to length (pointed end)
     const profile = [];
-    // Bottom tip
-    profile.push({y: 0, r: tipR});
-    profile.push({y: tipLen * 0.5, r: midRadius * 0.35});
-    profile.push({y: tipLen, r: midRadius * 0.85});
-    // Body
-    const bodySegs = 4;
-    for(let i = 0; i <= bodySegs; i++){
-      const u = i / bodySegs;
-      const y = tipLen + u * bodyLen;
-      // Slight taper: thickest at 40% from bottom
-      const bulge = 1 + 0.08 * Math.sin(u * Math.PI);
-      profile.push({y, r: midRadius * bulge});
-    }
-    // Top tip
-    profile.push({y: length - tipLen, r: midRadius * 0.85});
-    profile.push({y: length - tipLen * 0.5, r: midRadius * 0.35});
+    // Round bulb end (bottom) — hemisphere-like curve
+    const bulbR = midRadius * 1.1;
+    profile.push({y: -bulbR * 0.3, r: bulbR * 0.5});  // base of bulb
+    profile.push({y: 0, r: bulbR});                     // widest point of bulb
+    profile.push({y: bulbR * 0.25, r: bulbR * 0.95});  // still wide
+    // Neck (slight narrowing after bulb)
+    profile.push({y: length * 0.12, r: midRadius * 0.82});
+    // Shaft — long, gradually tapering
+    profile.push({y: length * 0.25, r: midRadius * 0.75});
+    profile.push({y: length * 0.4, r: midRadius * 0.62});
+    profile.push({y: length * 0.55, r: midRadius * 0.48});
+    profile.push({y: length * 0.7, r: midRadius * 0.32});
+    profile.push({y: length * 0.82, r: midRadius * 0.18});
+    profile.push({y: length * 0.92, r: midRadius * 0.08});
+    // Sharp point
     profile.push({y: length, r: tipR});
 
     const rows = profile.length;
-    // Build vertices
+    const verts = [], normals = [], indices = [];
+
     for(let row = 0; row < rows; row++){
       const {y, r} = profile[row];
       for(let seg = 0; seg <= radialSegs; seg++){
         const theta = (seg / radialSegs) * Math.PI * 2;
-        const x = Math.cos(theta) * r;
-        const z = Math.sin(theta) * r;
-        verts.push(x, y - length * 0.5, z); // center at origin
-        // Approximate normal
+        verts.push(Math.cos(theta) * r, y - length * 0.15, Math.sin(theta) * r);
+        // Approximate normals
+        let dy = 0;
+        if(row > 0 && row < rows - 1){
+          dy = (profile[row+1].r - profile[row-1].r) / (profile[row+1].y - profile[row-1].y);
+        }
         const nx = Math.cos(theta);
         const nz = Math.sin(theta);
-        normals.push(nx, 0, nz);
+        const nl = Math.sqrt(nx*nx + nz*nz + dy*dy) || 1;
+        normals.push(nx/nl, -dy/nl, nz/nl);
       }
     }
-    // Build indices
     for(let row = 0; row < rows - 1; row++){
       for(let seg = 0; seg < radialSegs; seg++){
         const a = row * (radialSegs + 1) + seg;
         const b = a + radialSegs + 1;
         const c = a + 1;
         const d = b + 1;
-        indices.push(a, b, c);
-        indices.push(c, b, d);
+        indices.push(a, b, c, c, b, d);
       }
     }
     const geo = new THREE.BufferGeometry();
@@ -11048,28 +11046,28 @@ const LIFE=(function(){
   // ═══════════════════════════════════════
   //  THREE LAYERS
   // ═══════════════════════════════════════
-  let coreGroup=null,flowSystem=null,fieldGroup=null,trailLine=null;
+  let coreGroup=null,moyaSystem=null,fieldGroup=null,trailLine=null;
   let starField=null;
   let spinePoints=[], spineData=[];
   let lastStage=-1, lastJointCount=-1;
 
-  // ── Layer 1: Core Body (pointed bones + proper joints) ──
+  // ── Layer 1: Core Body (flat/shadowless, round→pointed bones) ──
   function buildCore(d,p){
     if(coreGroup){scene.remove(coreGroup);coreGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     coreGroup=new THREE.Group();
     const col=stateColor(p);
     const jc=d.jointCount;
-    const segLen=d.bodyScale*3.5/(jc+1);
-    const baseR=d.limbRadius*.25*d.bodyScale;
+    // Make bones LONGER — increase spacing between joints
+    const segLen=d.bodyScale*5.0/(jc+1);
+    const baseR=d.limbRadius*.22*d.bodyScale;
 
-    // Matte material — no shininess, no specular
-    const boneMat=new THREE.MeshLambertMaterial({
-      color:col, emissive:col.clone().multiplyScalar(d.glow*.12),
-      transparent:true, opacity:.88
+    // Flat material — MeshBasicMaterial = NO lighting/shadows at all
+    const boneMat=new THREE.MeshBasicMaterial({
+      color:col,
+      transparent:true, opacity:.90
     });
-    // Joint material — slightly brighter, same matte
-    const jointMat=new THREE.MeshLambertMaterial({
-      color:col.clone().multiplyScalar(1.15), emissive:col.clone().multiplyScalar(d.glow*.18),
+    const jointMat=new THREE.MeshBasicMaterial({
+      color:col.clone().multiplyScalar(1.15),
       transparent:true, opacity:.92
     });
 
@@ -11091,48 +11089,48 @@ const LIFE=(function(){
       spineData.push({u,basePos:pt.clone()});
     }
 
-    // Bone segments — pointed at both ends, connecting joint-to-joint
+    // Bone segments — round end at joint[i], pointed toward joint[i+1]
     for(let i=0;i<spinePoints.length-1;i++){
       const u=i/(spinePoints.length-1);
-      // Slight radius variation along body
       const radMod=1
-        -(.15*p.discipline+.08*p.stability)*(1-u)
-        -(.05+.12*p.riskTolerance)*Math.sin(2*Math.PI*u)
-        -(.03+.08*p.stress)*fbm(u*8+31,2);
-      const r=Math.max(.05,baseR*Math.abs(radMod));
+        -(.12*p.discipline+.06*p.stability)*(1-u)
+        -(.04+.10*p.riskTolerance)*Math.sin(2*Math.PI*u)
+        -(.02+.06*p.stress)*fbm(u*8+31,2);
+      const r=Math.max(.04,baseR*Math.abs(radMod));
       const p1=spinePoints[i],p2=spinePoints[i+1];
       const dir=new THREE.Vector3().subVectors(p2,p1);
       const len=dir.length();
       if(len<.001)continue;
 
-      // Create pointed bone geometry
-      const boneGeo=createBoneGeometry(len, r, 0.2, 5);
+      const boneGeo=createBoneGeometry(len, r, 6);
       const bone=new THREE.Mesh(boneGeo, boneMat.clone());
-      const mid=new THREE.Vector3().addVectors(p1,p2).multiplyScalar(.5);
+      // Position: bulb end at p1, point toward p2
+      // The geometry has bulb at y~0, tip at y~length, centered at y~-length*0.15
+      // So we offset to place the bulb near p1
+      const mid=p1.clone().add(dir.clone().multiplyScalar(0.5));
       bone.position.copy(mid);
       bone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());
       bone.userData={u,segIdx:i,isBranch:false};
       coreGroup.add(bone);
     }
 
-    // Joint spheres — small, positioned exactly at spine points (bone endpoints)
+    // Joint spheres — small connectors at spine points
     spinePoints.forEach((pt,i)=>{
       const u=i/(spinePoints.length-1);
-      // Joint radius: smaller than bone midpoint — just a connector
-      const jr=baseR*(.35+.25*u);
-      const j=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.06,jr),5,5),jointMat.clone());
+      const jr=baseR*(.3+.2*u);
+      const j=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.05,jr),5,5),jointMat.clone());
       j.position.copy(pt);
       j.userData={u,jointIdx:i};
       coreGroup.add(j);
     });
 
-    // Branches (stage 2+) — also pointed bone form
+    // Branches (stage 2+) — same bone form
     if(d.stage>=2){
       const bc=Math.min(8,Math.floor(.5+d.stage*.8+p.curiosity*2.5));
       for(let b=0;b<bc;b++){
         const ai=Math.floor(Math.random()*spinePoints.length);
         const ap=spinePoints[ai];
-        const bLen=segLen*(.3+.8*Math.random())*d.bodyScale;
+        const bLen=segLen*(.4+1.0*Math.random())*d.bodyScale;
         const bAngle=Math.random()*Math.PI*2;
         const bElev=(Math.random()-.5)*Math.PI*.7;
         const bDir=new THREE.Vector3(Math.cos(bAngle)*Math.cos(bElev),Math.sin(bElev)*.5,Math.sin(bAngle)*Math.cos(bElev)).normalize();
@@ -11141,15 +11139,15 @@ const LIFE=(function(){
         const bDirV=new THREE.Vector3().subVectors(bEnd,ap);
         const bL=bDirV.length();
         if(bL<.001)continue;
-        const br=baseR*.35*(.3+.7*Math.random());
-        const branchGeo=createBoneGeometry(bL, br, 0.22, 4);
+        const br=baseR*.3*(.3+.7*Math.random());
+        const branchGeo=createBoneGeometry(bL, br, 4);
         const branch=new THREE.Mesh(branchGeo, boneMat.clone());
         branch.position.copy(bMid);
         branch.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bDirV.clone().normalize());
         branch.userData={u:.5,isBranch:true,attachIdx:ai,baseAng:bAngle};
         coreGroup.add(branch);
-        // Small joint at tip
-        const tip=new THREE.Mesh(new THREE.SphereGeometry(br*.8,4,4),jointMat.clone());
+        // Tiny joint at tip
+        const tip=new THREE.Mesh(new THREE.SphereGeometry(br*.6,4,4),jointMat.clone());
         tip.position.copy(bEnd);
         tip.userData={u:.5,isTip:true};
         coreGroup.add(tip);
@@ -11158,90 +11156,113 @@ const LIFE=(function(){
     scene.add(coreGroup);
   }
 
-  // ── Layer 2: Internal Flow ──
-  const FLOW_N=600;
-  let flowPositions=null,flowColors=null,flowVelocities=null;
+  // ── Layer 2: Moya (white particles as aura/mist) ──
+  // heat → strength/brightness, speed → particle velocity/trail length,
+  // stability(inverse) → shake, rotation → vortex spin
+  const MOYA_N=400;
+  let moyaPositions=null,moyaColors=null,moyaVelocities=null,moyaLife=null;
 
-  function buildFlow(d,p){
-    if(flowSystem){scene.remove(flowSystem);flowSystem.geometry.dispose();flowSystem.material.dispose();}
-    flowPositions=new Float32Array(FLOW_N*3);
-    flowColors=new Float32Array(FLOW_N*3);
-    flowVelocities=new Float32Array(FLOW_N*3);
-    const col=stateColor(p);
-    for(let i=0;i<FLOW_N;i++){
-      const u=Math.random();
-      const si=Math.min(spinePoints.length-2,Math.floor(u*(spinePoints.length-1)));
-      const sf=u*(spinePoints.length-1)-si;
-      const pt=spinePoints[si]?spinePoints[si].clone().lerp(spinePoints[Math.min(si+1,spinePoints.length-1)]||spinePoints[si],sf):new THREE.Vector3();
-      const scatter=d.limbRadius*.4*d.bodyScale;
-      flowPositions[i*3]=pt.x+(Math.random()-.5)*scatter;
-      flowPositions[i*3+1]=pt.y+(Math.random()-.5)*scatter;
-      flowPositions[i*3+2]=pt.z+(Math.random()-.5)*scatter;
-      flowVelocities[i*3]=(Math.random()-.5)*.02;
-      flowVelocities[i*3+1]=.01+Math.random()*.03;
-      flowVelocities[i*3+2]=(Math.random()-.5)*.02;
-      const bright=.3+.7*Math.random();
-      flowColors[i*3]=col.r*bright;flowColors[i*3+1]=col.g*bright*1.1;flowColors[i*3+2]=col.b*bright*1.2;
+  function buildMoya(d,p){
+    if(moyaSystem){scene.remove(moyaSystem);moyaSystem.geometry.dispose();moyaSystem.material.dispose();}
+    moyaPositions=new Float32Array(MOYA_N*3);
+    moyaColors=new Float32Array(MOYA_N*3);
+    moyaVelocities=new Float32Array(MOYA_N*4); // vx,vy,vz,life
+    moyaLife=new Float32Array(MOYA_N);
+
+    const spLen=spinePoints.length;
+    for(let i=0;i<MOYA_N;i++){
+      resetMoyaParticle(i, d, spLen, true);
     }
     const geo=new THREE.BufferGeometry();
-    geo.setAttribute('position',new THREE.BufferAttribute(flowPositions,3));
-    geo.setAttribute('color',new THREE.BufferAttribute(flowColors,3));
-    flowSystem=new THREE.Points(geo,new THREE.PointsMaterial({
-      size:.8+.5*p.energy, vertexColors:true, transparent:true, opacity:.45,
-      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true
+    geo.setAttribute('position',new THREE.BufferAttribute(moyaPositions,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(moyaColors,3));
+    moyaSystem=new THREE.Points(geo,new THREE.PointsMaterial({
+      size:.35+.25*d.moyaHeat,
+      vertexColors:true, transparent:true, opacity:.5,
+      depthWrite:false, sizeAttenuation:true
     }));
-    scene.add(flowSystem);
+    scene.add(moyaSystem);
   }
 
-  function updateFlow(dt,d,p){
-    if(!flowPositions||!spinePoints.length)return;
-    const speed=d.flowSpeed*.015*dt;
-    const chaos=d.flowChaos;
-    const col=stateColor(p);
-    const scatter=d.limbRadius*.4*d.bodyScale;
+  function resetMoyaParticle(i, d, spLen, randomAge){
+    // Spawn near body surface
+    const u=Math.random();
+    const si=Math.min(spLen-2,Math.floor(u*(spLen-1)));
+    const sf=u*(spLen-1)-si;
+    const sp0=spinePoints[si]||new THREE.Vector3();
+    const sp1=spinePoints[Math.min(si+1,spLen-1)]||sp0;
+    const pt=sp0.clone().lerp(sp1,sf);
+    const scatter=d.limbRadius*.6*d.bodyScale;
+    moyaPositions[i*3]=pt.x+(Math.random()-.5)*scatter;
+    moyaPositions[i*3+1]=pt.y+(Math.random()-.5)*scatter;
+    moyaPositions[i*3+2]=pt.z+(Math.random()-.5)*scatter;
+    // Initial velocity — outward + slight upward + vortex rotation
+    const angle=Math.random()*Math.PI*2;
+    const outSpeed=.01+.03*d.moyaSpeed;
+    moyaVelocities[i*4]=Math.cos(angle)*outSpeed;
+    moyaVelocities[i*4+1]=(.005+.02*d.moyaSpeed)*(Math.random()-.3);
+    moyaVelocities[i*4+2]=Math.sin(angle)*outSpeed;
+    moyaVelocities[i*4+3]=0; // age
+    // Life: how long before reset (longer = speed mapping)
+    moyaLife[i]=randomAge?(Math.random()*(.5+1.5*d.moyaSpeed)):(0.5+1.5*d.moyaSpeed);
+    // Color: white, brightness based on heat
+    const b=.6+.4*d.moyaHeat;
+    moyaColors[i*3]=b;moyaColors[i*3+1]=b;moyaColors[i*3+2]=b;
+  }
+
+  function updateMoya(dt,d,p){
+    if(!moyaPositions||!spinePoints.length)return;
     const spLen=spinePoints.length;
-    for(let i=0;i<FLOW_N;i++){
-      const i3=i*3;
-      flowPositions[i3]+=flowVelocities[i3]*speed*dt;
-      flowPositions[i3+1]+=flowVelocities[i3+1]*speed*dt;
-      flowPositions[i3+2]+=flowVelocities[i3+2]*speed*dt;
-      flowVelocities[i3]+=(Math.random()-.5)*chaos*.003*dt;
-      flowVelocities[i3+1]+=(Math.random()-.5)*chaos*.002*dt;
-      flowVelocities[i3+2]+=(Math.random()-.5)*chaos*.003*dt;
-      const py=flowPositions[i3+1];
-      const spineH=spinePoints[spLen-1]?spinePoints[spLen-1].y:5;
-      const spineL=spinePoints[0]?spinePoints[0].y:-5;
-      const u=Math.max(0,Math.min(1,(py-spineL)/(spineH-spineL+.001)));
-      const si=Math.min(spLen-2,Math.floor(u*(spLen-1)));
-      const sf=u*(spLen-1)-si;
-      const target=spinePoints[si]?spinePoints[si].clone().lerp(spinePoints[Math.min(si+1,spLen-1)]||spinePoints[si],sf):new THREE.Vector3();
-      const dx=target.x-flowPositions[i3],dz=target.z-flowPositions[i3+2];
-      const attract=.005*(1+p.stability)*dt;
-      flowVelocities[i3]+=dx*attract;
-      flowVelocities[i3+2]+=dz*attract;
-      const pulse=Math.sin(t*d.breathRate*3+u*Math.PI*4)*d.pulseAmp*scatter;
-      flowPositions[i3]+=pulse*.02*dt;
-      const dist=Math.sqrt(dx*dx+dz*dz);
-      if(dist>scatter*3||py>spineH+2||py<spineL-2){
-        const ru=Math.random();
-        const rsi=Math.min(spLen-2,Math.floor(ru*(spLen-1)));
-        const rsf=ru*(spLen-1)-rsi;
-        const rpt=spinePoints[rsi]?spinePoints[rsi].clone().lerp(spinePoints[Math.min(rsi+1,spLen-1)]||spinePoints[rsi],rsf):new THREE.Vector3();
-        flowPositions[i3]=rpt.x+(Math.random()-.5)*scatter;
-        flowPositions[i3+1]=rpt.y+(Math.random()-.5)*scatter;
-        flowPositions[i3+2]=rpt.z+(Math.random()-.5)*scatter;
-        flowVelocities[i3]=(Math.random()-.5)*.02;
-        flowVelocities[i3+1]=.01+Math.random()*.03;
-        flowVelocities[i3+2]=(Math.random()-.5)*.02;
+    const shake=(1-d.moyaStability)*.008; // instability → shake
+    const rot=d.moyaRotation*.003; // rotation → vortex
+    const heat=d.moyaHeat;
+    const speed=d.moyaSpeed;
+
+    for(let i=0;i<MOYA_N;i++){
+      const i3=i*3, i4=i*4;
+      const age=moyaVelocities[i4+3];
+      const maxLife=moyaLife[i];
+
+      // Age the particle
+      moyaVelocities[i4+3]+=dt*.016;
+
+      if(age>maxLife){
+        // Reset — respawn near body
+        resetMoyaParticle(i, d, spLen, false);
+        continue;
       }
-      const bright=.3+.4*Math.sin(t*2+i*.1)*.5+.3;
-      flowColors[i3]=col.r*bright;flowColors[i3+1]=col.g*bright*1.1;flowColors[i3+2]=col.b*bright*1.2;
+
+      const lifeFrac=age/maxLife; // 0→1
+
+      // Move outward
+      moyaPositions[i3]+=moyaVelocities[i4]*dt*speed;
+      moyaPositions[i3+1]+=moyaVelocities[i4+1]*dt*speed;
+      moyaPositions[i3+2]+=moyaVelocities[i4+2]*dt*speed;
+
+      // Shake (instability)
+      moyaPositions[i3]+=(Math.random()-.5)*shake*dt;
+      moyaPositions[i3+1]+=(Math.random()-.5)*shake*dt;
+      moyaPositions[i3+2]+=(Math.random()-.5)*shake*dt;
+
+      // Vortex rotation (spin around Y axis)
+      const px=moyaPositions[i3], pz=moyaPositions[i3+2];
+      const cosR=Math.cos(rot*dt), sinR=Math.sin(rot*dt);
+      moyaPositions[i3]=px*cosR-pz*sinR;
+      moyaPositions[i3+2]=px*sinR+pz*cosR;
+
+      // Fade: brightness decreases as particle moves outward
+      const fade=Math.max(0, 1-lifeFrac*lifeFrac); // quadratic fade
+      const b=(.5+.5*heat)*fade;
+      moyaColors[i3]=b;moyaColors[i3+1]=b;moyaColors[i3+2]=b;
     }
-    flowSystem.geometry.attributes.position.needsUpdate=true;
-    flowSystem.geometry.attributes.color.needsUpdate=true;
+    moyaSystem.geometry.attributes.position.needsUpdate=true;
+    moyaSystem.geometry.attributes.color.needsUpdate=true;
+    // Dynamic size based on heat
+    moyaSystem.material.size=.3+.3*heat;
+    moyaSystem.material.opacity=.35+.25*heat;
   }
 
-  // ── Layer 3: External Field (bone-like tendrils + subtle aura) ──
+  // ── Layer 3: External Field (bone-like tendrils) ──
   function buildField(d,p){
     if(fieldGroup){scene.remove(fieldGroup);fieldGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     fieldGroup=new THREE.Group();
@@ -11249,26 +11270,23 @@ const LIFE=(function(){
     const col=stateColor(p);
     const extN=d.extCount;
 
-    // Tendrils — bone-like form: thick at base → thin at tip (series of pointed bones)
     for(let e=0;e<extN;e++){
       const ai=Math.floor(Math.random()*spinePoints.length);
       const origin=spinePoints[ai]||new THREE.Vector3();
-      const totalLen=d.extLength*d.bodyScale*3;
-      const boneCount=2+Math.floor(Math.random()*3); // 2-4 bone segments per tendril
+      const totalLen=d.extLength*d.bodyScale*3.5;
+      const boneCount=2+Math.floor(Math.random()*3);
       const dir=new THREE.Vector3((Math.random()-.5)*2,(Math.random()-.5)*2,(Math.random()-.5)*2).normalize();
 
-      // Build tendril as chain of pointed bones, each smaller than the last
       let prevEnd=origin.clone();
-      const baseR=d.limbRadius*.15*d.bodyScale;
+      const baseR=d.limbRadius*.12*d.bodyScale;
       const tendrilGroup=new THREE.Group();
 
       for(let bi=0;bi<boneCount;bi++){
         const bFrac=(bi+1)/boneCount;
-        const bLen=totalLen/boneCount*(1-bFrac*.2); // each segment slightly shorter
-        const bRadius=baseR*(1-bFrac*.7); // thick→thin gradient
-        const bOpacity=Math.max(.08, .35*(1-bFrac*.6)); // fade opacity
+        const bLen=totalLen/boneCount*(1-bFrac*.15);
+        const bRadius=baseR*(1-bFrac*.7);
+        const bOpacity=Math.max(.06, .30*(1-bFrac*.6));
 
-        // Slight curve per segment
         const segDir=dir.clone();
         segDir.x+=Math.sin(bi*1.5+e)*.3*(1-p.stability);
         segDir.z+=Math.cos(bi*1.2+e)*.3*(1-p.stability);
@@ -11280,10 +11298,10 @@ const LIFE=(function(){
         const bL=bDirV.length();
         if(bL<.001)continue;
 
-        const boneGeo=createBoneGeometry(bL, Math.max(.02, bRadius), 0.25, 4);
-        const boneMat=new THREE.MeshLambertMaterial({
-          color:col.clone().multiplyScalar(1.1),
-          emissive:col.clone().multiplyScalar(d.glow*.08),
+        // Same bone shape as body — round→pointed, flat material
+        const boneGeo=createBoneGeometry(bL, Math.max(.02, bRadius), 4);
+        const boneMat=new THREE.MeshBasicMaterial({
+          color:col.clone().multiplyScalar(1.05),
           transparent:true, opacity:bOpacity
         });
         const bone=new THREE.Mesh(boneGeo, boneMat);
@@ -11291,52 +11309,20 @@ const LIFE=(function(){
         bone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bDirV.clone().normalize());
         tendrilGroup.add(bone);
 
-        // Small joint between segments
         if(bi<boneCount-1){
-          const jR=bRadius*.5;
-          const jMat=new THREE.MeshLambertMaterial({
-            color:col.clone().multiplyScalar(1.2),
-            emissive:col.clone().multiplyScalar(d.glow*.1),
-            transparent:true, opacity:bOpacity*.8
+          const jR=bRadius*.4;
+          const jMat=new THREE.MeshBasicMaterial({
+            color:col.clone().multiplyScalar(1.1),
+            transparent:true, opacity:bOpacity*.7
           });
-          const joint=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.03,jR),4,4),jMat);
+          const joint=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.02,jR),4,4),jMat);
           joint.position.copy(bEnd);
           tendrilGroup.add(joint);
         }
-
         prevEnd=bEnd;
       }
       tendrilGroup.userData={origin:origin.clone(),dir:dir.clone(),totalLen,boneCount,attachIdx:ai,phase:Math.random()*Math.PI*2};
       fieldGroup.add(tendrilGroup);
-    }
-
-    // Subtle aura — distance-based opacity gradient, very subdued
-    if(p.curiosity>.4||p.socialDrive>.4){
-      const hN=120+Math.floor(150*p.curiosity);
-      const hPos=new Float32Array(hN*3),hCol=new Float32Array(hN*3),hSizes=new Float32Array(hN);
-      const hR=d.bodyScale*4+d.extLength*1.5;
-      for(let i=0;i<hN;i++){
-        const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
-        const dist=hR*(.3+.7*Math.random());
-        hPos[i*3]=dist*Math.sin(ph)*Math.cos(th);
-        hPos[i*3+1]=dist*Math.cos(ph);
-        hPos[i*3+2]=dist*Math.sin(ph)*Math.sin(th);
-        // Closer = brighter, farther = dimmer (distance gradient)
-        const distNorm=dist/hR;
-        const fade=Math.max(0, 1-distNorm*distNorm); // quadratic falloff
-        const b=fade*(.15+.1*Math.random());
-        hCol[i*3]=col.r*b;hCol[i*3+1]=col.g*b*1.05;hCol[i*3+2]=col.b*b*1.1;
-        hSizes[i]=(.3+.3*fade)*(.5+.5*Math.random());
-      }
-      const hGeo=new THREE.BufferGeometry();
-      hGeo.setAttribute('position',new THREE.BufferAttribute(hPos,3));
-      hGeo.setAttribute('color',new THREE.BufferAttribute(hCol,3));
-      const hPts=new THREE.Points(hGeo,new THREE.PointsMaterial({
-        size:.4,vertexColors:true,transparent:true,opacity:.12+.06*p.curiosity,
-        blending:THREE.AdditiveBlending,depthWrite:false
-      }));
-      hPts.userData={isHalo:true};
-      fieldGroup.add(hPts);
     }
     scene.add(fieldGroup);
   }
@@ -11344,17 +11330,11 @@ const LIFE=(function(){
   function updateField(dt,d,p){
     if(!fieldGroup)return;
     fieldGroup.children.forEach(child=>{
-      if(child.userData.isHalo){
-        child.rotation.y+=.0002*dt*p.curiosity;
-        child.rotation.x+=.0001*dt*p.socialDrive;
-        return;
-      }
-      // Animate tendril bone chains with subtle sway
       const e=child.userData;
       if(!e||!e.origin)return;
-      const wave=d.extWave*.3; // reduced wave intensity
-      const swayX=wave*Math.sin(t*1.2+e.phase)*.5;
-      const swayZ=wave*Math.cos(t*1.0+e.phase)*.5;
+      const wave=d.extWave*.25;
+      const swayX=wave*Math.sin(t*1.2+e.phase)*.4;
+      const swayZ=wave*Math.cos(t*1.0+e.phase)*.4;
       child.rotation.x=swayX*(1-p.stability);
       child.rotation.z=swayZ*(1-p.stability);
     });
@@ -11371,7 +11351,7 @@ const LIFE=(function(){
     const cols=new Float32Array(trailMaxLen*3);
     geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
     geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
-    trailLine=new THREE.Line(geo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.25,blending:THREE.AdditiveBlending,depthWrite:false}));
+    trailLine=new THREE.Line(geo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.2,depthWrite:false}));
     trailLine.frustumCulled=false;
     scene.add(trailLine);
   }
@@ -11391,7 +11371,7 @@ const LIFE=(function(){
     for(let i=0;i<tN;i++){
       pos[i*3]=trailPositions[i].x;pos[i*3+1]=trailPositions[i].y;pos[i*3+2]=trailPositions[i].z;
       const fade=i/tN;
-      cols[i*3]=col.r*fade*.5;cols[i*3+1]=col.g*fade*.6;cols[i*3+2]=col.b*fade*.8;
+      cols[i*3]=col.r*fade*.4;cols[i*3+1]=col.g*fade*.5;cols[i*3+2]=col.b*fade*.6;
     }
     for(let i=tN;i<trailMaxLen;i++){pos[i*3]=pos[i*3+1]=pos[i*3+2]=0;cols[i*3]=cols[i*3+1]=cols[i*3+2]=0;}
     trailLine.geometry.attributes.position.needsUpdate=true;
@@ -11404,20 +11384,16 @@ const LIFE=(function(){
   // ═══════════════════════════════════════
   function buildScene(){
     scene=new THREE.Scene();
-    scene.fog=new THREE.FogExp2(0x000308,.0006);
+    scene.fog=new THREE.FogExp2(0x000308,.0005);
     camera=new THREE.PerspectiveCamera(50,W/H,.1,2000);
     camera.position.set(0,2,18);
-    // Lights — softer, less colorful for matte look
-    scene.add(new THREE.AmbientLight(0x1a1a2e,1.4));
-    const l1=new THREE.DirectionalLight(0xccccee,0.8);l1.position.set(10,15,10);scene.add(l1);
-    const l2=new THREE.PointLight(0x334466,1.5,300);l2.position.set(-12,-8,12);scene.add(l2);
-    const l3=new THREE.PointLight(0x223344,0.6,200);l3.position.set(0,-15,8);scene.add(l3);
-    scene.userData.lights=[l1,l2,l3];
+    // Minimal lighting — only ambient for flat look (no shadows/highlights)
+    scene.add(new THREE.AmbientLight(0xffffff,1.0));
     // Starfield
     const sN=1200,sPos=new Float32Array(sN*3);
     for(let i=0;i<sN;i++){const r=100+Math.random()*600,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);}
     const sGeo=new THREE.BufferGeometry();sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
-    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x223355,size:.5,transparent:true,opacity:.1,blending:THREE.AdditiveBlending,depthWrite:false}));
+    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x223355,size:.5,transparent:true,opacity:.1,depthWrite:false}));
     scene.add(starField);
     rebuildOrganism();
   }
@@ -11428,7 +11404,7 @@ const LIFE=(function(){
     lastStage=d.stage;
     lastJointCount=d.jointCount;
     buildCore(d,p);
-    buildFlow(d,p);
+    buildMoya(d,p);
     buildField(d,p);
     buildTrail(d,p);
   }
@@ -11485,29 +11461,33 @@ const LIFE=(function(){
           const jit=d.noiseAmp*1.5;
           child.position.x=spineData[ud.jointIdx]?.basePos.x+Math.sin(t*1.8+ud.u*5)*jit||0;
           child.position.z=spineData[ud.jointIdx]?.basePos.z+Math.cos(t*2.1+ud.u*4)*jit||0;
-          const pulse=1+.06*Math.sin(t*d.breathRate*2+ud.u*Math.PI*2)*p.energy;
+          const pulse=1+.05*Math.sin(t*d.breathRate*2+ud.u*Math.PI*2)*p.energy;
           child.scale.setScalar(pulse);
         }
         if(ud.isBranch){
-          const sway=(.015+.04*(1-p.stability))*Math.sin(t*1.3+ud.baseAng*2);
+          const sway=(.012+.035*(1-p.stability))*Math.sin(t*1.3+ud.baseAng*2);
           child.rotation.z=sway;
-          child.rotation.x=Math.cos(t+ud.baseAng)*sway*.4;
+          child.rotation.x=Math.cos(t+ud.baseAng)*sway*.35;
         }
         if(ud.segIdx!==undefined&&!ud.isBranch){
-          const b=1+.02*Math.sin(t*d.breathRate+ud.u*Math.PI);
+          const b=1+.015*Math.sin(t*d.breathRate+ud.u*Math.PI);
           child.scale.x=b;child.scale.z=b;
         }
-        // Update material color smoothly
-        if(child.material&&child.material.emissive){
+        // Smooth color update
+        if(child.material&&child.material.color){
           const col=stateColor(p);
           child.material.color.lerp(col,.02*dt);
-          child.material.emissive.copy(col).multiplyScalar(d.glow*.12);
         }
       });
     }
 
-    updateFlow(dt,d,p);
+    // ── Animate Moya ──
+    updateMoya(dt,d,p);
+
+    // ── Animate Field ──
     updateField(dt,d,p);
+
+    // ── Animate Trail ──
     updateTrail(dt,d,p);
 
     if(evoFlash>0)evoFlash-=dt*.03;
@@ -11630,6 +11610,7 @@ const LIFE=(function(){
     }
   };
 })();
+
 
 
 
