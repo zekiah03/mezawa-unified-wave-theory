@@ -10920,124 +10920,342 @@ const LIFE=(function(){
   function sn(x){const i=Math.floor(x),f=x-i;return hash(i)*(1-f*f*(3-2*f))+hash(i+1)*(f*f*(3-2*f));}
   function fbm(x,oct){let v=0,a=1,f=1,s=0;for(let i=0;i<oct;i++){v+=a*sn(x*f);s+=a;a*=.5;f*=2;}return v/s;}
 
-  // ── State → Parameters bridge ──
-  function getParams(){
+  // ═══════════════════════════════════════
+  //  INDIVIDUAL DNA SYSTEM
+  //  Each lifeform has unique transformation
+  //  Generated deterministically from user identity
+  // ═══════════════════════════════════════
+
+  let DNA = null; // Current organism's DNA
+
+  // Deterministic hash from string → [0,1] float array
+  function seedFromString(str, count){
+    const seeds=[];
+    for(let i=0;i<count;i++){
+      let h=0;
+      for(let j=0;j<str.length;j++){
+        h=((h<<5)-h+str.charCodeAt(j)+i*7919)|0;
+      }
+      seeds.push(((Math.sin(h)*43758.5453)%1+1)%1);
+    }
+    return seeds;
+  }
+
+  // Generate DNA for an individual
+  function generateDNA(identifier){
+    // Use 200 seeds for rich variation
+    const s=seedFromString(identifier||'default_organism', 200);
+    let si=0;
+    const next=()=>s[si++%s.length];
+    const nextRange=(lo,hi)=>lo+(hi-lo)*next();
+    const nextInt=(lo,hi)=>Math.floor(nextRange(lo,hi+1));
+
+    // ── 1. Weight Matrix W_i: 11D state → 15 visual params ──
+    // Each row is a visual param, each col is a state dimension
+    // Standard params: bodyScale, jointCount, boneRadius, bendAmp, twistAmp,
+    //   moyaHeat, moyaSpeed, moyaStab, moyaRot, extCount, extLength,
+    //   colorR, colorG, colorB, breathRate
+    const STATE_DIM=11; // [energy,focus,motivation,stability,curiosity,stress,socialDrive,discipline,riskTol,rewardSens,growthBias]
+    const VIS_DIM=15;
+    const weights=[];
+    for(let v=0;v<VIS_DIM;v++){
+      const row=[];
+      for(let d=0;d<STATE_DIM;d++){
+        // Each weight: [-1.5, 1.5] — can be negative (inverted interpretation!)
+        row.push(nextRange(-1.5,1.5));
+      }
+      // Normalize row so magnitudes are balanced
+      let mag=0;
+      for(let d=0;d<STATE_DIM;d++) mag+=Math.abs(row[d]);
+      if(mag>0) for(let d=0;d<STATE_DIM;d++) row[d]/=mag;
+      weights.push(row);
+    }
+
+    // ── 2. Nonlinear Functions per visual param ──
+    // Each param gets one of 6 nonlinearity types with unique parameters
+    const NL_TYPES=['power','sin','log','sigmoid','step','tanh'];
+    const nonlinear=[];
+    for(let v=0;v<VIS_DIM;v++){
+      const type=NL_TYPES[nextInt(0,5)];
+      nonlinear.push({
+        type,
+        gamma:nextRange(0.3,3.0),    // for power: x^gamma
+        phi:nextRange(0.5,3.0),       // for sin: sin(pi*x*phi)
+        alpha:nextRange(0.5,5.0),     // for log: log(1+alpha*x)
+        center:nextRange(0.2,0.8),    // for sigmoid center
+        steepness:nextRange(3,12),    // for sigmoid/step steepness
+      });
+    }
+
+    // ── 3. Cross-Parameter Interactions ──
+    // 6 unique interaction rules: pairs of state params → visual modifier
+    const interactions=[];
+    for(let i=0;i<6;i++){
+      interactions.push({
+        paramA:nextInt(0,STATE_DIM-1),
+        paramB:nextInt(0,STATE_DIM-1),
+        targetVis:nextInt(0,VIS_DIM-1),
+        mode:nextInt(0,3), // 0=multiply, 1=max, 2=diff, 3=harmonic mean
+        strength:nextRange(0.3,1.2),
+      });
+    }
+
+    // ── 4. Individual Thresholds ──
+    // 5 threshold triggers that cause morphological shifts
+    const thresholds=[];
+    for(let i=0;i<5;i++){
+      thresholds.push({
+        param:nextInt(0,STATE_DIM-1),
+        value:nextRange(0.3,0.85),
+        effect:nextInt(0,4), // 0=double bones, 1=shrink, 2=spiral, 3=fragment, 4=merge
+        magnitude:nextRange(0.5,2.0),
+      });
+    }
+
+    // ── 5. Parameter Meaning Remapping ──
+    // Shuffle which state params map to which conceptual roles
+    // This is the key to "heat means different things for different organisms"
+    const meaningMap=[];
+    const shuffled=[0,1,2,3,4,5,6,7,8,9,10];
+    // Fisher-Yates shuffle with our deterministic random
+    for(let i=shuffled.length-1;i>0;i--){
+      const j=nextInt(0,i);
+      [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+    }
+    // meaningMap[conceptual_role] = actual_state_index
+    for(let i=0;i<STATE_DIM;i++) meaningMap.push(shuffled[i]);
+
+    // ── 6. Structural DNA — body plan fundamentals ──
+    const bodyPlan={
+      spineStyle:nextInt(0,3),        // 0=straight,1=curved,2=zigzag,3=spiral
+      symmetry:nextInt(1,5),          // bilateral/radial/asymmetric count
+      branchPattern:nextInt(0,3),     // 0=random,1=alternating,2=clustered,3=fractal
+      boneProfile:nextInt(0,3),       // 0=round→point,1=point→round,2=slim→bulge→slim,3=uniform taper
+      colorStrategy:nextInt(0,4),     // 0=mono,1=gradient,2=complementary,3=triadic,4=analogous
+      baseHue:nextRange(0,360),       // HSL base hue unique to individual
+      saturationBias:nextRange(0.2,0.9),
+      moyaDensity:nextRange(0.3,2.0), // moya particle density multiplier
+      moyaBaseColor:nextInt(0,2),     // 0=white,1=tinted,2=complementary
+      scaleMultiplier:nextRange(0.5,1.8),
+    };
+
+    return {weights, nonlinear, interactions, thresholds, meaningMap, bodyPlan, identifier};
+  }
+
+  // Apply nonlinear transformation
+  function applyNonlinear(x, nl){
+    x=Math.max(0,Math.min(1,x)); // clamp [0,1]
+    switch(nl.type){
+      case 'power': return Math.pow(x,nl.gamma);
+      case 'sin': return (Math.sin(Math.PI*x*nl.phi-Math.PI/2)+1)/2;
+      case 'log': return Math.log(1+nl.alpha*x)/Math.log(1+nl.alpha);
+      case 'sigmoid': return 1/(1+Math.exp(-nl.steepness*(x-nl.center)));
+      case 'step': return x>nl.center?1:x>(nl.center-.15)?((x-nl.center+.15)/.15):0;
+      case 'tanh': return (Math.tanh(nl.steepness*(x-nl.center))+1)/2;
+      default: return x;
+    }
+  }
+
+  // ── F_i(state) → visual: The Individual Transformation ──
+  function transformState(stateArr, dna){
+    if(!dna) return null;
+    const S=dna.meaningMap.map(idx=>stateArr[idx]||0.5); // remap meanings first
+
+    // Step 1: Weight matrix multiplication W_i × S
+    const raw=[];
+    for(let v=0;v<dna.weights.length;v++){
+      let sum=0;
+      for(let d=0;d<S.length;d++){
+        sum+=dna.weights[v][d]*S[d];
+      }
+      raw.push(sum);
+    }
+
+    // Step 2: Apply nonlinear transforms
+    const nl=raw.map((v,i)=>applyNonlinear((v+1)/2, dna.nonlinear[i])); // normalize to [0,1] first
+
+    // Step 3: Cross-parameter interactions
+    const vis=[...nl];
+    dna.interactions.forEach(ix=>{
+      const a=S[ix.paramA]||0.5;
+      const b=S[ix.paramB]||0.5;
+      let mod=0;
+      switch(ix.mode){
+        case 0: mod=a*b; break;             // multiply
+        case 1: mod=Math.max(a,b); break;   // max
+        case 2: mod=Math.abs(a-b); break;   // difference
+        case 3: mod=a+b>0?(2*a*b)/(a+b):0; break; // harmonic mean
+      }
+      vis[ix.targetVis]=Math.max(0,Math.min(1, vis[ix.targetVis]+mod*ix.strength-ix.strength/2));
+    });
+
+    // Step 4: Threshold triggers
+    let thresholdMods={doubleBones:false,shrink:false,spiral:false,fragment:false,merge:false};
+    dna.thresholds.forEach(th=>{
+      if(S[th.param]>th.value){
+        switch(th.effect){
+          case 0: thresholdMods.doubleBones=true; break;
+          case 1: thresholdMods.shrink=true; break;
+          case 2: thresholdMods.spiral=true; break;
+          case 3: thresholdMods.fragment=true; break;
+          case 4: thresholdMods.merge=true; break;
+        }
+      }
+    });
+
+    return {
+      // Map the 15 visual outputs to named parameters
+      bodyScale:  0.3+vis[0]*2.5,
+      jointCount: Math.max(2,Math.floor(2+vis[1]*8)),
+      boneRadius: 0.08+vis[2]*0.5,
+      bendAmp:    vis[3]*1.2,
+      twistAmp:   vis[4]*1.0,
+      moyaHeat:   vis[5],
+      moyaSpeed:  vis[6],
+      moyaStab:   vis[7],
+      moyaRot:    vis[8],
+      extCount:   Math.floor(vis[9]*8),
+      extLength:  0.3+vis[10]*2.0,
+      colorR:     vis[11],
+      colorG:     vis[12],
+      colorB:     vis[13],
+      breathRate: 0.5+vis[14]*2.0,
+      // Pass through
+      thresholdMods,
+      bodyPlan:dna.bodyPlan,
+      // Derived
+      noiseAmp:   0.01+vis[3]*0.15,
+      asymmetry:  vis[4]*0.4,
+      pulseAmp:   0.01+vis[14]*0.08,
+      glow:       vis[0]*0.2,
+      flowChaos:  vis[5]*0.8,
+      extWave:    vis[8]*0.6,
+      trailLen:   Math.floor(10+vis[6]*40),
+      stage:vis[1]<.15?0:vis[1]<.25?1:vis[1]<.4?2:vis[1]<.55?3:vis[1]<.72?4:5,
+    };
+  }
+
+  // ── Get current state as array ──
+  function getStateArray(){
     if(typeof BA_STATE!=='undefined'&&BA_STATE.params){
       const p=BA_STATE.params;
-      return{
-        energy:p.energy||.5, focus:p.focus||.5, motivation:p.motivation||.5,
-        stability:p.stability||.5, curiosity:p.curiosity||.5, stress:p.stress||.3,
-        socialDrive:p.socialDrive||.4, discipline:p.discipline||.5,
-        riskTolerance:p.riskTolerance||.5, rewardSensitivity:p.rewardSensitivity||.5,
-        growthBias:p.growthBias||.5
-      };
+      return[p.energy||.5,p.focus||.5,p.motivation||.5,p.stability||.5,
+             p.curiosity||.5,p.stress||.3,p.socialDrive||.4,p.discipline||.5,
+             p.riskTolerance||.5,p.rewardSensitivity||.5,p.growthBias||.5];
     }
     const c=(typeof LIFE_STATE!=='undefined')?LIFE_STATE.coords:[0,0,0,0,1,1,1,1,.593,.15,117];
-    return{
-      energy:Math.min(1,c[4]/3), focus:.5, motivation:Math.min(1,c[1]/50),
-      stability:Math.min(1,c[7]), curiosity:Math.min(1,c[6]/3), stress:.3,
-      socialDrive:.4, discipline:.5, riskTolerance:Math.min(1,c[0]/(Math.PI*2)),
-      rewardSensitivity:Math.min(1,c[9]*3), growthBias:Math.min(1,c[10]/180)
-    };
+    return[Math.min(1,c[4]/3),.5,Math.min(1,c[1]/50),Math.min(1,c[7]),
+           Math.min(1,c[6]/3),.3,.4,.5,Math.min(1,c[0]/(Math.PI*2)),
+           Math.min(1,c[9]*3),Math.min(1,c[10]/180)];
   }
 
-  // ── Derived shape parameters ──
-  function derive(p){
-    const age=typeof BA_STATE!=='undefined'?BA_STATE.logs.length:0;
-    const z=Math.min(1,.15*p.growthBias+.15*p.curiosity+.15*p.discipline+.15*p.motivation+.2*Math.min(1,age/80)+.2*p.energy);
-    const stage=z<.12?0:z<.22?1:z<.38?2:z<.52?3:z<.70?4:5;
-    return{
-      bodyScale:.6+1.4*p.energy,
-      jointCount:1+Math.floor(3*p.curiosity+2*p.growthBias+stage),
-      limbRadius:.3+.8*p.discipline+.3*p.stability,
-      bendAmp:.08+.7*(1-p.stability)+.2*p.stress,
-      twistAmp:.05+.8*p.riskTolerance,
-      flowSpeed:.3+1.5*p.energy+p.motivation,
-      flowChaos:.1+.9*p.stress+.3*(1-p.stability),
-      extCount:Math.floor(1+3*p.curiosity+2*p.riskTolerance+1.5*p.socialDrive),
-      extLength:.4+.8*p.curiosity+.5*p.stress+.3*p.riskTolerance,
-      extWave:.1+.5*p.stress+.4*(1-p.stability),
-      trailLen:Math.floor(15+25*p.energy+15*p.motivation),
-      glow:.15+1.5*Math.pow(p.energy,.8)+.5*p.motivation,
-      stage, z,
-      breathRate:.8+1.2*p.energy,
-      pulseAmp:.02+.08*p.motivation+.05*p.stress,
-      noiseAmp:.02+.12*p.stress+.06*(1-p.stability),
-      asymmetry:.05+.3*(1-p.stability)+.2*p.curiosity,
-      // Moya (aura) parameters mapped to state
-      moyaHeat:p.energy,           // strength/brightness
-      moyaSpeed:p.motivation+p.energy*.5, // particle speed = length of trails
-      moyaStability:p.stability,   // inverse = shake amount
-      moyaRotation:p.curiosity+p.riskTolerance*.5 // vortex rotation
+  // ── Color from DNA + state ──
+  function individualColor(d){
+    const bp=d.bodyPlan;
+    // Base color from DNA hue + state modulation
+    const h=bp.baseHue;
+    const s=bp.saturationBias;
+    const l=0.35+d.colorR*0.3;
+    // HSL → RGB
+    const hsl2rgb=(h,s,l)=>{
+      h/=360;
+      const a=s*Math.min(l,1-l);
+      const f=(n)=>{const k=(n+h*12)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));};
+      return new THREE.Color(f(0),f(8),f(4));
     };
-  }
+    const base=hsl2rgb(h,s,l);
+    // Modulate with state-derived RGB
+    base.r=base.r*0.6+d.colorR*0.4;
+    base.g=base.g*0.6+d.colorG*0.4;
+    base.b=base.b*0.6+d.colorB*0.4;
 
-  // ── Color from state ──
-  function stateColor(p){
-    const r=.1+.3*p.stress+.4*p.energy+.2*p.motivation;
-    const g=.15+.35*p.stability+.25*p.discipline+.15*p.growthBias;
-    const b=.3+.4*(1-p.stress)+.2*p.focus+.1*p.curiosity;
-    return new THREE.Color(Math.min(1,r),Math.min(1,g),Math.min(1,b));
+    switch(bp.colorStrategy){
+      case 1: // gradient — shift hue along body
+        break; // handled in buildCore
+      case 2: // complementary accent
+        break;
+      case 3: // triadic
+        break;
+      default: // mono
+        break;
+    }
+    return base;
   }
 
   // ═══════════════════════════════════════
-  //  CUSTOM GEOMETRY: Bone (round end → pointed end)
+  //  CUSTOM BONE GEOMETRY (per DNA profile)
   // ═══════════════════════════════════════
-  // One end is rounded (bulb), the other tapers to a sharp point
-  function createBoneGeometry(length, midRadius, radialSegs){
-    radialSegs = radialSegs || 6;
-    const tipR = midRadius * 0.04; // very sharp point
-    // Profile: bottom = round bulb, top = sharp taper
-    // y goes from 0 (round end) to length (pointed end)
-    const profile = [];
-    // Round bulb end (bottom) — hemisphere-like curve
-    const bulbR = midRadius * 1.1;
-    profile.push({y: -bulbR * 0.3, r: bulbR * 0.5});  // base of bulb
-    profile.push({y: 0, r: bulbR});                     // widest point of bulb
-    profile.push({y: bulbR * 0.25, r: bulbR * 0.95});  // still wide
-    // Neck (slight narrowing after bulb)
-    profile.push({y: length * 0.12, r: midRadius * 0.82});
-    // Shaft — long, gradually tapering
-    profile.push({y: length * 0.25, r: midRadius * 0.75});
-    profile.push({y: length * 0.4, r: midRadius * 0.62});
-    profile.push({y: length * 0.55, r: midRadius * 0.48});
-    profile.push({y: length * 0.7, r: midRadius * 0.32});
-    profile.push({y: length * 0.82, r: midRadius * 0.18});
-    profile.push({y: length * 0.92, r: midRadius * 0.08});
-    // Sharp point
-    profile.push({y: length, r: tipR});
+  function createBoneGeometry(length, midRadius, boneProfile, radialSegs){
+    radialSegs=radialSegs||6;
+    const tipR=midRadius*0.04;
+    const profile=[];
 
-    const rows = profile.length;
-    const verts = [], normals = [], indices = [];
+    switch(boneProfile){
+      case 0: // round→point (default)
+        profile.push({y:-midRadius*.3,r:midRadius*.5});
+        profile.push({y:0,r:midRadius*1.1});
+        profile.push({y:midRadius*.25,r:midRadius*.95});
+        profile.push({y:length*.12,r:midRadius*.82});
+        profile.push({y:length*.3,r:midRadius*.7});
+        profile.push({y:length*.5,r:midRadius*.5});
+        profile.push({y:length*.7,r:midRadius*.3});
+        profile.push({y:length*.85,r:midRadius*.15});
+        profile.push({y:length*.95,r:midRadius*.06});
+        profile.push({y:length,r:tipR});
+        break;
+      case 1: // point→round (reversed)
+        profile.push({y:0,r:tipR});
+        profile.push({y:length*.05,r:midRadius*.06});
+        profile.push({y:length*.15,r:midRadius*.15});
+        profile.push({y:length*.3,r:midRadius*.3});
+        profile.push({y:length*.5,r:midRadius*.5});
+        profile.push({y:length*.7,r:midRadius*.7});
+        profile.push({y:length*.85,r:midRadius*.95});
+        profile.push({y:length,r:midRadius*1.1});
+        profile.push({y:length+midRadius*.25,r:midRadius*.5});
+        break;
+      case 2: // slim→bulge→slim (spindle)
+        profile.push({y:0,r:tipR*2});
+        profile.push({y:length*.1,r:midRadius*.25});
+        profile.push({y:length*.25,r:midRadius*.7});
+        profile.push({y:length*.4,r:midRadius*1.2});
+        profile.push({y:length*.5,r:midRadius*1.3});
+        profile.push({y:length*.6,r:midRadius*1.2});
+        profile.push({y:length*.75,r:midRadius*.7});
+        profile.push({y:length*.9,r:midRadius*.25});
+        profile.push({y:length,r:tipR*2});
+        break;
+      case 3: // uniform taper (cone)
+        profile.push({y:0,r:midRadius*1.0});
+        profile.push({y:length*.2,r:midRadius*.85});
+        profile.push({y:length*.4,r:midRadius*.65});
+        profile.push({y:length*.6,r:midRadius*.45});
+        profile.push({y:length*.8,r:midRadius*.25});
+        profile.push({y:length*.95,r:midRadius*.08});
+        profile.push({y:length,r:tipR});
+        break;
+    }
 
-    for(let row = 0; row < rows; row++){
-      const {y, r} = profile[row];
-      for(let seg = 0; seg <= radialSegs; seg++){
-        const theta = (seg / radialSegs) * Math.PI * 2;
-        verts.push(Math.cos(theta) * r, y - length * 0.15, Math.sin(theta) * r);
-        // Approximate normals
-        let dy = 0;
-        if(row > 0 && row < rows - 1){
-          dy = (profile[row+1].r - profile[row-1].r) / (profile[row+1].y - profile[row-1].y);
-        }
-        const nx = Math.cos(theta);
-        const nz = Math.sin(theta);
-        const nl = Math.sqrt(nx*nx + nz*nz + dy*dy) || 1;
-        normals.push(nx/nl, -dy/nl, nz/nl);
+    const rows=profile.length;
+    const verts=[],normals=[],indices=[];
+    for(let row=0;row<rows;row++){
+      const {y,r}=profile[row];
+      for(let seg=0;seg<=radialSegs;seg++){
+        const theta=(seg/radialSegs)*Math.PI*2;
+        verts.push(Math.cos(theta)*r,y-length*.15,Math.sin(theta)*r);
+        normals.push(Math.cos(theta),0,Math.sin(theta));
       }
     }
-    for(let row = 0; row < rows - 1; row++){
-      for(let seg = 0; seg < radialSegs; seg++){
-        const a = row * (radialSegs + 1) + seg;
-        const b = a + radialSegs + 1;
-        const c = a + 1;
-        const d = b + 1;
-        indices.push(a, b, c, c, b, d);
+    for(let row=0;row<rows-1;row++){
+      for(let seg=0;seg<radialSegs;seg++){
+        const a=row*(radialSegs+1)+seg;
+        const b=a+radialSegs+1;
+        indices.push(a,b,a+1,a+1,b,b+1);
       }
     }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-    geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+    geo.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
     geo.setIndex(indices);
     geo.computeVertexNormals();
     return geo;
@@ -11048,90 +11266,124 @@ const LIFE=(function(){
   // ═══════════════════════════════════════
   let coreGroup=null,moyaSystem=null,fieldGroup=null,trailLine=null;
   let starField=null;
-  let spinePoints=[], spineData=[];
-  let lastStage=-1, lastJointCount=-1;
+  let spinePoints=[],spineData=[];
+  let lastStage=-1,lastJointCount=-1;
 
-  // ── Layer 1: Core Body (flat/shadowless, round→pointed bones) ──
-  function buildCore(d,p){
+  // ── Layer 1: Core Body ──
+  function buildCore(d){
     if(coreGroup){scene.remove(coreGroup);coreGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     coreGroup=new THREE.Group();
-    const col=stateColor(p);
-    const jc=d.jointCount;
-    // Make bones LONGER — increase spacing between joints
-    const segLen=d.bodyScale*5.0/(jc+1);
-    const baseR=d.limbRadius*.22*d.bodyScale;
+    const col=individualColor(d);
+    const bp=d.bodyPlan;
+    const jc=d.thresholdMods.doubleBones?d.jointCount*2:d.jointCount;
+    const globalScale=bp.scaleMultiplier*(d.thresholdMods.shrink?0.5:1.0);
+    const segLen=d.bodyScale*globalScale*4.5/(jc+1);
+    const baseR=d.boneRadius*globalScale*.7;
 
-    // Flat material — MeshBasicMaterial = NO lighting/shadows at all
-    const boneMat=new THREE.MeshBasicMaterial({
-      color:col,
-      transparent:true, opacity:.90
-    });
-    const jointMat=new THREE.MeshBasicMaterial({
-      color:col.clone().multiplyScalar(1.15),
-      transparent:true, opacity:.92
-    });
+    const boneMat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.90});
+    const jointMat=new THREE.MeshBasicMaterial({color:col.clone().multiplyScalar(1.15),transparent:true,opacity:.92});
 
-    // Build spine path
     spinePoints=[];spineData=[];
     for(let i=0;i<=jc;i++){
       const u=i/Math.max(1,jc);
-      const bend=d.bendAmp*Math.sin(Math.PI*u);
-      const twist=d.twistAmp*Math.sin(2*Math.PI*u);
+      let px=0,py=(u-.5)*segLen*(jc+1),pz=0;
+
+      switch(bp.spineStyle){
+        case 0: // straight — minimal deviation
+          px=d.bendAmp*Math.sin(Math.PI*u)*1.5;
+          pz=d.twistAmp*Math.sin(2*Math.PI*u)*1.2;
+          break;
+        case 1: // curved — S-curve
+          px=d.bendAmp*Math.sin(Math.PI*u*2)*2.5;
+          pz=d.twistAmp*Math.cos(Math.PI*u)*2.0;
+          break;
+        case 2: // zigzag
+          px=d.bendAmp*(((i%2)*2-1))*1.8;
+          pz=d.twistAmp*(((Math.floor(i/2)%2)*2-1))*1.2;
+          break;
+        case 3: // spiral
+          const spiralR=d.bendAmp*2.0*(0.3+0.7*u);
+          px=spiralR*Math.cos(u*Math.PI*3);
+          pz=spiralR*Math.sin(u*Math.PI*3);
+          break;
+      }
+      // Asymmetry + noise
       const asym=d.asymmetry*(fbm(u*5+137,3)-.5)*4;
       const nx=d.noiseAmp*fbm(u*6+42,3)*3;
       const ny=d.noiseAmp*fbm(u*6+99,3)*3;
-      const pt=new THREE.Vector3(
-        bend*2.5+asym+nx+twist*1.2,
-        (u-.5)*segLen*(jc+1),
-        twist*1.8+ny
-      );
+      px+=asym+nx;
+      pz+=ny;
+
+      // Threshold: spiral mod
+      if(d.thresholdMods.spiral){
+        const sr=1.5*u;
+        px+=sr*Math.cos(u*Math.PI*4+t*0.5);
+        pz+=sr*Math.sin(u*Math.PI*4+t*0.5);
+      }
+
+      const pt=new THREE.Vector3(px,py,pz);
       spinePoints.push(pt);
       spineData.push({u,basePos:pt.clone()});
     }
 
-    // Bone segments — round end at joint[i], pointed toward joint[i+1]
+    // Bones
     for(let i=0;i<spinePoints.length-1;i++){
       const u=i/(spinePoints.length-1);
-      const radMod=1
-        -(.12*p.discipline+.06*p.stability)*(1-u)
-        -(.04+.10*p.riskTolerance)*Math.sin(2*Math.PI*u)
-        -(.02+.06*p.stress)*fbm(u*8+31,2);
-      const r=Math.max(.04,baseR*Math.abs(radMod));
+      const radVar=1-0.1*Math.sin(u*Math.PI*2*bp.symmetry);
+      const r=Math.max(.03,baseR*radVar);
       const p1=spinePoints[i],p2=spinePoints[i+1];
       const dir=new THREE.Vector3().subVectors(p2,p1);
       const len=dir.length();
       if(len<.001)continue;
 
-      const boneGeo=createBoneGeometry(len, r, 6);
-      const bone=new THREE.Mesh(boneGeo, boneMat.clone());
-      // Position: bulb end at p1, point toward p2
-      // The geometry has bulb at y~0, tip at y~length, centered at y~-length*0.15
-      // So we offset to place the bulb near p1
-      const mid=p1.clone().add(dir.clone().multiplyScalar(0.5));
-      bone.position.copy(mid);
+      // Color gradient along body if colorStrategy=1
+      let bMat=boneMat;
+      if(bp.colorStrategy===1){
+        const hShift=bp.baseHue+u*120;
+        const hsl2rgb=(h,s,l)=>{h/=360;const a=s*Math.min(l,1-l);const f=(n)=>{const k=(n+h*12)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));};return new THREE.Color(f(0),f(8),f(4));};
+        bMat=new THREE.MeshBasicMaterial({color:hsl2rgb(hShift,bp.saturationBias,.35+d.colorR*.3),transparent:true,opacity:.90});
+      }
+
+      const boneGeo=createBoneGeometry(len,r,bp.boneProfile,6);
+      const bone=new THREE.Mesh(boneGeo,bMat.clone?bMat.clone():bMat);
+      bone.position.copy(new THREE.Vector3().addVectors(p1,p2).multiplyScalar(.5));
       bone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());
       bone.userData={u,segIdx:i,isBranch:false};
       coreGroup.add(bone);
     }
 
-    // Joint spheres — small connectors at spine points
+    // Joints
     spinePoints.forEach((pt,i)=>{
       const u=i/(spinePoints.length-1);
-      const jr=baseR*(.3+.2*u);
-      const j=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.05,jr),5,5),jointMat.clone());
+      const jr=baseR*(.25+.2*u);
+      const j=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.04,jr),5,5),jointMat.clone());
       j.position.copy(pt);
       j.userData={u,jointIdx:i};
       coreGroup.add(j);
     });
 
-    // Branches (stage 2+) — same bone form
-    if(d.stage>=2){
-      const bc=Math.min(8,Math.floor(.5+d.stage*.8+p.curiosity*2.5));
+    // Branches (based on branchPattern)
+    if(d.stage>=2 && !d.thresholdMods.merge){
+      const bc=Math.min(10,d.extCount>4?Math.floor(d.extCount*0.6):Math.floor(2+d.stage*0.8));
       for(let b=0;b<bc;b++){
-        const ai=Math.floor(Math.random()*spinePoints.length);
+        let ai;
+        switch(bp.branchPattern){
+          case 1: // alternating
+            ai=Math.floor(b/(bc-1||1)*(spinePoints.length-1));
+            break;
+          case 2: // clustered at center
+            ai=Math.floor(spinePoints.length*.3+Math.random()*spinePoints.length*.4);
+            break;
+          case 3: // fractal-like: branches from branches (attach near tips)
+            ai=Math.floor(Math.random()*spinePoints.length);
+            break;
+          default: // random
+            ai=Math.floor(Math.random()*spinePoints.length);
+        }
+        ai=Math.min(ai,spinePoints.length-1);
         const ap=spinePoints[ai];
-        const bLen=segLen*(.4+1.0*Math.random())*d.bodyScale;
-        const bAngle=Math.random()*Math.PI*2;
+        const bLen=segLen*(.5+1.2*Math.random())*d.bodyScale*globalScale*.7;
+        const bAngle=bp.branchPattern===1?(b/(bc||1))*Math.PI*2:Math.random()*Math.PI*2;
         const bElev=(Math.random()-.5)*Math.PI*.7;
         const bDir=new THREE.Vector3(Math.cos(bAngle)*Math.cos(bElev),Math.sin(bElev)*.5,Math.sin(bAngle)*Math.cos(bElev)).normalize();
         const bEnd=ap.clone().add(bDir.clone().multiplyScalar(bLen));
@@ -11140,14 +11392,13 @@ const LIFE=(function(){
         const bL=bDirV.length();
         if(bL<.001)continue;
         const br=baseR*.3*(.3+.7*Math.random());
-        const branchGeo=createBoneGeometry(bL, br, 4);
-        const branch=new THREE.Mesh(branchGeo, boneMat.clone());
+        const branchGeo=createBoneGeometry(bL,br,bp.boneProfile,4);
+        const branch=new THREE.Mesh(branchGeo,boneMat.clone());
         branch.position.copy(bMid);
         branch.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bDirV.clone().normalize());
         branch.userData={u:.5,isBranch:true,attachIdx:ai,baseAng:bAngle};
         coreGroup.add(branch);
-        // Tiny joint at tip
-        const tip=new THREE.Mesh(new THREE.SphereGeometry(br*.6,4,4),jointMat.clone());
+        const tip=new THREE.Mesh(new THREE.SphereGeometry(br*.5,4,4),jointMat.clone());
         tip.position.copy(bEnd);
         tip.userData={u:.5,isTip:true};
         coreGroup.add(tip);
@@ -11156,166 +11407,148 @@ const LIFE=(function(){
     scene.add(coreGroup);
   }
 
-  // ── Layer 2: Moya (white particles as aura/mist) ──
-  // heat → strength/brightness, speed → particle velocity/trail length,
-  // stability(inverse) → shake, rotation → vortex spin
-  const MOYA_N=400;
+  // ── Layer 2: Moya (white/tinted particles) ──
+  const MOYA_BASE=400;
+  let moyaN=MOYA_BASE;
   let moyaPositions=null,moyaColors=null,moyaVelocities=null,moyaLife=null;
 
-  function buildMoya(d,p){
+  function buildMoya(d){
     if(moyaSystem){scene.remove(moyaSystem);moyaSystem.geometry.dispose();moyaSystem.material.dispose();}
-    moyaPositions=new Float32Array(MOYA_N*3);
-    moyaColors=new Float32Array(MOYA_N*3);
-    moyaVelocities=new Float32Array(MOYA_N*4); // vx,vy,vz,life
-    moyaLife=new Float32Array(MOYA_N);
+    const bp=d.bodyPlan;
+    moyaN=Math.floor(MOYA_BASE*bp.moyaDensity);
+    moyaPositions=new Float32Array(moyaN*3);
+    moyaColors=new Float32Array(moyaN*3);
+    moyaVelocities=new Float32Array(moyaN*4);
+    moyaLife=new Float32Array(moyaN);
 
     const spLen=spinePoints.length;
-    for(let i=0;i<MOYA_N;i++){
-      resetMoyaParticle(i, d, spLen, true);
-    }
+    for(let i=0;i<moyaN;i++) resetMoyaParticle(i,d,spLen,true);
+
     const geo=new THREE.BufferGeometry();
     geo.setAttribute('position',new THREE.BufferAttribute(moyaPositions,3));
     geo.setAttribute('color',new THREE.BufferAttribute(moyaColors,3));
     moyaSystem=new THREE.Points(geo,new THREE.PointsMaterial({
-      size:.35+.25*d.moyaHeat,
-      vertexColors:true, transparent:true, opacity:.5,
+      size:.3+.25*d.moyaHeat, vertexColors:true, transparent:true, opacity:.45,
       depthWrite:false, sizeAttenuation:true
     }));
     scene.add(moyaSystem);
   }
 
-  function resetMoyaParticle(i, d, spLen, randomAge){
-    // Spawn near body surface
+  function getMoyaColor(d){
+    const bp=d.bodyPlan;
+    switch(bp.moyaBaseColor){
+      case 1: { // tinted with body color
+        const c=individualColor(d);
+        return {r:.6+c.r*.4, g:.6+c.g*.4, b:.6+c.b*.4};
+      }
+      case 2: { // complementary
+        const c=individualColor(d);
+        return {r:1-c.r*.5, g:1-c.g*.5, b:1-c.b*.5};
+      }
+      default: return {r:1,g:1,b:1}; // white
+    }
+  }
+
+  function resetMoyaParticle(i,d,spLen,randomAge){
     const u=Math.random();
     const si=Math.min(spLen-2,Math.floor(u*(spLen-1)));
     const sf=u*(spLen-1)-si;
     const sp0=spinePoints[si]||new THREE.Vector3();
     const sp1=spinePoints[Math.min(si+1,spLen-1)]||sp0;
     const pt=sp0.clone().lerp(sp1,sf);
-    const scatter=d.limbRadius*.6*d.bodyScale;
+    const scatter=d.boneRadius*2*d.bodyScale*(d.bodyPlan.scaleMultiplier||1);
     moyaPositions[i*3]=pt.x+(Math.random()-.5)*scatter;
     moyaPositions[i*3+1]=pt.y+(Math.random()-.5)*scatter;
     moyaPositions[i*3+2]=pt.z+(Math.random()-.5)*scatter;
-    // Initial velocity — outward + slight upward + vortex rotation
     const angle=Math.random()*Math.PI*2;
     const outSpeed=.01+.03*d.moyaSpeed;
     moyaVelocities[i*4]=Math.cos(angle)*outSpeed;
     moyaVelocities[i*4+1]=(.005+.02*d.moyaSpeed)*(Math.random()-.3);
     moyaVelocities[i*4+2]=Math.sin(angle)*outSpeed;
-    moyaVelocities[i*4+3]=0; // age
-    // Life: how long before reset (longer = speed mapping)
-    moyaLife[i]=randomAge?(Math.random()*(.5+1.5*d.moyaSpeed)):(0.5+1.5*d.moyaSpeed);
-    // Color: white, brightness based on heat
-    const b=.6+.4*d.moyaHeat;
-    moyaColors[i*3]=b;moyaColors[i*3+1]=b;moyaColors[i*3+2]=b;
+    moyaVelocities[i*4+3]=0;
+    moyaLife[i]=randomAge?(Math.random()*(.5+1.5*d.moyaSpeed)):(.5+1.5*d.moyaSpeed);
+    const mc=getMoyaColor(d);
+    const b=.5+.5*d.moyaHeat;
+    moyaColors[i*3]=mc.r*b;moyaColors[i*3+1]=mc.g*b;moyaColors[i*3+2]=mc.b*b;
   }
 
-  function updateMoya(dt,d,p){
+  function updateMoya(dt,d){
     if(!moyaPositions||!spinePoints.length)return;
     const spLen=spinePoints.length;
-    const shake=(1-d.moyaStability)*.008; // instability → shake
-    const rot=d.moyaRotation*.003; // rotation → vortex
+    const shake=(1-d.moyaStab)*.008;
+    const rot=d.moyaRot*.003;
     const heat=d.moyaHeat;
     const speed=d.moyaSpeed;
+    const mc=getMoyaColor(d);
 
-    for(let i=0;i<MOYA_N;i++){
-      const i3=i*3, i4=i*4;
+    for(let i=0;i<moyaN;i++){
+      const i3=i*3,i4=i*4;
       const age=moyaVelocities[i4+3];
-      const maxLife=moyaLife[i];
-
-      // Age the particle
       moyaVelocities[i4+3]+=dt*.016;
-
-      if(age>maxLife){
-        // Reset — respawn near body
-        resetMoyaParticle(i, d, spLen, false);
-        continue;
-      }
-
-      const lifeFrac=age/maxLife; // 0→1
-
-      // Move outward
+      if(age>moyaLife[i]){resetMoyaParticle(i,d,spLen,false);continue;}
+      const lifeFrac=age/moyaLife[i];
       moyaPositions[i3]+=moyaVelocities[i4]*dt*speed;
       moyaPositions[i3+1]+=moyaVelocities[i4+1]*dt*speed;
       moyaPositions[i3+2]+=moyaVelocities[i4+2]*dt*speed;
-
-      // Shake (instability)
       moyaPositions[i3]+=(Math.random()-.5)*shake*dt;
       moyaPositions[i3+1]+=(Math.random()-.5)*shake*dt;
       moyaPositions[i3+2]+=(Math.random()-.5)*shake*dt;
-
-      // Vortex rotation (spin around Y axis)
-      const px=moyaPositions[i3], pz=moyaPositions[i3+2];
-      const cosR=Math.cos(rot*dt), sinR=Math.sin(rot*dt);
+      const px=moyaPositions[i3],pz=moyaPositions[i3+2];
+      const cosR=Math.cos(rot*dt),sinR=Math.sin(rot*dt);
       moyaPositions[i3]=px*cosR-pz*sinR;
       moyaPositions[i3+2]=px*sinR+pz*cosR;
-
-      // Fade: brightness decreases as particle moves outward
-      const fade=Math.max(0, 1-lifeFrac*lifeFrac); // quadratic fade
-      const b=(.5+.5*heat)*fade;
-      moyaColors[i3]=b;moyaColors[i3+1]=b;moyaColors[i3+2]=b;
+      const fade=Math.max(0,1-lifeFrac*lifeFrac);
+      const b=(.4+.6*heat)*fade;
+      moyaColors[i3]=mc.r*b;moyaColors[i3+1]=mc.g*b;moyaColors[i3+2]=mc.b*b;
     }
     moyaSystem.geometry.attributes.position.needsUpdate=true;
     moyaSystem.geometry.attributes.color.needsUpdate=true;
-    // Dynamic size based on heat
-    moyaSystem.material.size=.3+.3*heat;
-    moyaSystem.material.opacity=.35+.25*heat;
+    moyaSystem.material.size=.25+.3*heat;
+    moyaSystem.material.opacity=.3+.25*heat;
   }
 
-  // ── Layer 3: External Field (bone-like tendrils) ──
-  function buildField(d,p){
+  // ── Layer 3: External Field (tendrils) ──
+  function buildField(d){
     if(fieldGroup){scene.remove(fieldGroup);fieldGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     fieldGroup=new THREE.Group();
-    if(d.stage<3){scene.add(fieldGroup);return;}
-    const col=stateColor(p);
+    if(d.stage<3||d.extCount<1){scene.add(fieldGroup);return;}
+    const col=individualColor(d);
+    const bp=d.bodyPlan;
     const extN=d.extCount;
 
     for(let e=0;e<extN;e++){
       const ai=Math.floor(Math.random()*spinePoints.length);
       const origin=spinePoints[ai]||new THREE.Vector3();
-      const totalLen=d.extLength*d.bodyScale*3.5;
+      const totalLen=d.extLength*d.bodyScale*(bp.scaleMultiplier||1)*2.5;
       const boneCount=2+Math.floor(Math.random()*3);
       const dir=new THREE.Vector3((Math.random()-.5)*2,(Math.random()-.5)*2,(Math.random()-.5)*2).normalize();
-
       let prevEnd=origin.clone();
-      const baseR=d.limbRadius*.12*d.bodyScale;
+      const baseR=d.boneRadius*.4*(bp.scaleMultiplier||1);
       const tendrilGroup=new THREE.Group();
 
       for(let bi=0;bi<boneCount;bi++){
         const bFrac=(bi+1)/boneCount;
         const bLen=totalLen/boneCount*(1-bFrac*.15);
         const bRadius=baseR*(1-bFrac*.7);
-        const bOpacity=Math.max(.06, .30*(1-bFrac*.6));
-
+        const bOpacity=Math.max(.05,.28*(1-bFrac*.6));
         const segDir=dir.clone();
-        segDir.x+=Math.sin(bi*1.5+e)*.3*(1-p.stability);
-        segDir.z+=Math.cos(bi*1.2+e)*.3*(1-p.stability);
+        segDir.x+=Math.sin(bi*1.5+e)*.3;
+        segDir.z+=Math.cos(bi*1.2+e)*.3;
         segDir.normalize();
-
         const bEnd=prevEnd.clone().add(segDir.clone().multiplyScalar(bLen));
         const bMid=new THREE.Vector3().addVectors(prevEnd,bEnd).multiplyScalar(.5);
         const bDirV=new THREE.Vector3().subVectors(bEnd,prevEnd);
         const bL=bDirV.length();
         if(bL<.001)continue;
-
-        // Same bone shape as body — round→pointed, flat material
-        const boneGeo=createBoneGeometry(bL, Math.max(.02, bRadius), 4);
-        const boneMat=new THREE.MeshBasicMaterial({
-          color:col.clone().multiplyScalar(1.05),
-          transparent:true, opacity:bOpacity
-        });
-        const bone=new THREE.Mesh(boneGeo, boneMat);
+        const boneGeo=createBoneGeometry(bL,Math.max(.02,bRadius),bp.boneProfile,4);
+        const boneMat=new THREE.MeshBasicMaterial({color:col.clone().multiplyScalar(1.05),transparent:true,opacity:bOpacity});
+        const bone=new THREE.Mesh(boneGeo,boneMat);
         bone.position.copy(bMid);
         bone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bDirV.clone().normalize());
         tendrilGroup.add(bone);
-
         if(bi<boneCount-1){
-          const jR=bRadius*.4;
-          const jMat=new THREE.MeshBasicMaterial({
-            color:col.clone().multiplyScalar(1.1),
-            transparent:true, opacity:bOpacity*.7
-          });
-          const joint=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.02,jR),4,4),jMat);
+          const jMat=new THREE.MeshBasicMaterial({color:col.clone().multiplyScalar(1.1),transparent:true,opacity:bOpacity*.7});
+          const joint=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.02,bRadius*.4),4,4),jMat);
           joint.position.copy(bEnd);
           tendrilGroup.add(joint);
         }
@@ -11327,35 +11560,31 @@ const LIFE=(function(){
     scene.add(fieldGroup);
   }
 
-  function updateField(dt,d,p){
+  function updateField(dt,d){
     if(!fieldGroup)return;
     fieldGroup.children.forEach(child=>{
       const e=child.userData;
       if(!e||!e.origin)return;
-      const wave=d.extWave*.25;
-      const swayX=wave*Math.sin(t*1.2+e.phase)*.4;
-      const swayZ=wave*Math.cos(t*1.0+e.phase)*.4;
-      child.rotation.x=swayX*(1-p.stability);
-      child.rotation.z=swayZ*(1-p.stability);
+      const wave=d.extWave*.2;
+      child.rotation.x=wave*Math.sin(t*1.2+e.phase)*.35;
+      child.rotation.z=wave*Math.cos(t*1.0+e.phase)*.35;
     });
   }
 
   // ── Trail ──
   let trailPositions=[],trailMaxLen=40;
-  function buildTrail(d,p){
+  function buildTrail(d){
     if(trailLine){scene.remove(trailLine);trailLine.geometry.dispose();trailLine.material.dispose();}
     trailMaxLen=d.trailLen;
-    const col=stateColor(p);
+    const col=individualColor(d);
     const geo=new THREE.BufferGeometry();
-    const pos=new Float32Array(trailMaxLen*3);
-    const cols=new Float32Array(trailMaxLen*3);
-    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-    geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
+    geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(trailMaxLen*3),3));
+    geo.setAttribute('color',new THREE.BufferAttribute(new Float32Array(trailMaxLen*3),3));
     trailLine=new THREE.Line(geo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.2,depthWrite:false}));
     trailLine.frustumCulled=false;
     scene.add(trailLine);
   }
-  function updateTrail(dt,d,p){
+  function updateTrail(dt,d){
     if(!trailLine||!coreGroup)return;
     const center=new THREE.Vector3();
     let n=0;
@@ -11366,7 +11595,7 @@ const LIFE=(function(){
     while(trailPositions.length>trailMaxLen)trailPositions.shift();
     const pos=trailLine.geometry.attributes.position.array;
     const cols=trailLine.geometry.attributes.color.array;
-    const col=stateColor(p);
+    const col=individualColor(d);
     const tN=trailPositions.length;
     for(let i=0;i<tN;i++){
       pos[i*3]=trailPositions[i].x;pos[i*3+1]=trailPositions[i].y;pos[i*3+2]=trailPositions[i].z;
@@ -11387,9 +11616,7 @@ const LIFE=(function(){
     scene.fog=new THREE.FogExp2(0x000308,.0005);
     camera=new THREE.PerspectiveCamera(50,W/H,.1,2000);
     camera.position.set(0,2,18);
-    // Minimal lighting — only ambient for flat look (no shadows/highlights)
     scene.add(new THREE.AmbientLight(0xffffff,1.0));
-    // Starfield
     const sN=1200,sPos=new Float32Array(sN*3);
     for(let i=0;i<sN;i++){const r=100+Math.random()*600,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);}
     const sGeo=new THREE.BufferGeometry();sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
@@ -11398,15 +11625,22 @@ const LIFE=(function(){
     rebuildOrganism();
   }
 
+  let cachedD=null;
   function rebuildOrganism(){
-    const p=getParams();
-    const d=derive(p);
+    // Generate/refresh DNA if needed
+    if(!DNA){
+      const id=(typeof AUTH!=='undefined'&&AUTH.user)?AUTH.user.email:'default_organism';
+      DNA=generateDNA(id);
+    }
+    const state=getStateArray();
+    const d=transformState(state,DNA);
+    cachedD=d;
     lastStage=d.stage;
     lastJointCount=d.jointCount;
-    buildCore(d,p);
-    buildMoya(d,p);
-    buildField(d,p);
-    buildTrail(d,p);
+    buildCore(d);
+    buildMoya(d);
+    buildField(d);
+    buildTrail(d);
   }
 
   // ═══════════════════════════════════════
@@ -11435,15 +11669,17 @@ const LIFE=(function(){
     t+=dt*.016;
     frameCount++;
 
-    const p=getParams();
-    const d=derive(p);
+    const d=cachedD;
+    if(!d)return;
 
-    if(d.stage!==lastStage||d.jointCount!==lastJointCount||(frameCount%480===0)){
+    // Periodic rebuild check
+    const state=getStateArray();
+    const freshD=transformState(state,DNA);
+    if(freshD.stage!==lastStage||freshD.jointCount!==lastJointCount||(frameCount%480===0)){
       rebuildOrganism();
     }
 
     if(autoRotate)camTheta+=.0008*dt;
-
     camera.position.x=Math.sin(camTheta)*Math.cos(camPhi)*camDist;
     camera.position.y=Math.sin(camPhi)*camDist*.6+2;
     camera.position.z=Math.cos(camTheta)*Math.cos(camPhi)*camDist;
@@ -11451,7 +11687,7 @@ const LIFE=(function(){
 
     if(starField)starField.rotation.y+=.00003*dt;
 
-    // ── Animate Core Body ──
+    // Animate core
     if(coreGroup){
       const breathe=1+d.pulseAmp*Math.sin(t*d.breathRate);
       coreGroup.scale.setScalar(breathe);
@@ -11459,97 +11695,62 @@ const LIFE=(function(){
         const ud=child.userData;
         if(ud.jointIdx!==undefined){
           const jit=d.noiseAmp*1.5;
-          child.position.x=spineData[ud.jointIdx]?.basePos.x+Math.sin(t*1.8+ud.u*5)*jit||0;
-          child.position.z=spineData[ud.jointIdx]?.basePos.z+Math.cos(t*2.1+ud.u*4)*jit||0;
-          const pulse=1+.05*Math.sin(t*d.breathRate*2+ud.u*Math.PI*2)*p.energy;
-          child.scale.setScalar(pulse);
+          child.position.x=(spineData[ud.jointIdx]?.basePos.x||0)+Math.sin(t*1.8+ud.u*5)*jit;
+          child.position.z=(spineData[ud.jointIdx]?.basePos.z||0)+Math.cos(t*2.1+ud.u*4)*jit;
+          child.scale.setScalar(1+.05*Math.sin(t*d.breathRate*2+ud.u*Math.PI*2));
         }
         if(ud.isBranch){
-          const sway=(.012+.035*(1-p.stability))*Math.sin(t*1.3+ud.baseAng*2);
-          child.rotation.z=sway;
-          child.rotation.x=Math.cos(t+ud.baseAng)*sway*.35;
+          const sway=(.012+.035*d.bendAmp)*Math.sin(t*1.3+(ud.baseAng||0)*2);
+          child.rotation.z=sway;child.rotation.x=Math.cos(t+(ud.baseAng||0))*sway*.35;
         }
         if(ud.segIdx!==undefined&&!ud.isBranch){
           const b=1+.015*Math.sin(t*d.breathRate+ud.u*Math.PI);
           child.scale.x=b;child.scale.z=b;
         }
-        // Smooth color update
         if(child.material&&child.material.color){
-          const col=stateColor(p);
+          const col=individualColor(d);
           child.material.color.lerp(col,.02*dt);
         }
       });
     }
 
-    // ── Animate Moya ──
-    updateMoya(dt,d,p);
-
-    // ── Animate Field ──
-    updateField(dt,d,p);
-
-    // ── Animate Trail ──
-    updateTrail(dt,d,p);
+    updateMoya(dt,d);
+    updateField(dt,d);
+    updateTrail(dt,d);
 
     if(evoFlash>0)evoFlash-=dt*.03;
-    if(frameCount%15===0)updateOverlay(d,p);
+    if(frameCount%15===0)updateOverlay(d);
 
     renderer.render(scene,camera);
   }
 
-  // ── Overlay Updates ──
-  function updateOverlay(d,p){
+  function updateOverlay(d){
     const stageLabels=['原始棒','変形体','分節体','放射体','分岐体','複合有機体'];
     const pill=document.getElementById('life-stage-lbl');
     if(pill)pill.textContent=`Stage ${d.stage} · ${stageLabels[d.stage]||'未知'}`;
-
     let mode='—',modeDesc='—',direction='—';
-    if(typeof BA_STATE!=='undefined'&&BA_STATE.getDominantMode){
-      const m=BA_STATE.getDominantMode();
-      mode=m.mode;
-      modeDesc=m.desc;
-    }
-    const modeEl=document.getElementById('life-viz-mode');
-    if(modeEl)modeEl.textContent=mode;
-    const sumEl=document.getElementById('life-viz-summary');
-    if(sumEl)sumEl.textContent=modeDesc||'行動ログから生成される生命体';
-
+    if(typeof BA_STATE!=='undefined'&&BA_STATE.getDominantMode){const m=BA_STATE.getDominantMode();mode=m.mode;modeDesc=m.desc;}
+    const modeEl=document.getElementById('life-viz-mode');if(modeEl)modeEl.textContent=mode;
+    const sumEl=document.getElementById('life-viz-summary');if(sumEl)sumEl.textContent=modeDesc||'行動ログから生成される生命体';
     if(typeof BA_STATE!=='undefined'&&BA_STATE.history&&BA_STATE.history.length>=3){
-      const h=BA_STATE.history;
-      const last=h[h.length-1]?.params||{};
-      const prev=h[Math.max(0,h.length-5)]?.params||{};
-      let maxK='',maxD=0;
-      Object.keys(last).forEach(k=>{
-        const d=Math.abs((last[k]||0)-(prev[k]||0));
-        if(d>maxD){maxD=d;maxK=k;}
-      });
-      if(maxD>.03){
-        const dir=(last[maxK]||0)>(prev[maxK]||0)?'↑':'↓';
-        direction=`${BA_STATE.PARAM_LABELS?.[maxK]||maxK} ${dir}`;
-      }else{direction='安定';}
+      const h=BA_STATE.history;const last=h[h.length-1]?.params||{};const prev=h[Math.max(0,h.length-5)]?.params||{};
+      let maxK='',maxD=0;Object.keys(last).forEach(k=>{const dd=Math.abs((last[k]||0)-(prev[k]||0));if(dd>maxD){maxD=dd;maxK=k;}});
+      if(maxD>.03){const dir=(last[maxK]||0)>(prev[maxK]||0)?'↑':'↓';direction=`${BA_STATE.PARAM_LABELS?.[maxK]||maxK} ${dir}`;}else{direction='安定';}
     }
-    const dirEl=document.getElementById('life-viz-direction');
-    if(dirEl)dirEl.textContent=direction;
+    const dirEl=document.getElementById('life-viz-direction');if(dirEl)dirEl.textContent=direction;
   }
 
-  // ── Time scrub ──
   function initTimeScrub(){
     const scrub=document.getElementById('life-time-scrub');
     const label=document.getElementById('life-time-label');
     if(!scrub)return;
     scrub.addEventListener('input',()=>{
       const v=parseInt(scrub.value);
-      if(v>=100){
-        label.textContent='now';
-        rebuildOrganism();
-      }else if(typeof BA_STATE!=='undefined'&&BA_STATE.history.length>0){
+      if(v>=100){label.textContent='now';rebuildOrganism();}
+      else if(typeof BA_STATE!=='undefined'&&BA_STATE.history.length>0){
         const idx=Math.floor(v/100*(BA_STATE.history.length-1));
         const snap=BA_STATE.history[idx];
-        if(snap){
-          label.textContent=`#${idx}`;
-          const p=snap.params;
-          const d=derive(p);
-          buildCore(d,p);buildField(d,p);
-        }
+        if(snap){label.textContent=`#${idx}`;const state=Object.values(snap.params);const d=transformState(state,DNA);buildCore(d);buildField(d);}
       }
     });
   }
@@ -11564,6 +11765,8 @@ const LIFE=(function(){
       renderer=new THREE.WebGLRenderer({canvas:c,alpha:false,antialias:true,powerPreference:'high-performance'});
       renderer.setSize(W,H);renderer.setPixelRatio(dpr);renderer.setClearColor(0x000308);
       clk=new THREE.Clock();
+      // Reset DNA so it regenerates for current user
+      DNA=null;
       buildScene();
       initTimeScrub();
       c.addEventListener('mousedown',onMouseDown);
@@ -11573,10 +11776,7 @@ const LIFE=(function(){
       c.addEventListener('touchstart',onTouchStart,{passive:true});
       c.addEventListener('touchmove',onTouchMove,{passive:true});
       c.addEventListener('touchend',onTouchEnd);
-      const ro=new ResizeObserver(()=>{
-        W=cv.clientWidth;H=cv.clientHeight;
-        if(W>0&&H>0){renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();}
-      });
+      const ro=new ResizeObserver(()=>{W=cv.clientWidth;H=cv.clientHeight;if(W>0&&H>0){renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();}});
       ro.observe(cv.parentElement||cv);
     },
     start(){if(!raf&&renderer)frame();},
@@ -11596,20 +11796,20 @@ const LIFE=(function(){
       rebuildOrganism();
     },
     divide(){
-      if(typeof BA_STATE!=='undefined'){
-        BA_STATE.params.growthBias=Math.min(1,BA_STATE.params.growthBias+.03);
-        BA_STATE.params.energy=Math.min(1,BA_STATE.params.energy+.02);
-        BA_STATE.save();
-      }
+      if(typeof BA_STATE!=='undefined'){BA_STATE.params.growthBias=Math.min(1,BA_STATE.params.growthBias+.03);BA_STATE.params.energy=Math.min(1,BA_STATE.params.energy+.02);BA_STATE.save();}
       rebuildOrganism();
     },
     getStatus(){
-      const p=getParams();
-      const d=derive(p);
-      return{cells:d.jointCount,energy:p.energy.toFixed(1),gen:(typeof AUTH!=='undefined'&&AUTH.user?.gen)||0,stage:(typeof LIFE_STATE!=='undefined')?LIFE_STATE.stage:{n:d.stage}};
-    }
+      const d=cachedD||{jointCount:3,stage:0};
+      const state=getStateArray();
+      return{cells:d.jointCount,energy:(state[0]||.5).toFixed(1),gen:(typeof AUTH!=='undefined'&&AUTH.user?.gen)||0,stage:(typeof LIFE_STATE!=='undefined')?LIFE_STATE.stage:{n:d.stage}};
+    },
+    // Expose DNA for debugging/display
+    getDNA(){return DNA;},
+    regenerateDNA(id){DNA=generateDNA(id);rebuildOrganism();}
   };
 })();
+
 
 
 
