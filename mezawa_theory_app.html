@@ -10960,27 +10960,20 @@ const LIFE=(function(){
     for(let i=0;i<STATE_DIM;i++) meaningMap.push(shuffled[i]);
 
     // ── TENTACLE INDIVIDUALITY GENES ──
-    // These define HOW tentacles look/grow per individual
     const tentacleStyle={
-      // Shape: 0=smooth-taper, 1=wavy, 2=barbed, 3=segmented, 4=bulbous, 5=whip
       primaryShape:nextInt(0,5),
-      // Thickness profile
       baseThickness:nextRange(0.06,0.25),
-      thicknessDecay:nextRange(0.6,0.95),   // how quickly they thin
-      // Curvature
+      thicknessDecay:nextRange(0.6,0.95),
       curvature:nextRange(0.0,1.2),
-      curvatureStyle:nextInt(0,3),  // 0=smooth, 1=zigzag, 2=spiral
-      // Growth behavior
+      curvatureStyle:nextInt(0,3),
       growthRate:nextRange(0.3,1.5),
       maxSegments:nextInt(4,15),
-      branchChance:nextRange(0.0,0.3),  // chance a tentacle branches
-      // Motion
+      branchChance:nextRange(0.0,0.3),
       swaySpeed:nextRange(0.3,2.0),
       swayAmp:nextRange(0.05,0.4),
       phaseOffset:nextRange(0,Math.PI*2),
-      // Spread direction from back
-      spreadAngle:nextRange(0.3,1.5), // how wide tentacles spread
-      upwardBias:nextRange(-0.3,0.8),  // tendency to go up vs down
+      spreadAngle:nextRange(0.3,1.5),
+      upwardBias:nextRange(-0.3,0.8),
     };
 
     // ── COLOR GENES ──
@@ -10988,8 +10981,7 @@ const LIFE=(function(){
       baseHue:nextRange(0,360),
       saturation:nextRange(0.2,0.9),
       lightness:nextRange(0.3,0.65),
-      hueVariation:nextRange(0,60),   // how much hue varies per tentacle
-      // Color evolution: how color changes as organism grows
+      hueVariation:nextRange(0,60),
       growthHueShift:nextRange(-30,30),
       growthSatShift:nextRange(-0.1,0.2),
     };
@@ -10997,7 +10989,7 @@ const LIFE=(function(){
     // ── MOYA GENES ──
     const moyaGenes={
       density:nextRange(0.3,2.0),
-      baseColor:nextInt(0,2), // 0=white, 1=tinted, 2=complementary
+      baseColor:nextInt(0,2),
       particleSize:nextRange(0.15,0.5),
       speed:nextRange(0.3,1.5),
       spread:nextRange(1.0,3.0),
@@ -11005,15 +10997,15 @@ const LIFE=(function(){
 
     // ── ORBITER GENES ──
     const orbiterGenes={
-      style:nextInt(0,3),  // 0=small bones, 1=spheres, 2=rings, 3=crystals
+      style:nextInt(0,3),
       orbitRadius:nextRange(2.0,5.0),
       orbitSpeed:nextRange(0.2,0.8),
       size:nextRange(0.1,0.4),
-      count:nextInt(0,3), // base count (grows with input)
+      count:nextInt(0,3),
     };
 
     // ── MOTION PERSONALITY ──
-    const motionType=nextInt(0,4); // 0=breathing, 1=nervous, 2=fluid, 3=mechanical, 4=contraction
+    const motionType=nextInt(0,4);
     const motionGenes={
       type:motionType,
       breathFreq:nextRange(0.3,1.5),breathAmp:nextRange(0.02,0.10),
@@ -11053,25 +11045,24 @@ const LIFE=(function(){
       vis[ix.targetVis]=clamp(vis[ix.targetVis]+mod*ix.strength-ix.strength/2,0,1);
     });
     return{
-      tentacleGrowth:vis[0],    // how fast tentacles grow
-      tentacleThick:vis[1],     // thickness multiplier
-      tentacleCurve:vis[2],     // curvature multiplier
-      tentacleBranch:vis[3],    // branching probability multiplier
-      tentacleCount:vis[4],     // how many tentacles per input
-      moyaHeat:vis[5],          // moya intensity
+      tentacleGrowth:vis[0],
+      tentacleThick:vis[1],
+      tentacleCurve:vis[2],
+      tentacleBranch:vis[3],
+      tentacleCount:vis[4],
+      moyaHeat:vis[5],
       moyaSpeed:vis[6],
       moyaStab:vis[7],
       moyaRot:vis[8],
-      colorShift:vis[9],        // hue shift from base
-      colorIntensity:vis[10],   // saturation/brightness boost
-      orbiterDrive:vis[11],     // floating object intensity
-      motionIntensity:vis[12],  // overall motion strength
-      chaosDrive:vis[13],       // randomness
-      growthDrive:vis[14],      // growth speed multiplier
-      tentacleLength:vis[15],   // length multiplier
-      auraStrength:vis[16],     // glow/aura around organism
-      vibration:vis[17],        // vibration intensity
-      // Genes pass-through
+      colorShift:vis[9],
+      colorIntensity:vis[10],
+      orbiterDrive:vis[11],
+      motionIntensity:vis[12],
+      chaosDrive:vis[13],
+      growthDrive:vis[14],
+      tentacleLength:vis[15],
+      auraStrength:vis[16],
+      vibration:vis[17],
       tentacleStyle:dna.tentacleStyle,
       colorGenes:dna.colorGenes,
       moyaGenes:dna.moyaGenes,
@@ -11102,112 +11093,205 @@ const LIFE=(function(){
     return hsl(hue,sat,lit);
   }
 
+  // Get the main body color from DNA (used for stick figure)
+  function getBodyColor(d){
+    const cg=d.colorGenes;
+    const hue=cg.baseHue+d.colorShift*30;
+    const sat=clamp(cg.saturation*0.8+d.colorIntensity*0.2,0.15,0.9);
+    const lit=clamp(cg.lightness*0.9,0.2,0.6);
+    return hsl(hue,sat,lit);
+  }
+
   // ═══════════════════════════════════════════════════
-  //  STICK FIGURE — same for everyone
+  //  STICK FIGURE — dynamic running pose, colored per individual
   // ═══════════════════════════════════════════════════
   const STICK={
-    headR:0.35,
+    headR:0.30,
     bodyLen:2.0,
     armLen:1.2,
-    legLen:1.4,
-    limbR:0.04,
-    jointR:0.07,
-    color:0xcccccc,
-    jointColor:0xdddddd,
+    forearmLen:0.9,
+    legLen:1.3,
+    shinLen:1.0,
+    limbR:0.055,
+    jointR:0.08,
   };
 
   let stickGroup=null;
-  let backAttachPoints=[]; // where tentacles attach
+  let stickJoints={}; // named joints for animation
+  let backAttachPoints=[];
 
-  function buildStickFigure(){
+  function buildStickFigure(d){
     if(stickGroup){scene.remove(stickGroup);stickGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     stickGroup=new THREE.Group();
-    const mat=new THREE.MeshBasicMaterial({color:STICK.color,transparent:true,opacity:0.9});
-    const jMat=new THREE.MeshBasicMaterial({color:STICK.jointColor,transparent:true,opacity:0.95});
+    stickJoints={};
+
+    const bodyCol=getBodyColor(d);
+    const jointCol=bodyCol.clone().multiplyScalar(1.3);
+    const mat=new THREE.MeshBasicMaterial({color:bodyCol,transparent:true,opacity:0.95});
+    const jMat=new THREE.MeshBasicMaterial({color:jointCol,transparent:true,opacity:0.95});
+
+    // ── Joint positions — running pose inspired by reference image ──
+    // Torso leans forward slightly
+    const torsoLean=0.25; // radians forward lean
+    const hipY=0;
+    const shoulderY=STICK.bodyLen*0.85;
+    const neckY=STICK.bodyLen;
+    const headY=neckY+STICK.headR*0.9;
+
+    // Torso (leaning forward)
+    const hipPos=new THREE.Vector3(0,hipY,0);
+    const shoulderPos=new THREE.Vector3(Math.sin(torsoLean)*STICK.bodyLen*0.85,Math.cos(torsoLean)*STICK.bodyLen*0.85,0);
+    const neckPos=new THREE.Vector3(Math.sin(torsoLean)*STICK.bodyLen,Math.cos(torsoLean)*STICK.bodyLen,0);
+    const headPos=neckPos.clone().add(new THREE.Vector3(Math.sin(torsoLean)*STICK.headR*0.7,STICK.headR*0.9,0));
 
     // Head
-    const head=new THREE.Mesh(new THREE.SphereGeometry(STICK.headR,8,8),jMat.clone());
-    head.position.set(0,STICK.bodyLen+STICK.headR*0.8,0);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(STICK.headR,10,10),jMat.clone());
+    head.position.copy(headPos);
     stickGroup.add(head);
+    stickJoints.head=head;
 
-    // Neck joint
-    const neck=new THREE.Mesh(new THREE.SphereGeometry(STICK.jointR,4,4),jMat.clone());
-    neck.position.set(0,STICK.bodyLen,0);
-    stickGroup.add(neck);
+    // Helper: create joint sphere
+    function addJoint(name,pos,scale){
+      const j=new THREE.Mesh(new THREE.SphereGeometry(STICK.jointR*(scale||1),5,5),jMat.clone());
+      j.position.copy(pos);
+      stickGroup.add(j);
+      stickJoints[name]=j;
+      // Each joint has a motionState: 0=still, 1=gentle sway, 2=medium, 3=trembling, 4=intense shake
+      j.userData={motionState:0,motionLevel:0,motionTarget:0,pivot:pos.clone()};
+      return j;
+    }
 
-    // Body (cylinder)
-    const bodyGeo=new THREE.CylinderGeometry(STICK.limbR,STICK.limbR,STICK.bodyLen,6);
-    const body=new THREE.Mesh(bodyGeo,mat.clone());
-    body.position.set(0,STICK.bodyLen/2,0);
-    stickGroup.add(body);
-
-    // Shoulder joint
-    const shoulder=new THREE.Mesh(new THREE.SphereGeometry(STICK.jointR*1.2,4,4),jMat.clone());
-    shoulder.position.set(0,STICK.bodyLen*0.85,0);
-    stickGroup.add(shoulder);
-
-    // Hip joint
-    const hip=new THREE.Mesh(new THREE.SphereGeometry(STICK.jointR*1.1,4,4),jMat.clone());
-    hip.position.set(0,0,0);
-    stickGroup.add(hip);
-
-    // Arms
-    function makeLimb(start,end){
+    // Helper: create limb connecting two points
+    function addLimb(name,start,end,radius){
       const dir=new THREE.Vector3().subVectors(end,start);
       const len=dir.length();
-      const geo=new THREE.CylinderGeometry(STICK.limbR,STICK.limbR,len,4);
+      if(len<0.001)return null;
+      const geo=new THREE.CylinderGeometry(radius||STICK.limbR,radius||STICK.limbR,len,6);
       const limb=new THREE.Mesh(geo,mat.clone());
       limb.position.copy(start.clone().add(end).multiplyScalar(0.5));
       limb.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
       stickGroup.add(limb);
-      // End joint
-      const j=new THREE.Mesh(new THREE.SphereGeometry(STICK.jointR*0.8,4,4),jMat.clone());
-      j.position.copy(end);
-      stickGroup.add(j);
+      // Store anchor (始点) and endpoint (力点)
+      limb.userData={anchor:start.clone(),forcePoint:end.clone(),restAnchor:start.clone(),restForce:end.clone(),motionState:0,motionLevel:0,motionTarget:0};
+      stickJoints[name]=limb;
+      return limb;
     }
 
-    const shoulderY=STICK.bodyLen*0.85;
-    // Left arm
-    makeLimb(new THREE.Vector3(0,shoulderY,0),new THREE.Vector3(-STICK.armLen*0.7,shoulderY-STICK.armLen*0.5,0));
-    // Right arm
-    makeLimb(new THREE.Vector3(0,shoulderY,0),new THREE.Vector3(STICK.armLen*0.7,shoulderY-STICK.armLen*0.5,0));
-    // Left leg
-    makeLimb(new THREE.Vector3(0,0,0),new THREE.Vector3(-0.4,-STICK.legLen,0));
-    // Right leg
-    makeLimb(new THREE.Vector3(0,0,0),new THREE.Vector3(0.4,-STICK.legLen,0));
+    // Joints
+    addJoint('hip',hipPos,1.2);
+    addJoint('shoulder',shoulderPos,1.3);
+    addJoint('neck',neckPos,0.9);
 
-    // Back attachment points for tentacles (spine area, behind the body)
+    // Torso
+    addLimb('torso',hipPos,shoulderPos,STICK.limbR*1.3);
+
+    // ── Left arm: raised back (running pose) ──
+    const lElbow=new THREE.Vector3(shoulderPos.x-0.5,shoulderPos.y+0.2,-0.15);
+    const lHand=new THREE.Vector3(shoulderPos.x-0.3,shoulderPos.y+0.7,0.1);
+    addJoint('lElbow',lElbow,0.8);
+    addJoint('lHand',lHand,0.6);
+    addLimb('lUpperArm',shoulderPos,lElbow);
+    addLimb('lForearm',lElbow,lHand);
+
+    // ── Right arm: swung forward (running pose) ──
+    const rElbow=new THREE.Vector3(shoulderPos.x+0.6,shoulderPos.y-0.2,0.2);
+    const rHand=new THREE.Vector3(shoulderPos.x+0.8,shoulderPos.y-0.6,0.1);
+    addJoint('rElbow',rElbow,0.8);
+    addJoint('rHand',rHand,0.6);
+    addLimb('rUpperArm',shoulderPos,rElbow);
+    addLimb('rForearm',rElbow,rHand);
+
+    // ── Left leg: extended back (running stride) ──
+    const lKnee=new THREE.Vector3(-0.3,-0.7,-0.3);
+    const lFoot=new THREE.Vector3(-0.6,-STICK.legLen-0.5,-0.1);
+    addJoint('lKnee',lKnee,0.9);
+    addJoint('lFoot',lFoot,0.6);
+    addLimb('lThigh',hipPos,lKnee,STICK.limbR*1.1);
+    addLimb('lShin',lKnee,lFoot);
+
+    // ── Right leg: bent forward (running stride) ──
+    const rKnee=new THREE.Vector3(0.35,0.0,0.4);
+    const rFoot=new THREE.Vector3(0.15,-0.5,0.3);
+    addJoint('rKnee',rKnee,0.9);
+    addJoint('rFoot',rFoot,0.6);
+    addLimb('rThigh',hipPos,rKnee,STICK.limbR*1.1);
+    addLimb('rShin',rKnee,rFoot);
+
+    // ── Back attachment points for tentacles (upper back, like wings in the image) ──
     backAttachPoints=[];
+    // Concentrate around shoulder blade area
+    const backCenter=shoulderPos.clone();
+    backCenter.z-=0.2; // behind the body
     for(let i=0;i<8;i++){
-      const y=STICK.bodyLen*0.3+STICK.bodyLen*0.55*(i/7); // from lower back to upper back
-      backAttachPoints.push(new THREE.Vector3(0,y,-0.15)); // slightly behind
+      const angle=(i/7-0.5)*1.2; // spread vertically
+      const yOff=Math.sin(angle)*STICK.bodyLen*0.25;
+      const xOff=Math.cos(angle)*0.15*(i%2===0?-1:1);
+      backAttachPoints.push(new THREE.Vector3(
+        backCenter.x+xOff,
+        backCenter.y+yOff,
+        backCenter.z-0.1-Math.abs(angle)*0.1
+      ));
     }
 
     scene.add(stickGroup);
   }
 
   // ═══════════════════════════════════════════════════
+  //  MOTION STATE SYSTEM
+  //  Each joint/tentacle-segment has:
+  //    motionState: 0=still(default), 1=gentle, 2=sway, 3=tremble, 4=intense shake
+  //    motionLevel: smooth 0→1 value (interpolated toward target)
+  //    motionTarget: target level (set by state/inputs)
+  //  Hierarchy: still → gentle sway → medium sway → tremble → intense vibration
+  // ═══════════════════════════════════════════════════
+
+  // Map motionLevel (0-1) to motion parameters
+  function getMotionParams(level){
+    // level 0.0 = perfectly still
+    // level 0.15 = barely perceptible sway
+    // level 0.3 = gentle sway
+    // level 0.5 = noticeable sway
+    // level 0.7 = trembling
+    // level 0.85 = strong trembling
+    // level 1.0 = intense high-speed vibration
+    if(level<0.01)return{amp:0,freq:0,jitter:0};
+    if(level<0.2)return{amp:level*0.02,freq:0.3+level*2,jitter:0};
+    if(level<0.5)return{amp:0.004+level*0.03,freq:0.5+level*3,jitter:level*0.005};
+    if(level<0.75)return{amp:0.015+level*0.05,freq:2+level*8,jitter:level*0.02};
+    return{amp:0.03+level*0.08,freq:8+level*25,jitter:level*0.05+(level-0.75)*0.15};
+  }
+
+  // Determine target motion level based on state and inputs
+  function computeGlobalMotionTarget(d){
+    // Base: starts very low (still is default)
+    let base=0;
+    // motionIntensity from state drives the overall level
+    base+=d.motionIntensity*0.4;
+    // vibration param adds trembling
+    base+=d.vibration*0.3;
+    // More inputs = more activity over time
+    base+=Math.min(0.2,inputCount*0.01);
+    // Chaos adds jitter
+    base+=d.chaosDrive*0.1;
+    return clamp(base,0,1);
+  }
+
+  // ═══════════════════════════════════════════════════
   //  TENTACLE SYSTEM — individual differences here
   // ═══════════════════════════════════════════════════
 
-  let tentacles=[]; // array of tentacle objects
+  let tentacles=[];
   let inputCount=0;
   let growthEvents=[];
-
-  // Each tentacle: {segments:[], attachPoint, baseDir, style, growthTime, phase, branchChildren:[]}
-  // Each segment: {pos, dir, length, thickness, growthFrac, mesh, jointMesh}
 
   function createTentacle(d,attachIdx){
     const ts=d.tentacleStyle;
     const attachPt=backAttachPoints[attachIdx%backAttachPoints.length];
-
-    // Direction: spread from back, with individual bias
     const spreadAngle=ts.spreadAngle*(0.5+d.chaosDrive*0.5);
     const tentacleIdx=tentacles.length;
     const nr=hash(tentacleIdx*37.7+inputCount*13.1+(ts.phaseOffset*100));
 
-    // Base direction: backward + spread
-    const azimuth=(nr-0.5)*spreadAngle*2+Math.PI; // PI = backward
+    const azimuth=(nr-0.5)*spreadAngle*2+Math.PI;
     const elevation=(hash(nr*100+tentacleIdx)-0.5)*spreadAngle+ts.upwardBias*0.5;
     const baseDir=new THREE.Vector3(
       Math.sin(azimuth)*Math.cos(elevation),
@@ -11215,7 +11299,6 @@ const LIFE=(function(){
       Math.cos(azimuth)*Math.cos(elevation)
     ).normalize();
 
-    // Determine segment count for this tentacle
     const maxSegs=Math.max(2,Math.floor(ts.maxSegments*(0.5+d.tentacleLength*0.8)));
     const segLen=0.3+d.tentacleLength*0.5;
     const baseThick=ts.baseThickness*(0.5+d.tentacleThick*1.0);
@@ -11234,27 +11317,28 @@ const LIFE=(function(){
       nr:nr,
       inputBorn:inputCount,
       branchChildren:[],
+      // Per-tentacle motion state
+      motionLevel:0,
+      motionTarget:0,
     };
 
-    // Create initial segments (all start at growthFrac=0)
     let prevPos=attachPt.clone();
     let prevDir=baseDir.clone();
 
     for(let s=0;s<maxSegs;s++){
       const u=s/maxSegs;
-      // Apply curvature
       let segDir=prevDir.clone();
       switch(ts.curvatureStyle){
-        case 0: // smooth curve
+        case 0:
           {const curveAmt=ts.curvature*(0.5+d.tentacleCurve)*0.15;
           segDir.x+=Math.sin(u*Math.PI*2)*curveAmt;
           segDir.y+=Math.cos(u*Math.PI*1.5)*curveAmt*0.5;}
           break;
-        case 1: // zigzag
+        case 1:
           {const zig=ts.curvature*(0.5+d.tentacleCurve)*0.2*(s%2===0?1:-1);
           segDir.x+=zig;segDir.z+=zig*0.5;}
           break;
-        case 2: // spiral
+        case 2:
           {const spiralAmt=ts.curvature*(0.5+d.tentacleCurve)*0.2;
           segDir.x+=Math.cos(u*Math.PI*3)*spiralAmt;
           segDir.z+=Math.sin(u*Math.PI*3)*spiralAmt;}
@@ -11265,22 +11349,28 @@ const LIFE=(function(){
       const thick=baseThick*Math.pow(ts.thicknessDecay,s)*(1+d.tentacleThick*0.3);
 
       tentacle.segments.push({
-        pos:prevPos.clone(),
+        // ★ PIVOT SYSTEM: anchor = start of segment (始点), forcePoint = end (力点)
+        anchor:prevPos.clone(),
+        restAnchor:prevPos.clone(),
+        forcePoint:prevPos.clone().add(segDir.clone().multiplyScalar(segLen)),
+        restForcePoint:prevPos.clone().add(segDir.clone().multiplyScalar(segLen)),
         dir:segDir.clone(),
         length:segLen*(0.8+hash(tentacleIdx*10+s)*0.4),
         thickness:Math.max(0.01,thick),
-        growthFrac:0, // ★ starts at 0 — grows over time
-        growthDelay:s*0.4, // later segments grow later
+        growthFrac:0,
+        growthDelay:s*0.4,
         mesh:null,
         jointMesh:null,
         segIdx:s,
+        // Per-segment motion state
+        motionLevel:0,
+        motionTarget:0,
       });
 
       prevPos=prevPos.clone().add(segDir.clone().multiplyScalar(segLen));
       prevDir=segDir;
     }
 
-    // Branch chance
     if(ts.branchChance>0 && d.tentacleBranch>0.3 && hash(tentacleIdx*71+inputCount)< ts.branchChance*d.tentacleBranch){
       tentacle.hasBranch=true;
       tentacle.branchAtSeg=Math.floor(maxSegs*0.3+hash(tentacleIdx*90)*maxSegs*0.4);
@@ -11292,52 +11382,22 @@ const LIFE=(function(){
   }
 
   // ═══════════════════════════════════════════════════
-  //  TENTACLE SEGMENT GEOMETRY (new styles, not bone-based)
+  //  TENTACLE SEGMENT GEOMETRY
   // ═══════════════════════════════════════════════════
 
   function createTentacleSegGeo(length,thickness,shape,segIdx,totalSegs){
-    const u=segIdx/totalSegs;
-    const segs=6; // mesh segments along length
-    const radSegs=5;
-    const tipR=thickness*0.05;
-    const profile=[];
-
+    const segs=6;const radSegs=5;const tipR=thickness*0.05;const profile=[];
     switch(shape){
-      case 0: // smooth taper
-        for(let i=0;i<=segs;i++){const su=i/segs;profile.push({y:su*length,r:lerp(thickness,tipR,Math.pow(su,1.5))});}
-        break;
-      case 1: // wavy
-        for(let i=0;i<=segs;i++){const su=i/segs;const wave=1+0.25*Math.sin(su*Math.PI*3);profile.push({y:su*length,r:lerp(thickness,tipR,su)*wave});}
-        break;
-      case 2: // barbed (ridges)
-        for(let i=0;i<=segs;i++){const su=i/segs;const barb=i%2===0?1.3:0.7;profile.push({y:su*length,r:lerp(thickness,tipR,su)*barb});}
-        break;
-      case 3: // segmented (distinct sections)
-        for(let i=0;i<=segs;i++){const su=i/segs;const seg=(su*4-Math.floor(su*4));const pinch=seg<0.15||seg>0.85?0.6:1.0;profile.push({y:su*length,r:lerp(thickness,tipR,su)*pinch});}
-        break;
-      case 4: // bulbous (thick middle)
-        for(let i=0;i<=segs;i++){const su=i/segs;const bulge=1+0.6*Math.sin(su*Math.PI);profile.push({y:su*length,r:lerp(thickness,tipR,su)*bulge});}
-        break;
-      case 5: // whip (fast taper)
-        for(let i=0;i<=segs;i++){const su=i/segs;profile.push({y:su*length,r:lerp(thickness,tipR,Math.pow(su,0.6))});}
-        break;
+      case 0:for(let i=0;i<=segs;i++){const su=i/segs;profile.push({y:su*length,r:lerp(thickness,tipR,Math.pow(su,1.5))});}break;
+      case 1:for(let i=0;i<=segs;i++){const su=i/segs;const wave=1+0.25*Math.sin(su*Math.PI*3);profile.push({y:su*length,r:lerp(thickness,tipR,su)*wave});}break;
+      case 2:for(let i=0;i<=segs;i++){const su=i/segs;const barb=i%2===0?1.3:0.7;profile.push({y:su*length,r:lerp(thickness,tipR,su)*barb});}break;
+      case 3:for(let i=0;i<=segs;i++){const su=i/segs;const seg=(su*4-Math.floor(su*4));const pinch=seg<0.15||seg>0.85?0.6:1.0;profile.push({y:su*length,r:lerp(thickness,tipR,su)*pinch});}break;
+      case 4:for(let i=0;i<=segs;i++){const su=i/segs;const bulge=1+0.6*Math.sin(su*Math.PI);profile.push({y:su*length,r:lerp(thickness,tipR,su)*bulge});}break;
+      case 5:for(let i=0;i<=segs;i++){const su=i/segs;profile.push({y:su*length,r:lerp(thickness,tipR,Math.pow(su,0.6))});}break;
     }
-
     const verts=[],normals=[],indices=[];
-    for(let row=0;row<profile.length;row++){
-      const{y,r}=profile[row];
-      for(let seg=0;seg<=radSegs;seg++){
-        const theta=(seg/radSegs)*Math.PI*2;
-        verts.push(Math.cos(theta)*r,y,Math.sin(theta)*r);
-        normals.push(Math.cos(theta),0,Math.sin(theta));
-      }
-    }
-    for(let row=0;row<profile.length-1;row++){
-      for(let seg=0;seg<radSegs;seg++){
-        const a=row*(radSegs+1)+seg;const b=a+radSegs+1;
-        indices.push(a,b,a+1,a+1,b,b+1);
-      }
-    }
+    for(let row=0;row<profile.length;row++){const{y,r}=profile[row];for(let seg=0;seg<=radSegs;seg++){const theta=(seg/radSegs)*Math.PI*2;verts.push(Math.cos(theta)*r,y,Math.sin(theta)*r);normals.push(Math.cos(theta),0,Math.sin(theta));}}
+    for(let row=0;row<profile.length-1;row++){for(let seg=0;seg<radSegs;seg++){const a=row*(radSegs+1)+seg;const b=a+radSegs+1;indices.push(a,b,a+1,a+1,b,b+1);}}
     const geo=new THREE.BufferGeometry();
     geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
     geo.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
@@ -11355,9 +11415,8 @@ const LIFE=(function(){
     const ts=d.tentacleStyle;
 
     tentacles.forEach(tent=>{
-      let prevEnd=tent.attachPt.clone();
       tent.segments.forEach((seg,si)=>{
-        if(seg.growthFrac<0.01)return; // not visible yet
+        if(seg.growthFrac<0.01)return;
         const len=seg.length*seg.growthFrac;
         if(len<0.005)return;
 
@@ -11365,33 +11424,28 @@ const LIFE=(function(){
         const opa=clamp(0.85-si*0.04,0.2,0.95)*Math.min(1,seg.growthFrac*3);
 
         const geo=createTentacleSegGeo(len,seg.thickness*seg.growthFrac,ts.primaryShape,si,tent.segments.length);
-        const mat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:opa});
-        const mesh=new THREE.Mesh(geo,mat);
+        const meshMat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:opa});
+        const mesh=new THREE.Mesh(geo,meshMat);
 
-        const endPos=prevEnd.clone().add(seg.dir.clone().multiplyScalar(len));
-        const midPos=prevEnd.clone().add(endPos).multiplyScalar(0.5);
-        const dirV=new THREE.Vector3().subVectors(endPos,prevEnd);
+        // Position based on current anchor (始点) — force point (力点) moves from anchor
+        mesh.position.copy(seg.anchor);
+        const dirV=new THREE.Vector3().subVectors(seg.forcePoint,seg.anchor);
         if(dirV.length()>0.001){
-          mesh.position.copy(prevEnd);
           mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dirV.normalize());
         }
         tentacleGroup.add(mesh);
         seg.mesh=mesh;
-        seg._startPos=prevEnd.clone();
-        seg._endPos=endPos.clone();
 
-        // Small joint sphere between segments
+        // Joint sphere
         if(si<tent.segments.length-1&&seg.growthFrac>0.5){
           const jr=seg.thickness*0.25*seg.growthFrac;
           const jGeo=new THREE.SphereGeometry(Math.max(0.01,jr),3,3);
           const jMat=new THREE.MeshBasicMaterial({color:col.clone().multiplyScalar(1.2),transparent:true,opacity:opa*0.8});
           const jMesh=new THREE.Mesh(jGeo,jMat);
-          jMesh.position.copy(endPos);
+          jMesh.position.copy(seg.forcePoint);
           tentacleGroup.add(jMesh);
           seg.jointMesh=jMesh;
         }
-
-        prevEnd=endPos;
       });
     });
     scene.add(tentacleGroup);
@@ -11407,12 +11461,9 @@ const LIFE=(function(){
     const og=d.orbiterGenes;
     const nr=hash(orbiters.length*31.7+inputCount*19.3);
     orbiters.push({
-      angle:nr*Math.PI*2,
-      elevation:(nr-0.5)*2,
-      radius:og.orbitRadius*(0.6+nr*0.8),
-      speed:og.orbitSpeed*(0.5+nr*1.0),
-      size:og.size*(0.5+nr*1.0),
-      style:og.style,
+      angle:nr*Math.PI*2,elevation:(nr-0.5)*2,
+      radius:og.orbitRadius*(0.6+nr*0.8),speed:og.orbitSpeed*(0.5+nr*1.0),
+      size:og.size*(0.5+nr*1.0),style:og.style,
       mesh:null,glowMesh:null,phase:nr*Math.PI*2,
     });
   }
@@ -11421,18 +11472,16 @@ const LIFE=(function(){
     if(orbiterGroup){scene.remove(orbiterGroup);orbiterGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     orbiterGroup=new THREE.Group();
     const col=hsl(d.colorGenes.baseHue,d.colorGenes.saturation*0.7,d.colorGenes.lightness);
-
     orbiters.forEach(orb=>{
       let geo;
       switch(orb.style){
-        case 0: geo=new THREE.CylinderGeometry(0.02,0.02,orb.size*2,4);break; // small bone
-        case 1: geo=new THREE.SphereGeometry(orb.size*0.5,4,4);break; // sphere
-        case 2: geo=new THREE.TorusGeometry(orb.size*0.4,orb.size*0.08,4,8);break; // ring
-        default: geo=new THREE.OctahedronGeometry(orb.size*0.5);break; // crystal
+        case 0: geo=new THREE.CylinderGeometry(0.02,0.02,orb.size*2,4);break;
+        case 1: geo=new THREE.SphereGeometry(orb.size*0.5,4,4);break;
+        case 2: geo=new THREE.TorusGeometry(orb.size*0.4,orb.size*0.08,4,8);break;
+        default: geo=new THREE.OctahedronGeometry(orb.size*0.5);break;
       }
       orb.mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col.clone().multiplyScalar(0.6),transparent:true,opacity:0.4+d.orbiterDrive*0.3}));
       orbiterGroup.add(orb.mesh);
-      // Glow
       const gGeo=new THREE.SphereGeometry(orb.size*0.7,4,4);
       orb.glowMesh=new THREE.Mesh(gGeo,new THREE.MeshBasicMaterial({color:col.clone().multiplyScalar(1.5),transparent:true,opacity:0.08+d.auraStrength*0.1}));
       orbiterGroup.add(orb.glowMesh);
@@ -11449,8 +11498,7 @@ const LIFE=(function(){
 
   function getAllPoints(){
     const pts=[];
-    tentacles.forEach(tent=>{tent.segments.forEach(seg=>{if(seg._startPos)pts.push(seg._startPos);if(seg._endPos)pts.push(seg._endPos);});});
-    // Also include stick figure center
+    tentacles.forEach(tent=>{tent.segments.forEach(seg=>{if(seg.anchor)pts.push(seg.anchor);if(seg.forcePoint)pts.push(seg.forcePoint);});});
     pts.push(new THREE.Vector3(0,STICK.bodyLen*0.5,0));
     return pts.length>1?pts:[new THREE.Vector3(0,1,0)];
   }
@@ -11542,77 +11590,151 @@ const LIFE=(function(){
   }
 
   // ═══════════════════════════════════════════════════
-  //  UPDATE: GROWTH + MOTION
+  //  UPDATE: GROWTH + PIVOT-BASED MOTION
   // ═══════════════════════════════════════════════════
 
   let organismAge=0;
 
   function updateAll(dt,d){
     organismAge+=dt*0.016;
-    const mg=d.motionGenes;const motionInt=d.motionIntensity;
+    const mg=d.motionGenes;
 
-    // ── Tentacle growth ──
-    tentacles.forEach(tent=>{
+    // ── Compute global motion target ──
+    const globalTarget=computeGlobalMotionTarget(d);
+
+    // ── Tentacle growth + pivot-based motion ──
+    tentacles.forEach((tent,ti)=>{
       tent.growthTime+=dt*0.016;
+
+      // Per-tentacle motion target: varies slightly from global
+      const tentVariance=hash(ti*77.3+13.7)*0.15-0.075;
+      tent.motionTarget=clamp(globalTarget+tentVariance,0,1);
+      // Smooth interpolation toward target
+      tent.motionLevel+=(tent.motionTarget-tent.motionLevel)*dt*0.008;
+
+      let prevAnchor=tent.attachPt.clone();
+
       tent.segments.forEach((seg,si)=>{
+        // Growth
         const age=tent.growthTime-seg.growthDelay*0.1*d.tentacleStyle.growthRate;
-        if(age<0)return;
-        seg.growthFrac=clamp(seg.growthFrac+dt*0.01*d.tentacleStyle.growthRate*(0.5+d.growthDrive),0,1);
-      });
-    });
+        if(age>0){
+          seg.growthFrac=clamp(seg.growthFrac+dt*0.01*d.tentacleStyle.growthRate*(0.5+d.growthDrive),0,1);
+        }
 
-    // ── Stick figure breathing ──
-    if(stickGroup){
-      const breath=1+0.02*Math.sin(t*mg.breathFreq)*motionInt;
-      stickGroup.scale.setScalar(breath);
-      stickGroup.position.y=Math.sin(t*0.3)*0.05*motionInt;
-    }
+        // Per-segment motion target: tips move more than bases
+        const tipFactor=si/tent.segments.length; // 0 at base, 1 at tip
+        const segVariance=hash(ti*100+si*31)*0.1-0.05;
+        seg.motionTarget=clamp(tent.motionTarget*(0.3+tipFactor*0.7)+segVariance,0,1);
+        // Smooth interpolation
+        seg.motionLevel+=(seg.motionTarget-seg.motionLevel)*dt*0.006;
 
-    // ── Tentacle motion ──
-    tentacles.forEach(tent=>{
-      const ts=d.tentacleStyle;
-      tent.segments.forEach((seg,si)=>{
-        if(!seg.mesh)return;
+        // ★ PIVOT PHYSICS: anchor (始点) is fixed to previous segment's forcePoint
+        // Force point (力点) moves based on motion state
+        seg.anchor.copy(prevAnchor);
+
+        const mp=getMotionParams(seg.motionLevel);
         const ph=tent.phase+si*0.5;
-        let dx=0,dy=0,dz=0,rx=0,rz=0;
 
-        // Sway motion (all tentacles sway)
-        const sway=ts.swayAmp*(0.5+motionInt)*Math.sin(t*ts.swaySpeed+ph);
-        const sway2=ts.swayAmp*0.5*(0.5+motionInt)*Math.cos(t*ts.swaySpeed*0.7+ph*1.3);
-        dx=sway*0.15*(1+si*0.2);
-        dz=sway2*0.15*(1+si*0.2);
-        dy=Math.sin(t*ts.swaySpeed*1.5+ph)*ts.swayAmp*0.05*motionInt;
+        // Base direction from rest pose
+        const restEnd=seg.anchor.clone().add(seg.dir.clone().multiplyScalar(seg.length*seg.growthFrac));
 
-        // Motion personality overlay
-        switch(mg.type){
-          case 1: // nervous
-            dx+=(hash(t*mg.nervousFreq+ph*10)-0.5)*mg.nervousTwitch*motionInt;
-            dz+=(hash(t*mg.nervousFreq+ph*20)-0.5)*mg.nervousTwitch*motionInt;
-            break;
-          case 2: // fluid
-            {const w=Math.sin(t*0.8+si*mg.fluidWaveLen)*0.03*motionInt*Math.pow(mg.fluidDamp,si);
-            dx+=w;dz+=w*0.7;}
-            break;
-          case 3: // mechanical
-            {const step=Math.floor(t/mg.mechInterval);const sf=(t%mg.mechInterval)/mg.mechInterval;
-            if(sf>0.8)dx+=Math.sin((step+si)*2.1)*mg.mechStep*(sf-0.8)/0.2*motionInt;}
-            break;
-          case 4: // contraction
-            {const c=Math.sin(t/mg.contractCycle+si*0.3);
-            if(c>0){const pull=mg.contractDepth*c*motionInt*0.1;if(seg._endPos){dx-=seg._endPos.x*pull;dz-=seg._endPos.z*pull;}}}
-            break;
+        if(mp.amp>0){
+          // Smooth sway component (from anchor, force point swings)
+          const swayX=Math.sin(t*mp.freq+ph)*mp.amp*(1+tipFactor*2);
+          const swayY=Math.cos(t*mp.freq*0.7+ph*1.3)*mp.amp*0.5;
+          const swayZ=Math.sin(t*mp.freq*0.9+ph*0.8)*mp.amp*(1+tipFactor);
+
+          // Jitter component (high-frequency noise for trembling)
+          const jitX=(hash(t*mp.freq*3+ph*10+si)-0.5)*mp.jitter;
+          const jitY=(hash(t*mp.freq*3+ph*20+si*7)-0.5)*mp.jitter;
+          const jitZ=(hash(t*mp.freq*3+ph*30+si*13)-0.5)*mp.jitter;
+
+          // Motion personality overlay
+          let perX=0,perY=0,perZ=0;
+          switch(mg.type){
+            case 1: // nervous — random twitches
+              if(seg.motionLevel>0.3){
+                perX=(hash(t*mg.nervousFreq+ph*10)-0.5)*mg.nervousTwitch*seg.motionLevel;
+                perZ=(hash(t*mg.nervousFreq+ph*20)-0.5)*mg.nervousTwitch*seg.motionLevel;
+              }
+              break;
+            case 2: // fluid — wave propagation
+              {const w=Math.sin(t*0.8+si*mg.fluidWaveLen)*0.03*seg.motionLevel*Math.pow(mg.fluidDamp,si);
+              perX=w;perZ=w*0.7;}
+              break;
+            case 3: // mechanical — step motion
+              {const step=Math.floor(t/mg.mechInterval);const sf=(t%mg.mechInterval)/mg.mechInterval;
+              if(sf>0.8&&seg.motionLevel>0.2)perX=Math.sin((step+si)*2.1)*mg.mechStep*(sf-0.8)/0.2*seg.motionLevel;}
+              break;
+            case 4: // contraction — pull toward center
+              if(seg.motionLevel>0.3){
+                const c=Math.sin(t/mg.contractCycle+si*0.3);
+                if(c>0){const pull=mg.contractDepth*c*seg.motionLevel*0.05;perX=-restEnd.x*pull;perZ=-restEnd.z*pull;}}
+              break;
+          }
+
+          seg.forcePoint.set(
+            restEnd.x+swayX+jitX+perX,
+            restEnd.y+swayY+jitY+perY,
+            restEnd.z+swayZ+jitZ+perZ
+          );
+        }else{
+          // Perfectly still — force point exactly at rest position
+          seg.forcePoint.copy(restEnd);
         }
 
-        // Vibration
-        if(d.vibration>0.2){
-          const va=d.vibration*0.02;
-          dx+=Math.sin(t*8+ph)*va;dz+=Math.cos(t*7+ph)*va;
-        }
+        // Next segment's anchor = this segment's force point
+        prevAnchor=seg.forcePoint.clone();
 
-        seg.mesh.position.x+=dx;seg.mesh.position.y+=dy;seg.mesh.position.z+=dz;
-        if(seg.jointMesh){seg.jointMesh.position.x+=dx*0.7;seg.jointMesh.position.y+=dy*0.7;seg.jointMesh.position.z+=dz*0.7;}
+        // Update mesh position/rotation
+        if(seg.mesh){
+          seg.mesh.position.copy(seg.anchor);
+          const dirV=new THREE.Vector3().subVectors(seg.forcePoint,seg.anchor);
+          if(dirV.length()>0.001){
+            seg.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dirV.normalize());
+          }
+        }
+        if(seg.jointMesh){
+          seg.jointMesh.position.copy(seg.forcePoint);
+        }
       });
     });
+
+    // ── Stick figure motion (also uses motion states) ──
+    if(stickGroup){
+      // Overall body motion level
+      const bodyMotion=clamp(globalTarget*0.5,0,1);
+      const bmp=getMotionParams(bodyMotion);
+
+      // Subtle body sway from anchor (hip) — force points (limbs) move
+      if(bmp.amp>0){
+        const bx=Math.sin(t*bmp.freq)*bmp.amp*0.5;
+        const by=Math.sin(t*bmp.freq*0.7)*bmp.amp*0.3;
+        const bJitX=(hash(t*bmp.freq*3+99)-0.5)*bmp.jitter*0.5;
+        const bJitY=(hash(t*bmp.freq*3+199)-0.5)*bmp.jitter*0.3;
+        stickGroup.position.x=bx+bJitX;
+        stickGroup.position.y=by+bJitY;
+      }else{
+        stickGroup.position.x=0;
+        stickGroup.position.y=0;
+      }
+
+      // Animate individual joints
+      Object.keys(stickJoints).forEach(name=>{
+        const j=stickJoints[name];
+        if(!j||!j.userData||!j.userData.pivot)return;
+        // Each joint has its own motion level
+        const jTarget=clamp(globalTarget*(name==='hip'?0.3:name==='head'?0.6:0.5)+hash(name.length*37)*0.1,0,1);
+        j.userData.motionTarget=jTarget;
+        j.userData.motionLevel+=(j.userData.motionTarget-j.userData.motionLevel)*dt*0.005;
+        const jmp=getMotionParams(j.userData.motionLevel);
+        if(jmp.amp>0){
+          const ph=hash(name.length*13.7)*Math.PI*2;
+          j.position.x=j.userData.pivot.x+Math.sin(t*jmp.freq+ph)*jmp.amp+(hash(t*jmp.freq*3+ph)-0.5)*jmp.jitter;
+          j.position.y=j.userData.pivot.y+Math.cos(t*jmp.freq*0.8+ph)*jmp.amp*0.5+(hash(t*jmp.freq*3+ph+100)-0.5)*jmp.jitter*0.5;
+        }
+      });
+    }
 
     // ── Orbiter motion ──
     orbiters.forEach(orb=>{
@@ -11632,7 +11754,6 @@ const LIFE=(function(){
   function addGrowthOnInput(d){
     inputCount++;
 
-    // Add 1-3 tentacles per input (driven by state)
     const newCount=Math.max(1,Math.floor(1+d.tentacleCount*2+Math.random()));
     for(let i=0;i<newCount;i++){
       const attachIdx=Math.floor(Math.random()*backAttachPoints.length);
@@ -11643,13 +11764,20 @@ const LIFE=(function(){
     tentacles.forEach(tent=>{
       if(tent.inputBorn<inputCount){
         tent.segments.forEach(seg=>{
-          seg.thickness*=(1+d.tentacleThick*0.05); // get thicker
-          seg.length*=(1+d.tentacleLength*0.03);   // get longer
+          seg.thickness*=(1+d.tentacleThick*0.05);
+          seg.length*=(1+d.tentacleLength*0.03);
         });
       }
     });
 
-    // Add orbiter every 3rd input
+    // Boost motion temporarily on input (excitement spike)
+    tentacles.forEach(tent=>{
+      tent.motionTarget=clamp(tent.motionTarget+0.15,0,1);
+      tent.segments.forEach(seg=>{
+        seg.motionTarget=clamp(seg.motionTarget+0.1,0,1);
+      });
+    });
+
     if(inputCount%3===0) addOrbiter(d);
   }
 
@@ -11676,7 +11804,7 @@ const LIFE=(function(){
     if(!DNA){const id=(typeof AUTH!=='undefined'&&AUTH.user)?AUTH.user.email:'default_organism';DNA=generateDNA(id);}
     const state=getStateArray();cachedD=transformState(state,DNA);
     inputCount=0;organismAge=0;tentacles=[];orbiters=[];growthEvents=[];
-    buildStickFigure();
+    buildStickFigure(cachedD);
     buildTentacleVisuals(cachedD);
     buildMoya(cachedD);
     buildTrail(cachedD);
