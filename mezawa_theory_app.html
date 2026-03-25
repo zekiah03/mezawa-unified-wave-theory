@@ -984,6 +984,40 @@ body.lang-gr { font-family:var(--font-gr); }
 .ba-diverge-date{font-size:9px;color:var(--T);font-weight:700;margin-bottom:3px}
 .ba-diverge-text{font-size:11px;color:rgba(200,220,240,.8)}
 
+
+/* ── Account Management ── */
+.acct-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); display:flex; align-items:center; justify-content:center; z-index:10000; backdrop-filter:blur(6px); }
+.acct-modal { background:#fff; border:1px solid var(--bdr2); border-radius:14px; padding:32px 28px; max-width:400px; width:90%; box-shadow:0 12px 48px rgba(0,0,0,.15); }
+.acct-modal h3 { font:700 17px var(--font-ja); color:var(--head); margin:0 0 6px; }
+.acct-modal .acct-sub { font:12px var(--font-ja); color:var(--dim); margin-bottom:18px; line-height:1.6; }
+.acct-modal .lf-input { margin:4px 0; }
+.acct-modal .acct-btns { display:flex; gap:8px; margin-top:14px; }
+.acct-modal .acct-btns button { flex:1; padding:10px; border-radius:6px; font:600 13px var(--font-ja); cursor:pointer; transition:.15s; border:none; }
+.acct-modal .acct-btn-primary { background:var(--T); color:#fff; }
+.acct-modal .acct-btn-primary:hover { opacity:.85; }
+.acct-modal .acct-btn-cancel { background:var(--bg2); color:var(--dim); border:1px solid var(--bdr2) !important; }
+.acct-modal .acct-btn-cancel:hover { color:var(--text); }
+.acct-modal .acct-btn-danger { background:var(--R); color:#fff; }
+.acct-modal .acct-btn-danger:hover { opacity:.85; }
+.acct-msg { font:12px var(--font-ja); padding:8px 10px; border-radius:5px; margin-top:8px; }
+.acct-msg.ok { color:var(--G); background:rgba(34,136,68,.06); border:1px solid rgba(34,136,68,.15); }
+.acct-msg.err { color:var(--R); background:rgba(200,50,50,.06); border:1px solid rgba(200,50,50,.15); }
+/* settings sections */
+.settings-section { margin-bottom:24px; }
+.settings-section h4 { font:600 14px var(--font-ja); color:var(--head); margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--bdr2); }
+.settings-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(0,0,0,.04); }
+.settings-row-label { font:13px var(--font-ja); color:var(--text); }
+.settings-row-val { font:12px var(--font-code); color:var(--dim); max-width:180px; overflow:hidden; text-overflow:ellipsis; }
+.settings-row-btn { padding:5px 14px; background:transparent; border:1px solid var(--bdr2); border-radius:5px; font:12px var(--font-ja); color:var(--dim); cursor:pointer; transition:.15s; white-space:nowrap; }
+.settings-row-btn:hover { color:var(--T); border-color:var(--T); }
+.settings-row-btn.danger { color:var(--R); }
+.settings-row-btn.danger:hover { border-color:var(--R); background:rgba(200,50,50,.04); }
+/* password reset gate addition */
+.lf-forgot { font-size:11px; color:var(--dim); text-align:right; margin-top:4px; margin-bottom:2px; }
+.lf-forgot a { color:var(--T); cursor:pointer; text-decoration:underline; }
+/* password reset form in gate */
+#lf-reset { display:none; }
+
 </style>
 </head>
 <body class="lang-ja">
@@ -3556,6 +3590,7 @@ Q_series = compute_Q(eeg_data, fs=int(raw.info['sfreq']))
         <input class="lf-input" id="lf-email" type="email" placeholder="メールアドレス" autocomplete="email">
         <input class="lf-input" id="lf-pw" type="password" placeholder="パスワード" autocomplete="current-password">
         <button id="lf-login-btn" class="lf-btn" onclick="doLogin()">ログイン</button>
+        <div class="lf-forgot"><a onclick="showLifeGate('reset')">パスワードを忘れた方</a></div>
         <div class="lf-switch" id="lf-login-switch">アカウントをお持ちでない方は <a onclick="showLifeGate('signup')">新規登録（最初の1ヶ月無料）</a></div>
       </div>
 
@@ -3568,6 +3603,16 @@ Q_series = compute_Q(eeg_data, fs=int(raw.info['sfreq']))
         <div id="lf-trial-note" class="lf-trial-note">最初の1ヶ月は無料でご利用いただけます</div>
         <button id="lf-signup-btn" class="lf-btn" onclick="doSignup()">新規登録して生命体を育てる</button>
         <div class="lf-switch" id="lf-signup-switch">既にアカウントをお持ちの方は <a onclick="showLifeGate('login')">ログイン</a></div>
+      </div>
+
+      <!-- Password Reset -->
+      <div id="lf-reset">
+        <div style="font:13px var(--font-ja);color:var(--dim);text-align:center;margin-bottom:14px;line-height:1.6">登録メールアドレスを入力してパスワードをリセット</div>
+        <input class="lf-input" id="lf-reset-email" type="email" placeholder="登録メールアドレス" autocomplete="email">
+        <input class="lf-input" id="lf-reset-newpw" type="password" placeholder="新しいパスワード（6文字以上）" autocomplete="new-password">
+        <input class="lf-input" id="lf-reset-newpw2" type="password" placeholder="新しいパスワード（確認）">
+        <button class="lf-btn" onclick="doPasswordReset()">パスワードをリセット</button>
+        <div class="lf-switch">思い出した方は <a onclick="showLifeGate('login')">ログインへ戻る</a></div>
       </div>
 
       <div id="lf-auth-err" class="lf-error"></div>
@@ -3621,8 +3666,8 @@ Q_series = compute_Q(eeg_data, fs=int(raw.info['sfreq']))
 
         <!-- 設定 -->
         <div id="sp-l1" class="sub-pane ldp">
-          <div id="lf-settings-title" class="panel-title">API ＆ ナレッジベース設定</div>
-          <div id="lf-settings-sub" class="panel-sub">接続先とデータ保存先を選択してください</div>
+          <div id="lf-settings-title" class="panel-title">アカウント ＆ 設定</div>
+          <div id="lf-settings-sub" class="panel-sub">アカウント管理、API接続、データ管理</div>
           <div id="lf-settings-form"></div>
         </div>
 
@@ -10369,7 +10414,72 @@ const AUTH = (function(){
     trialDaysLeft(){ if(!user||user.plan!=='trial')return 0; return Math.max(0,Math.ceil((user.trialEnd-Date.now())/86400000)); },
     save(k,v){ const users=getUsers(); const i=users.findIndex(u=>u.email===user?.email); if(i>=0){users[i][k]=v;user=users[i];saveUsers(users);} },
     canChatToday(){ if(!user)return false; if(this.isPremium())return true; const today=new Date().toDateString(); if(user.lastChatDate!==today)return true; return(user.dailyMsgs||0)<5; },
-    recordChat(){ if(!user)return; const today=new Date().toDateString(); if(user.lastChatDate!==today){this.save('lastChatDate',today);this.save('dailyMsgs',1);}else{this.save('dailyMsgs',(user.dailyMsgs||0)+1);} }
+    recordChat(){ if(!user)return; const today=new Date().toDateString(); if(user.lastChatDate!==today){this.save('lastChatDate',today);this.save('dailyMsgs',1);}else{this.save('dailyMsgs',(user.dailyMsgs||0)+1);} },
+    changePassword(oldPw, newPw){
+      if(!user) return {err:'ログインしてください'};
+      if(user.pw!==hashPw(oldPw)) return {err:'現在のパスワードが間違っています'};
+      if(newPw.length<6) return {err:'新しいパスワードは6文字以上にしてください'};
+      this.save('pw', hashPw(newPw));
+      return {ok:true};
+    },
+    changeEmail(newEmail, pw){
+      if(!user) return {err:'ログインしてください'};
+      if(user.pw!==hashPw(pw)) return {err:'パスワードが間違っています'};
+      if(!newEmail||!newEmail.includes('@')) return {err:'有効なメールアドレスを入力してください'};
+      const users=getUsers();
+      if(users.find(u=>u.email===newEmail&&u.email!==user.email)) return {err:'このメールアドレスは既に使用されています'};
+      const oldEmail=user.email;
+      this.save('email', newEmail);
+      // Update session
+      localStorage.setItem('mz_sess', JSON.stringify({email:newEmail, exp:Date.now()+7*86400000}));
+      // Migrate per-user data keys
+      ['mz_kb_','mz_cal_','mz_ba_'].forEach(prefix=>{
+        const old=localStorage.getItem(prefix+oldEmail);
+        if(old){localStorage.setItem(prefix+newEmail,old);localStorage.removeItem(prefix+oldEmail);}
+      });
+      return {ok:true};
+    },
+    changeName(newName){
+      if(!user) return {err:'ログインしてください'};
+      if(!newName.trim()) return {err:'名前を入力してください'};
+      this.save('name', newName.trim());
+      return {ok:true};
+    },
+    deleteAccount(pw){
+      if(!user) return {err:'ログインしてください'};
+      if(user.pw!==hashPw(pw)) return {err:'パスワードが間違っています'};
+      const email=user.email;
+      let users=getUsers();
+      users=users.filter(u=>u.email!==email);
+      saveUsers(users);
+      // Clean up per-user data
+      ['mz_kb_','mz_cal_','mz_ba_'].forEach(prefix=>{
+        localStorage.removeItem(prefix+email);
+      });
+      user=null;
+      localStorage.removeItem('mz_sess');
+      return {ok:true};
+    },
+    resetPassword(email, newPw){
+      if(!email) return {err:'メールアドレスを入力してください'};
+      if(newPw.length<6) return {err:'パスワードは6文字以上にしてください'};
+      const users=getUsers();
+      const i=users.findIndex(u=>u.email===email);
+      if(i<0) return {err:'このメールアドレスのアカウントが見つかりません'};
+      users[i].pw=hashPw(newPw);
+      saveUsers(users);
+      return {ok:true};
+    },
+    exportData(){
+      if(!user) return null;
+      const email=user.email;
+      const data={user:{...user}, kb:null, cal:null, ba:null};
+      try{data.kb=JSON.parse(localStorage.getItem('mz_kb_'+email)||'null');}catch(e){}
+      try{data.cal=JSON.parse(localStorage.getItem('mz_cal_'+email)||'null');}catch(e){}
+      try{data.ba=JSON.parse(localStorage.getItem('mz_ba_'+email)||'null');}catch(e){}
+      delete data.user.pw;
+      return data;
+    }
   };
 })();
 
@@ -12109,6 +12219,8 @@ function showLifeGate(mode='login'){
   document.getElementById('life-main').style.display='none';
   document.getElementById('lf-login').style.display=mode==='login'?'block':'none';
   document.getElementById('lf-signup').style.display=mode==='signup'?'block':'none';
+  const resetEl=document.getElementById('lf-reset');
+  if(resetEl) resetEl.style.display=mode==='reset'?'block':'none';
   document.getElementById('lf-auth-err').textContent='';
 }
 function showLifeMain(){
@@ -12155,6 +12267,462 @@ function doLogout(){
   // フラグリセット: 次のユーザーのデータで再初期化されるよう
   calInited=false; goalTabInited=false;
   AUTH.logout();
+}
+
+// ── Password Reset ──
+function doPasswordReset(){
+  const email=document.getElementById('lf-reset-email').value.trim();
+  const pw1=document.getElementById('lf-reset-newpw').value;
+  const pw2=document.getElementById('lf-reset-newpw2').value;
+  const errEl=document.getElementById('lf-auth-err');
+  if(!email){errEl.textContent='メールアドレスを入力してください';return;}
+  if(pw1!==pw2){errEl.textContent='パスワードが一致しません';return;}
+  const r=AUTH.resetPassword(email,pw1);
+  if(r.err){errEl.textContent=r.err;return;}
+  errEl.textContent='';
+  // Auto-login after reset
+  const lr=AUTH.login(email,pw1);
+  if(lr.ok){calInited=false;goalTabInited=false;showLifeMain();}
+  else{errEl.textContent='パスワードをリセットしました。ログインしてください。';showLifeGate('login');}
+}
+
+// ── Account Modal System ──
+function showAcctModal(html){
+  let ov=document.getElementById('acct-modal-overlay');
+  if(ov)ov.remove();
+  ov=document.createElement('div');
+  ov.id='acct-modal-overlay';
+  ov.className='acct-modal-overlay';
+  ov.innerHTML=`<div class="acct-modal">${html}</div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)closeAcctModal();});
+}
+function closeAcctModal(){
+  const ov=document.getElementById('acct-modal-overlay');
+  if(ov)ov.remove();
+}
+
+// ── Change Password Modal ──
+function showChangePasswordModal(){
+  showAcctModal(`
+    <h3>パスワード変更</h3>
+    <div class="acct-sub">現在のパスワードと新しいパスワードを入力してください</div>
+    <input class="lf-input" id="acct-old-pw" type="password" placeholder="現在のパスワード">
+    <input class="lf-input" id="acct-new-pw" type="password" placeholder="新しいパスワード（6文字以上）">
+    <input class="lf-input" id="acct-new-pw2" type="password" placeholder="新しいパスワード（確認）">
+    <div id="acct-pw-msg"></div>
+    <div class="acct-btns">
+      <button class="acct-btn-cancel" onclick="closeAcctModal()">キャンセル</button>
+      <button class="acct-btn-primary" onclick="doChangePassword()">変更する</button>
+    </div>
+  `);
+}
+function doChangePassword(){
+  const oldPw=document.getElementById('acct-old-pw').value;
+  const newPw=document.getElementById('acct-new-pw').value;
+  const newPw2=document.getElementById('acct-new-pw2').value;
+  const msg=document.getElementById('acct-pw-msg');
+  if(newPw!==newPw2){msg.className='acct-msg err';msg.textContent='新しいパスワードが一致しません';return;}
+  const r=AUTH.changePassword(oldPw,newPw);
+  if(r.err){msg.className='acct-msg err';msg.textContent=r.err;return;}
+  msg.className='acct-msg ok';msg.textContent='パスワードを変更しました';
+  setTimeout(()=>{closeAcctModal();renderLifeSettings();},1200);
+}
+
+// ── Change Email Modal ──
+function showChangeEmailModal(){
+  const u=AUTH.user;
+  showAcctModal(`
+    <h3>メールアドレス変更</h3>
+    <div class="acct-sub">現在: <strong>${u?u.email:''}</strong></div>
+    <input class="lf-input" id="acct-new-email" type="email" placeholder="新しいメールアドレス">
+    <input class="lf-input" id="acct-email-pw" type="password" placeholder="パスワード（確認用）">
+    <div id="acct-email-msg"></div>
+    <div class="acct-btns">
+      <button class="acct-btn-cancel" onclick="closeAcctModal()">キャンセル</button>
+      <button class="acct-btn-primary" onclick="doChangeEmail()">変更する</button>
+    </div>
+  `);
+}
+function doChangeEmail(){
+  const newEmail=document.getElementById('acct-new-email').value.trim();
+  const pw=document.getElementById('acct-email-pw').value;
+  const msg=document.getElementById('acct-email-msg');
+  const r=AUTH.changeEmail(newEmail,pw);
+  if(r.err){msg.className='acct-msg err';msg.textContent=r.err;return;}
+  msg.className='acct-msg ok';msg.textContent='メールアドレスを変更しました';
+  setTimeout(()=>{closeAcctModal();renderLifeSettings();updateLifeStatus();},1200);
+}
+
+// ── Change Name Modal ──
+function showChangeNameModal(){
+  const u=AUTH.user;
+  showAcctModal(`
+    <h3>表示名変更</h3>
+    <div class="acct-sub">現在: <strong>${u?u.name:''}</strong></div>
+    <input class="lf-input" id="acct-new-name" type="text" placeholder="新しい表示名" value="${u?u.name:''}">
+    <div id="acct-name-msg"></div>
+    <div class="acct-btns">
+      <button class="acct-btn-cancel" onclick="closeAcctModal()">キャンセル</button>
+      <button class="acct-btn-primary" onclick="doChangeName()">変更する</button>
+    </div>
+  `);
+}
+function doChangeName(){
+  const newName=document.getElementById('acct-new-name').value;
+  const msg=document.getElementById('acct-name-msg');
+  const r=AUTH.changeName(newName);
+  if(r.err){msg.className='acct-msg err';msg.textContent=r.err;return;}
+  msg.className='acct-msg ok';msg.textContent='表示名を変更しました';
+  setTimeout(()=>{closeAcctModal();renderLifeSettings();updateLifeStatus();},1200);
+}
+
+// ── Delete Account Modal ──
+function showDeleteAccountModal(){
+  showAcctModal(`
+    <h3 style="color:var(--R)">アカウント削除</h3>
+    <div class="acct-sub" style="color:var(--R)">この操作は取り消せません。すべてのデータ（生命体、チャット履歴、行動ログ、習慣データ）が完全に削除されます。</div>
+    <div style="font:12px var(--font-ja);color:var(--dim);margin-bottom:12px;padding:10px;background:var(--bg2);border-radius:6px">
+      削除前にデータをエクスポートすることをお勧めします。<br>
+      <a style="color:var(--T);cursor:pointer;text-decoration:underline" onclick="doExportData()">データをエクスポート</a>
+    </div>
+    <input class="lf-input" id="acct-del-pw" type="password" placeholder="パスワードを入力して確認">
+    <input class="lf-input" id="acct-del-confirm" type="text" placeholder="「削除する」と入力してください">
+    <div id="acct-del-msg"></div>
+    <div class="acct-btns">
+      <button class="acct-btn-cancel" onclick="closeAcctModal()">キャンセル</button>
+      <button class="acct-btn-danger" onclick="doDeleteAccount()">アカウントを完全に削除</button>
+    </div>
+  `);
+}
+function doDeleteAccount(){
+  const pw=document.getElementById('acct-del-pw').value;
+  const confirm=document.getElementById('acct-del-confirm').value.trim();
+  const msg=document.getElementById('acct-del-msg');
+  if(confirm!=='削除する'){msg.className='acct-msg err';msg.textContent='「削除する」と正確に入力してください';return;}
+  LIFE.stop();
+  const r=AUTH.deleteAccount(pw);
+  if(r.err){msg.className='acct-msg err';msg.textContent=r.err;return;}
+  msg.className='acct-msg ok';msg.textContent='アカウントが削除されました';
+  calInited=false;goalTabInited=false;
+  setTimeout(()=>{closeAcctModal();showLifeGate('login');},1000);
+}
+
+// ── Export Data ──
+function doExportData(){
+  const data=AUTH.exportData();
+  if(!data){alert('エクスポートするデータがありません');return;}
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`mezawa-backup-${AUTH.user.email}-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── initLifeTab (was missing) ──
+function initLifeTab(){
+  if(lifeTabInited) return;
+  lifeTabInited=true;
+  AUTH.init();
+  LIFE_CFG.load();
+  if(AUTH.user){
+    showLifeMain();
+  } else {
+    showLifeGate('login');
+  }
+}
+
+// ── renderLifeSettings (was missing) ──
+function renderLifeSettings(){
+  const form=document.getElementById('lf-settings-form');
+  if(!form)return;
+  const u=AUTH.user;
+  const cfg=LIFE_CFG.get();
+  const isEn=typeof currentLang!=='undefined'&&currentLang==='en';
+  const isGr=typeof currentLang!=='undefined'&&currentLang==='gr';
+
+  let html='';
+
+  // Section: Account
+  html+=`<div class="settings-section">
+    <h4>${isEn?'Account':isGr?'Λογαριασμός':'アカウント'}</h4>`;
+  if(u){
+    html+=`
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'Display Name':isGr?'Ὄνομα':'表示名'}</div><div class="settings-row-val">${u.name||'—'}</div></div>
+      <button class="settings-row-btn" onclick="showChangeNameModal()">${isEn?'Change':'変更'}</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'Email':isGr?'Email':'メールアドレス'}</div><div class="settings-row-val">${u.email}</div></div>
+      <button class="settings-row-btn" onclick="showChangeEmailModal()">${isEn?'Change':'変更'}</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'Password':isGr?'Κωδικός':'パスワード'}</div><div class="settings-row-val">••••••</div></div>
+      <button class="settings-row-btn" onclick="showChangePasswordModal()">${isEn?'Change':'変更'}</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'Account Created':isGr?'Δημιουργία':'アカウント作成日'}</div><div class="settings-row-val">${new Date(u.createdAt).toLocaleDateString('ja-JP')}</div></div>
+      <div></div>
+    </div>`;
+  } else {
+    html+=`<div style="padding:12px;font:13px var(--font-ja);color:var(--dim)">ログインしてください</div>`;
+  }
+  html+=`</div>`;
+
+  // Section: API Settings
+  html+=`<div class="settings-section">
+    <h4>${isEn?'API & Knowledge Base':isGr?'API & Γνωσ. Βάση':'API ＆ ナレッジベース'}</h4>
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'AI API Mode':'AI API モード'}</div><div class="settings-row-val">${cfg.apiMode==='app'?(isEn?'App default':'アプリ既定'):(isEn?'Custom':'カスタム')}</div></div>
+      <button class="settings-row-btn" onclick="showApiConfigModal()">${isEn?'Configure':'設定'}</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'KB Mode':'KB モード'}</div><div class="settings-row-val">${cfg.kbMode==='app'?(isEn?'App default':'アプリ既定'):(isEn?'Custom':'カスタム')}</div></div>
+      <button class="settings-row-btn" onclick="showKbConfigModal()">${isEn?'Configure':'設定'}</button>
+    </div>
+  </div>`;
+
+  // Section: Data
+  html+=`<div class="settings-section">
+    <h4>${isEn?'Data Management':isGr?'Δεδομένα':'データ管理'}</h4>
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'Export All Data':'全データエクスポート'}</div><div class="settings-row-val">${isEn?'Download as JSON':'JSON形式でダウンロード'}</div></div>
+      <button class="settings-row-btn" onclick="doExportData()">${isEn?'Export':'エクスポート'}</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">${isEn?'Clear Chat History':'チャット履歴削除'}</div><div class="settings-row-val">${isEn?'Remove all conversation history':'全会話履歴を削除'}</div></div>
+      <button class="settings-row-btn danger" onclick="doClearChatHistory()">${isEn?'Clear':'削除'}</button>
+    </div>
+  </div>`;
+
+  // Section: Danger Zone
+  if(u){
+    html+=`<div class="settings-section">
+      <h4 style="color:var(--R)">${isEn?'Danger Zone':isGr?'Κίνδυνος':'危険な操作'}</h4>
+      <div class="settings-row">
+        <div><div class="settings-row-label" style="color:var(--R)">${isEn?'Delete Account':'アカウント削除'}</div><div class="settings-row-val">${isEn?'All data will be permanently deleted':'全てのデータが完全に削除されます'}</div></div>
+        <button class="settings-row-btn danger" onclick="showDeleteAccountModal()">${isEn?'Delete':'削除'}</button>
+      </div>
+    </div>`;
+  }
+
+  // Logout button
+  if(u){
+    html+=`<div style="text-align:center;margin-top:20px">
+      <button class="lf-btn" style="background:transparent;color:var(--dim);border:1px solid var(--bdr2);max-width:200px" onclick="doLogout()">${isEn?'Log Out':isGr?'Ἀποσύνδεση':'ログアウト'}</button>
+    </div>`;
+  }
+
+  form.innerHTML=html;
+}
+
+// ── API Config Modal ──
+function showApiConfigModal(){
+  const cfg=LIFE_CFG.get();
+  showAcctModal(`
+    <h3>AI API 設定</h3>
+    <div class="acct-sub">チャット機能で使用するAI APIの接続先を設定します</div>
+    <div style="margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:8px;font:13px var(--font-ja);cursor:pointer;padding:6px 0">
+        <input type="radio" name="api-mode" value="app" ${cfg.apiMode==='app'?'checked':''} onchange="toggleApiFields()"> アプリ既定（推奨）
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font:13px var(--font-ja);cursor:pointer;padding:6px 0">
+        <input type="radio" name="api-mode" value="custom" ${cfg.apiMode==='custom'?'checked':''} onchange="toggleApiFields()"> カスタムAPI
+      </label>
+    </div>
+    <div id="api-custom-fields" style="display:${cfg.apiMode==='custom'?'block':'none'}">
+      <input class="lf-input" id="acct-api-key" type="password" placeholder="API Key" value="${cfg.userApiKey||''}">
+      <input class="lf-input" id="acct-api-endpoint" type="text" placeholder="Endpoint URL" value="${cfg.userApiEndpoint||'https://api.anthropic.com/v1/messages'}">
+    </div>
+    <div id="acct-api-msg"></div>
+    <div class="acct-btns">
+      <button class="acct-btn-cancel" onclick="closeAcctModal()">キャンセル</button>
+      <button class="acct-btn-primary" onclick="doSaveApiConfig()">保存</button>
+    </div>
+  `);
+}
+function toggleApiFields(){
+  const mode=document.querySelector('input[name="api-mode"]:checked').value;
+  document.getElementById('api-custom-fields').style.display=mode==='custom'?'block':'none';
+}
+function doSaveApiConfig(){
+  const mode=document.querySelector('input[name="api-mode"]:checked').value;
+  const key=document.getElementById('acct-api-key')?.value||'';
+  const endpoint=document.getElementById('acct-api-endpoint')?.value||'';
+  LIFE_CFG.save({apiMode:mode, userApiKey:key, userApiEndpoint:endpoint});
+  const msg=document.getElementById('acct-api-msg');
+  msg.className='acct-msg ok';msg.textContent='保存しました';
+  setTimeout(()=>{closeAcctModal();renderLifeSettings();},800);
+}
+
+// ── KB Config Modal ──
+function showKbConfigModal(){
+  const cfg=LIFE_CFG.get();
+  showAcctModal(`
+    <h3>ナレッジベース設定</h3>
+    <div class="acct-sub">チャット履歴の保存先を設定します</div>
+    <div style="margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:8px;font:13px var(--font-ja);cursor:pointer;padding:6px 0">
+        <input type="radio" name="kb-mode" value="app" ${cfg.kbMode==='app'?'checked':''} onchange="toggleKbFields()"> ローカル保存（既定）
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font:13px var(--font-ja);cursor:pointer;padding:6px 0">
+        <input type="radio" name="kb-mode" value="custom" ${cfg.kbMode==='custom'?'checked':''} onchange="toggleKbFields()"> カスタムエンドポイント
+      </label>
+    </div>
+    <div id="kb-custom-fields" style="display:${cfg.kbMode==='custom'?'block':'none'}">
+      <input class="lf-input" id="acct-kb-endpoint" type="text" placeholder="KB Endpoint URL" value="${cfg.userKbEndpoint||''}">
+      <input class="lf-input" id="acct-kb-key" type="password" placeholder="KB API Key" value="${cfg.userKbKey||''}">
+    </div>
+    <div id="acct-kb-msg"></div>
+    <div class="acct-btns">
+      <button class="acct-btn-cancel" onclick="closeAcctModal()">キャンセル</button>
+      <button class="acct-btn-primary" onclick="doSaveKbConfig()">保存</button>
+    </div>
+  `);
+}
+function toggleKbFields(){
+  const mode=document.querySelector('input[name="kb-mode"]:checked').value;
+  document.getElementById('kb-custom-fields').style.display=mode==='custom'?'block':'none';
+}
+function doSaveKbConfig(){
+  const mode=document.querySelector('input[name="kb-mode"]:checked').value;
+  const endpoint=document.getElementById('acct-kb-endpoint')?.value||'';
+  const key=document.getElementById('acct-kb-key')?.value||'';
+  LIFE_CFG.save({kbMode:mode, userKbEndpoint:endpoint, userKbKey:key});
+  const msg=document.getElementById('acct-kb-msg');
+  msg.className='acct-msg ok';msg.textContent='保存しました';
+  setTimeout(()=>{closeAcctModal();renderLifeSettings();},800);
+}
+
+// ── Clear Chat History ──
+function doClearChatHistory(){
+  if(!AUTH.user)return;
+  if(!confirm('チャット履歴を全て削除しますか？この操作は取り消せません。'))return;
+  localStorage.removeItem('mz_kb_'+AUTH.user.email);
+  if(typeof lifeChatHistory!=='undefined')lifeChatHistory.length=0;
+  const log=document.getElementById('life-chat-log');
+  if(log)log.innerHTML='';
+  renderLifeSettings();
+}
+
+// ── renderLifePlan (was missing) ──
+function renderLifePlan(){
+  const el=document.getElementById('lf-plan-content');
+  if(!el)return;
+  const u=AUTH.user;
+  const isEn=typeof currentLang!=='undefined'&&currentLang==='en';
+
+  if(!u){
+    el.innerHTML=`<div style="padding:20px;text-align:center;font:13px var(--font-ja);color:var(--dim)">ログインしてください</div>`;
+    return;
+  }
+
+  const isPrem=AUTH.isPremium();
+  const daysLeft=AUTH.trialDaysLeft();
+  const planLabel=u.plan==='premium'?(isEn?'Premium':'プレミアム'):
+    (isPrem?(isEn?`Trial (${daysLeft} days left)`:`トライアル（残り${daysLeft}日）`):
+    (isEn?'Trial Expired':'トライアル期限切れ'));
+  const planColor=u.plan==='premium'?'var(--T)':(isPrem?'var(--G)':'var(--R)');
+
+  let html=`
+    <div style="text-align:center;padding:20px 0">
+      <div style="font:700 15px var(--font-ja);color:${planColor};margin-bottom:6px">${planLabel}</div>
+      <div style="font:12px var(--font-ja);color:var(--dim);margin-bottom:20px">${isEn?'Current Plan':'現在のプラン'}</div>
+    </div>
+    <div style="background:var(--bg2);border-radius:10px;padding:16px;margin-bottom:16px">
+      <div style="font:600 13px var(--font-ja);color:var(--head);margin-bottom:10px">${isEn?'Features':'機能一覧'}</div>
+      <div style="font:12px var(--font-ja);color:var(--text);line-height:2.2">
+        ${isPrem?'✓':'✓'} ${isEn?'3D Life Visualization':'3D生命体ビジュアライゼーション'}<br>
+        ${isPrem?'✓':'✓'} ${isEn?'Behavioral Analysis':'行動分析エンジン'}<br>
+        ${isPrem?'✓':'✓'} ${isEn?'Growth Guide':'成長ガイド'}<br>
+        ${isPrem?'✓':'△ 5${isEn?" msgs/day":"件/日"}'} ${isEn?'AI Chat':'AIチャット'} ${!isPrem&&u.plan==='trial'?`(${isEn?'5/day limit':'1日5件まで'})`:''}<br>
+        ${isPrem?'✓':'✓'} ${isEn?'Habit Tracking':'習慣トラッキング'}<br>
+        ${isPrem?'✓':'✓'} ${isEn?'Calendar':'カレンダー'}
+      </div>
+    </div>`;
+
+  if(!isPrem || u.plan==='trial'){
+    html+=`<div style="text-align:center">
+      <button class="lf-btn" style="max-width:260px" onclick="showUpgradeModal('plan')">
+        ${isEn?'Upgrade to Premium':'プレミアムにアップグレード'}
+      </button>
+      <div style="font:11px var(--font-ja);color:var(--dim);margin-top:8px">${isEn?'Unlimited AI chat & full access':'無制限AIチャット＆フルアクセス'}</div>
+    </div>`;
+  }
+
+  el.innerHTML=html;
+}
+
+// ── checkUpgradeStatus (was missing) ──
+function checkUpgradeStatus(){
+  if(!AUTH.user)return;
+  if(AUTH.user.plan==='premium')return;
+  if(!AUTH.isPremium()){
+    // Trial expired — show subtle notification, don't block
+    const bar=document.getElementById('life-status-bar');
+    if(bar&&!bar.querySelector('.trial-expired-notice')){
+      const notice=document.createElement('span');
+      notice.className='trial-expired-notice';
+      notice.style.cssText='color:var(--R);font-size:10px;margin-left:auto;cursor:pointer';
+      notice.textContent='トライアル期限切れ';
+      notice.onclick=()=>showUpgradeModal('expired');
+      bar.appendChild(notice);
+    }
+  }
+}
+
+// ── showUpgradeModal (was missing) ──
+function showUpgradeModal(reason){
+  const isEn=typeof currentLang!=='undefined'&&currentLang==='en';
+  const ov=document.getElementById('upgrade-overlay');
+  if(!ov)return;
+  ov.classList.remove('hidden');
+  ov.innerHTML=`<div class="upgrade-card">
+    <h2>${isEn?'Upgrade to Premium':'プレミアムプラン'}</h2>
+    <div class="upg-sub">${reason==='expired'
+      ?(isEn?'Your trial has expired. Upgrade for unlimited access.':'トライアル期間が終了しました。アップグレードで無制限アクセス。')
+      :(isEn?'Get unlimited AI chat and full features':'無制限AIチャットと全機能をアンロック')}</div>
+    <div class="upg-price">¥980<span>/月</span></div>
+    <div class="upg-features">
+      ${isEn?'✓ Unlimited AI chat':'✓ AIチャット無制限'}<br>
+      ${isEn?'✓ Full behavioral analysis':'✓ 行動分析フルアクセス'}<br>
+      ${isEn?'✓ Priority support':'✓ 優先サポート'}<br>
+      ${isEn?'✓ Data export':'✓ データエクスポート'}
+    </div>
+    <button class="upg-btn" onclick="doUpgradePremium()">${isEn?'Upgrade Now':'アップグレードする'}</button>
+    <button class="upg-btn-cancel" onclick="closeUpgradeModal()">${isEn?'Maybe Later':'あとで'}</button>
+  </div>`;
+}
+function closeUpgradeModal(){
+  const ov=document.getElementById('upgrade-overlay');
+  if(ov)ov.classList.add('hidden');
+}
+function doUpgradePremium(){
+  // Client-side only: just upgrade the plan (no real payment in this version)
+  if(!AUTH.user)return;
+  AUTH.save('plan','premium');
+  const ov=document.getElementById('upgrade-overlay');
+  if(ov){
+    ov.innerHTML=`<div class="upgrade-card">
+      <div class="upg-success">アップグレード完了！プレミアムプランが有効になりました。</div>
+      <button class="upg-btn" onclick="closeUpgradeModal();renderLifePlan();updateLifeStatus();">OK</button>
+    </div>`;
+  }
+}
+
+// ── handlePaymentReturn (was missing) ──
+function handlePaymentReturn(){
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('payment')==='success'){
+    AUTH.init();
+    if(AUTH.user){
+      AUTH.save('plan','premium');
+    }
+    // Clean URL
+    window.history.replaceState({},document.title,window.location.pathname);
+  }
 }
 
 // ════════════════════════════════════
