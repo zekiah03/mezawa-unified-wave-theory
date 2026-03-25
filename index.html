@@ -10921,7 +10921,6 @@ const LIFE=(function(){
   function fbm(x,oct){let v=0,a=1,f=1,s=0;for(let i=0;i<oct;i++){v+=a*sn(x*f);s+=a;a*=.5;f*=2;}return v/s;}
 
   // ── State → Parameters bridge ──
-  // Reads from BA_STATE if available, otherwise uses LIFE_STATE coords
   function getParams(){
     if(typeof BA_STATE!=='undefined'&&BA_STATE.params){
       const p=BA_STATE.params;
@@ -10933,7 +10932,6 @@ const LIFE=(function(){
         growthBias:p.growthBias||.5
       };
     }
-    // Fallback to LIFE_STATE 11D coords
     const c=(typeof LIFE_STATE!=='undefined')?LIFE_STATE.coords:[0,0,0,0,1,1,1,1,.593,.15,117];
     return{
       energy:Math.min(1,c[4]/3), focus:.5, motivation:Math.min(1,c[1]/50),
@@ -10971,11 +10969,80 @@ const LIFE=(function(){
 
   // ── Color from state ──
   function stateColor(p){
-    // Blend based on dominant state
     const r=.1+.3*p.stress+.4*p.energy+.2*p.motivation;
     const g=.15+.35*p.stability+.25*p.discipline+.15*p.growthBias;
     const b=.3+.4*(1-p.stress)+.2*p.focus+.1*p.curiosity;
     return new THREE.Color(Math.min(1,r),Math.min(1,g),Math.min(1,b));
+  }
+
+  // ═══════════════════════════════════════
+  //  CUSTOM GEOMETRY: Pointed Bone
+  // ═══════════════════════════════════════
+  // Creates a tapered shape: pointed tip → thick middle → pointed tip
+  // Like a real bone or a diamond/spindle shape
+  function createBoneGeometry(length, midRadius, tipFraction, radialSegs){
+    radialSegs = radialSegs || 5;
+    tipFraction = tipFraction || 0.18;
+    const tipLen = length * tipFraction;
+    const bodyLen = length - tipLen * 2;
+    const tipR = midRadius * 0.06; // nearly sharp tip
+    // Build via lathe-like approach: stack of rings
+    const segsY = 8;
+    const verts = [];
+    const indices = [];
+    const normals = [];
+    // Generate profile points: (y position, radius) pairs
+    const profile = [];
+    // Bottom tip
+    profile.push({y: 0, r: tipR});
+    profile.push({y: tipLen * 0.5, r: midRadius * 0.35});
+    profile.push({y: tipLen, r: midRadius * 0.85});
+    // Body
+    const bodySegs = 4;
+    for(let i = 0; i <= bodySegs; i++){
+      const u = i / bodySegs;
+      const y = tipLen + u * bodyLen;
+      // Slight taper: thickest at 40% from bottom
+      const bulge = 1 + 0.08 * Math.sin(u * Math.PI);
+      profile.push({y, r: midRadius * bulge});
+    }
+    // Top tip
+    profile.push({y: length - tipLen, r: midRadius * 0.85});
+    profile.push({y: length - tipLen * 0.5, r: midRadius * 0.35});
+    profile.push({y: length, r: tipR});
+
+    const rows = profile.length;
+    // Build vertices
+    for(let row = 0; row < rows; row++){
+      const {y, r} = profile[row];
+      for(let seg = 0; seg <= radialSegs; seg++){
+        const theta = (seg / radialSegs) * Math.PI * 2;
+        const x = Math.cos(theta) * r;
+        const z = Math.sin(theta) * r;
+        verts.push(x, y - length * 0.5, z); // center at origin
+        // Approximate normal
+        const nx = Math.cos(theta);
+        const nz = Math.sin(theta);
+        normals.push(nx, 0, nz);
+      }
+    }
+    // Build indices
+    for(let row = 0; row < rows - 1; row++){
+      for(let seg = 0; seg < radialSegs; seg++){
+        const a = row * (radialSegs + 1) + seg;
+        const b = a + radialSegs + 1;
+        const c = a + 1;
+        const d = b + 1;
+        indices.push(a, b, c);
+        indices.push(c, b, d);
+      }
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+    geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    geo.setIndex(indices);
+    geo.computeVertexNormals();
+    return geo;
   }
 
   // ═══════════════════════════════════════
@@ -10986,14 +11053,25 @@ const LIFE=(function(){
   let spinePoints=[], spineData=[];
   let lastStage=-1, lastJointCount=-1;
 
-  // ── Layer 1: Core Body ──
+  // ── Layer 1: Core Body (pointed bones + proper joints) ──
   function buildCore(d,p){
     if(coreGroup){scene.remove(coreGroup);coreGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     coreGroup=new THREE.Group();
     const col=stateColor(p);
     const jc=d.jointCount;
     const segLen=d.bodyScale*3.5/(jc+1);
-    const baseR=d.limbRadius*.3*d.bodyScale;
+    const baseR=d.limbRadius*.25*d.bodyScale;
+
+    // Matte material — no shininess, no specular
+    const boneMat=new THREE.MeshLambertMaterial({
+      color:col, emissive:col.clone().multiplyScalar(d.glow*.12),
+      transparent:true, opacity:.88
+    });
+    // Joint material — slightly brighter, same matte
+    const jointMat=new THREE.MeshLambertMaterial({
+      color:col.clone().multiplyScalar(1.15), emissive:col.clone().multiplyScalar(d.glow*.18),
+      transparent:true, opacity:.92
+    });
 
     // Build spine path
     spinePoints=[];spineData=[];
@@ -11013,64 +11091,65 @@ const LIFE=(function(){
       spineData.push({u,basePos:pt.clone()});
     }
 
-    // Limb cylinders
-    const limbMat=new THREE.MeshPhongMaterial({
-      color:col, emissive:col.clone().multiplyScalar(d.glow*.2),
-      transparent:true, opacity:.82, shininess:30+40*p.energy
-    });
+    // Bone segments — pointed at both ends, connecting joint-to-joint
     for(let i=0;i<spinePoints.length-1;i++){
       const u=i/(spinePoints.length-1);
+      // Slight radius variation along body
       const radMod=1
-        -(.2*p.discipline+.1*p.stability)*(1-u)
-        -(.08+.18*p.riskTolerance)*Math.sin(2*Math.PI*u)
-        -(.04+.12*p.stress)*fbm(u*8+31,2);
-      const r=Math.max(.06,baseR*Math.abs(radMod));
+        -(.15*p.discipline+.08*p.stability)*(1-u)
+        -(.05+.12*p.riskTolerance)*Math.sin(2*Math.PI*u)
+        -(.03+.08*p.stress)*fbm(u*8+31,2);
+      const r=Math.max(.05,baseR*Math.abs(radMod));
       const p1=spinePoints[i],p2=spinePoints[i+1];
       const dir=new THREE.Vector3().subVectors(p2,p1);
       const len=dir.length();
+      if(len<.001)continue;
+
+      // Create pointed bone geometry
+      const boneGeo=createBoneGeometry(len, r, 0.2, 5);
+      const bone=new THREE.Mesh(boneGeo, boneMat.clone());
       const mid=new THREE.Vector3().addVectors(p1,p2).multiplyScalar(.5);
-      const cyl=new THREE.Mesh(new THREE.CylinderGeometry(r*.7,r*1.15,Math.max(.01,len),6,1),limbMat.clone());
-      cyl.position.copy(mid);
-      if(len>.001){cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());}
-      cyl.userData={u,segIdx:i,isBranch:false};
-      coreGroup.add(cyl);
+      bone.position.copy(mid);
+      bone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());
+      bone.userData={u,segIdx:i,isBranch:false};
+      coreGroup.add(bone);
     }
 
-    // Joint spheres
-    const jointMat=new THREE.MeshPhongMaterial({
-      color:col.clone().multiplyScalar(1.3),emissive:col.clone().multiplyScalar(d.glow*.35),
-      transparent:true,opacity:.88
-    });
+    // Joint spheres — small, positioned exactly at spine points (bone endpoints)
     spinePoints.forEach((pt,i)=>{
       const u=i/(spinePoints.length-1);
-      const jr=baseR*(.6+.5*u)*1.3;
-      const j=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.08,jr),5,5),jointMat.clone());
+      // Joint radius: smaller than bone midpoint — just a connector
+      const jr=baseR*(.35+.25*u);
+      const j=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.06,jr),5,5),jointMat.clone());
       j.position.copy(pt);
       j.userData={u,jointIdx:i};
       coreGroup.add(j);
     });
 
-    // Branches (stage 2+)
+    // Branches (stage 2+) — also pointed bone form
     if(d.stage>=2){
       const bc=Math.min(8,Math.floor(.5+d.stage*.8+p.curiosity*2.5));
       for(let b=0;b<bc;b++){
         const ai=Math.floor(Math.random()*spinePoints.length);
         const ap=spinePoints[ai];
-        const bLen=segLen*(.2+.7*Math.random())*d.bodyScale;
+        const bLen=segLen*(.3+.8*Math.random())*d.bodyScale;
         const bAngle=Math.random()*Math.PI*2;
         const bElev=(Math.random()-.5)*Math.PI*.7;
         const bDir=new THREE.Vector3(Math.cos(bAngle)*Math.cos(bElev),Math.sin(bElev)*.5,Math.sin(bAngle)*Math.cos(bElev)).normalize();
-        const bEnd=ap.clone().add(bDir.multiplyScalar(bLen));
+        const bEnd=ap.clone().add(bDir.clone().multiplyScalar(bLen));
         const bMid=new THREE.Vector3().addVectors(ap,bEnd).multiplyScalar(.5);
         const bDirV=new THREE.Vector3().subVectors(bEnd,ap);
         const bL=bDirV.length();
-        const br=baseR*.4*(.3+.7*Math.random());
-        const branch=new THREE.Mesh(new THREE.CylinderGeometry(br*.5,br,Math.max(.01,bL),4,1),limbMat.clone());
+        if(bL<.001)continue;
+        const br=baseR*.35*(.3+.7*Math.random());
+        const branchGeo=createBoneGeometry(bL, br, 0.22, 4);
+        const branch=new THREE.Mesh(branchGeo, boneMat.clone());
         branch.position.copy(bMid);
-        if(bL>.001)branch.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bDirV.clone().normalize());
+        branch.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bDirV.clone().normalize());
         branch.userData={u:.5,isBranch:true,attachIdx:ai,baseAng:bAngle};
         coreGroup.add(branch);
-        const tip=new THREE.Mesh(new THREE.SphereGeometry(br*1.4,4,4),jointMat.clone());
+        // Small joint at tip
+        const tip=new THREE.Mesh(new THREE.SphereGeometry(br*.8,4,4),jointMat.clone());
         tip.position.copy(bEnd);
         tip.userData={u:.5,isTip:true};
         coreGroup.add(tip);
@@ -11089,28 +11168,26 @@ const LIFE=(function(){
     flowColors=new Float32Array(FLOW_N*3);
     flowVelocities=new Float32Array(FLOW_N*3);
     const col=stateColor(p);
-    // Initialize particles along spine
     for(let i=0;i<FLOW_N;i++){
       const u=Math.random();
       const si=Math.min(spinePoints.length-2,Math.floor(u*(spinePoints.length-1)));
       const sf=u*(spinePoints.length-1)-si;
       const pt=spinePoints[si]?spinePoints[si].clone().lerp(spinePoints[Math.min(si+1,spinePoints.length-1)]||spinePoints[si],sf):new THREE.Vector3();
-      // Scatter around spine
-      const scatter=d.limbRadius*.5*d.bodyScale;
+      const scatter=d.limbRadius*.4*d.bodyScale;
       flowPositions[i*3]=pt.x+(Math.random()-.5)*scatter;
       flowPositions[i*3+1]=pt.y+(Math.random()-.5)*scatter;
       flowPositions[i*3+2]=pt.z+(Math.random()-.5)*scatter;
       flowVelocities[i*3]=(Math.random()-.5)*.02;
-      flowVelocities[i*3+1]=.01+Math.random()*.03;// upward bias
+      flowVelocities[i*3+1]=.01+Math.random()*.03;
       flowVelocities[i*3+2]=(Math.random()-.5)*.02;
       const bright=.3+.7*Math.random();
-      flowColors[i*3]=col.r*bright;flowColors[i*3+1]=col.g*bright*1.2;flowColors[i*3+2]=col.b*bright*1.4;
+      flowColors[i*3]=col.r*bright;flowColors[i*3+1]=col.g*bright*1.1;flowColors[i*3+2]=col.b*bright*1.2;
     }
     const geo=new THREE.BufferGeometry();
     geo.setAttribute('position',new THREE.BufferAttribute(flowPositions,3));
     geo.setAttribute('color',new THREE.BufferAttribute(flowColors,3));
     flowSystem=new THREE.Points(geo,new THREE.PointsMaterial({
-      size:1.2+.8*p.energy, vertexColors:true, transparent:true, opacity:.65,
+      size:.8+.5*p.energy, vertexColors:true, transparent:true, opacity:.45,
       blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true
     }));
     scene.add(flowSystem);
@@ -11121,19 +11198,16 @@ const LIFE=(function(){
     const speed=d.flowSpeed*.015*dt;
     const chaos=d.flowChaos;
     const col=stateColor(p);
-    const scatter=d.limbRadius*.5*d.bodyScale;
+    const scatter=d.limbRadius*.4*d.bodyScale;
     const spLen=spinePoints.length;
     for(let i=0;i<FLOW_N;i++){
       const i3=i*3;
-      // Flow upward along spine
       flowPositions[i3]+=flowVelocities[i3]*speed*dt;
       flowPositions[i3+1]+=flowVelocities[i3+1]*speed*dt;
       flowPositions[i3+2]+=flowVelocities[i3+2]*speed*dt;
-      // Chaos jitter
       flowVelocities[i3]+=(Math.random()-.5)*chaos*.003*dt;
       flowVelocities[i3+1]+=(Math.random()-.5)*chaos*.002*dt;
       flowVelocities[i3+2]+=(Math.random()-.5)*chaos*.003*dt;
-      // Attract to spine
       const py=flowPositions[i3+1];
       const spineH=spinePoints[spLen-1]?spinePoints[spLen-1].y:5;
       const spineL=spinePoints[0]?spinePoints[0].y:-5;
@@ -11145,10 +11219,8 @@ const LIFE=(function(){
       const attract=.005*(1+p.stability)*dt;
       flowVelocities[i3]+=dx*attract;
       flowVelocities[i3+2]+=dz*attract;
-      // Pulsation
       const pulse=Math.sin(t*d.breathRate*3+u*Math.PI*4)*d.pulseAmp*scatter;
       flowPositions[i3]+=pulse*.02*dt;
-      // Reset if too far
       const dist=Math.sqrt(dx*dx+dz*dz);
       if(dist>scatter*3||py>spineH+2||py<spineL-2){
         const ru=Math.random();
@@ -11162,58 +11234,105 @@ const LIFE=(function(){
         flowVelocities[i3+1]=.01+Math.random()*.03;
         flowVelocities[i3+2]=(Math.random()-.5)*.02;
       }
-      // Color: pulse brightness
       const bright=.3+.4*Math.sin(t*2+i*.1)*.5+.3;
-      flowColors[i3]=col.r*bright;flowColors[i3+1]=col.g*bright*1.2;flowColors[i3+2]=col.b*bright*1.3;
+      flowColors[i3]=col.r*bright;flowColors[i3+1]=col.g*bright*1.1;flowColors[i3+2]=col.b*bright*1.2;
     }
     flowSystem.geometry.attributes.position.needsUpdate=true;
     flowSystem.geometry.attributes.color.needsUpdate=true;
   }
 
-  // ── Layer 3: External Field ──
+  // ── Layer 3: External Field (bone-like tendrils + subtle aura) ──
   function buildField(d,p){
     if(fieldGroup){scene.remove(fieldGroup);fieldGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     fieldGroup=new THREE.Group();
-    if(d.stage<3)return scene.add(fieldGroup);
+    if(d.stage<3){scene.add(fieldGroup);return;}
     const col=stateColor(p);
     const extN=d.extCount;
-    const extMat=new THREE.MeshBasicMaterial({
-      color:col.clone().multiplyScalar(1.6),transparent:true,opacity:.25+.2*p.energy,
-      blending:THREE.AdditiveBlending,depthWrite:false
-    });
+
+    // Tendrils — bone-like form: thick at base → thin at tip (series of pointed bones)
     for(let e=0;e<extN;e++){
       const ai=Math.floor(Math.random()*spinePoints.length);
       const origin=spinePoints[ai]||new THREE.Vector3();
-      const eLen=d.extLength*d.bodyScale*3;
-      const segs=5+Math.floor(Math.random()*4);
+      const totalLen=d.extLength*d.bodyScale*3;
+      const boneCount=2+Math.floor(Math.random()*3); // 2-4 bone segments per tendril
       const dir=new THREE.Vector3((Math.random()-.5)*2,(Math.random()-.5)*2,(Math.random()-.5)*2).normalize();
-      const pts=[];
-      for(let si=0;si<=segs;si++){
-        const su=si/segs;
-        pts.push(origin.clone().add(dir.clone().multiplyScalar(eLen*su)));
+
+      // Build tendril as chain of pointed bones, each smaller than the last
+      let prevEnd=origin.clone();
+      const baseR=d.limbRadius*.15*d.bodyScale;
+      const tendrilGroup=new THREE.Group();
+
+      for(let bi=0;bi<boneCount;bi++){
+        const bFrac=(bi+1)/boneCount;
+        const bLen=totalLen/boneCount*(1-bFrac*.2); // each segment slightly shorter
+        const bRadius=baseR*(1-bFrac*.7); // thick→thin gradient
+        const bOpacity=Math.max(.08, .35*(1-bFrac*.6)); // fade opacity
+
+        // Slight curve per segment
+        const segDir=dir.clone();
+        segDir.x+=Math.sin(bi*1.5+e)*.3*(1-p.stability);
+        segDir.z+=Math.cos(bi*1.2+e)*.3*(1-p.stability);
+        segDir.normalize();
+
+        const bEnd=prevEnd.clone().add(segDir.clone().multiplyScalar(bLen));
+        const bMid=new THREE.Vector3().addVectors(prevEnd,bEnd).multiplyScalar(.5);
+        const bDirV=new THREE.Vector3().subVectors(bEnd,prevEnd);
+        const bL=bDirV.length();
+        if(bL<.001)continue;
+
+        const boneGeo=createBoneGeometry(bL, Math.max(.02, bRadius), 0.25, 4);
+        const boneMat=new THREE.MeshLambertMaterial({
+          color:col.clone().multiplyScalar(1.1),
+          emissive:col.clone().multiplyScalar(d.glow*.08),
+          transparent:true, opacity:bOpacity
+        });
+        const bone=new THREE.Mesh(boneGeo, boneMat);
+        bone.position.copy(bMid);
+        bone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bDirV.clone().normalize());
+        tendrilGroup.add(bone);
+
+        // Small joint between segments
+        if(bi<boneCount-1){
+          const jR=bRadius*.5;
+          const jMat=new THREE.MeshLambertMaterial({
+            color:col.clone().multiplyScalar(1.2),
+            emissive:col.clone().multiplyScalar(d.glow*.1),
+            transparent:true, opacity:bOpacity*.8
+          });
+          const joint=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.03,jR),4,4),jMat);
+          joint.position.copy(bEnd);
+          tendrilGroup.add(joint);
+        }
+
+        prevEnd=bEnd;
       }
-      const curve=new THREE.CatmullRomCurve3(pts);
-      const tubeR=d.limbRadius*.25*d.bodyScale*.12;
-      const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,segs*3,tubeR,4,false),extMat.clone());
-      tube.userData={origin:origin.clone(),dir:dir.clone(),len:eLen,segs,attachIdx:ai,phase:Math.random()*Math.PI*2};
-      fieldGroup.add(tube);
+      tendrilGroup.userData={origin:origin.clone(),dir:dir.clone(),totalLen,boneCount,attachIdx:ai,phase:Math.random()*Math.PI*2};
+      fieldGroup.add(tendrilGroup);
     }
-    // Particle halo for high perception/curiosity
-    if(p.curiosity>.5||p.socialDrive>.5){
-      const hN=200+Math.floor(300*p.curiosity);
-      const hPos=new Float32Array(hN*3),hCol=new Float32Array(hN*3);
-      const hR=d.bodyScale*5+d.extLength*2;
+
+    // Subtle aura — distance-based opacity gradient, very subdued
+    if(p.curiosity>.4||p.socialDrive>.4){
+      const hN=120+Math.floor(150*p.curiosity);
+      const hPos=new Float32Array(hN*3),hCol=new Float32Array(hN*3),hSizes=new Float32Array(hN);
+      const hR=d.bodyScale*4+d.extLength*1.5;
       for(let i=0;i<hN;i++){
-        const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=hR*(.5+.5*Math.random());
-        hPos[i*3]=r*Math.sin(ph)*Math.cos(th);hPos[i*3+1]=r*Math.cos(ph);hPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);
-        const b=.2+.3*Math.random();
-        hCol[i*3]=col.r*b;hCol[i*3+1]=col.g*b*1.1;hCol[i*3+2]=col.b*b*1.3;
+        const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
+        const dist=hR*(.3+.7*Math.random());
+        hPos[i*3]=dist*Math.sin(ph)*Math.cos(th);
+        hPos[i*3+1]=dist*Math.cos(ph);
+        hPos[i*3+2]=dist*Math.sin(ph)*Math.sin(th);
+        // Closer = brighter, farther = dimmer (distance gradient)
+        const distNorm=dist/hR;
+        const fade=Math.max(0, 1-distNorm*distNorm); // quadratic falloff
+        const b=fade*(.15+.1*Math.random());
+        hCol[i*3]=col.r*b;hCol[i*3+1]=col.g*b*1.05;hCol[i*3+2]=col.b*b*1.1;
+        hSizes[i]=(.3+.3*fade)*(.5+.5*Math.random());
       }
       const hGeo=new THREE.BufferGeometry();
       hGeo.setAttribute('position',new THREE.BufferAttribute(hPos,3));
       hGeo.setAttribute('color',new THREE.BufferAttribute(hCol,3));
       const hPts=new THREE.Points(hGeo,new THREE.PointsMaterial({
-        size:.6,vertexColors:true,transparent:true,opacity:.2+.15*p.curiosity,
+        size:.4,vertexColors:true,transparent:true,opacity:.12+.06*p.curiosity,
         blending:THREE.AdditiveBlending,depthWrite:false
       }));
       hPts.userData={isHalo:true};
@@ -11226,29 +11345,18 @@ const LIFE=(function(){
     if(!fieldGroup)return;
     fieldGroup.children.forEach(child=>{
       if(child.userData.isHalo){
-        child.rotation.y+=.0003*dt*p.curiosity;
+        child.rotation.y+=.0002*dt*p.curiosity;
         child.rotation.x+=.0001*dt*p.socialDrive;
         return;
       }
-      // Animate tubes with wave
+      // Animate tendril bone chains with subtle sway
       const e=child.userData;
       if(!e||!e.origin)return;
-      const wave=d.extWave;
-      const pts=[];
-      for(let si=0;si<=e.segs;si++){
-        const su=si/e.segs;
-        const wx=wave*Math.sin(t*2.5+su*Math.PI*4+e.phase)*su*2.5;
-        const wz=wave*Math.cos(t*2+su*Math.PI*3+e.phase)*su*2.5;
-        const nx=.3*p.stress*fbm(su*3+t*.4+e.phase,2)*su;
-        pts.push(new THREE.Vector3(
-          e.origin.x+e.dir.x*e.len*su+wx+nx,
-          e.origin.y+e.dir.y*e.len*su+wave*Math.sin(t*1.8+su*5+e.phase)*su*1.5,
-          e.origin.z+e.dir.z*e.len*su+wz
-        ));
-      }
-      if(child.geometry)child.geometry.dispose();
-      const curve=new THREE.CatmullRomCurve3(pts);
-      child.geometry=new THREE.TubeGeometry(curve,e.segs*3,d.limbRadius*.25*d.bodyScale*.12,4,false);
+      const wave=d.extWave*.3; // reduced wave intensity
+      const swayX=wave*Math.sin(t*1.2+e.phase)*.5;
+      const swayZ=wave*Math.cos(t*1.0+e.phase)*.5;
+      child.rotation.x=swayX*(1-p.stability);
+      child.rotation.z=swayZ*(1-p.stability);
     });
   }
 
@@ -11263,13 +11371,12 @@ const LIFE=(function(){
     const cols=new Float32Array(trailMaxLen*3);
     geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
     geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
-    trailLine=new THREE.Line(geo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.3,blending:THREE.AdditiveBlending,depthWrite:false}));
+    trailLine=new THREE.Line(geo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.25,blending:THREE.AdditiveBlending,depthWrite:false}));
     trailLine.frustumCulled=false;
     scene.add(trailLine);
   }
   function updateTrail(dt,d,p){
     if(!trailLine||!coreGroup)return;
-    // Record center of organism
     const center=new THREE.Vector3();
     let n=0;
     spinePoints.forEach(pt=>{center.add(pt);n++;});
@@ -11284,7 +11391,7 @@ const LIFE=(function(){
     for(let i=0;i<tN;i++){
       pos[i*3]=trailPositions[i].x;pos[i*3+1]=trailPositions[i].y;pos[i*3+2]=trailPositions[i].z;
       const fade=i/tN;
-      cols[i*3]=col.r*fade*.6;cols[i*3+1]=col.g*fade*.8;cols[i*3+2]=col.b*fade;
+      cols[i*3]=col.r*fade*.5;cols[i*3+1]=col.g*fade*.6;cols[i*3+2]=col.b*fade*.8;
     }
     for(let i=tN;i<trailMaxLen;i++){pos[i*3]=pos[i*3+1]=pos[i*3+2]=0;cols[i*3]=cols[i*3+1]=cols[i*3+2]=0;}
     trailLine.geometry.attributes.position.needsUpdate=true;
@@ -11297,22 +11404,21 @@ const LIFE=(function(){
   // ═══════════════════════════════════════
   function buildScene(){
     scene=new THREE.Scene();
-    scene.fog=new THREE.FogExp2(0x000308,.0008);
+    scene.fog=new THREE.FogExp2(0x000308,.0006);
     camera=new THREE.PerspectiveCamera(50,W/H,.1,2000);
     camera.position.set(0,2,18);
-    // Lights
-    scene.add(new THREE.AmbientLight(0x080818,1.0));
-    const l1=new THREE.PointLight(0x4488ff,3,400);l1.position.set(20,20,20);scene.add(l1);
-    const l2=new THREE.PointLight(0xff2266,1.8,300);l2.position.set(-15,-10,15);scene.add(l2);
-    const l3=new THREE.PointLight(0x22ffaa,1,250);l3.position.set(0,-20,10);scene.add(l3);
+    // Lights — softer, less colorful for matte look
+    scene.add(new THREE.AmbientLight(0x1a1a2e,1.4));
+    const l1=new THREE.DirectionalLight(0xccccee,0.8);l1.position.set(10,15,10);scene.add(l1);
+    const l2=new THREE.PointLight(0x334466,1.5,300);l2.position.set(-12,-8,12);scene.add(l2);
+    const l3=new THREE.PointLight(0x223344,0.6,200);l3.position.set(0,-15,8);scene.add(l3);
     scene.userData.lights=[l1,l2,l3];
     // Starfield
     const sN=1200,sPos=new Float32Array(sN*3);
     for(let i=0;i<sN;i++){const r=100+Math.random()*600,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);}
     const sGeo=new THREE.BufferGeometry();sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
-    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x223355,size:.6,transparent:true,opacity:.12,blending:THREE.AdditiveBlending,depthWrite:false}));
+    starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x223355,size:.5,transparent:true,opacity:.1,blending:THREE.AdditiveBlending,depthWrite:false}));
     scene.add(starField);
-    // Build organism
     rebuildOrganism();
   }
 
@@ -11356,69 +11462,55 @@ const LIFE=(function(){
     const p=getParams();
     const d=derive(p);
 
-    // Check if rebuild needed
     if(d.stage!==lastStage||d.jointCount!==lastJointCount||(frameCount%480===0)){
       rebuildOrganism();
     }
 
-    // Auto-rotate
     if(autoRotate)camTheta+=.0008*dt;
 
-    // Camera
     camera.position.x=Math.sin(camTheta)*Math.cos(camPhi)*camDist;
     camera.position.y=Math.sin(camPhi)*camDist*.6+2;
     camera.position.z=Math.cos(camTheta)*Math.cos(camPhi)*camDist;
     camera.lookAt(0,1,0);
 
-    // Stars
     if(starField)starField.rotation.y+=.00003*dt;
 
     // ── Animate Core Body ──
     if(coreGroup){
-      // Breathing
       const breathe=1+d.pulseAmp*Math.sin(t*d.breathRate);
       coreGroup.scale.setScalar(breathe);
-      // Animate joints
       coreGroup.children.forEach(child=>{
         const ud=child.userData;
         if(ud.jointIdx!==undefined){
-          const jit=d.noiseAmp*2;
+          const jit=d.noiseAmp*1.5;
           child.position.x=spineData[ud.jointIdx]?.basePos.x+Math.sin(t*1.8+ud.u*5)*jit||0;
           child.position.z=spineData[ud.jointIdx]?.basePos.z+Math.cos(t*2.1+ud.u*4)*jit||0;
-          const pulse=1+.08*Math.sin(t*d.breathRate*2+ud.u*Math.PI*2)*p.energy;
+          const pulse=1+.06*Math.sin(t*d.breathRate*2+ud.u*Math.PI*2)*p.energy;
           child.scale.setScalar(pulse);
         }
         if(ud.isBranch){
-          const sway=(.02+.06*(1-p.stability))*Math.sin(t*1.3+ud.baseAng*2);
+          const sway=(.015+.04*(1-p.stability))*Math.sin(t*1.3+ud.baseAng*2);
           child.rotation.z=sway;
-          child.rotation.x=Math.cos(t+ud.baseAng)*sway*.5;
+          child.rotation.x=Math.cos(t+ud.baseAng)*sway*.4;
         }
         if(ud.segIdx!==undefined&&!ud.isBranch){
-          const b=1+.025*Math.sin(t*d.breathRate+ud.u*Math.PI);
+          const b=1+.02*Math.sin(t*d.breathRate+ud.u*Math.PI);
           child.scale.x=b;child.scale.z=b;
         }
-        // Update material glow
+        // Update material color smoothly
         if(child.material&&child.material.emissive){
           const col=stateColor(p);
           child.material.color.lerp(col,.02*dt);
-          child.material.emissive.copy(col).multiplyScalar(d.glow*.2);
+          child.material.emissive.copy(col).multiplyScalar(d.glow*.12);
         }
       });
     }
 
-    // ── Animate Flow ──
     updateFlow(dt,d,p);
-
-    // ── Animate Field ──
     updateField(dt,d,p);
-
-    // ── Animate Trail ──
     updateTrail(dt,d,p);
 
-    // ── Evo flash ──
     if(evoFlash>0)evoFlash-=dt*.03;
-
-    // ── Update overlays ──
     if(frameCount%15===0)updateOverlay(d,p);
 
     renderer.render(scene,camera);
@@ -11430,7 +11522,6 @@ const LIFE=(function(){
     const pill=document.getElementById('life-stage-lbl');
     if(pill)pill.textContent=`Stage ${d.stage} · ${stageLabels[d.stage]||'未知'}`;
 
-    // Mode (from BA_STATE)
     let mode='—',modeDesc='—',direction='—';
     if(typeof BA_STATE!=='undefined'&&BA_STATE.getDominantMode){
       const m=BA_STATE.getDominantMode();
@@ -11442,7 +11533,6 @@ const LIFE=(function(){
     const sumEl=document.getElementById('life-viz-summary');
     if(sumEl)sumEl.textContent=modeDesc||'行動ログから生成される生命体';
 
-    // Direction of change
     if(typeof BA_STATE!=='undefined'&&BA_STATE.history&&BA_STATE.history.length>=3){
       const h=BA_STATE.history;
       const last=h[h.length-1]?.params||{};
@@ -11470,14 +11560,12 @@ const LIFE=(function(){
       const v=parseInt(scrub.value);
       if(v>=100){
         label.textContent='now';
-        // Reset to current state
         rebuildOrganism();
       }else if(typeof BA_STATE!=='undefined'&&BA_STATE.history.length>0){
         const idx=Math.floor(v/100*(BA_STATE.history.length-1));
         const snap=BA_STATE.history[idx];
         if(snap){
           label.textContent=`#${idx}`;
-          // Temporarily override params and rebuild
           const p=snap.params;
           const d=derive(p);
           buildCore(d,p);buildField(d,p);
@@ -11498,7 +11586,6 @@ const LIFE=(function(){
       clk=new THREE.Clock();
       buildScene();
       initTimeScrub();
-      // Mouse interaction
       c.addEventListener('mousedown',onMouseDown);
       c.addEventListener('mousemove',onMouseMove);
       window.addEventListener('mouseup',onMouseUp);
@@ -11506,7 +11593,6 @@ const LIFE=(function(){
       c.addEventListener('touchstart',onTouchStart,{passive:true});
       c.addEventListener('touchmove',onTouchMove,{passive:true});
       c.addEventListener('touchend',onTouchEnd);
-      // Resize
       const ro=new ResizeObserver(()=>{
         W=cv.clientWidth;H=cv.clientHeight;
         if(W>0&&H>0){renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();}
@@ -11517,9 +11603,7 @@ const LIFE=(function(){
     stop(){if(raf){cancelAnimationFrame(raf);raf=null;}},
     resize(){if(!cv||!renderer)return;W=cv.clientWidth;H=cv.clientHeight;if(W>0&&H>0){renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();}},
     applyResponse(text,sent){
-      // Feed from chat → mutate organism
       if(typeof BA_STATE!=='undefined'){
-        // Chat sentiment → BA_STATE
         if(sent.score>=2){BA_STATE.params.energy=Math.min(1,BA_STATE.params.energy+.05);BA_STATE.params.motivation=Math.min(1,BA_STATE.params.motivation+.03);}
         else if(sent.score<=-2){BA_STATE.params.stress=Math.min(1,BA_STATE.params.stress+.05);BA_STATE.params.stability=Math.max(0,BA_STATE.params.stability-.03);}
         BA_STATE.save();
@@ -11529,11 +11613,9 @@ const LIFE=(function(){
       const evo=(typeof LIFE_STATE!=='undefined')?LIFE_STATE.checkEvolution():{evolved:false};
       if(evo.evolved){evoFlash=1.5;evoMsg=`⬡ Stage ${evo.to} — ${evo.label} に進化！`;setTimeout(()=>{if(typeof updateLifeStatus==='function')updateLifeStatus();},200);}
       if(typeof LIFE_STATE!=='undefined')LIFE_STATE.save();
-      // Trigger rebuild
       rebuildOrganism();
     },
     divide(){
-      // Theory boost → rebuild with evolved params
       if(typeof BA_STATE!=='undefined'){
         BA_STATE.params.growthBias=Math.min(1,BA_STATE.params.growthBias+.03);
         BA_STATE.params.energy=Math.min(1,BA_STATE.params.energy+.02);
@@ -11548,6 +11630,7 @@ const LIFE=(function(){
     }
   };
 })();
+
 
 
 
