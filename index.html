@@ -10922,298 +10922,127 @@ const LIFE=(function(){
   function lerp(a,b,t){return a+(b-a)*t;}
 
   // ═══════════════════════════════════════════════════
-  //  INDIVIDUAL DNA SYSTEM v6
-  //  Recursive branching + skeletal parameters + vibration
+  //  DNA SYSTEM v7
   // ═══════════════════════════════════════════════════
+  let DNA=null;
 
-  let DNA = null;
-
-  function seedFromString(str, count){
+  function seedFromString(str,count){
     const seeds=[];
     for(let i=0;i<count;i++){
       let h=0;
-      for(let j=0;j<str.length;j++){
-        h=((h<<5)-h+str.charCodeAt(j)+i*7919)|0;
-      }
+      for(let j=0;j<str.length;j++) h=((h<<5)-h+str.charCodeAt(j)+i*7919)|0;
       seeds.push(((Math.sin(h)*43758.5453)%1+1)%1);
     }
     return seeds;
   }
 
   function generateDNA(identifier){
-    const s=seedFromString(identifier||'default_organism', 800);
+    const s=seedFromString(identifier||'default_organism',800);
     let si=0;
     const next=()=>s[si++%s.length];
     const nextRange=(lo,hi)=>lo+(hi-lo)*next();
     const nextInt=(lo,hi)=>Math.floor(nextRange(lo,hi+0.999));
 
-    // ── 1. Weight Matrix W_i: 11D state → 22 visual params ──
-    const STATE_DIM=11;
-    const VIS_DIM=22;
+    const STATE_DIM=11,VIS_DIM=22;
     const weights=[];
     for(let v=0;v<VIS_DIM;v++){
       const row=[];
       for(let d=0;d<STATE_DIM;d++) row.push(nextRange(-1.5,1.5));
-      let mag=0;
-      for(let d=0;d<STATE_DIM;d++) mag+=Math.abs(row[d]);
+      let mag=0;for(let d=0;d<STATE_DIM;d++) mag+=Math.abs(row[d]);
       if(mag>0) for(let d=0;d<STATE_DIM;d++) row[d]/=mag;
       weights.push(row);
     }
-
-    // ── 2. Nonlinear Functions ──
     const NL_TYPES=['power','sin','log','sigmoid','step','tanh'];
     const nonlinear=[];
     for(let v=0;v<VIS_DIM;v++){
-      nonlinear.push({
-        type:NL_TYPES[nextInt(0,5)],
-        gamma:nextRange(0.3,3.0),
-        phi:nextRange(0.5,3.0),
-        alpha:nextRange(0.5,5.0),
-        center:nextRange(0.2,0.8),
-        steepness:nextRange(3,12),
-      });
+      nonlinear.push({type:NL_TYPES[nextInt(0,5)],gamma:nextRange(0.3,3.0),phi:nextRange(0.5,3.0),alpha:nextRange(0.5,5.0),center:nextRange(0.2,0.8),steepness:nextRange(3,12)});
     }
-
-    // ── 3. Cross-Parameter Interactions ──
     const interactions=[];
-    for(let i=0;i<8;i++){
-      interactions.push({
-        paramA:nextInt(0,STATE_DIM-1),
-        paramB:nextInt(0,STATE_DIM-1),
-        targetVis:nextInt(0,VIS_DIM-1),
-        mode:nextInt(0,3),
-        strength:nextRange(0.3,1.2),
-      });
-    }
-
-    // ── 4. Thresholds ──
+    for(let i=0;i<8;i++) interactions.push({paramA:nextInt(0,STATE_DIM-1),paramB:nextInt(0,STATE_DIM-1),targetVis:nextInt(0,VIS_DIM-1),mode:nextInt(0,3),strength:nextRange(0.3,1.2)});
     const thresholds=[];
-    for(let i=0;i<5;i++){
-      thresholds.push({
-        param:nextInt(0,STATE_DIM-1),
-        value:nextRange(0.3,0.85),
-        effect:nextInt(0,4),
-        magnitude:nextRange(0.5,2.0),
-      });
-    }
-
-    // ── 5. Meaning Remapping ──
+    for(let i=0;i<5;i++) thresholds.push({param:nextInt(0,STATE_DIM-1),value:nextRange(0.3,0.85),effect:nextInt(0,4),magnitude:nextRange(0.5,2.0)});
     const meaningMap=[];
     const shuffled=[0,1,2,3,4,5,6,7,8,9,10];
-    for(let i=shuffled.length-1;i>0;i--){
-      const j=nextInt(0,i);
-      [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
-    }
+    for(let i=shuffled.length-1;i>0;i--){const j=nextInt(0,i);[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
     for(let i=0;i<STATE_DIM;i++) meaningMap.push(shuffled[i]);
 
-    // ── 6. Body Plan ──
-    const bodyPlan={
-      colorStrategy:nextInt(0,4),
-      baseHue:nextRange(0,360),
-      saturationBias:nextRange(0.2,0.9),
-      moyaDensity:nextRange(0.4,2.0),
-      moyaBaseColor:nextInt(0,2),
-      scaleMultiplier:nextRange(0.6,1.6),
-    };
+    const bodyPlan={colorStrategy:nextInt(0,4),baseHue:nextRange(0,360),saturationBias:nextRange(0.2,0.9),moyaDensity:nextRange(0.4,2.0),moyaBaseColor:nextInt(0,2),scaleMultiplier:nextRange(0.6,1.6)};
 
-    // ── 7. RECURSIVE BRANCHING GENES ──
-    const branchGenes={
-      maxDepth:nextInt(3,6),
-      baseBranchCount:nextInt(2,4),
-      branchDecay:nextRange(0.4,0.9),
-      lengthDecay:nextRange(0.5,0.85),
-      spreadAngle:nextRange(0.3,1.2),
-      directionBias:new THREE.Vector3(nextRange(-0.5,0.5),nextRange(0.3,1.0),nextRange(-0.5,0.5)).normalize(),
-      curvature:nextRange(0.0,0.8),
-      asymmetry:nextRange(0.0,0.7),
-      noiseProfile:nextRange(0.0,0.5),
-      phaseOffset:nextRange(0,Math.PI*2),
-      rootLength:nextRange(1.5,3.5),
-      rootThickness:nextRange(0.15,0.45),
-      childProbs:[],
-    };
+    const branchGenes={maxDepth:nextInt(3,6),baseBranchCount:nextInt(2,4),branchDecay:nextRange(0.4,0.9),lengthDecay:nextRange(0.5,0.85),spreadAngle:nextRange(0.3,1.2),directionBias:new THREE.Vector3(nextRange(-0.5,0.5),nextRange(0.3,1.0),nextRange(-0.5,0.5)).normalize(),curvature:nextRange(0.0,0.8),asymmetry:nextRange(0.0,0.7),noiseProfile:nextRange(0.0,0.5),phaseOffset:nextRange(0,Math.PI*2),rootLength:nextRange(1.5,3.5),rootThickness:nextRange(0.15,0.45),childProbs:[]};
     for(let depth=0;depth<branchGenes.maxDepth;depth++){
-      const probs=[];
-      for(let c=0;c<4;c++) probs.push(nextRange(0.1,1.0)*(1-depth*0.12));
+      const probs=[];for(let c=0;c<4;c++) probs.push(nextRange(0.1,1.0)*(1-depth*0.12));
       branchGenes.childProbs.push(probs);
     }
 
-    // ── 8. SKELETAL DNA TEMPLATES ──
-    // These are per-organism templates that get modulated per-bone
-    // 6 shape types: 0=tapered, 1=center-swollen, 2=wave, 3=locally-massed, 4=segmented-angular, 5=organic-taper
-    const skeletalDNA={
-      // Base shape
-      primaryShape:nextInt(0,5),
-      secondaryShape:nextInt(0,5),       // some bones use secondary
-      shapeMixRatio:nextRange(0.0,0.4),  // how often secondary appears
-      // Taper
-      taperStart:nextRange(0.5,1.2),     // radius multiplier at base
-      taperEnd:nextRange(0.02,0.4),      // radius multiplier at tip
-      taperCurve:nextRange(0.3,2.5),     // taper curve exponent (1=linear, <1=fast taper, >1=slow taper)
-      // Curvature
-      curvatureAmount:nextRange(0.0,1.5),
-      curvatureProfile:nextInt(0,4),     // 0=uniform, 1=root-heavy, 2=tip-heavy, 3=sinusoidal, 4=segmented
-      curvatureAxis:new THREE.Vector3(nextRange(-1,1),nextRange(-0.3,0.3),nextRange(-1,1)).normalize(),
-      // Twist
-      twistAmount:nextRange(0.0,Math.PI*2),
-      twistProfile:nextInt(0,2),         // 0=linear, 1=accelerating, 2=oscillating
-      // Segmentation
-      segmentCount:nextInt(6,16),        // bone mesh resolution along length
-      segmentStyle:nextInt(0,3),         // 0=smooth, 1=ridged, 2=knobby, 3=faceted
-      ridgeAmplitude:nextRange(0.0,0.3),
-      // Stiffness / Flexibility / Elasticity
-      stiffness:nextRange(0.1,1.0),
-      flexibility:nextRange(0.1,1.0),
-      elasticity:nextRange(0.1,1.0),
-      density:nextRange(0.3,1.5),
-      damping:nextRange(0.1,0.9),
-      // Vibration
-      vibrationAmp:nextRange(0.0,0.08),
-      vibrationFreq:nextRange(0.5,12.0),
-      vibrationNoise:nextRange(0.0,0.5),  // noise modulation on vibration
-      // Pulse
-      pulseAmp:nextRange(0.0,0.15),
-      pulseFreq:nextRange(0.3,3.0),
-      // Resonance
-      resonanceBias:nextRange(0.0,1.0),  // how much neighboring bones influence each other
-      resonanceFreq:nextRange(1.0,6.0),
-      // Mechanical bias (0=organic, 1=mechanical)
-      mechanicalBias:nextRange(0.0,1.0),
-      // Per-depth modifiers (skeletal properties change with depth)
-      depthThicknessDecay:nextRange(0.5,0.9),
-      depthStiffnessShift:nextRange(-0.3,0.3),
-      depthVibAmpShift:nextRange(-0.02,0.04),
-      // Swelling / local mass
-      swellPosition:nextRange(0.2,0.8),   // where along bone the swell appears
-      swellAmount:nextRange(0.0,1.5),     // how much swell
-      swellWidth:nextRange(0.1,0.4),      // how wide the swell is
-      // Wave shape parameters
-      waveCount:nextRange(1,4),
-      waveAmplitude:nextRange(0.0,0.4),
-    };
+    const skeletalDNA={primaryShape:nextInt(0,5),secondaryShape:nextInt(0,5),shapeMixRatio:nextRange(0.0,0.4),taperStart:nextRange(0.5,1.2),taperEnd:nextRange(0.02,0.4),taperCurve:nextRange(0.3,2.5),curvatureAmount:nextRange(0.0,1.5),curvatureProfile:nextInt(0,4),curvatureAxis:new THREE.Vector3(nextRange(-1,1),nextRange(-0.3,0.3),nextRange(-1,1)).normalize(),twistAmount:nextRange(0.0,Math.PI*2),twistProfile:nextInt(0,2),segmentCount:nextInt(6,16),segmentStyle:nextInt(0,3),ridgeAmplitude:nextRange(0.0,0.3),stiffness:nextRange(0.1,1.0),flexibility:nextRange(0.1,1.0),elasticity:nextRange(0.1,1.0),density:nextRange(0.3,1.5),damping:nextRange(0.1,0.9),vibrationAmp:nextRange(0.0,0.08),vibrationFreq:nextRange(0.5,12.0),vibrationNoise:nextRange(0.0,0.5),pulseAmp:nextRange(0.0,0.15),pulseFreq:nextRange(0.3,3.0),resonanceBias:nextRange(0.0,1.0),resonanceFreq:nextRange(1.0,6.0),mechanicalBias:nextRange(0.0,1.0),depthThicknessDecay:nextRange(0.5,0.9),depthStiffnessShift:nextRange(-0.3,0.3),depthVibAmpShift:nextRange(-0.02,0.04),swellPosition:nextRange(0.2,0.8),swellAmount:nextRange(0.0,1.5),swellWidth:nextRange(0.1,0.4),waveCount:nextRange(1,4),waveAmplitude:nextRange(0.0,0.4)};
 
-    // ── 9. GROWTH & BEHAVIOR TENDENCIES ──
-    const growthGenes={
-      growthTendency:nextRange(0.2,0.9),
-      dormancyTendency:nextRange(0.05,0.5),
-      curlTendency:nextRange(0.0,0.6),
-      recoilTendency:nextRange(0.0,0.4),
-      pulseTendency:nextRange(0.1,0.7),
-      branchingTendency:nextRange(0.1,0.6),
-      growthSpeed:nextRange(0.3,1.5),
-      growthExponent:nextRange(0.5,2.0),
-      detachChance:nextRange(0.0,0.15),
-    };
+    const growthGenes={growthTendency:nextRange(0.2,0.9),dormancyTendency:nextRange(0.05,0.5),curlTendency:nextRange(0.0,0.6),recoilTendency:nextRange(0.0,0.4),pulseTendency:nextRange(0.1,0.7),branchingTendency:nextRange(0.1,0.6),growthSpeed:nextRange(0.3,1.5),growthExponent:nextRange(0.5,2.0),detachChance:nextRange(0.0,0.15)};
 
-    // ── 10. MOTION PERSONALITY ──
     const motionType=nextInt(0,4);
-    const motionGenes={
-      type:motionType,
-      breathFreq:nextRange(0.3,1.5),
-      breathAmp:nextRange(0.02,0.12),
-      oscillFreq:nextRange(0.5,3.0),
-      oscillAmp:nextRange(0.01,0.08),
-      reactivity:nextRange(0.1,0.8),
-      phaseSpread:nextRange(0.3,2.0),
-      nervousTwitch:nextRange(0.02,0.1),
-      nervousFreq:nextRange(3.0,8.0),
-      fluidWaveLen:nextRange(1.0,4.0),
-      fluidDamping:nextRange(0.3,0.8),
-      mechStepSize:nextRange(0.05,0.2),
-      mechInterval:nextRange(0.3,1.5),
-      contractCycle:nextRange(1.0,4.0),
-      contractDepth:nextRange(0.2,0.7),
-      curlSpeed:nextRange(0.3,1.5),
-      curlTightness:nextRange(0.3,1.5),
+    const motionGenes={type:motionType,breathFreq:nextRange(0.3,1.5),breathAmp:nextRange(0.02,0.12),oscillFreq:nextRange(0.5,3.0),oscillAmp:nextRange(0.01,0.08),reactivity:nextRange(0.1,0.8),phaseSpread:nextRange(0.3,2.0),nervousTwitch:nextRange(0.02,0.1),nervousFreq:nextRange(3.0,8.0),fluidWaveLen:nextRange(1.0,4.0),fluidDamping:nextRange(0.3,0.8),mechStepSize:nextRange(0.05,0.2),mechInterval:nextRange(0.3,1.5),contractCycle:nextRange(1.0,4.0),contractDepth:nextRange(0.2,0.7),curlSpeed:nextRange(0.3,1.5),curlTightness:nextRange(0.3,1.5)};
+
+    // ── TENTACLE GENES ──
+    const tentacleGenes={
+      baseCount:nextInt(2,6),
+      lengthMult:nextRange(1.5,4.0),
+      thicknessMult:nextRange(0.15,0.4),
+      flexibility:nextRange(0.5,2.0),
+      waveFreq:nextRange(0.5,3.0),
+      waveAmp:nextRange(0.1,0.6),
+      growthDelay:nextRange(3.0,8.0), // seconds before tentacles appear
+      segCount:nextInt(5,12),
     };
 
-    return {weights, nonlinear, interactions, thresholds, meaningMap, bodyPlan,
-            branchGenes, skeletalDNA, growthGenes, motionGenes, identifier};
+    // ── ORBITER GENES ──
+    const orbiterGenes={
+      baseCount:nextInt(2,5),
+      orbitRadius:nextRange(2.0,5.0),
+      orbitSpeed:nextRange(0.2,0.8),
+      size:nextRange(0.1,0.4),
+      wobble:nextRange(0.0,0.5),
+      spawnDelay:nextRange(5.0,12.0),
+    };
+
+    return{weights,nonlinear,interactions,thresholds,meaningMap,bodyPlan,branchGenes,skeletalDNA,growthGenes,motionGenes,tentacleGenes,orbiterGenes,identifier};
   }
 
-  // Apply nonlinear transformation
-  function applyNonlinear(x, nl){
+  function applyNonlinear(x,nl){
     x=Math.max(0,Math.min(1,x));
     switch(nl.type){
-      case 'power': return Math.pow(x,nl.gamma);
-      case 'sin': return (Math.sin(Math.PI*x*nl.phi-Math.PI/2)+1)/2;
-      case 'log': return Math.log(1+nl.alpha*x)/Math.log(1+nl.alpha);
-      case 'sigmoid': return 1/(1+Math.exp(-nl.steepness*(x-nl.center)));
-      case 'step': return x>nl.center?1:x>(nl.center-.15)?((x-nl.center+.15)/.15):0;
-      case 'tanh': return (Math.tanh(nl.steepness*(x-nl.center))+1)/2;
-      default: return x;
+      case 'power':return Math.pow(x,nl.gamma);
+      case 'sin':return(Math.sin(Math.PI*x*nl.phi-Math.PI/2)+1)/2;
+      case 'log':return Math.log(1+nl.alpha*x)/Math.log(1+nl.alpha);
+      case 'sigmoid':return 1/(1+Math.exp(-nl.steepness*(x-nl.center)));
+      case 'step':return x>nl.center?1:x>(nl.center-.15)?((x-nl.center+.15)/.15):0;
+      case 'tanh':return(Math.tanh(nl.steepness*(x-nl.center))+1)/2;
+      default:return x;
     }
   }
 
-  // ── F_i(state) → visual parameters ──
-  function transformState(stateArr, dna){
-    if(!dna) return null;
+  function transformState(stateArr,dna){
+    if(!dna)return null;
     const S=dna.meaningMap.map(idx=>stateArr[idx]||0.5);
     const raw=[];
-    for(let v=0;v<dna.weights.length;v++){
-      let sum=0;
-      for(let d=0;d<S.length;d++) sum+=dna.weights[v][d]*S[d];
-      raw.push(sum);
-    }
-    const nl=raw.map((v,i)=>applyNonlinear((v+1)/2, dna.nonlinear[i]));
+    for(let v=0;v<dna.weights.length;v++){let sum=0;for(let d=0;d<S.length;d++)sum+=dna.weights[v][d]*S[d];raw.push(sum);}
+    const nl=raw.map((v,i)=>applyNonlinear((v+1)/2,dna.nonlinear[i]));
     const vis=[...nl];
     dna.interactions.forEach(ix=>{
-      const a=S[ix.paramA]||0.5;
-      const b=S[ix.paramB]||0.5;
+      const a=S[ix.paramA]||0.5,b=S[ix.paramB]||0.5;
       let mod=0;
-      switch(ix.mode){
-        case 0: mod=a*b; break;
-        case 1: mod=Math.max(a,b); break;
-        case 2: mod=Math.abs(a-b); break;
-        case 3: mod=a+b>0?(2*a*b)/(a+b):0; break;
-      }
-      vis[ix.targetVis]=Math.max(0,Math.min(1, vis[ix.targetVis]+mod*ix.strength-ix.strength/2));
+      switch(ix.mode){case 0:mod=a*b;break;case 1:mod=Math.max(a,b);break;case 2:mod=Math.abs(a-b);break;case 3:mod=a+b>0?(2*a*b)/(a+b):0;break;}
+      vis[ix.targetVis]=Math.max(0,Math.min(1,vis[ix.targetVis]+mod*ix.strength-ix.strength/2));
     });
     let thresholdMods={doubleBranch:false,shrink:false,spiral:false,fragment:false,merge:false};
-    dna.thresholds.forEach(th=>{
-      if(S[th.param]>th.value){
-        switch(th.effect){
-          case 0: thresholdMods.doubleBranch=true; break;
-          case 1: thresholdMods.shrink=true; break;
-          case 2: thresholdMods.spiral=true; break;
-          case 3: thresholdMods.fragment=true; break;
-          case 4: thresholdMods.merge=true; break;
-        }
-      }
-    });
-
-    return {
-      bodyScale:  0.3+vis[0]*2.0,
-      branchDepth: Math.max(2,Math.floor(2+vis[1]*4)),
-      boneRadius: 0.08+vis[2]*0.4,
-      bendAmp:    vis[3]*1.0,
-      twistAmp:   vis[4]*0.8,
-      moyaHeat:   vis[5],
-      moyaSpeed:  vis[6],
-      moyaStab:   vis[7],
-      moyaRot:    vis[8],
-      extCount:   Math.floor(vis[9]*6),
-      extLength:  0.3+vis[10]*1.5,
-      colorR:     vis[11],
-      colorG:     vis[12],
-      colorB:     vis[13],
-      breathRate: 0.5+vis[14]*2.0,
-      motionIntensity: 0.3+vis[15]*1.5,
-      growthDrive: vis[16],
-      curlDrive:   vis[17],
-      chaosDrive:  vis[18],
-      dormancyDrive: vis[19],
-      vibrationDrive: vis[20],       // state-driven vibration intensity
-      skeletalStressDrive: vis[21],  // state-driven skeletal stress
-      thresholdMods,
-      bodyPlan:dna.bodyPlan,
-      branchGenes:dna.branchGenes,
-      skeletalDNA:dna.skeletalDNA,
-      growthGenes:dna.growthGenes,
-      motionGenes:dna.motionGenes,
-      noiseAmp:   0.01+vis[3]*0.12,
-      pulseAmp:   0.01+vis[14]*0.08,
-      flowChaos:  vis[18]*0.8,
+    dna.thresholds.forEach(th=>{if(S[th.param]>th.value){switch(th.effect){case 0:thresholdMods.doubleBranch=true;break;case 1:thresholdMods.shrink=true;break;case 2:thresholdMods.spiral=true;break;case 3:thresholdMods.fragment=true;break;case 4:thresholdMods.merge=true;break;}}});
+    return{
+      bodyScale:0.3+vis[0]*2.0,branchDepth:Math.max(2,Math.floor(2+vis[1]*4)),boneRadius:0.08+vis[2]*0.4,
+      bendAmp:vis[3]*1.0,twistAmp:vis[4]*0.8,moyaHeat:vis[5],moyaSpeed:vis[6],moyaStab:vis[7],moyaRot:vis[8],
+      extCount:Math.floor(vis[9]*6),extLength:0.3+vis[10]*1.5,colorR:vis[11],colorG:vis[12],colorB:vis[13],
+      breathRate:0.5+vis[14]*2.0,motionIntensity:0.3+vis[15]*1.5,growthDrive:vis[16],curlDrive:vis[17],
+      chaosDrive:vis[18],dormancyDrive:vis[19],vibrationDrive:vis[20],skeletalStressDrive:vis[21],
+      thresholdMods,bodyPlan:dna.bodyPlan,branchGenes:dna.branchGenes,skeletalDNA:dna.skeletalDNA,
+      growthGenes:dna.growthGenes,motionGenes:dna.motionGenes,tentacleGenes:dna.tentacleGenes,orbiterGenes:dna.orbiterGenes,
+      noiseAmp:0.01+vis[3]*0.12,pulseAmp:0.01+vis[14]*0.08,flowChaos:vis[18]*0.8,
       stage:vis[1]<.15?0:vis[1]<.25?1:vis[1]<.4?2:vis[1]<.55?3:vis[1]<.72?4:5,
     };
   }
@@ -11221,373 +11050,164 @@ const LIFE=(function(){
   function getStateArray(){
     if(typeof BA_STATE!=='undefined'&&BA_STATE.params){
       const p=BA_STATE.params;
-      return[p.energy||.5,p.focus||.5,p.motivation||.5,p.stability||.5,
-             p.curiosity||.5,p.stress||.3,p.socialDrive||.4,p.discipline||.5,
-             p.riskTolerance||.5,p.rewardSensitivity||.5,p.growthBias||.5];
+      return[p.energy||.5,p.focus||.5,p.motivation||.5,p.stability||.5,p.curiosity||.5,p.stress||.3,p.socialDrive||.4,p.discipline||.5,p.riskTolerance||.5,p.rewardSensitivity||.5,p.growthBias||.5];
     }
     const c=(typeof LIFE_STATE!=='undefined')?LIFE_STATE.coords:[0,0,0,0,1,1,1,1,.593,.15,117];
-    return[Math.min(1,c[4]/3),.5,Math.min(1,c[1]/50),Math.min(1,c[7]),
-           Math.min(1,c[6]/3),.3,.4,.5,Math.min(1,c[0]/(Math.PI*2)),
-           Math.min(1,c[9]*3),Math.min(1,c[10]/180)];
+    return[Math.min(1,c[4]/3),.5,Math.min(1,c[1]/50),Math.min(1,c[7]),Math.min(1,c[6]/3),.3,.4,.5,Math.min(1,c[0]/(Math.PI*2)),Math.min(1,c[9]*3),Math.min(1,c[10]/180)];
   }
 
   // ── Color ──
-  function hsl2rgb(h,s,l){
-    h/=360;const a=s*Math.min(l,1-l);
-    const f=(n)=>{const k=(n+h*12)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));};
-    return new THREE.Color(f(0),f(8),f(4));
-  }
-  function individualColor(d){
-    const bp=d.bodyPlan;
-    const base=hsl2rgb(bp.baseHue,bp.saturationBias,0.35+d.colorR*0.3);
-    base.r=base.r*0.6+d.colorR*0.4;
-    base.g=base.g*0.6+d.colorG*0.4;
-    base.b=base.b*0.6+d.colorB*0.4;
-    return base;
-  }
-  function depthColor(d,depth){
-    const bp=d.bodyPlan;
-    switch(bp.colorStrategy){
-      case 1: return hsl2rgb(bp.baseHue+depth*40,bp.saturationBias,0.35+d.colorR*0.3);
-      case 2: return hsl2rgb(depth%2===0?bp.baseHue:(bp.baseHue+180)%360,bp.saturationBias,0.35+d.colorG*0.3);
-      case 3: return hsl2rgb(bp.baseHue+depth*120,bp.saturationBias,0.35+d.colorB*0.25);
-      case 4: return hsl2rgb(bp.baseHue+depth*30,bp.saturationBias*0.8,0.3+d.colorR*0.35);
-      default: return individualColor(d);
-    }
-  }
+  function hsl2rgb(h,s,l){h/=360;const a=s*Math.min(l,1-l);const f=(n)=>{const k=(n+h*12)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));};return new THREE.Color(f(0),f(8),f(4));}
+  function individualColor(d){const bp=d.bodyPlan;const base=hsl2rgb(bp.baseHue,bp.saturationBias,0.35+d.colorR*0.3);base.r=base.r*0.6+d.colorR*0.4;base.g=base.g*0.6+d.colorG*0.4;base.b=base.b*0.6+d.colorB*0.4;return base;}
+  function depthColor(d,depth){const bp=d.bodyPlan;switch(bp.colorStrategy){case 1:return hsl2rgb(bp.baseHue+depth*40,bp.saturationBias,0.35+d.colorR*0.3);case 2:return hsl2rgb(depth%2===0?bp.baseHue:(bp.baseHue+180)%360,bp.saturationBias,0.35+d.colorG*0.3);case 3:return hsl2rgb(bp.baseHue+depth*120,bp.saturationBias,0.35+d.colorB*0.25);default:return individualColor(d);}}
 
   // ═══════════════════════════════════════════════════
   //  PER-BONE SKELETAL PARAMETERS
-  //  Each bone gets unique physical properties derived
-  //  from skeletalDNA + depth + node random
   // ═══════════════════════════════════════════════════
-
-  function generateBoneParams(skDNA, depth, childIdx, nodeRand, d){
+  function generateBoneParams(skDNA,depth,childIdx,nodeRand,d){
     const depthFrac=depth/(d.branchGenes.maxDepth||4);
-
-    // Determine shape for this bone
     let shape=skDNA.primaryShape;
-    if(nodeRand<skDNA.shapeMixRatio) shape=skDNA.secondaryShape;
-
-    // Per-bone taper (modulated by depth)
-    const taperStart=skDNA.taperStart*(1-depthFrac*0.2);
-    const taperEnd=skDNA.taperEnd*(1+depthFrac*0.3);
-    const taperCurve=skDNA.taperCurve+(depthFrac-0.5)*0.3;
-
-    // Per-bone curvature
-    const curvatureAmount=skDNA.curvatureAmount*(0.5+nodeRand*1.0)*(1+d.bendAmp*0.5);
-    const curvatureProfile=skDNA.curvatureProfile;
-
-    // Per-bone twist
-    const twistAmount=skDNA.twistAmount*(0.3+nodeRand*1.4)*(0.5+d.twistAmp);
-    const twistProfile=skDNA.twistProfile;
-
-    // Segmentation
-    const segCount=Math.max(4,Math.floor(skDNA.segmentCount*(0.7+depthFrac*0.6)));
-    const segStyle=skDNA.segmentStyle;
-    const ridgeAmp=skDNA.ridgeAmplitude*(0.5+nodeRand*1.0);
-
-    // Physical properties (depth-modulated)
-    const stiffness=Math.max(0.05,skDNA.stiffness+skDNA.depthStiffnessShift*depthFrac);
-    const flexibility=skDNA.flexibility*(1+depthFrac*0.5);
-    const elasticity=skDNA.elasticity;
-    const density=skDNA.density*(1-depthFrac*0.3);
-    const damping=skDNA.damping;
-
-    // Vibration (depth-modulated, state-driven)
-    const vibAmp=Math.max(0,skDNA.vibrationAmp+skDNA.depthVibAmpShift*depth)*(0.3+d.vibrationDrive*1.4);
-    const vibFreq=skDNA.vibrationFreq*(0.5+nodeRand*1.0)*(0.5+d.skeletalStressDrive);
-    const vibNoise=skDNA.vibrationNoise*(0.5+d.chaosDrive);
-
-    // Pulse
-    const pulseAmp=skDNA.pulseAmp*(0.5+nodeRand*1.0)*(0.5+d.vibrationDrive);
-    const pulseFreq=skDNA.pulseFreq*(0.7+nodeRand*0.6);
-
-    // Resonance
-    const resonanceBias=skDNA.resonanceBias*(0.5+depthFrac*0.5);
-    const resonanceFreq=skDNA.resonanceFreq;
-
-    // Swell (only for certain shapes)
-    const swellPos=skDNA.swellPosition+nodeRand*0.2-0.1;
-    const swellAmt=skDNA.swellAmount*(shape===1||shape===3?1.0:0.2);
-    const swellWidth=skDNA.swellWidth;
-
-    // Wave (for wave shapes)
-    const waveCount=skDNA.waveCount;
-    const waveAmp=skDNA.waveAmplitude*(shape===2?1.0:0.1);
-
-    const mechBias=skDNA.mechanicalBias;
-
-    return {
-      shape, taperStart, taperEnd, taperCurve,
-      curvatureAmount, curvatureProfile,
-      twistAmount, twistProfile,
-      segCount, segStyle, ridgeAmp,
-      stiffness, flexibility, elasticity, density, damping,
-      vibAmp, vibFreq, vibNoise,
-      pulseAmp, pulseFreq,
-      resonanceBias, resonanceFreq,
-      swellPos, swellAmt, swellWidth,
-      waveCount, waveAmp,
-      mechBias
+    if(nodeRand<skDNA.shapeMixRatio)shape=skDNA.secondaryShape;
+    return{
+      shape,taperStart:skDNA.taperStart*(1-depthFrac*0.2),taperEnd:skDNA.taperEnd*(1+depthFrac*0.3),taperCurve:skDNA.taperCurve+(depthFrac-0.5)*0.3,
+      curvatureAmount:skDNA.curvatureAmount*(0.5+nodeRand*1.0)*(1+d.bendAmp*0.5),curvatureProfile:skDNA.curvatureProfile,
+      twistAmount:skDNA.twistAmount*(0.3+nodeRand*1.4)*(0.5+d.twistAmp),twistProfile:skDNA.twistProfile,
+      segCount:Math.max(4,Math.floor(skDNA.segmentCount*(0.7+depthFrac*0.6))),segStyle:skDNA.segmentStyle,ridgeAmp:skDNA.ridgeAmplitude*(0.5+nodeRand*1.0),
+      stiffness:Math.max(0.05,skDNA.stiffness+skDNA.depthStiffnessShift*depthFrac),flexibility:skDNA.flexibility*(1+depthFrac*0.5),
+      elasticity:skDNA.elasticity,density:skDNA.density*(1-depthFrac*0.3),damping:skDNA.damping,
+      vibAmp:Math.max(0,skDNA.vibrationAmp+skDNA.depthVibAmpShift*depth)*(0.3+d.vibrationDrive*1.4),
+      vibFreq:skDNA.vibrationFreq*(0.5+nodeRand*1.0)*(0.5+d.skeletalStressDrive),vibNoise:skDNA.vibrationNoise*(0.5+d.chaosDrive),
+      pulseAmp:skDNA.pulseAmp*(0.5+nodeRand*1.0)*(0.5+d.vibrationDrive),pulseFreq:skDNA.pulseFreq*(0.7+nodeRand*0.6),
+      resonanceBias:skDNA.resonanceBias*(0.5+depthFrac*0.5),resonanceFreq:skDNA.resonanceFreq,
+      swellPos:skDNA.swellPosition+nodeRand*0.2-0.1,swellAmt:skDNA.swellAmount*(shape===1||shape===3?1.0:0.2),swellWidth:skDNA.swellWidth,
+      waveCount:skDNA.waveCount,waveAmp:skDNA.waveAmplitude*(shape===2?1.0:0.1),mechBias:skDNA.mechanicalBias,
     };
   }
 
   // ═══════════════════════════════════════════════════
   //  ADVANCED BONE GEOMETRY
-  //  Supports 6 shape profiles + curvature + twist + segments
   // ═══════════════════════════════════════════════════
-
-  function createAdvancedBoneGeometry(length, baseRadius, bp, radialSegs){
-    radialSegs=radialSegs||6;
-    const segs=bp.segCount;
-    const tipR=baseRadius*0.03;
-
-    // Build radius profile along bone
+  function createAdvancedBoneGeometry(length,baseRadius,bp,radialSegs){
+    radialSegs=radialSegs||6;const segs=bp.segCount;const tipR=baseRadius*0.03;
     function radiusAt(u){
-      // Base taper: from taperStart to taperEnd with curve exponent
-      let r=lerp(bp.taperStart, bp.taperEnd, Math.pow(u, bp.taperCurve))*baseRadius;
-
-      // Shape modifiers
+      let r=lerp(bp.taperStart,bp.taperEnd,Math.pow(u,bp.taperCurve))*baseRadius;
       switch(bp.shape){
-        case 0: // tapered (default taper is fine)
-          break;
-        case 1: // center-swollen
-          {const dist=Math.abs(u-bp.swellPos)/Math.max(0.01,bp.swellWidth);
-          const swell=Math.exp(-dist*dist*2)*bp.swellAmt;
-          r*=(1+swell);}
-          break;
-        case 2: // wave-like undulations
-          r*=(1+bp.waveAmp*Math.sin(u*Math.PI*2*bp.waveCount));
-          break;
-        case 3: // locally massed (multiple lumps)
-          {const lumps=2+Math.floor(bp.waveCount);
-          for(let li=0;li<lumps;li++){
-            const lPos=(li+0.5)/lumps;
-            const lDist=Math.abs(u-lPos)*lumps;
-            r*=(1+bp.swellAmt*0.5*Math.exp(-lDist*lDist*3));}
-          }
-          break;
-        case 4: // segmented angular (mechanical)
-          {const segIdx=Math.floor(u*5);
-          const segFrac=(u*5)-segIdx;
-          // Flat segments with sharp transitions
-          if(segFrac<0.1||segFrac>0.9) r*=(1+bp.ridgeAmp*1.5);
-          else r*=(1-bp.ridgeAmp*0.3);}
-          break;
-        case 5: // organic taper with asymmetric bulge
-          {const bulge=Math.sin(u*Math.PI)*0.5*(1+bp.swellAmt*0.5);
-          r*=(1+bulge);
-          r*=(1-u*0.3);} // extra tip thinning
-          break;
+        case 0:break;
+        case 1:{const dist=Math.abs(u-bp.swellPos)/Math.max(0.01,bp.swellWidth);r*=(1+Math.exp(-dist*dist*2)*bp.swellAmt);}break;
+        case 2:r*=(1+bp.waveAmp*Math.sin(u*Math.PI*2*bp.waveCount));break;
+        case 3:{const lumps=2+Math.floor(bp.waveCount);for(let li=0;li<lumps;li++){const lDist=Math.abs(u-(li+0.5)/lumps)*lumps;r*=(1+bp.swellAmt*0.5*Math.exp(-lDist*lDist*3));}}break;
+        case 4:{const segFrac=(u*5)-Math.floor(u*5);if(segFrac<0.1||segFrac>0.9)r*=(1+bp.ridgeAmp*1.5);else r*=(1-bp.ridgeAmp*0.3);}break;
+        case 5:{r*=(1+Math.sin(u*Math.PI)*0.5*(1+bp.swellAmt*0.5));r*=(1-u*0.3);}break;
       }
-
-      // Segment style ridges
-      if(bp.segStyle===1){ // ridged
-        r*=(1+bp.ridgeAmp*Math.sin(u*segs*Math.PI*2)*0.5);
-      }else if(bp.segStyle===2){ // knobby
-        const ku=u*segs;
-        const kFrac=ku-Math.floor(ku);
-        if(kFrac<0.2||kFrac>0.8) r*=(1+bp.ridgeAmp*0.8);
-      }else if(bp.segStyle===3){ // faceted - handled in radial variation
-        // slight variation handled below
-      }
-
+      if(bp.segStyle===1)r*=(1+bp.ridgeAmp*Math.sin(u*segs*Math.PI*2)*0.5);
+      else if(bp.segStyle===2){const kFrac=(u*segs)-Math.floor(u*segs);if(kFrac<0.2||kFrac>0.8)r*=(1+bp.ridgeAmp*0.8);}
       return Math.max(tipR,r);
     }
-
-    // Build curvature offset at u along bone
     function curvatureOffset(u){
       let amount=bp.curvatureAmount;
-      switch(bp.curvatureProfile){
-        case 0: // uniform
-          break;
-        case 1: // root-heavy
-          amount*=(1-u);
-          break;
-        case 2: // tip-heavy
-          amount*=u;
-          break;
-        case 3: // sinusoidal
-          amount*=Math.sin(u*Math.PI);
-          break;
-        case 4: // segmented bends
-          amount*=(Math.floor(u*4)%2===0?1:-1)*0.7;
-          break;
-      }
+      switch(bp.curvatureProfile){case 0:break;case 1:amount*=(1-u);break;case 2:amount*=u;break;case 3:amount*=Math.sin(u*Math.PI);break;case 4:amount*=(Math.floor(u*4)%2===0?1:-1)*0.7;break;}
       return amount;
     }
-
-    // Build twist at u
-    function twistAt(u){
-      let tw=bp.twistAmount;
-      switch(bp.twistProfile){
-        case 0: tw*=u; break;       // linear
-        case 1: tw*=u*u; break;     // accelerating
-        case 2: tw*=Math.sin(u*Math.PI*2)*0.5+0.5; break; // oscillating
-      }
-      return tw;
-    }
+    function twistAt(u){let tw=bp.twistAmount;switch(bp.twistProfile){case 0:tw*=u;break;case 1:tw*=u*u;break;case 2:tw*=Math.sin(u*Math.PI*2)*0.5+0.5;break;}return tw;}
 
     const verts=[],normals=[],indices=[];
-
     for(let si=0;si<=segs;si++){
-      const u=si/segs;
-      const y=u*length-length*0.15; // offset so bone base is at ~-15% length
-      const r=radiusAt(u);
-
-      // Curvature displacement
-      const cv=curvatureOffset(u);
-      const cx=cv*length*0.3;
-      const cz=cv*length*0.15*Math.sin(u*Math.PI*0.5);
-
-      // Twist
+      const u=si/segs;const y=u*length-length*0.15;const r=radiusAt(u);
+      const cv=curvatureOffset(u);const cx=cv*length*0.3;const cz=cv*length*0.15*Math.sin(u*Math.PI*0.5);
       const tw=twistAt(u);
-
       for(let ri=0;ri<=radialSegs;ri++){
         let theta=(ri/radialSegs)*Math.PI*2+tw;
-
-        // Faceted style: snap to discrete angles
-        if(bp.segStyle===3){
-          const facets=Math.max(3,Math.floor(radialSegs*0.6));
-          theta=Math.round(theta/(Math.PI*2/facets))*(Math.PI*2/facets)+tw;
-        }
-
-        let px=Math.cos(theta)*r+cx;
-        let pz=Math.sin(theta)*r+cz;
-
-        verts.push(px,y,pz);
-        // Approximate normal
-        const nx=Math.cos(theta);
-        const nz=Math.sin(theta);
-        normals.push(nx,0,nz);
+        if(bp.segStyle===3){const facets=Math.max(3,Math.floor(radialSegs*0.6));theta=Math.round(theta/(Math.PI*2/facets))*(Math.PI*2/facets)+tw;}
+        verts.push(Math.cos(theta)*r+cx,y,Math.sin(theta)*r+cz);
+        normals.push(Math.cos(theta),0,Math.sin(theta));
       }
     }
-
-    for(let si=0;si<segs;si++){
-      for(let ri=0;ri<radialSegs;ri++){
-        const a=si*(radialSegs+1)+ri;
-        const b=a+radialSegs+1;
-        indices.push(a,b,a+1, a+1,b,b+1);
-      }
-    }
-
+    for(let si=0;si<segs;si++){for(let ri=0;ri<radialSegs;ri++){const a=si*(radialSegs+1)+ri;const b=a+radialSegs+1;indices.push(a,b,a+1,a+1,b,b+1);}}
     const geo=new THREE.BufferGeometry();
     geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
     geo.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
-    geo.setIndex(indices);
-    geo.computeVertexNormals();
-    return geo;
+    geo.setIndex(indices);geo.computeVertexNormals();return geo;
   }
 
   // ═══════════════════════════════════════════════════
-  //  RECURSIVE BRANCHING TREE
+  //  ORGANISM STATE — persists across inputs
   // ═══════════════════════════════════════════════════
 
   let treeRoot=null;
   let allNodes=[];
-  let detachedNodes=[];
+  let tentacles=[];      // tentacle objects
+  let orbiters=[];       // floating structures
+  let inputCount=0;      // tracks total inputs for cumulative growth
+  let organismAge=0;     // total time alive
+  let growthEvents=[];   // queued growth animations
+  let seedPhase=0;       // 0=seed, 1=sprouting, 2=growing, 3=branching, 4=mature
 
-  function nodeRandom(depth, childIdx, seed){
-    return hash(depth*137.7+childIdx*59.3+seed*23.1);
-  }
+  function nodeRandom(depth,childIdx,seed){return hash(depth*137.7+childIdx*59.3+seed*23.1);}
+
+  // ═══════════════════════════════════════════════════
+  //  ① GROWTH ANIMATION: seed → sprout → skeleton → branch
+  //     All nodes start at growthTime=0 and grow over time.
+  //     Deeper nodes have delayed growth start.
+  // ═══════════════════════════════════════════════════
 
   function generateTree(d){
     allNodes=[];
-    detachedNodes=[];
-    const bg=d.branchGenes;
-    const gg=d.growthGenes;
+    const bg=d.branchGenes;const gg=d.growthGenes;
     const globalScale=d.bodyPlan.scaleMultiplier*(d.thresholdMods.shrink?0.6:1.0);
     const doubleBranch=d.thresholdMods.doubleBranch;
 
-    function buildNode(parentPos, parentDir, depth, childIdx, thickness, maxLen){
-      if(depth>bg.maxDepth||depth>d.branchDepth+1) return null;
-
+    function buildNode(parentPos,parentDir,depth,childIdx,thickness,maxLen){
+      if(depth>bg.maxDepth||depth>d.branchDepth+1)return null;
       const nr=nodeRandom(depth,childIdx,bg.phaseOffset*100);
-
-      // Per-bone skeletal params
-      const boneParams=generateBoneParams(d.skeletalDNA, depth, childIdx, nr, d);
-
-      // Behavior mode
+      const boneParams=generateBoneParams(d.skeletalDNA,depth,childIdx,nr,d);
       let behaviorMode=0;
       const roll=nr;
-      if(roll<gg.dormancyTendency*d.dormancyDrive*0.5) behaviorMode=1;
-      else if(roll<gg.dormancyTendency*d.dormancyDrive*0.5+gg.curlTendency*d.curlDrive*0.4) behaviorMode=2;
-      else if(roll<gg.dormancyTendency*d.dormancyDrive*0.5+gg.curlTendency*d.curlDrive*0.4+gg.recoilTendency*0.3) behaviorMode=3;
-      else if(roll>0.85) behaviorMode=4;
+      if(roll<gg.dormancyTendency*d.dormancyDrive*0.5)behaviorMode=1;
+      else if(roll<gg.dormancyTendency*d.dormancyDrive*0.5+gg.curlTendency*d.curlDrive*0.4)behaviorMode=2;
+      else if(roll<gg.dormancyTendency*d.dormancyDrive*0.5+gg.curlTendency*d.curlDrive*0.4+gg.recoilTendency*0.3)behaviorMode=3;
+      else if(roll>0.85)behaviorMode=4;
 
       const node={
-        pos:parentPos.clone(),
-        dir:parentDir.clone().normalize(),
-        thickness:thickness,
-        maxLength:maxLen,
-        length:0,
-        depth:depth,
-        childIndex:childIdx,
+        pos:parentPos.clone(),dir:parentDir.clone().normalize(),thickness,maxLength:maxLen,
+        depth,childIndex:childIdx,
         growthState:behaviorMode===1?'dormant':behaviorMode===2?'curling':behaviorMode===3?'recoiling':behaviorMode===4?'pulsing':'growing',
-        growthTime:0,
-        behaviorMode:behaviorMode,
-        children:[],
-        mesh:null,
-        jointMesh:null,
+        growthTime:0, // ★ START AT ZERO — visible growth animation
+        growthDelay:depth*1.2+childIdx*0.3, // ★ deeper nodes start later
+        behaviorMode,children:[],mesh:null,jointMesh:null,
         phase:bg.phaseOffset+depth*d.motionGenes.phaseSpread+childIdx*1.37,
-        curlAngle:0,
-        curlTarget:behaviorMode===2?Math.PI*d.motionGenes.curlTightness*(0.3+nr*0.7):0,
-        detached:false,
-        orbitAngle:nr*Math.PI*2,
-        orbitDist:0,
-        orbitSpeed:0.3+nr*0.7,
-        nodeId:allNodes.length,
-        nr:nr,
-        boneParams:boneParams,
-        // Per-bone vibration state
-        vibPhase:nr*Math.PI*2,
-        vibCurrent:{dx:0,dy:0,dz:0,sx:1,opa:1},
+        curlAngle:0,curlTarget:behaviorMode===2?Math.PI*d.motionGenes.curlTightness*(0.3+nr*0.7):0,
+        detached:false,orbitAngle:nr*Math.PI*2,orbitDist:0,orbitSpeed:0.3+nr*0.7,
+        nodeId:allNodes.length,nr,boneParams,
+        vibPhase:nr*Math.PI*2,vibCurrent:{dx:0,dy:0,dz:0,sx:1,opa:1},
+        isTentacle:false,inputBorn:-1,
       };
-
       allNodes.push(node);
 
-      // Children
-      if(depth<bg.maxDepth && depth<d.branchDepth+1){
+      if(depth<bg.maxDepth&&depth<d.branchDepth+1){
         const maxChildren=doubleBranch?Math.min(4,bg.baseBranchCount+1):Math.min(4,bg.baseBranchCount);
         const probs=bg.childProbs[Math.min(depth,bg.childProbs.length-1)]||[0.5,0.3,0.2,0.1];
-
         for(let c=0;c<maxChildren;c++){
           const branchChance=probs[c]*(0.5+d.growthDrive*0.5)*(1+d.chaosDrive*0.3);
           const cRoll=nodeRandom(depth+1,c,bg.phaseOffset*100+childIdx*17);
-          if(cRoll>branchChance) continue;
-
+          if(cRoll>branchChance)continue;
           const childDir=parentDir.clone();
           const spread=bg.spreadAngle*(1+d.chaosDrive*0.5);
           const asymOff=bg.asymmetry*(c%2===0?1:-1)*0.5;
           const azimuth=((c/(maxChildren||1))*Math.PI*2)+asymOff+bg.noiseProfile*nodeRandom(depth,c+10,bg.phaseOffset*50)*Math.PI;
           const elevation=(nodeRandom(depth,c+20,bg.phaseOffset*30)-0.5)*spread;
-
           const up=new THREE.Vector3(0,1,0);
-          const right=new THREE.Vector3().crossVectors(parentDir,up);
-          if(right.length()<0.001) right.set(1,0,0);
-          right.normalize();
+          const right=new THREE.Vector3().crossVectors(parentDir,up);if(right.length()<0.001)right.set(1,0,0);right.normalize();
           const localUp=new THREE.Vector3().crossVectors(right,parentDir).normalize();
-
           childDir.addScaledVector(right,Math.cos(azimuth)*Math.sin(elevation)*spread);
           childDir.addScaledVector(localUp,Math.sin(azimuth)*Math.sin(elevation)*spread);
           childDir.addScaledVector(bg.directionBias,0.15);
-          if(bg.curvature>0) childDir.addScaledVector(bg.directionBias,bg.curvature*0.2*(depth/bg.maxDepth));
+          if(bg.curvature>0)childDir.addScaledVector(bg.directionBias,bg.curvature*0.2*(depth/bg.maxDepth));
           childDir.normalize();
-
           const childThick=thickness*bg.branchDecay*(0.8+cRoll*0.4);
           const childLen=maxLen*bg.lengthDecay*(0.7+nodeRandom(depth+1,c+5,bg.phaseOffset*70)*0.6);
           const childPos=parentPos.clone().add(parentDir.clone().normalize().multiplyScalar(maxLen));
-
           const child=buildNode(childPos,childDir,depth+1,c,childThick,childLen);
-          if(child){
-            if(depth>=2 && gg.detachChance>0 && nodeRandom(depth,c+50,bg.phaseOffset*90)<gg.detachChance){
-              child.detached=true;
-              child.orbitDist=2+depth*0.5;
-              detachedNodes.push(child);
-            }
-            node.children.push(child);
-          }
+          if(child)node.children.push(child);
         }
       }
       return node;
@@ -11600,49 +11220,212 @@ const LIFE=(function(){
   }
 
   // ═══════════════════════════════════════════════════
+  //  ② CUMULATIVE GROWTH: add nodes on each input
+  //     Never regenerate — only ADD new branches/tentacles
+  // ═══════════════════════════════════════════════════
+
+  function addGrowthOnInput(d){
+    inputCount++;
+    const bg=d.branchGenes;
+    const gg=d.growthGenes;
+    const globalScale=d.bodyPlan.scaleMultiplier*(d.thresholdMods.shrink?0.6:1.0);
+
+    // Pick random leaf/tip nodes to sprout new branches from
+    const leaves=allNodes.filter(n=>n.children.length===0&&!n.isTentacle&&n.growthTime>0.3);
+    if(leaves.length===0)return;
+
+    // Number of new branches: 1-3 per input, scaling with growthDrive
+    const newCount=Math.max(1,Math.floor(1+d.growthDrive*2+Math.random()*1.5));
+
+    for(let i=0;i<newCount&&leaves.length>0;i++){
+      const li=Math.floor(Math.random()*leaves.length);
+      const parent=leaves[li];
+      leaves.splice(li,1); // don't double-sprout
+
+      const nr=hash(inputCount*31.7+i*17.3+parent.nodeId*7.1);
+      const newDepth=parent.depth+1;
+      if(newDepth>bg.maxDepth+2)continue; // allow exceeding initial maxDepth!
+
+      const childDir=parent.dir.clone();
+      const spread=bg.spreadAngle*(1+d.chaosDrive*0.5);
+      const azimuth=nr*Math.PI*2;
+      const elevation=(hash(nr*100+i)-0.5)*spread;
+      const up=new THREE.Vector3(0,1,0);
+      const right=new THREE.Vector3().crossVectors(parent.dir,up);
+      if(right.length()<0.001)right.set(1,0,0);right.normalize();
+      const localUp=new THREE.Vector3().crossVectors(right,parent.dir).normalize();
+      childDir.addScaledVector(right,Math.cos(azimuth)*Math.sin(elevation)*spread);
+      childDir.addScaledVector(localUp,Math.sin(azimuth)*Math.sin(elevation)*spread);
+      childDir.normalize();
+
+      const childThick=parent.thickness*bg.branchDecay*(0.7+nr*0.6);
+      const childLen=parent.maxLength*bg.lengthDecay*(0.6+nr*0.8);
+      const boneParams=generateBoneParams(d.skeletalDNA,newDepth,i,nr,d);
+
+      const node={
+        pos:parent._endPos?parent._endPos.clone():parent.pos.clone(),
+        dir:childDir.normalize(),thickness:childThick,maxLength:childLen,
+        depth:newDepth,childIndex:i,
+        growthState:'growing',growthTime:0,growthDelay:0, // ★ immediate growth start
+        behaviorMode:0,children:[],mesh:null,jointMesh:null,
+        phase:bg.phaseOffset+newDepth*d.motionGenes.phaseSpread+i*1.37+inputCount*0.5,
+        curlAngle:0,curlTarget:0,detached:false,
+        orbitAngle:nr*Math.PI*2,orbitDist:0,orbitSpeed:0.3+nr*0.7,
+        nodeId:allNodes.length,nr,boneParams,
+        vibPhase:nr*Math.PI*2,vibCurrent:{dx:0,dy:0,dz:0,sx:1,opa:1},
+        isTentacle:false,inputBorn:inputCount,
+      };
+      allNodes.push(node);
+      parent.children.push(node);
+
+      // Queue a moya burst at this location
+      growthEvents.push({pos:parent._endPos?parent._endPos.clone():parent.pos.clone(),time:t,strength:1.0});
+    }
+
+    // ③ Also add a new tentacle on every 2nd input
+    if(inputCount%2===0){
+      addTentacle(d);
+    }
+
+    // ④ Possibly spawn an orbiter on every 3rd input
+    if(inputCount%3===0){
+      addOrbiter(d);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  ③ TENTACLE SYSTEM
+  //     Bone-shaped tentacles that grow from body tips
+  // ═══════════════════════════════════════════════════
+
+  function addTentacle(d){
+    const tg=d.tentacleGenes;
+    const tips=allNodes.filter(n=>n.children.length===0&&!n.isTentacle&&n._endPos);
+    if(tips.length===0)return;
+
+    const tip=tips[Math.floor(Math.random()*tips.length)];
+    const nr=hash(tentacles.length*47.3+inputCount*13.1);
+
+    // Tentacle = chain of small nodes from tip outward
+    const segCount=tg.segCount;
+    const totalLen=tip.maxLength*tg.lengthMult;
+    const segLen=totalLen/segCount;
+    const baseThick=tip.thickness*tg.thicknessMult;
+
+    let prevNode=tip;
+    const tentacleNodes=[];
+
+    for(let s=0;s<segCount;s++){
+      const u=s/segCount;
+      // Direction: continue parent direction + wave deviation
+      const dir=tip.dir.clone();
+      const wave=tg.waveAmp*Math.sin(u*Math.PI*tg.waveFreq);
+      const perp=new THREE.Vector3(-dir.z,0,dir.x).normalize();
+      dir.addScaledVector(perp,wave*(0.5+nr*1.0));
+      dir.normalize();
+
+      const thick=baseThick*(1-u*0.85); // thin toward tip
+      const boneParams=generateBoneParams(d.skeletalDNA,tip.depth+1+s,s,hash(nr+s*0.3),d);
+
+      const node={
+        pos:prevNode._endPos?prevNode._endPos.clone():prevNode.pos.clone(),
+        dir:dir,thickness:Math.max(0.01,thick),maxLength:segLen,
+        depth:tip.depth+1+s,childIndex:s,
+        growthState:'growing',growthTime:0,growthDelay:s*0.5, // ★ cascading growth
+        behaviorMode:0,children:[],mesh:null,jointMesh:null,
+        phase:tip.phase+s*0.8,
+        curlAngle:0,curlTarget:0,detached:false,
+        orbitAngle:0,orbitDist:0,orbitSpeed:0,
+        nodeId:allNodes.length,nr:hash(nr+s),boneParams,
+        vibPhase:hash(nr+s)*Math.PI*2,vibCurrent:{dx:0,dy:0,dz:0,sx:1,opa:1},
+        isTentacle:true,inputBorn:inputCount,
+        tentacleIndex:s,tentacleFlex:tg.flexibility,tentacleWaveFreq:tg.waveFreq,tentacleWaveAmp:tg.waveAmp,
+      };
+      allNodes.push(node);
+      if(s===0)tip.children.push(node);
+      else prevNode.children.push(node);
+      tentacleNodes.push(node);
+      prevNode=node;
+    }
+    tentacles.push({nodes:tentacleNodes,rootNode:tip,phase:nr*Math.PI*2});
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  ④ ORBITER SYSTEM
+  //     Floating bone fragments that orbit the organism
+  // ═══════════════════════════════════════════════════
+
+  function addOrbiter(d){
+    const og=d.orbiterGenes;
+    const nr=hash(orbiters.length*31.7+inputCount*19.3);
+    const orbiter={
+      angle:nr*Math.PI*2,
+      elevation:(nr-0.5)*1.5,
+      radius:og.orbitRadius*(0.6+nr*0.8),
+      speed:og.orbitSpeed*(0.5+nr*1.0),
+      size:og.size*(0.5+nr*1.0),
+      wobble:og.wobble,
+      mesh:null,
+      glowMesh:null,
+      age:0,
+      phase:nr*Math.PI*2,
+    };
+    orbiters.push(orbiter);
+  }
+
+  // ═══════════════════════════════════════════════════
   //  THREE.JS RENDERING
   // ═══════════════════════════════════════════════════
-  let coreGroup=null,moyaSystem=null,starField=null,trailLine=null;
+  let coreGroup=null,moyaSystem=null,starField=null,trailLine=null,orbiterGroup=null,seedMesh=null;
 
   function buildVisuals(d){
     if(coreGroup){scene.remove(coreGroup);coreGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
     coreGroup=new THREE.Group();
 
-    function renderNode(node,parentEndPos){
-      if(!node) return;
-      const growFrac=node.growthState==='dormant'?0.1:Math.min(1,node.growthTime);
-      const currentLen=node.maxLength*growFrac;
-      if(currentLen<0.01) return;
+    const col=individualColor(d);
 
-      // Curl
+    // Seed glow (visible at start, fades as organism grows)
+    if(!seedMesh){
+      const seedGeo=new THREE.SphereGeometry(0.15,8,8);
+      const seedMat=new THREE.MeshBasicMaterial({color:col.clone().multiplyScalar(2),transparent:true,opacity:1.0});
+      seedMesh=new THREE.Mesh(seedGeo,seedMat);
+      seedMesh.position.set(0,0,0);
+      scene.add(seedMesh);
+    }
+
+    function renderNode(node,parentEndPos){
+      if(!node)return;
+      const growFrac=node.growthState==='dormant'?0.1:Math.min(1,Math.max(0,node.growthTime));
+      const currentLen=node.maxLength*growFrac;
+      if(currentLen<0.005)return; // not yet visible
+
       let curlQ=new THREE.Quaternion();
       if(node.curlAngle!==0){
         const curlAxis=new THREE.Vector3().crossVectors(node.dir,new THREE.Vector3(0,1,0));
-        if(curlAxis.length()<0.001) curlAxis.set(1,0,0);
-        curlAxis.normalize();
+        if(curlAxis.length()<0.001)curlAxis.set(1,0,0);curlAxis.normalize();
         curlQ.setFromAxisAngle(curlAxis,node.curlAngle);
       }
       const effDir=node.dir.clone().applyQuaternion(curlQ).normalize();
-
       const startPos=parentEndPos||node.pos;
       const endPos=startPos.clone().add(effDir.clone().multiplyScalar(currentLen));
-      node._startPos=startPos;
-      node._endPos=endPos;
+      node._startPos=startPos;node._endPos=endPos;
 
       const midPos=new THREE.Vector3().addVectors(startPos,endPos).multiplyScalar(0.5);
       const dirV=new THREE.Vector3().subVectors(endPos,startPos);
       const len=dirV.length();
-      if(len<0.005) return;
+      if(len<0.005)return;
 
       const boneCol=depthColor(d,node.depth);
-      const depthFade=Math.max(0.15,1.0-node.depth*0.12);
+      const depthFade=Math.max(0.15,1.0-node.depth*0.08);
+      // Newly born nodes glow brighter
+      const isNew=node.inputBorn===inputCount&&inputCount>0;
+      const newGlow=isNew?1.3:1.0;
 
       const bp=node.boneParams;
-      const thick=Math.max(0.02,node.thickness*(node.growthState==='recoiling'?0.6:1.0));
-
-      // Create advanced bone geometry with full skeletal params
+      const thick=Math.max(0.02,node.thickness*growFrac*(node.growthState==='recoiling'?0.6:1.0));
       const boneGeo=createAdvancedBoneGeometry(len,thick,bp,5);
-      const boneMat=new THREE.MeshBasicMaterial({color:boneCol,transparent:true,opacity:0.9*depthFade});
+      const finalCol=boneCol.clone().multiplyScalar(newGlow);
+      const boneMat=new THREE.MeshBasicMaterial({color:finalCol,transparent:true,opacity:0.9*depthFade*Math.min(1,growFrac*3)});
       const bone=new THREE.Mesh(boneGeo,boneMat);
       bone.position.copy(midPos);
       bone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dirV.clone().normalize());
@@ -11650,106 +11433,98 @@ const LIFE=(function(){
       coreGroup.add(bone);
       node.mesh=bone;
 
-      // Joint
       const jr=Math.max(0.02,thick*0.35);
-      // Mechanical bones get box joints, organic get spheres
-      let jointGeo;
-      if(bp.mechBias>0.6){
-        const jSize=jr*1.4;
-        jointGeo=new THREE.BoxGeometry(jSize,jSize,jSize);
-      }else{
-        jointGeo=new THREE.SphereGeometry(jr,4,4);
-      }
-      const jointMat=new THREE.MeshBasicMaterial({color:boneCol.clone().multiplyScalar(1.15),transparent:true,opacity:0.92*depthFade});
+      let jointGeo=bp.mechBias>0.6?new THREE.BoxGeometry(jr*1.4,jr*1.4,jr*1.4):new THREE.SphereGeometry(jr,4,4);
+      const jointMat=new THREE.MeshBasicMaterial({color:finalCol.clone().multiplyScalar(1.15),transparent:true,opacity:0.92*depthFade*Math.min(1,growFrac*3)});
       const joint=new THREE.Mesh(jointGeo,jointMat);
       joint.position.copy(endPos);
       joint.userData={nodeId:node.nodeId,depth:node.depth,phase:node.phase,isJoint:true};
       coreGroup.add(joint);
       node.jointMesh=joint;
 
-      // Recurse children
-      node.children.forEach(child=>{
-        if(!child.detached) renderNode(child,endPos);
-      });
+      node.children.forEach(child=>renderNode(child,endPos));
     }
 
-    if(treeRoot) renderNode(treeRoot,null);
+    if(treeRoot)renderNode(treeRoot,null);
 
-    // Detached orbiting fragments
-    detachedNodes.forEach(node=>{
-      const orbitPos=new THREE.Vector3(
-        Math.cos(node.orbitAngle)*node.orbitDist,
-        node.pos.y+1,
-        Math.sin(node.orbitAngle)*node.orbitDist
-      );
-      renderNode(node,orbitPos);
+    // Render orbiters
+    if(orbiterGroup){scene.remove(orbiterGroup);orbiterGroup.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose();});}
+    orbiterGroup=new THREE.Group();
+    const orbCol=individualColor(d);
+    orbiters.forEach(orb=>{
+      const orbGeo=createAdvancedBoneGeometry(orb.size*2,orb.size*0.3,{shape:d.skeletalDNA.primaryShape,taperStart:0.8,taperEnd:0.1,taperCurve:1.5,curvatureAmount:0,curvatureProfile:0,twistAmount:0,twistProfile:0,segCount:5,segStyle:d.skeletalDNA.segmentStyle,ridgeAmp:d.skeletalDNA.ridgeAmplitude,swellPos:0.5,swellAmt:0,swellWidth:0.3,waveCount:1,waveAmp:0,mechBias:d.skeletalDNA.mechanicalBias},4);
+      const orbMat=new THREE.MeshBasicMaterial({color:orbCol.clone().multiplyScalar(0.7),transparent:true,opacity:0.5});
+      orb.mesh=new THREE.Mesh(orbGeo,orbMat);
+      orbiterGroup.add(orb.mesh);
+      // Glow sphere
+      const glowGeo=new THREE.SphereGeometry(orb.size*0.6,4,4);
+      const glowMat=new THREE.MeshBasicMaterial({color:orbCol.clone().multiplyScalar(1.5),transparent:true,opacity:0.15});
+      orb.glowMesh=new THREE.Mesh(glowGeo,glowMat);
+      orbiterGroup.add(orb.glowMesh);
     });
+    scene.add(orbiterGroup);
 
     scene.add(coreGroup);
   }
 
   // ═══════════════════════════════════════════════════
-  //  MOYA PARTICLES
+  //  ⑤ MOYA PARTICLES + growth event bursts
   // ═══════════════════════════════════════════════════
-  const MOYA_BASE=450;
+  const MOYA_BASE=500;
   let moyaN=MOYA_BASE;
   let moyaPositions=null,moyaColors=null,moyaVelocities=null,moyaLife=null;
 
   function getNodePositions(){
-    const pts=[];
-    allNodes.forEach(n=>{if(n._startPos)pts.push(n._startPos);if(n._endPos)pts.push(n._endPos);});
+    const pts=[];allNodes.forEach(n=>{if(n._startPos)pts.push(n._startPos);if(n._endPos)pts.push(n._endPos);});
     return pts.length>0?pts:[new THREE.Vector3(0,0,0)];
   }
-
   function buildMoya(d){
     if(moyaSystem){scene.remove(moyaSystem);moyaSystem.geometry.dispose();moyaSystem.material.dispose();}
     moyaN=Math.floor(MOYA_BASE*d.bodyPlan.moyaDensity);
-    moyaPositions=new Float32Array(moyaN*3);
-    moyaColors=new Float32Array(moyaN*3);
-    moyaVelocities=new Float32Array(moyaN*4);
-    moyaLife=new Float32Array(moyaN);
+    moyaPositions=new Float32Array(moyaN*3);moyaColors=new Float32Array(moyaN*3);
+    moyaVelocities=new Float32Array(moyaN*4);moyaLife=new Float32Array(moyaN);
     const pts=getNodePositions();
-    for(let i=0;i<moyaN;i++) resetMoyaParticle(i,d,pts,true);
+    for(let i=0;i<moyaN;i++)resetMoyaParticle(i,d,pts,true);
     const geo=new THREE.BufferGeometry();
     geo.setAttribute('position',new THREE.BufferAttribute(moyaPositions,3));
     geo.setAttribute('color',new THREE.BufferAttribute(moyaColors,3));
-    moyaSystem=new THREE.Points(geo,new THREE.PointsMaterial({
-      size:.3+.25*d.moyaHeat,vertexColors:true,transparent:true,opacity:.45,
-      depthWrite:false,sizeAttenuation:true
-    }));
+    moyaSystem=new THREE.Points(geo,new THREE.PointsMaterial({size:.3+.25*d.moyaHeat,vertexColors:true,transparent:true,opacity:.45,depthWrite:false,sizeAttenuation:true}));
     scene.add(moyaSystem);
   }
   function getMoyaColor(d){
     const bp=d.bodyPlan;
-    switch(bp.moyaBaseColor){
-      case 1:{const c=individualColor(d);return{r:.6+c.r*.4,g:.6+c.g*.4,b:.6+c.b*.4};}
-      case 2:{const c=individualColor(d);return{r:1-c.r*.5,g:1-c.g*.5,b:1-c.b*.5};}
-      default:return{r:1,g:1,b:1};
-    }
+    switch(bp.moyaBaseColor){case 1:{const c=individualColor(d);return{r:.6+c.r*.4,g:.6+c.g*.4,b:.6+c.b*.4};}case 2:{const c=individualColor(d);return{r:1-c.r*.5,g:1-c.g*.5,b:1-c.b*.5};}default:return{r:1,g:1,b:1};}
   }
   function resetMoyaParticle(i,d,pts,randomAge){
-    const pt=pts[Math.floor(Math.random()*pts.length)].clone();
+    // Check for growth event bursts — particles converge to growth points
+    let spawnPt=null;
+    if(growthEvents.length>0&&Math.random()<0.4){
+      const evt=growthEvents[Math.floor(Math.random()*growthEvents.length)];
+      if(t-evt.time<2.0){
+        spawnPt=evt.pos.clone();
+        spawnPt.x+=(Math.random()-0.5)*0.5;
+        spawnPt.y+=(Math.random()-0.5)*0.5;
+        spawnPt.z+=(Math.random()-0.5)*0.5;
+      }
+    }
+    const pt=spawnPt||pts[Math.floor(Math.random()*pts.length)].clone();
     const scatter=d.boneRadius*2*d.bodyScale*(d.bodyPlan.scaleMultiplier||1);
     moyaPositions[i*3]=pt.x+(Math.random()-.5)*scatter;
     moyaPositions[i*3+1]=pt.y+(Math.random()-.5)*scatter;
     moyaPositions[i*3+2]=pt.z+(Math.random()-.5)*scatter;
     const angle=Math.random()*Math.PI*2;
-    const outSpeed=.01+.03*d.moyaSpeed;
+    const outSpeed=spawnPt?(.02+.05*d.moyaSpeed):(.01+.03*d.moyaSpeed); // faster burst
     moyaVelocities[i*4]=Math.cos(angle)*outSpeed;
     moyaVelocities[i*4+1]=(.005+.02*d.moyaSpeed)*(Math.random()-.3);
     moyaVelocities[i*4+2]=Math.sin(angle)*outSpeed;
     moyaVelocities[i*4+3]=0;
     moyaLife[i]=randomAge?(Math.random()*(.5+1.5*d.moyaSpeed)):(.5+1.5*d.moyaSpeed);
-    const mc=getMoyaColor(d);
-    const b=.5+.5*d.moyaHeat;
+    const mc=getMoyaColor(d);const b=spawnPt?1.0:(.5+.5*d.moyaHeat);
     moyaColors[i*3]=mc.r*b;moyaColors[i*3+1]=mc.g*b;moyaColors[i*3+2]=mc.b*b;
   }
   function updateMoya(dt,d){
     if(!moyaPositions)return;
-    const pts=getNodePositions();
-    const shake=(1-d.moyaStab)*.008;
-    const rot=d.moyaRot*.003;
-    const mc=getMoyaColor(d);
+    const pts=getNodePositions();const shake=(1-d.moyaStab)*.008;const rot=d.moyaRot*.003;const mc=getMoyaColor(d);
     for(let i=0;i<moyaN;i++){
       const i3=i*3,i4=i*4;
       moyaVelocities[i4+3]+=dt*.016;
@@ -11758,21 +11533,19 @@ const LIFE=(function(){
       moyaPositions[i3]+=moyaVelocities[i4]*dt*d.moyaSpeed;
       moyaPositions[i3+1]+=moyaVelocities[i4+1]*dt*d.moyaSpeed;
       moyaPositions[i3+2]+=moyaVelocities[i4+2]*dt*d.moyaSpeed;
-      moyaPositions[i3]+=(Math.random()-.5)*shake*dt;
-      moyaPositions[i3+1]+=(Math.random()-.5)*shake*dt;
-      moyaPositions[i3+2]+=(Math.random()-.5)*shake*dt;
+      moyaPositions[i3]+=(Math.random()-.5)*shake*dt;moyaPositions[i3+1]+=(Math.random()-.5)*shake*dt;moyaPositions[i3+2]+=(Math.random()-.5)*shake*dt;
       const px=moyaPositions[i3],pz=moyaPositions[i3+2];
       const cosR=Math.cos(rot*dt),sinR=Math.sin(rot*dt);
-      moyaPositions[i3]=px*cosR-pz*sinR;
-      moyaPositions[i3+2]=px*sinR+pz*cosR;
+      moyaPositions[i3]=px*cosR-pz*sinR;moyaPositions[i3+2]=px*sinR+pz*cosR;
       const fade=Math.max(0,1-lifeFrac*lifeFrac);
       const brt=(.4+.6*d.moyaHeat)*fade;
       moyaColors[i3]=mc.r*brt;moyaColors[i3+1]=mc.g*brt;moyaColors[i3+2]=mc.b*brt;
     }
     moyaSystem.geometry.attributes.position.needsUpdate=true;
     moyaSystem.geometry.attributes.color.needsUpdate=true;
-    moyaSystem.material.size=.25+.3*d.moyaHeat;
-    moyaSystem.material.opacity=.3+.25*d.moyaHeat;
+    moyaSystem.material.size=.25+.3*d.moyaHeat;moyaSystem.material.opacity=.3+.25*d.moyaHeat;
+    // Expire old growth events
+    growthEvents=growthEvents.filter(e=>t-e.time<3.0);
   }
 
   // ── Trail ──
@@ -11784,28 +11557,19 @@ const LIFE=(function(){
     geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(trailMaxLen*3),3));
     geo.setAttribute('color',new THREE.BufferAttribute(new Float32Array(trailMaxLen*3),3));
     trailLine=new THREE.Line(geo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.2,depthWrite:false}));
-    trailLine.frustumCulled=false;
-    scene.add(trailLine);
+    trailLine.frustumCulled=false;scene.add(trailLine);
   }
   function updateTrail(dt,d){
     if(!trailLine||!coreGroup)return;
     const center=new THREE.Vector3();let n=0;
     allNodes.forEach(node=>{if(node._endPos){center.add(node._endPos);n++;}});
     if(n>0)center.divideScalar(n);
-    trailPositions.push(center.clone());
-    while(trailPositions.length>trailMaxLen)trailPositions.shift();
-    const pos=trailLine.geometry.attributes.position.array;
-    const cols=trailLine.geometry.attributes.color.array;
+    trailPositions.push(center.clone());while(trailPositions.length>trailMaxLen)trailPositions.shift();
+    const pos=trailLine.geometry.attributes.position.array;const cols=trailLine.geometry.attributes.color.array;
     const col=individualColor(d);const tN=trailPositions.length;
-    for(let i=0;i<tN;i++){
-      pos[i*3]=trailPositions[i].x;pos[i*3+1]=trailPositions[i].y;pos[i*3+2]=trailPositions[i].z;
-      const fade=i/tN;
-      cols[i*3]=col.r*fade*.4;cols[i*3+1]=col.g*fade*.5;cols[i*3+2]=col.b*fade*.6;
-    }
+    for(let i=0;i<tN;i++){pos[i*3]=trailPositions[i].x;pos[i*3+1]=trailPositions[i].y;pos[i*3+2]=trailPositions[i].z;const fade=i/tN;cols[i*3]=col.r*fade*.4;cols[i*3+1]=col.g*fade*.5;cols[i*3+2]=col.b*fade*.6;}
     for(let i=tN;i<trailMaxLen;i++){pos[i*3]=pos[i*3+1]=pos[i*3+2]=0;cols[i*3]=cols[i*3+1]=cols[i*3+2]=0;}
-    trailLine.geometry.attributes.position.needsUpdate=true;
-    trailLine.geometry.attributes.color.needsUpdate=true;
-    trailLine.geometry.setDrawRange(0,tN);
+    trailLine.geometry.attributes.position.needsUpdate=true;trailLine.geometry.attributes.color.needsUpdate=true;trailLine.geometry.setDrawRange(0,tN);
   }
 
   // ═══════════════════════════════════════════════════
@@ -11813,29 +11577,48 @@ const LIFE=(function(){
   // ═══════════════════════════════════════════════════
 
   function updateGrowthAndMotion(dt,d){
-    const gg=d.growthGenes;
-    const mg=d.motionGenes;
-    const chaos=d.chaosDrive;
-    const motionInt=d.motionIntensity;
+    const gg=d.growthGenes;const mg=d.motionGenes;const chaos=d.chaosDrive;const motionInt=d.motionIntensity;
+
+    // Update seed phase
+    const totalGrowth=allNodes.reduce((s,n)=>s+n.growthTime,0)/Math.max(1,allNodes.length);
+    if(totalGrowth<0.1)seedPhase=0;
+    else if(totalGrowth<0.3)seedPhase=1;
+    else if(totalGrowth<0.6)seedPhase=2;
+    else if(totalGrowth<0.85)seedPhase=3;
+    else seedPhase=4;
+
+    // Seed mesh: shrink and fade as organism grows
+    if(seedMesh){
+      const seedOpacity=Math.max(0,1-totalGrowth*3);
+      seedMesh.material.opacity=seedOpacity;
+      seedMesh.scale.setScalar(0.15+0.3*seedOpacity);
+      if(seedOpacity<=0&&seedMesh.parent){scene.remove(seedMesh);seedMesh.geometry.dispose();seedMesh.material.dispose();seedMesh=null;}
+    }
+
+    organismAge+=dt*0.016;
 
     allNodes.forEach((node,ni)=>{
-      const depthFactor=1.0-node.depth*0.1;
+      const depthFactor=1.0-node.depth*0.08;
       const bp=node.boneParams;
 
-      // ── Growth Logic ──
+      // ── GROWTH with delay ──
+      const age=organismAge-node.growthDelay*0.1;
+      if(age<0)return; // hasn't started growing yet
+
       switch(node.growthState){
         case 'growing':
-          node.growthTime=Math.min(1,node.growthTime+dt*0.008*gg.growthSpeed*depthFactor);
+          // Power-law growth: L(t) = t^gamma, capped at 1
+          {const rate=dt*0.012*gg.growthSpeed*depthFactor;
+          node.growthTime=Math.min(1,node.growthTime+rate);}
           break;
         case 'dormant':
           node.growthTime=Math.min(0.15,node.growthTime+dt*0.001*gg.growthSpeed);
-          if(d.growthDrive>0.6 && Math.random()<0.001*d.growthDrive) node.growthState='growing';
+          if(d.growthDrive>0.6&&Math.random()<0.002*d.growthDrive)node.growthState='growing';
           break;
         case 'curling':
-          node.growthTime=Math.min(1,node.growthTime+dt*0.005*gg.growthSpeed);
+          node.growthTime=Math.min(1,node.growthTime+dt*0.006*gg.growthSpeed);
           node.curlTarget=Math.PI*mg.curlTightness*(0.3+0.7*node.nr)*(0.5+0.5*Math.sin(t*0.5*mg.curlSpeed+node.phase));
-          {const curlDir=node.curlAngle<node.curlTarget?1:-1;
-          node.curlAngle+=curlDir*dt*0.003*mg.curlSpeed;}
+          {const cd=node.curlAngle<node.curlTarget?1:-1;node.curlAngle+=cd*dt*0.003*mg.curlSpeed;}
           break;
         case 'recoiling':
           node.growthTime=0.3+0.3*Math.max(0,Math.sin(t*0.7+node.phase*2));
@@ -11845,228 +11628,110 @@ const LIFE=(function(){
           break;
       }
 
-      if(!node.mesh) return;
+      if(!node.mesh)return;
 
-      // ═══ Per-bone VIBRATION system ═══
+      // ═══ VIBRATION ═══
       const vibT=t+node.vibPhase;
       let vibDx=0,vibDy=0,vibDz=0,vibScale=1,vibOpa=1;
-
       if(bp.vibAmp>0.001){
-        // Base vibration
-        const vf=bp.vibFreq;
-        const va=bp.vibAmp;
+        const vf=bp.vibFreq,va=bp.vibAmp;
         vibDx=va*Math.sin(vibT*vf*6.28)*bp.flexibility;
         vibDy=va*Math.cos(vibT*vf*5.13)*bp.flexibility*0.7;
         vibDz=va*Math.sin(vibT*vf*4.37+1.3)*bp.flexibility;
-
-        // Noise modulation
-        if(bp.vibNoise>0){
-          const n=fbm(vibT*vf*0.5+node.nodeId*7.3,3);
-          vibDx*=(1+bp.vibNoise*(n-0.5)*2);
-          vibDz*=(1+bp.vibNoise*(n-0.5)*2);
-        }
-
-        // Damping over time
-        vibDx*=(1-bp.damping*0.3);
-        vibDy*=(1-bp.damping*0.3);
-        vibDz*=(1-bp.damping*0.3);
-
-        // Stiffness reduces displacement
-        vibDx*=(1-bp.stiffness*0.7);
-        vibDy*=(1-bp.stiffness*0.7);
-        vibDz*=(1-bp.stiffness*0.7);
-
-        // High-frequency visual effects
-        if(bp.vibFreq>5){
-          // Motion blur effect via scale oscillation
-          const blurAmt=(bp.vibFreq-5)/7*bp.vibAmp*3;
-          vibScale=1+blurAmt*Math.sin(vibT*bp.vibFreq*12)*0.5;
-          // Glow fluctuation via opacity
-          vibOpa=1-blurAmt*0.3*Math.abs(Math.sin(vibT*bp.vibFreq*8));
-        }
+        if(bp.vibNoise>0){const n=fbm(vibT*vf*0.5+node.nodeId*7.3,3);vibDx*=(1+bp.vibNoise*(n-0.5)*2);vibDz*=(1+bp.vibNoise*(n-0.5)*2);}
+        vibDx*=(1-bp.damping*0.3)*(1-bp.stiffness*0.7);vibDy*=(1-bp.damping*0.3)*(1-bp.stiffness*0.7);vibDz*=(1-bp.damping*0.3)*(1-bp.stiffness*0.7);
+        if(bp.vibFreq>5){const blurAmt=(bp.vibFreq-5)/7*bp.vibAmp*3;vibScale=1+blurAmt*Math.sin(vibT*bp.vibFreq*12)*0.5;vibOpa=1-blurAmt*0.3*Math.abs(Math.sin(vibT*bp.vibFreq*8));}
       }
-
-      // Per-bone pulse (radial breathing)
       let pulseSx=1,pulseSy=1;
-      if(bp.pulseAmp>0.001){
-        const p=Math.sin(t*bp.pulseFreq*6.28+node.phase);
-        pulseSx=pulseSy=1+bp.pulseAmp*p;
-      }
-
-      // Resonance: influence from parent/neighbors
+      if(bp.pulseAmp>0.001){const p=Math.sin(t*bp.pulseFreq*6.28+node.phase);pulseSx=pulseSy=1+bp.pulseAmp*p;}
       let resDx=0,resDz=0;
-      if(bp.resonanceBias>0 && ni>0){
-        const prev=allNodes[ni-1];
-        if(prev && prev.vibCurrent){
-          resDx=prev.vibCurrent.dx*bp.resonanceBias*0.5;
-          resDz=prev.vibCurrent.dz*bp.resonanceBias*0.5;
-          // Resonance frequency modulation
-          resDx*=Math.sin(t*bp.resonanceFreq+node.phase)*0.5+0.5;
-          resDz*=Math.cos(t*bp.resonanceFreq+node.phase)*0.5+0.5;
+      if(bp.resonanceBias>0&&ni>0){const prev=allNodes[ni-1];if(prev&&prev.vibCurrent){resDx=prev.vibCurrent.dx*bp.resonanceBias*0.5*Math.sin(t*bp.resonanceFreq+node.phase)*0.5;resDz=prev.vibCurrent.dz*bp.resonanceBias*0.5*Math.cos(t*bp.resonanceFreq+node.phase)*0.5;}}
+      node.vibCurrent={dx:vibDx+resDx,dy:vibDy,dz:vibDz+resDz,sx:vibScale*pulseSx,opa:vibOpa};
+
+      // ═══ MOTION PERSONALITY ═══
+      let dx=0,dy=0,dz=0,sx=1,sy=1,sz=1,rx=0,rz=0;
+      const ph=node.phase;const depthPhase=node.depth*mg.phaseSpread;
+
+      // Tentacle-specific fluid motion
+      if(node.isTentacle){
+        const tf=node.tentacleWaveFreq||1;const ta=node.tentacleWaveAmp||0.3;const flex=node.tentacleFlex||1;
+        dx=ta*Math.sin(t*tf+node.tentacleIndex*1.2)*flex*0.15*motionInt;
+        dy=ta*Math.cos(t*tf*0.7+node.tentacleIndex*0.8)*flex*0.05*motionInt;
+        dz=ta*Math.sin(t*tf*0.9+node.tentacleIndex*1.5+1.0)*flex*0.15*motionInt;
+        rx=Math.sin(t*tf*1.3+node.tentacleIndex*0.5)*0.04*flex*motionInt;
+        rz=Math.cos(t*tf*0.8+node.tentacleIndex*0.7)*0.04*flex*motionInt;
+      }else{
+        switch(mg.type){
+          case 0:{const breath=Math.sin(t*mg.breathFreq+depthPhase)*mg.breathAmp*motionInt;sx=sy=sz=1+breath;dy=breath*0.3;dx=Math.sin(t*0.5+ph)*0.02*motionInt;dz=Math.cos(t*0.4+ph)*0.02*motionInt;}break;
+          case 1:{const twitch=mg.nervousTwitch*motionInt;dx=(hash(t*mg.nervousFreq+ph*10)-0.5)*twitch;dy=(hash(t*mg.nervousFreq+ph*20+0.3)-0.5)*twitch;dz=(hash(t*mg.nervousFreq+ph*30+0.7)-0.5)*twitch;if(hash(Math.floor(t*3)+node.nodeId*0.1)>0.95){dx*=4;dy*=4;dz*=4;}rx=(hash(t*12+ph)-0.5)*0.03*motionInt;rz=(hash(t*13+ph*2)-0.5)*0.03*motionInt;}break;
+          case 2:{const wave=Math.sin(t*mg.oscillFreq+depthPhase*mg.fluidWaveLen)*mg.oscillAmp*motionInt;const wave2=Math.cos(t*mg.oscillFreq*0.7+depthPhase*mg.fluidWaveLen*1.3)*mg.oscillAmp*motionInt*0.6;dx=wave;dy=wave2*0.5;dz=Math.sin(t*mg.oscillFreq*0.5+ph)*mg.oscillAmp*motionInt*0.4;rx=wave*0.5;rz=wave2*0.5;const damp=Math.pow(mg.fluidDamping,node.depth);dx*=damp;dy*=damp;dz*=damp;}break;
+          case 3:{const step=Math.floor(t/mg.mechInterval);const stepPhase=(step+node.nodeId)%7;const stepFrac=(t%mg.mechInterval)/mg.mechInterval;if(stepFrac>0.8){const snap=(stepFrac-0.8)/0.2;dx=Math.sin(stepPhase*2.1)*mg.mechStepSize*snap*motionInt;dy=Math.cos(stepPhase*1.7)*mg.mechStepSize*snap*motionInt*0.5;rz=Math.sin(stepPhase*3.3)*0.05*snap*motionInt;}if(stepPhase%3===0)sx=sy=sz=1+0.03*motionInt*Math.sin(stepFrac*Math.PI);}break;
+          case 4:{const contract=Math.sin(t/mg.contractCycle+depthPhase*0.5);const contractAmt=mg.contractDepth*motionInt;const outerFactor=node.depth/(d.branchGenes.maxDepth||4);sx=sz=1-contractAmt*outerFactor*Math.max(0,contract);sy=1+contractAmt*outerFactor*0.3*Math.max(0,contract);if(node._endPos&&contract>0){dx=-node._endPos.x*contractAmt*outerFactor*0.15*contract;dz=-node._endPos.z*contractAmt*outerFactor*0.15*contract;}}break;
         }
       }
 
-      // Store vibration state for resonance chain
-      node.vibCurrent.dx=vibDx+resDx;
-      node.vibCurrent.dy=vibDy;
-      node.vibCurrent.dz=vibDz+resDz;
-      node.vibCurrent.sx=vibScale*pulseSx;
-      node.vibCurrent.opa=vibOpa;
+      // Global layers
+      const globalBreath=1+0.015*Math.sin(t*0.4)*motionInt;sx*=globalBreath;sy*=globalBreath;sz*=globalBreath;
+      dx+=Math.sin(t*1.1+ph*3)*0.003*motionInt;dz+=Math.cos(t*0.9+ph*2)*0.003*motionInt;
+      if(chaos>0.6){dx+=(Math.random()-0.5)*0.01*chaos*motionInt;dz+=(Math.random()-0.5)*0.01*chaos*motionInt;}
 
-      // ═══ Motion Personality ═══
-      let dx=0,dy=0,dz=0,sx=1,sy=1,sz=1,rx=0,ry=0,rz=0;
-      const ph=node.phase;
-      const depthPhase=node.depth*mg.phaseSpread;
+      const totalDx=dx+node.vibCurrent.dx;const totalDy=dy+node.vibCurrent.dy;const totalDz=dz+node.vibCurrent.dz;
+      node.mesh.position.x+=totalDx;node.mesh.position.y+=totalDy;node.mesh.position.z+=totalDz;
+      node.mesh.scale.set(sx*node.vibCurrent.sx*pulseSx,sy*pulseSy,sz*node.vibCurrent.sx);
+      node.mesh.rotation.x+=rx;node.mesh.rotation.z+=rz;
+      if(node.mesh.material&&node.vibCurrent.opa<0.99)node.mesh.material.opacity=Math.max(0.1,node.mesh.material.opacity*node.vibCurrent.opa);
 
-      switch(mg.type){
-        case 0: // BREATHING
-          {const breath=Math.sin(t*mg.breathFreq+depthPhase)*mg.breathAmp*motionInt;
-          sx=sy=sz=1+breath;
-          dy=breath*0.3;
-          dx=Math.sin(t*0.5+ph)*0.02*motionInt;
-          dz=Math.cos(t*0.4+ph)*0.02*motionInt;}
-          break;
-        case 1: // NERVOUS
-          {const twitch=mg.nervousTwitch*motionInt;
-          dx=(hash(t*mg.nervousFreq+ph*10)-0.5)*twitch;
-          dy=(hash(t*mg.nervousFreq+ph*20+0.3)-0.5)*twitch;
-          dz=(hash(t*mg.nervousFreq+ph*30+0.7)-0.5)*twitch;
-          if(hash(Math.floor(t*3)+node.nodeId*0.1)>0.95){dx*=4;dy*=4;dz*=4;}
-          rx=(hash(t*12+ph)-0.5)*0.03*motionInt;
-          rz=(hash(t*13+ph*2)-0.5)*0.03*motionInt;}
-          break;
-        case 2: // FLUID
-          {const wave=Math.sin(t*mg.oscillFreq+depthPhase*mg.fluidWaveLen)*mg.oscillAmp*motionInt;
-          const wave2=Math.cos(t*mg.oscillFreq*0.7+depthPhase*mg.fluidWaveLen*1.3)*mg.oscillAmp*motionInt*0.6;
-          dx=wave;dy=wave2*0.5;dz=Math.sin(t*mg.oscillFreq*0.5+ph)*mg.oscillAmp*motionInt*0.4;
-          rx=wave*0.5;rz=wave2*0.5;
-          const damp=Math.pow(mg.fluidDamping,node.depth);
-          dx*=damp;dy*=damp;dz*=damp;}
-          break;
-        case 3: // MECHANICAL
-          {const step=Math.floor(t/mg.mechInterval);
-          const stepPhase=(step+node.nodeId)%7;
-          const stepFrac=(t%mg.mechInterval)/mg.mechInterval;
-          if(stepFrac>0.8){
-            const snap=(stepFrac-0.8)/0.2;
-            dx=Math.sin(stepPhase*2.1)*mg.mechStepSize*snap*motionInt;
-            dy=Math.cos(stepPhase*1.7)*mg.mechStepSize*snap*motionInt*0.5;
-            rz=Math.sin(stepPhase*3.3)*0.05*snap*motionInt;
-          }
-          if(stepPhase%3===0) sx=sy=sz=1+0.03*motionInt*Math.sin(stepFrac*Math.PI);}
-          break;
-        case 4: // CONTRACTION
-          {const contract=Math.sin(t/mg.contractCycle+depthPhase*0.5);
-          const contractAmt=mg.contractDepth*motionInt;
-          const outerFactor=node.depth/(d.branchGenes.maxDepth||4);
-          sx=sz=1-contractAmt*outerFactor*Math.max(0,contract);
-          sy=1+contractAmt*outerFactor*0.3*Math.max(0,contract);
-          if(node._endPos && contract>0){
-            dx=-node._endPos.x*contractAmt*outerFactor*0.15*contract;
-            dz=-node._endPos.z*contractAmt*outerFactor*0.15*contract;
-          }}
-          break;
-      }
-
-      // Global breath layer
-      const globalBreath=1+0.015*Math.sin(t*0.4)*motionInt;
-      sx*=globalBreath;sy*=globalBreath;sz*=globalBreath;
-
-      // Subtle continuous oscillation
-      dx+=Math.sin(t*1.1+ph*3)*0.003*motionInt;
-      dz+=Math.cos(t*0.9+ph*2)*0.003*motionInt;
-
-      // Chaos layer
-      if(chaos>0.6){
-        dx+=(Math.random()-0.5)*0.01*chaos*motionInt;
-        dz+=(Math.random()-0.5)*0.01*chaos*motionInt;
-      }
-
-      // ═══ COMBINE: motion + vibration + pulse ═══
-      const totalDx=dx+node.vibCurrent.dx;
-      const totalDy=dy+node.vibCurrent.dy;
-      const totalDz=dz+node.vibCurrent.dz;
-
-      node.mesh.position.x+=totalDx;
-      node.mesh.position.y+=totalDy;
-      node.mesh.position.z+=totalDz;
-      node.mesh.scale.set(sx*node.vibCurrent.sx*pulseSx, sy*pulseSy, sz*node.vibCurrent.sx);
-      node.mesh.rotation.x+=rx;
-      node.mesh.rotation.z+=rz;
-
-      // Vibration opacity effect
-      if(node.mesh.material && node.vibCurrent.opa<0.99){
-        node.mesh.material.opacity=Math.max(0.1,node.mesh.material.opacity*node.vibCurrent.opa);
-      }
-
-      // Joint
       if(node.jointMesh){
         const jBreathe=1+0.02*Math.sin(t*mg.breathFreq*1.3+ph+0.5)*motionInt;
         node.jointMesh.scale.setScalar(jBreathe*node.vibCurrent.sx*pulseSx);
-        node.jointMesh.position.x+=totalDx*0.7;
-        node.jointMesh.position.y+=totalDy*0.7;
-        node.jointMesh.position.z+=totalDz*0.7;
-        if(node.jointMesh.material && node.vibCurrent.opa<0.99){
-          node.jointMesh.material.opacity=Math.max(0.1,node.jointMesh.material.opacity*node.vibCurrent.opa);
-        }
+        node.jointMesh.position.x+=totalDx*0.7;node.jointMesh.position.y+=totalDy*0.7;node.jointMesh.position.z+=totalDz*0.7;
+        if(node.jointMesh.material&&node.vibCurrent.opa<0.99)node.jointMesh.material.opacity=Math.max(0.1,node.jointMesh.material.opacity*node.vibCurrent.opa);
       }
     });
 
-    // Detached orbiting
-    detachedNodes.forEach(node=>{
-      node.orbitAngle+=dt*0.003*node.orbitSpeed;
+    // Update orbiters
+    orbiters.forEach(orb=>{
+      orb.age+=dt*0.016;
+      orb.angle+=dt*0.003*orb.speed;
+      const x=Math.cos(orb.angle)*orb.radius;
+      const y=orb.elevation+Math.sin(t*0.5+orb.phase)*orb.wobble;
+      const z=Math.sin(orb.angle)*orb.radius;
+      if(orb.mesh){orb.mesh.position.set(x,y,z);orb.mesh.rotation.y=orb.angle;orb.mesh.rotation.x=Math.sin(t*0.3+orb.phase)*0.3;}
+      if(orb.glowMesh){orb.glowMesh.position.set(x,y,z);const glow=0.1+0.1*Math.sin(t*2+orb.phase);orb.glowMesh.material.opacity=glow;}
     });
   }
 
   // ═══════════════════════════════════════════════════
-  //  SCENE SETUP
+  //  SCENE
   // ═══════════════════════════════════════════════════
   function buildScene(){
-    scene=new THREE.Scene();
-    scene.fog=new THREE.FogExp2(0x000308,.0005);
-    camera=new THREE.PerspectiveCamera(50,W/H,.1,2000);
-    camera.position.set(0,2,18);
+    scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x000308,.0005);
+    camera=new THREE.PerspectiveCamera(50,W/H,.1,2000);camera.position.set(0,2,18);
     scene.add(new THREE.AmbientLight(0xffffff,1.0));
     const sN=1200,sPos=new Float32Array(sN*3);
     for(let i=0;i<sN;i++){const r=100+Math.random()*600,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);sPos[i*3]=r*Math.sin(ph)*Math.cos(th);sPos[i*3+1]=r*Math.cos(ph);sPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);}
     const sGeo=new THREE.BufferGeometry();sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
     starField=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0x223355,size:.5,transparent:true,opacity:.1,depthWrite:false}));
     scene.add(starField);
-    rebuildOrganism();
+    initOrganism();
   }
 
-  let cachedD=null;
-  let lastStage=-1,lastBranchDepth=-1;
+  let cachedD=null;let lastStage=-1,lastBranchDepth=-1;
 
-  function rebuildOrganism(){
-    if(!DNA){
-      const id=(typeof AUTH!=='undefined'&&AUTH.user)?AUTH.user.email:'default_organism';
-      DNA=generateDNA(id);
-    }
-    const state=getStateArray();
-    const d=transformState(state,DNA);
-    cachedD=d;
-    lastStage=d.stage;
-    lastBranchDepth=d.branchDepth;
+  function initOrganism(){
+    if(!DNA){const id=(typeof AUTH!=='undefined'&&AUTH.user)?AUTH.user.email:'default_organism';DNA=generateDNA(id);}
+    const state=getStateArray();const d=transformState(state,DNA);
+    cachedD=d;lastStage=d.stage;lastBranchDepth=d.branchDepth;
+    inputCount=0;organismAge=0;tentacles=[];orbiters=[];growthEvents=[];seedPhase=0;seedMesh=null;
     generateTree(d);
-    allNodes.forEach(node=>{
-      if(node.growthState!=='dormant') node.growthTime=0.7+0.3*node.nr;
-    });
-    buildVisuals(d);
-    buildMoya(d);
-    buildTrail(d);
-  }
-
-  function rebuildVisualsOnly(d){
-    buildVisuals(d);
+    // ★ ALL nodes start at growthTime=0 — visible growth from seed
+    buildVisuals(d);buildMoya(d);buildTrail(d);
   }
 
   // ═══════════════════════════════════════════════════
   //  MOUSE / TOUCH
   // ═══════════════════════════════════════════════════
-  let isDragging=false,prevMX=0,prevMY=0;
-  let camTheta=0,camPhi=.3,camDist=18;
-  let autoRotate=true;
+  let isDragging=false,prevMX=0,prevMY=0,camTheta=0,camPhi=.3,camDist=18;let autoRotate=true;
   function onMouseDown(e){isDragging=true;autoRotate=false;prevMX=e.clientX;prevMY=e.clientY;}
   function onMouseMove(e){if(!isDragging)return;camTheta-=(e.clientX-prevMX)*.005;camPhi=Math.max(-.8,Math.min(.8,camPhi+(e.clientY-prevMY)*.005));prevMX=e.clientX;prevMY=e.clientY;}
   function onMouseUp(){isDragging=false;setTimeout(()=>{autoRotate=true;},5000);}
@@ -12078,29 +11743,24 @@ const LIFE=(function(){
   // ═══════════════════════════════════════════════════
   //  ANIMATION LOOP
   // ═══════════════════════════════════════════════════
-  let frameCount=0;
-  let visualRebuildTimer=0;
+  let frameCount=0,visualRebuildTimer=0;
 
   function frame(){
     raf=requestAnimationFrame(frame);
-    const dt=Math.min(clk.getDelta()*60,4);
-    t+=dt*.016;
-    frameCount++;
+    const dt=Math.min(clk.getDelta()*60,4);t+=dt*.016;frameCount++;
+    const d=cachedD;if(!d)return;
 
-    const d=cachedD;
-    if(!d)return;
-
-    if(frameCount%480===0){
-      const state=getStateArray();
-      const freshD=transformState(state,DNA);
-      if(freshD.stage!==lastStage||freshD.branchDepth!==lastBranchDepth){
-        rebuildOrganism();return;
-      }
+    // Refresh state periodically (but DON'T regenerate tree)
+    if(frameCount%300===0){
+      const state=getStateArray();const freshD=transformState(state,DNA);
       cachedD=freshD;
+      // Only full rebuild if stage changed drastically
+      if(freshD.stage!==lastStage&&Math.abs(freshD.stage-lastStage)>1){lastStage=freshD.stage;lastBranchDepth=freshD.branchDepth;initOrganism();return;}
     }
 
+    // Periodic visual rebuild to reflect growth
     visualRebuildTimer+=dt;
-    if(visualRebuildTimer>8){visualRebuildTimer=0;rebuildVisualsOnly(d);}
+    if(visualRebuildTimer>3){visualRebuildTimer=0;buildVisuals(d);}
 
     if(autoRotate)camTheta+=.0008*dt;
     camera.position.x=Math.sin(camTheta)*Math.cos(camPhi)*camDist;
@@ -12116,14 +11776,12 @@ const LIFE=(function(){
 
     if(evoFlash>0)evoFlash-=dt*.03;
     if(frameCount%15===0)updateOverlay(d);
-
     renderer.render(scene,camera);
   }
 
   function updateOverlay(d){
     const stageLabels=['原始棒','変形体','分節体','放射体','分岐体','複合有機体'];
-    const pill=document.getElementById('life-stage-lbl');
-    if(pill)pill.textContent='Stage '+d.stage+' · '+(stageLabels[d.stage]||'未知');
+    const pill=document.getElementById('life-stage-lbl');if(pill)pill.textContent='Stage '+d.stage+' · '+(stageLabels[d.stage]||'未知');
     let mode='—',modeDesc='—',direction='—';
     if(typeof BA_STATE!=='undefined'&&BA_STATE.getDominantMode){const m=BA_STATE.getDominantMode();mode=m.mode;modeDesc=m.desc;}
     const modeEl=document.getElementById('life-viz-mode');if(modeEl)modeEl.textContent=mode;
@@ -12131,27 +11789,26 @@ const LIFE=(function(){
     if(typeof BA_STATE!=='undefined'&&BA_STATE.history&&BA_STATE.history.length>=3){
       const h=BA_STATE.history;const last=h[h.length-1]?.params||{};const prev=h[Math.max(0,h.length-5)]?.params||{};
       let maxK='',maxD=0;Object.keys(last).forEach(k=>{const dd=Math.abs((last[k]||0)-(prev[k]||0));if(dd>maxD){maxD=dd;maxK=k;}});
-      if(maxD>.03){direction=(BA_STATE.PARAM_LABELS?.[maxK]||maxK)+' '+((last[maxK]||0)>(prev[maxK]||0)?'↑':'↓');}else{direction='安定';}
+      if(maxD>.03)direction=(BA_STATE.PARAM_LABELS?.[maxK]||maxK)+' '+((last[maxK]||0)>(prev[maxK]||0)?'↑':'↓');else direction='安定';
     }
     const dirEl=document.getElementById('life-viz-direction');if(dirEl)dirEl.textContent=direction;
     const motionNames=['呼吸型','神経型','流体型','機械型','収縮型'];
     const motEl=document.getElementById('life-viz-motion');if(motEl)motEl.textContent=motionNames[d.motionGenes.type]||'—';
-    // Show skeletal shape info
-    const shapeNames=['テーパー','中央膨張','波状','局所質量','分節機械','有機テーパー'];
     const skelEl=document.getElementById('life-viz-skeleton');
+    const shapeNames=['テーパー','中央膨張','波状','局所質量','分節機械','有機テーパー'];
     if(skelEl)skelEl.textContent=shapeNames[d.skeletalDNA.primaryShape]||'—';
+    // Node count and input count
+    const nodeEl=document.getElementById('life-viz-nodes');if(nodeEl)nodeEl.textContent=allNodes.length+' nodes · '+inputCount+' inputs';
   }
 
   function initTimeScrub(){
-    const scrub=document.getElementById('life-time-scrub');
-    const label=document.getElementById('life-time-label');
+    const scrub=document.getElementById('life-time-scrub');const label=document.getElementById('life-time-label');
     if(!scrub)return;
     scrub.addEventListener('input',()=>{
       const v=parseInt(scrub.value);
-      if(v>=100){label.textContent='now';rebuildOrganism();}
+      if(v>=100){label.textContent='now';initOrganism();}
       else if(typeof BA_STATE!=='undefined'&&BA_STATE.history.length>0){
-        const idx=Math.floor(v/100*(BA_STATE.history.length-1));
-        const snap=BA_STATE.history[idx];
+        const idx=Math.floor(v/100*(BA_STATE.history.length-1));const snap=BA_STATE.history[idx];
         if(snap){label.textContent='#'+idx;const state=Object.values(snap.params);const dd=transformState(state,DNA);generateTree(dd);buildVisuals(dd);}
       }
     });
@@ -12166,16 +11823,11 @@ const LIFE=(function(){
       const dpr=Math.min(window.devicePixelRatio||1,2);
       renderer=new THREE.WebGLRenderer({canvas:c,alpha:false,antialias:true,powerPreference:'high-performance'});
       renderer.setSize(W,H);renderer.setPixelRatio(dpr);renderer.setClearColor(0x000308);
-      clk=new THREE.Clock();
-      DNA=null;
-      buildScene();
-      initTimeScrub();
-      c.addEventListener('mousedown',onMouseDown);
-      c.addEventListener('mousemove',onMouseMove);
-      window.addEventListener('mouseup',onMouseUp);
-      c.addEventListener('wheel',onWheel,{passive:false});
-      c.addEventListener('touchstart',onTouchStart,{passive:true});
-      c.addEventListener('touchmove',onTouchMove,{passive:true});
+      clk=new THREE.Clock();DNA=null;
+      buildScene();initTimeScrub();
+      c.addEventListener('mousedown',onMouseDown);c.addEventListener('mousemove',onMouseMove);
+      window.addEventListener('mouseup',onMouseUp);c.addEventListener('wheel',onWheel,{passive:false});
+      c.addEventListener('touchstart',onTouchStart,{passive:true});c.addEventListener('touchmove',onTouchMove,{passive:true});
       c.addEventListener('touchend',onTouchEnd);
       const ro=new ResizeObserver(()=>{W=cv.clientWidth;H=cv.clientHeight;if(W>0&&H>0){renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();}});
       ro.observe(cv.parentElement||cv);
@@ -12194,21 +11846,25 @@ const LIFE=(function(){
       const evo=(typeof LIFE_STATE!=='undefined')?LIFE_STATE.checkEvolution():{evolved:false};
       if(evo.evolved){evoFlash=1.5;evoMsg='Stage '+evo.to+' '+evo.label+' に進化！';setTimeout(()=>{if(typeof updateLifeStatus==='function')updateLifeStatus();},200);}
       if(typeof LIFE_STATE!=='undefined')LIFE_STATE.save();
-      rebuildOrganism();
+      // ★ CUMULATIVE GROWTH — add new branches/tentacles, don't regenerate
+      const state=getStateArray();const d=transformState(state,DNA);cachedD=d;
+      addGrowthOnInput(d);
+      buildVisuals(d); // rebuild visuals to show new nodes
     },
     divide(){
       if(typeof BA_STATE!=='undefined'){BA_STATE.params.growthBias=Math.min(1,BA_STATE.params.growthBias+.03);BA_STATE.params.energy=Math.min(1,BA_STATE.params.energy+.02);BA_STATE.save();}
-      rebuildOrganism();
+      const d=cachedD;if(d)addGrowthOnInput(d);
+      buildVisuals(d);
     },
     getStatus(){
-      const d=cachedD||{branchDepth:2,stage:0};
-      const state=getStateArray();
+      const d=cachedD||{branchDepth:2,stage:0};const state=getStateArray();
       return{cells:allNodes.length,energy:(state[0]||.5).toFixed(1),gen:(typeof AUTH!=='undefined'&&AUTH.user?.gen)||0,stage:(typeof LIFE_STATE!=='undefined')?LIFE_STATE.stage:{n:d.stage}};
     },
     getDNA(){return DNA;},
-    regenerateDNA(id){DNA=generateDNA(id);rebuildOrganism();}
+    regenerateDNA(id){DNA=generateDNA(id);initOrganism();}
   };
 })();
+
 
 
 
